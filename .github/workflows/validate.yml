@@ -1,0 +1,42 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync latest.json with Directory.Build.props
+        shell: pwsh
+        run: |
+          [xml]$props = Get-Content Directory.Build.props
+          $modVersion = @($props.Project.PropertyGroup.ModVersion | Where-Object { $_ })[0]
+          $gameEa = @($props.Project.PropertyGroup.ModGameEa | Where-Object { $_ })[0]
+          $repo = @($props.Project.PropertyGroup.ModGitHubRepository | Where-Object { $_ })[0]
+
+          $latest = Get-Content latest.json -Raw | ConvertFrom-Json
+          if ($latest.version -ne $modVersion) {
+            throw "latest.json version '$($latest.version)' != ModVersion '$modVersion'. Run: dotnet build -c Release"
+          }
+          if ($latest.gameVersion -ne $gameEa) {
+            throw "latest.json gameVersion '$($latest.gameVersion)' != ModGameEa '$gameEa'"
+          }
+          if ($latest.manifestUrl -notmatch [regex]::Escape($repo)) {
+            Write-Warning "manifestUrl may not match ModGitHubRepository ($repo)"
+          }
+          Write-Host "OK: Voogle Route v$modVersion (game EA $gameEa)"
+
+      - name: Check CHANGELOG mentions version
+        shell: pwsh
+        run: |
+          $ver = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.ModVersion | Select-Object -First 1
+          if ((Get-Content CHANGELOG.md -Raw) -notmatch [regex]::Escape($ver)) {
+            Write-Warning "CHANGELOG.md does not mention $ver"
+          }

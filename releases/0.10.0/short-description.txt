@@ -1,0 +1,3 @@
+Voogle Route extends Voogle Maps with on-ground route lines, turn-by-turn driving HUD, intersection arrows, and optional auto-walk. All 22 in-game languages supported. Requires MelonLoader on Big Ambitions EA 0.10.
+
+Source & updates: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute

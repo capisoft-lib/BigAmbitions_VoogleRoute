@@ -1,0 +1,20 @@
+# Build
+bin/
+obj/
+*.user
+*.suo
+
+# IDE
+.vs/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local game path overrides (optional)
+*.local.props
+
+# Do not commit pre-built DLLs at repo root (use GitHub Releases instead)
+# Uncomment if you prefer not to track release binaries:
+# releases/**/*.dll
