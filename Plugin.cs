@@ -3,6 +3,7 @@ using VoogleRoute.Localization;
 using VoogleRoute.Navigation;
 using VoogleRoute.Rendering;
 using VoogleRoute.UI;
+using VoogleRoute.Update;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,12 +30,14 @@ public sealed class Plugin : MelonMod
         RouteToggleHud.EnsureCreated();
         TurnNavigationHud.EnsureCreated();
         IntersectionArrowRenderer.EnsureCreated();
+        UpdateService.Initialize();
 
         MelonLogger.Msg($"{ModInfo.Name} v{ModInfo.Version} loaded.");
     }
 
     public override void OnUpdate()
     {
+        UpdateService.Tick();
         ModLocalization.PollLanguageChange();
 
         if (!GameState.IsPlayable())
@@ -153,6 +156,7 @@ public sealed class Plugin : MelonMod
 
     public override void OnDeinitializeMelon()
     {
+        UpdateService.Shutdown();
         ModLocalization.LanguageChanged -= OnGameLanguageChanged;
         MelonEvents.OnSceneWasLoaded.Unsubscribe(OnSceneWasLoaded);
         RouteLineRenderer.Destroy();

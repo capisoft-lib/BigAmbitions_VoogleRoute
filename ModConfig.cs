@@ -4,6 +4,12 @@ namespace VoogleRoute;
 
 internal static class ModConfig
 {
+    /// <summary>Nexus header route glow (#00B4FF).</summary>
+    internal const float RouteNeonBlueR = 0f;
+    internal const float RouteNeonBlueG = 180f / 255f;
+    internal const float RouteNeonBlueB = 1f;
+    internal const float RouteNeonBlueA = 0.92f;
+
     internal static MelonPreferences_Category Category = null!;
 
     internal static MelonPreferences_Entry<bool> RouteLineEnabled = null!;
@@ -33,6 +39,9 @@ internal static class ModConfig
     internal static MelonPreferences_Entry<float> IntersectionArrowColorB = null!;
     internal static MelonPreferences_Entry<float> IntersectionArrowWidth = null!;
     internal static MelonPreferences_Entry<float> IntersectionArrowLength = null!;
+    internal static MelonPreferences_Entry<bool> CheckForUpdates = null!;
+    internal static MelonPreferences_Entry<bool> AutoDownloadUpdates = null!;
+    internal static MelonPreferences_Entry<bool> PromptInstallUpdate = null!;
 
     internal static void Init()
     {
@@ -46,18 +55,18 @@ internal static class ModConfig
         MinTurnAngleDegrees = Category.CreateEntry("MinTurnAngleDegrees", 22f, "Min. angle to count as a turn (°)");
         MaxIntersectionMarkers = Category.CreateEntry("MaxIntersectionMarkers", 6, "Max. arrow markers ahead");
         IntersectionMarkerRangeMeters = Category.CreateEntry("IntersectionMarkerRangeMeters", 300f, "Arrow marker range (m)");
-        IntersectionArrowColorR = Category.CreateEntry("IntersectionArrowColorR", 0.07f, "Arrow color R");
-        IntersectionArrowColorG = Category.CreateEntry("IntersectionArrowColorG", 0.22f, "Arrow color G");
-        IntersectionArrowColorB = Category.CreateEntry("IntersectionArrowColorB", 0.42f, "Arrow color B");
+        IntersectionArrowColorR = Category.CreateEntry("IntersectionArrowColorR", RouteNeonBlueR, "Arrow color R");
+        IntersectionArrowColorG = Category.CreateEntry("IntersectionArrowColorG", RouteNeonBlueG, "Arrow color G");
+        IntersectionArrowColorB = Category.CreateEntry("IntersectionArrowColorB", RouteNeonBlueB, "Arrow color B");
         IntersectionArrowWidth = Category.CreateEntry("IntersectionArrowWidth", 0.07f, "Arrow width (m)");
         IntersectionArrowLength = Category.CreateEntry("IntersectionArrowLength", 3f, "Arrow length (m)");
         LineWidth = Category.CreateEntry("LineWidth", 0.5f, "Line width (legacy, see Foot/Vehicle)");
         FootLineWidth = Category.CreateEntry("FootLineWidth", 0.5f, "Line width on foot");
         VehicleLineWidth = Category.CreateEntry("VehicleLineWidth", 0.1f, "Line width in vehicle");
-        LineColorR = Category.CreateEntry("LineColorR", 0.07f, "Line color R");
-        LineColorG = Category.CreateEntry("LineColorG", 0.22f, "Line color G");
-        LineColorB = Category.CreateEntry("LineColorB", 0.42f, "Line color B");
-        LineColorA = Category.CreateEntry("LineColorA", 0.92f, "Line color A");
+        LineColorR = Category.CreateEntry("LineColorR", RouteNeonBlueR, "Line color R");
+        LineColorG = Category.CreateEntry("LineColorG", RouteNeonBlueG, "Line color G");
+        LineColorB = Category.CreateEntry("LineColorB", RouteNeonBlueB, "Line color B");
+        LineColorA = Category.CreateEntry("LineColorA", RouteNeonBlueA, "Line color A");
         GroundOffset = Category.CreateEntry("GroundOffset", 0.12f, "Ground offset (m)");
         RecalcIntervalSeconds = Category.CreateEntry("RecalcIntervalSeconds", 0.75f, "Recalc interval on foot (s)");
         VehicleRecalcIntervalSeconds = Category.CreateEntry("VehicleRecalcIntervalSeconds", 2.5f, "Recalc interval in vehicle (s)");
@@ -65,29 +74,29 @@ internal static class ModConfig
         HudButtonScale = Category.CreateEntry("HudButtonScale", 1f, "HUD panel scale");
         NavHudOffsetY = Category.CreateEntry("NavHudOffsetY", 16f,
             "Bottom margin of VOOGLE ROUTE panel (bottom-left anchor)");
+        CheckForUpdates = Category.CreateEntry("CheckForUpdates", true, "Check for mod updates on startup");
+        AutoDownloadUpdates = Category.CreateEntry("AutoDownloadUpdates", false,
+            "Download updates automatically when a newer version is found");
+        PromptInstallUpdate = Category.CreateEntry("PromptInstallUpdate", true,
+            "Show in-game prompt to install after an update is downloaded");
 
-        MigrateLegacyGreenLineColors();
+        MigrateLegacyRouteColors();
     }
 
-    /// <summary>Resets old green / cyan line defaults from On-Map GPS era.</summary>
-    private static void MigrateLegacyGreenLineColors()
+    /// <summary>Align saved prefs with Nexus neon blue (#00B4FF).</summary>
+    private static void MigrateLegacyRouteColors()
     {
         var migrated = false;
 
-        if (IsLegacyGreenLine())
+        if (!IsRouteNeonBlue(LineColorR.Value, LineColorG.Value, LineColorB.Value))
         {
-            LineColorR.Value = 0.07f;
-            LineColorG.Value = 0.22f;
-            LineColorB.Value = 0.42f;
-            LineColorA.Value = 0.92f;
+            ApplyRouteNeonBlueToLinePrefs();
             migrated = true;
         }
 
-        if (IsLegacyGreenArrow())
+        if (!IsRouteNeonBlue(IntersectionArrowColorR.Value, IntersectionArrowColorG.Value, IntersectionArrowColorB.Value))
         {
-            IntersectionArrowColorR.Value = 0.07f;
-            IntersectionArrowColorG.Value = 0.22f;
-            IntersectionArrowColorB.Value = 0.42f;
+            ApplyRouteNeonBlueToArrowPrefs();
             migrated = true;
         }
 
@@ -95,13 +104,23 @@ internal static class ModConfig
             Category.SaveToFile(false);
     }
 
-    private static bool IsLegacyGreenLine() =>
-        LineColorG.Value > 0.65f && LineColorR.Value < 0.2f && LineColorB.Value < 0.35f;
+    private static void ApplyRouteNeonBlueToLinePrefs()
+    {
+        LineColorR.Value = RouteNeonBlueR;
+        LineColorG.Value = RouteNeonBlueG;
+        LineColorB.Value = RouteNeonBlueB;
+        LineColorA.Value = RouteNeonBlueA;
+    }
 
-    private static bool IsLegacyGreenArrow() =>
-        IntersectionArrowColorG.Value > 0.65f
-        && IntersectionArrowColorR.Value < 0.2f
-        && IntersectionArrowColorB.Value < 0.35f;
+    private static void ApplyRouteNeonBlueToArrowPrefs()
+    {
+        IntersectionArrowColorR.Value = RouteNeonBlueR;
+        IntersectionArrowColorG.Value = RouteNeonBlueG;
+        IntersectionArrowColorB.Value = RouteNeonBlueB;
+    }
+
+    private static bool IsRouteNeonBlue(float r, float g, float b) =>
+        r < 0.06f && g > 0.64f && g < 0.76f && b > 0.96f;
 
     /// <summary>Recalcul itinéraire / résolution cible (ligne ou marche auto).</summary>
     internal static bool WantsRouteComputation =>
@@ -118,4 +137,24 @@ internal static class ModConfig
         IntersectionArrowColorG.Value,
         IntersectionArrowColorB.Value,
         0.95f);
+
+    internal static void SetRouteLineColor(UnityEngine.Color color, bool save = true)
+    {
+        LineColorR.Value = color.r;
+        LineColorG.Value = color.g;
+        LineColorB.Value = color.b;
+        LineColorA.Value = color.a;
+        IntersectionArrowColorR.Value = color.r;
+        IntersectionArrowColorG.Value = color.g;
+        IntersectionArrowColorB.Value = color.b;
+
+        if (save)
+            Category.SaveToFile(false);
+
+        Rendering.RouteLineRenderer.ApplyStyle();
+        Rendering.IntersectionArrowRenderer.ApplyStyle();
+        Navigation.PathFinderService.InvalidateCache();
+    }
+
+    internal static void Save() => Category.SaveToFile(false);
 }
