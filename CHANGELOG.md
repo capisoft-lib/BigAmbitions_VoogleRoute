@@ -17,6 +17,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/) where practica
 
 - Renamed from **On-Map GPS** (`OnMapGps.dll`) to **Voogle Route** (`VoogleRoute.dll`)
 - MelonLoader preference category: `VoogleRoute`
+- Route HUD and settings panel styling aligned with in-game GPS / BizPhone UI chrome
 
 ### Removed
 

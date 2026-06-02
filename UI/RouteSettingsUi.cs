@@ -14,11 +14,15 @@ namespace VoogleRoute.UI;
 /// <summary>In-game settings overlay for Voogle Route (opened from the VOOGLE ROUTE panel).</summary>
 internal static class RouteSettingsUi
 {
-    private const string RootName = "VoogleRoute_Settings_v3";
+    private const string RootName = "VoogleRoute_Settings_v12";
+    /// <summary>Bleed bas du 9-slice pour toggles compacts (layout 44px, pas la hauteur CLOSE).</summary>
+    private const float ToggleGraphicBleedMultiplier = 2.5f;
     private const int CanvasSortOrder = 11500;
-    private const float PanelWidth = 540f;
-    private const float PanelHeight = 600f;
-    private const float FooterHeight = 52f;
+    /// <summary>Même échelle propre que le HUD (370 × 1,5 = 555 px).</summary>
+    private const float PanelScale = 1.5f;
+    private static float PanelWidth => NavPanelLayout.PanelWidth * PanelScale;
+    private const float PanelHeight = 700f;
+    private const float FooterBottomPad = 18f;
     private const float RowHeight = 44f;
     private const float RowGap = 8f;
     private const float ToggleWidth = 72f;
@@ -48,31 +52,25 @@ internal static class RouteSettingsUi
         if (_root != null)
             return;
 
-        foreach (var legacyName in new[] { "VoogleRoute_Settings", "VoogleRoute_Settings_v2", "VoogleRoute_Settings_v3" })
+        foreach (var legacyName in new[]
+                 {
+                     "VoogleRoute_Settings", "VoogleRoute_Settings_v2",
+                     "VoogleRoute_Settings_v3", "VoogleRoute_Settings_v4",
+                     "VoogleRoute_Settings_v5", "VoogleRoute_Settings_v6",
+                     "VoogleRoute_Settings_v7", "VoogleRoute_Settings_v8",
+                     "VoogleRoute_Settings_v9", "VoogleRoute_Settings_v10",
+                     "VoogleRoute_Settings_v11", "VoogleRoute_Settings_v12"
+                 })
         {
             var legacy = GameObject.Find(legacyName);
-            if (legacy != null && legacyName != RootName)
+            if (legacy != null && legacy.name != RootName)
                 Object.Destroy(legacy);
         }
-
-        GameUiStyle.EnsureInitialized();
-
-        var scale = PanelWidth / NavPanelLayout.PanelWidth;
-        var metrics = NavPanelLayout.CreateMetrics(scale);
-        var contentInset = metrics.ContentInset;
 
         _root = new GameObject(RootName);
         Object.DontDestroyOnLoad(_root);
 
-        var canvas = _root.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = CanvasSortOrder;
-
-        var scaler = _root.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920f, 1080f);
-        scaler.matchWidthOrHeight = 0.5f;
-        _root.AddComponent<GraphicRaycaster>();
+        GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
 
         var dim = CreateRect(_root.transform, "Dimmer");
         Stretch(dim);
@@ -83,23 +81,20 @@ internal static class RouteSettingsUi
         dimBtn.targetGraphic = dimImg;
         dimBtn.onClick.AddListener((UnityAction)Close);
 
-        var panel = CreateRect(_root.transform, "Panel");
-        panel.anchorMin = panel.anchorMax = new Vector2(0.5f, 0.5f);
-        panel.pivot = new Vector2(0.5f, 0.5f);
-        panel.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+        var chrome = GameStylePanelChrome.Build(
+            _root.transform,
+            PanelWidth,
+            PanelHeight,
+            "Panel",
+            NavPanelLayout.SettingsHeaderTightenPerSide * 2f);
+        var metrics = chrome.Metrics;
+        var scale = chrome.Scale;
+        var contentInset = chrome.ContentInset;
+        var panel = chrome.Panel;
+        var closeButtonHeight = NavPanelLayout.ButtonHeight * scale;
+        var footerReserve = closeButtonHeight + NavPanelLayout.BodyBottomPadding * scale + FooterBottomPad + 12f;
 
-        var background = CreateRect(panel, "Background");
-        NavPanelLayout.ApplyBodyFrame(background, scale);
-        var backgroundImg = background.gameObject.AddComponent<Image>();
-        backgroundImg.raycastTarget = true;
-        GameUiStyle.ApplyPanelBg(backgroundImg);
-
-        var header = CreateRect(panel, "Header");
-        NavPanelLayout.ApplyHeaderFrame(header, metrics);
-        var headerImg = header.gameObject.AddComponent<Image>();
-        headerImg.raycastTarget = false;
-        GameUiStyle.ApplyHeaderBg(headerImg);
-
+        var header = chrome.Header;
         var titleGo = CreateRect(header, "Title");
         titleGo.anchorMin = Vector2.zero;
         titleGo.anchorMax = Vector2.one;
@@ -115,7 +110,7 @@ internal static class RouteSettingsUi
         var scrollGo = CreateRect(panel, "Scroll");
         scrollGo.anchorMin = Vector2.zero;
         scrollGo.anchorMax = Vector2.one;
-        scrollGo.offsetMin = new Vector2(contentInset, FooterHeight);
+        scrollGo.offsetMin = new Vector2(contentInset, footerReserve);
         scrollGo.offsetMax = new Vector2(-contentInset, -scrollTop);
 
         var scroll = scrollGo.gameObject.AddComponent<ScrollRect>();
@@ -141,21 +136,21 @@ internal static class RouteSettingsUi
         layout.childForceExpandWidth = true;
         layout.childForceExpandHeight = false;
         layout.spacing = RowGap;
-        layout.padding = new RectOffset(4, 4, 6, 6);
+        layout.padding = new RectOffset(4, 4, 6, 10);
 
         var fitter = content.gameObject.AddComponent<ContentSizeFitter>();
         fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
         fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         scroll.content = content;
 
-        BuildRows(content);
+        BuildRows(content, scale);
 
         var closeRow = CreateRect(panel, "CloseRow");
         closeRow.anchorMin = new Vector2(0f, 0f);
         closeRow.anchorMax = new Vector2(1f, 0f);
         closeRow.pivot = new Vector2(0.5f, 0f);
-        closeRow.anchoredPosition = new Vector2(0f, NavPanelLayout.BodyBottomPadding * scale + 6f);
-        closeRow.sizeDelta = new Vector2(-contentInset * 2f, NavPanelLayout.ButtonHeight * scale);
+        closeRow.anchoredPosition = new Vector2(0f, FooterBottomPad);
+        closeRow.sizeDelta = new Vector2(-contentInset * 2f, closeButtonHeight);
 
         var closeImg = closeRow.gameObject.AddComponent<Image>();
         GameUiStyle.ApplyButtonBlue(closeImg);
@@ -229,21 +224,21 @@ internal static class RouteSettingsUi
         RefreshAll();
     }
 
-    private static void BuildRows(RectTransform content)
+    private static void BuildRows(RectTransform content, float scale)
     {
         AddSectionLabel(content, StringKey.SettingRouteLineColor);
         AddColorPresets(content);
 
-        AddToggle(content, StringKey.SettingCheckForUpdates, ModConfig.CheckForUpdates);
-        AddToggle(content, StringKey.SettingAutoDownloadUpdates, ModConfig.AutoDownloadUpdates);
-        AddToggle(content, StringKey.SettingPromptInstallUpdate, ModConfig.PromptInstallUpdate);
+        AddToggle(content, scale, StringKey.SettingCheckForUpdates, ModConfig.CheckForUpdates);
+        AddToggle(content, scale, StringKey.SettingAutoDownloadUpdates, ModConfig.AutoDownloadUpdates);
+        AddToggle(content, scale, StringKey.SettingPromptInstallUpdate, ModConfig.PromptInstallUpdate);
 
-        AddActionButton(content, StringKey.SettingCheckNow, GameUiStyle.ApplyButtonBlue,
+        AddActionButton(content, scale, StringKey.SettingCheckNow, GameUiStyle.ApplyButtonBlue,
             (UnityAction)(() => UpdateService.RequestVersionCheck()));
 
-        AddToggle(content, StringKey.SettingShowTurnGuidance, ModConfig.ShowTurnGuidance);
-        AddToggle(content, StringKey.SettingShowIntersectionArrows, ModConfig.ShowIntersectionArrows);
-        AddToggle(content, StringKey.SettingShowFullRouteLine, ModConfig.ShowFullRouteLine,
+        AddToggle(content, scale, StringKey.SettingShowTurnGuidance, ModConfig.ShowTurnGuidance);
+        AddToggle(content, scale, StringKey.SettingShowIntersectionArrows, ModConfig.ShowIntersectionArrows);
+        AddToggle(content, scale, StringKey.SettingShowFullRouteLine, ModConfig.ShowFullRouteLine,
             () => PathFinderService.InvalidateCache());
     }
 
@@ -272,17 +267,17 @@ internal static class RouteSettingsUi
         };
 
         var hLayout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-        hLayout.spacing = 10f;
+        hLayout.spacing = 4f;
         hLayout.childControlWidth = false;
         hLayout.childControlHeight = false;
-        hLayout.padding = new RectOffset(2, 2, 0, 0);
+        hLayout.padding = new RectOffset(2, 8, 0, 0);
 
         ColorSwatches.Clear();
         foreach (var (color, nameKey) in presets)
         {
             var cell = CreateRect(row, nameKey.ToString());
             var cellLe = cell.gameObject.AddComponent<LayoutElement>();
-            cellLe.preferredWidth = SwatchSize + 6f;
+            cellLe.preferredWidth = SwatchSize + 2f;
             cellLe.preferredHeight = rowHeight - 4f;
 
             var column = CreateRect(cell, "Column");
@@ -333,6 +328,7 @@ internal static class RouteSettingsUi
 
     private static void AddToggle(
         RectTransform parent,
+        float scale,
         StringKey labelKey,
         MelonPreferences_Entry<bool> entry,
         Action? onChanged = null)
@@ -343,7 +339,8 @@ internal static class RouteSettingsUi
         hLayout.spacing = 10f;
         hLayout.childControlWidth = true;
         hLayout.childControlHeight = true;
-        hLayout.padding = new RectOffset(2, 2, 4, 4);
+        // Pas de padding bas : laisse ~40px au toggle + bleed dans le RowGap (évite coins bas rognés).
+        hLayout.padding = new RectOffset(2, 2, 4, 0);
 
         var labelGo = CreateRect(row, "Label");
         var labelFlex = labelGo.gameObject.AddComponent<LayoutElement>();
@@ -359,8 +356,8 @@ internal static class RouteSettingsUi
         btnLayout.preferredWidth = ToggleWidth;
         btnLayout.minHeight = 32f;
 
-        var btnImg = btnGo.gameObject.AddComponent<Image>();
-        GameUiStyle.ApplyButtonGrey(btnImg);
+        var btnImg = GameUiStyle.CreateButtonGraphic(
+            btnGo, scale, GameUiStyle.ApplyButtonGrey, ToggleGraphicBleedMultiplier);
         var btn = btnGo.gameObject.AddComponent<Button>();
         btn.targetGraphic = btnImg;
 
@@ -391,6 +388,7 @@ internal static class RouteSettingsUi
 
     private static void AddActionButton(
         RectTransform parent,
+        float scale,
         StringKey labelKey,
         Action<Image> style,
         UnityAction onClick)

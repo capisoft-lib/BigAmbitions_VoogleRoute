@@ -24,6 +24,18 @@ internal static class NavPanelLayout
     public const float ButtonFontSize = 16f;
     public const float ButtonLabelBottomInset = 0f;
     public const float ButtonPixelsPerUnit = 2.5f;
+    /// <summary>Pixels supplémentaires sous le graphic 9-slice (layout inchangé).</summary>
+    public const float ButtonGraphicBleedBottom = 2f;
+
+    /// <summary>Graphic enfant : même cadre que le bouton + quelques px vers le bas pour les coins arrondis.</summary>
+    public static void StretchButtonGraphic(RectTransform rt, float scale, float bleedBottomMultiplier = 1f)
+    {
+        var bleed = ButtonGraphicBleedBottom * bleedBottomMultiplier * scale;
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = new Vector2(0f, -bleed);
+        rt.offsetMax = Vector2.zero;
+    }
 
     // --- Extension 9-slice du cadre (partagée par le seul fond du panneau) ---
     public const float FrameBleedWidth = 24f;
@@ -41,6 +53,37 @@ internal static class NavPanelLayout
     /// Élargir de N px sans bouger le bord droit : trim -= N et offset -= N/2 (ancres centrées).
     /// </summary>
     public const float HeaderLeftExtend = 2f;
+
+    /// <summary>Bord visible gauche du corps (grey-round-bordered), panel ref 370px @ scale 1.</summary>
+    public const float BodyVisibleLeft = 26f;
+
+    /// <summary>Bord visible droit du corps (374 fill HUD ; −1 px vs lip pour flush parfait).</summary>
+    public const float BodyVisibleRight = 373f;
+
+    /// <summary>Tranche 9-slice gauche du header (fill x=26 → rect left x=3 @ scale 1).</summary>
+    public const float HeaderSliceBorderLeft = BodyVisibleLeft - 3f;
+
+    /// <summary>Tranche 9-slice droite du header (rect right x=364 → fill x≈374 @ scale 1).</summary>
+    public const float HeaderSliceBorderRight = 10f;
+
+    /// <summary>Trim HUD + resserrement modale (px ref panel 370, par côté).</summary>
+    public const float SettingsHeaderTightenPerSide = 2f;
+
+    /// <summary>
+    /// Trim HUD validé ; bordures 9-slice scalent avec le panneau (sinon header trop large @ scale &gt; 1).
+    /// </summary>
+    public static void ComputeHeaderRectHudTrim(
+        float panelWidth,
+        float scale,
+        float extraTrimWidth,
+        out float sizeDeltaX,
+        out float anchoredPositionX)
+    {
+        var trimW = (HeaderTrimWidthBase - HeaderLeftExtend + extraTrimWidth) * scale;
+        var trimOffset = (HeaderTrimOffsetXBase - HeaderLeftExtend * 0.5f) * scale;
+        sizeDeltaX = -trimW;
+        anchoredPositionX = trimOffset;
+    }
 
     // --- Position à l'écran ---
     public const float ScreenMarginX = 16f;
@@ -84,32 +127,19 @@ internal static class NavPanelLayout
     public static Metrics CreateMetrics(float scale) => new(scale);
 
     /// <summary>Cadre 9-slice du corps foncé (grey-round-bordered), plein panneau.</summary>
-    public static void ApplyBodyFrame(RectTransform rect, float scale) => ApplyFrame(rect, scale, fullPanel: true);
+    public static void ApplyBodyFrame(RectTransform rect, float scale) => ApplyFrame(rect, scale);
 
     /// <summary>Cadre 9-slice du bandeau header clair (darkgreybox-header), aligné sur le corps.</summary>
-    public static void ApplyHeaderFrame(RectTransform rect, in Metrics m) => ApplyFrame(rect, m.Scale, fullPanel: false, m.HeaderHeight);
+    public static void ApplyHeaderFrame(RectTransform rect, in Metrics m) =>
+        GameStylePanelChrome.ApplyHeaderFrameAligned(rect, m);
 
-    private static void ApplyFrame(RectTransform rect, float scale, bool fullPanel, float headerHeight = 0f)
+    private static void ApplyFrame(RectTransform rect, float scale)
     {
-        if (fullPanel)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = new Vector2(FrameOffsetX * scale, FrameOffsetY * scale);
-            rect.sizeDelta = new Vector2(FrameBleedWidth * scale, FrameBleedHeight * scale);
-        }
-        else
-        {
-            // Ancres haut : position horizontale indépendante de FrameOffsetX (réservé au corps, pivot centre).
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(1f, 1f);
-            rect.pivot = new Vector2(0.5f, 1f);
-            var trimW = (HeaderTrimWidthBase - HeaderLeftExtend) * scale;
-            var offsetX = (HeaderTrimOffsetXBase - HeaderLeftExtend * 0.5f) * scale;
-            rect.anchoredPosition = new Vector2(offsetX, 0f);
-            rect.sizeDelta = new Vector2(-trimW, headerHeight);
-        }
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = new Vector2(FrameOffsetX * scale, FrameOffsetY * scale);
+        rect.sizeDelta = new Vector2(FrameBleedWidth * scale, FrameBleedHeight * scale);
     }
 
     public static void ApplyHeaderTitleInsets(RectTransform rect, in Metrics m)

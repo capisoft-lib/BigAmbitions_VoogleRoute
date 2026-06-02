@@ -150,6 +150,34 @@ internal static class GameUiStyle
             text.font = font;
     }
 
+    /// <summary>Image 9-slice enfant avec bleed vertical (évite coins bas aplatis / rognés).</summary>
+    /// <param name="bleedBottom">false dans un ScrollRect masqué (évite coins bas coupés).</param>
+    internal static Image CreateButtonGraphic(
+        RectTransform buttonRoot,
+        float scale,
+        Action<Image> applyStyle,
+        float bleedBottomMultiplier = 1f,
+        bool bleedBottom = true)
+    {
+        Image img;
+        if (!bleedBottom)
+        {
+            img = buttonRoot.gameObject.AddComponent<Image>();
+            img.raycastTarget = true;
+            applyStyle(img);
+            return img;
+        }
+
+        var graphicGo = new GameObject("Graphic");
+        graphicGo.transform.SetParent(buttonRoot, false);
+        var rt = graphicGo.AddComponent<RectTransform>();
+        NavPanelLayout.StretchButtonGraphic(rt, scale, bleedBottomMultiplier);
+        img = graphicGo.AddComponent<Image>();
+        img.raycastTarget = true;
+        applyStyle(img);
+        return img;
+    }
+
     private static void ApplySliced(Image image, Sprite? sprite, Color fallbackTint)
         => ApplySliced(image, sprite, fallbackTint, White);
 

@@ -240,8 +240,7 @@ internal static class UpdateDialogUi
         rect.anchoredPosition = anchoredPos;
         rect.sizeDelta = new Vector2(width, ButtonHeight);
 
-        buttonImage = rect.gameObject.AddComponent<Image>();
-        GameUiStyle.ApplyButtonBlue(buttonImage);
+        buttonImage = GameUiStyle.CreateButtonGraphic(rect, 1f, GameUiStyle.ApplyButtonBlue);
 
         button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = buttonImage;

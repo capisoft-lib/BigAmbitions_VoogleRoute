@@ -56,36 +56,16 @@ public static class RouteToggleHud
         _root = new GameObject(RootName);
         Object.DontDestroyOnLoad(_root);
 
-        var canvas = _root.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 9000;
-
-        var scaler = _root.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ConstantPixelSize;
-        scaler.scaleFactor = 1f;
-        _root.AddComponent<GraphicRaycaster>();
+        GameStylePanelChrome.SetupOverlayCanvas(_root, 9000);
 
         var layout = NavPanelLayout.CreateMetrics(Mathf.Max(1f, ModConfig.HudButtonScale.Value));
+        var chrome = GameStylePanelChrome.Build(_root.transform, layout.PanelWidth, layout.PanelHeight, "NavPanel");
+        _panelRect = chrome.Panel;
+        _panelRect.anchorMin = _panelRect.anchorMax = new Vector2(0f, 0f);
+        _panelRect.pivot = new Vector2(0f, 0f);
+        _panelRect.anchoredPosition = NavPanelLayout.GetScreenPosition(ModConfig.NavHudOffsetY.Value);
 
-        var panel = CreateRect(_root.transform, "NavPanel");
-        _panelRect = panel;
-        panel.anchorMin = panel.anchorMax = new Vector2(0f, 0f);
-        panel.pivot = new Vector2(0f, 0f);
-        panel.anchoredPosition = NavPanelLayout.GetScreenPosition(ModConfig.NavHudOffsetY.Value);
-        panel.sizeDelta = new Vector2(layout.PanelWidth, layout.PanelHeight);
-
-        var background = CreateRect(panel, "Background");
-        NavPanelLayout.ApplyBodyFrame(background, layout.Scale);
-        var backgroundImg = background.gameObject.AddComponent<Image>();
-        backgroundImg.raycastTarget = true;
-        GameUiStyle.ApplyPanelBg(backgroundImg);
-
-        var header = CreateRect(panel, "Header");
-        NavPanelLayout.ApplyHeaderFrame(header, layout);
-        var headerImg = header.gameObject.AddComponent<Image>();
-        headerImg.raycastTarget = false;
-        GameUiStyle.ApplyHeaderBg(headerImg);
-
+        var header = chrome.Header;
         var titleGo = CreateRect(header, "Title");
         titleGo.anchorMin = Vector2.zero;
         titleGo.anchorMax = Vector2.one;
@@ -101,11 +81,11 @@ public static class RouteToggleHud
 
         CreateSettingsButton(header, layout);
 
-        CreateActionButton(panel, "RouteButton", new Vector2(layout.LeftButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
+        CreateActionButton(chrome.Panel, "RouteButton", new Vector2(layout.LeftButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
             layout.ButtonHeight, layout.Scale, (UnityEngine.Events.UnityAction)OnRouteToggleClicked,
             out _routeButtonImage, out _routeLabel);
 
-        CreateActionButton(panel, "AutoWalkButton", new Vector2(layout.RightButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
+        CreateActionButton(chrome.Panel, "AutoWalkButton", new Vector2(layout.RightButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
             layout.ButtonHeight, layout.Scale, (UnityEngine.Events.UnityAction)OnAutoWalkToggleClicked,
             out _autoWalkButtonImage, out _autoWalkLabel);
 
@@ -130,8 +110,7 @@ public static class RouteToggleHud
         rect.anchoredPosition = topAnchoredPos;
         rect.sizeDelta = new Vector2(width, height);
 
-        buttonImage = rect.gameObject.AddComponent<Image>();
-        GameUiStyle.ApplyButtonBlue(buttonImage);
+        buttonImage = GameUiStyle.CreateButtonGraphic(rect, scale, GameUiStyle.ApplyButtonBlue);
 
         var button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = buttonImage;
@@ -335,8 +314,7 @@ public static class RouteToggleHud
         rect.sizeDelta = new Vector2(btnW, btnH);
         rect.anchoredPosition = new Vector2(-pad, 0f);
 
-        var buttonImage = rect.gameObject.AddComponent<Image>();
-        GameUiStyle.ApplyButtonGrey(buttonImage);
+        var buttonImage = GameUiStyle.CreateButtonGraphic(rect, scale, GameUiStyle.ApplyButtonGrey);
 
         var button = rect.gameObject.AddComponent<Button>();
         button.targetGraphic = buttonImage;
