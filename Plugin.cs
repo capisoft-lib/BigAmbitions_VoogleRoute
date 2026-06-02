@@ -30,6 +30,7 @@ public sealed class Plugin : MelonMod
         RouteToggleHud.EnsureCreated();
         TurnNavigationHud.EnsureCreated();
         IntersectionArrowRenderer.EnsureCreated();
+        RouteSettingsUi.EnsureCreated();
         UpdateService.Initialize();
 
         MelonLogger.Msg($"{ModInfo.Name} v{ModInfo.Version} loaded.");
@@ -37,8 +38,8 @@ public sealed class Plugin : MelonMod
 
     public override void OnUpdate()
     {
-        UpdateService.Tick();
         ModLocalization.PollLanguageChange();
+        UpdateService.Tick();
 
         if (!GameState.IsPlayable())
         {
@@ -130,7 +131,8 @@ public sealed class Plugin : MelonMod
             }
 
             guidance = _cachedGuidance;
-            AutoWalkService.Tick(canNavigate, path);
+            if (AutoWalkService.Tick(canNavigate, path))
+                RouteToggleHud.RefreshVisual();
         }
 
         if (ShouldRefreshDebugOverlay())
@@ -149,6 +151,7 @@ public sealed class Plugin : MelonMod
     private static void OnGameLanguageChanged()
     {
         RouteToggleHud.RefreshLocalizedText();
+        RouteSettingsUi.RefreshLocalizedText();
         TurnNavigationHud.Clear();
         _cachedGuidance = default;
         _nextGuidanceRefresh = 0f;
@@ -156,11 +159,12 @@ public sealed class Plugin : MelonMod
 
     public override void OnDeinitializeMelon()
     {
-        UpdateService.Shutdown();
         ModLocalization.LanguageChanged -= OnGameLanguageChanged;
         MelonEvents.OnSceneWasLoaded.Unsubscribe(OnSceneWasLoaded);
+        UpdateService.Shutdown();
         RouteLineRenderer.Destroy();
         RouteToggleHud.Destroy();
+        RouteSettingsUi.Destroy();
         TurnNavigationHud.Destroy();
         IntersectionArrowRenderer.Destroy();
         DebugOverlayHud.Destroy();

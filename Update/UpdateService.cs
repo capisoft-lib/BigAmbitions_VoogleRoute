@@ -1,5 +1,6 @@
 using System.Net.Http;
 using MelonLoader;
+using UnityEngine.Events;
 
 namespace VoogleRoute.Update;
 
@@ -17,11 +18,12 @@ internal static class UpdateService
     }
 
     private static Phase _phase = Phase.Idle;
-    private static volatile UpdateManifest? _checkResultManifest;
+    private static UpdateManifest? _checkResultManifest;
     private static UpdateManifest? _downloadManifest;
-    private static UpdateManifest? _dialogManifest;
     private static string? _checkError;
     private static bool _quitHooked;
+    private static volatile bool _checkCompleted;
+    private static bool _manualCheckRequested;
 
     private static volatile bool _downloadFinished;
     private static UpdateDownloader.DownloadResult _downloadResult;
@@ -46,8 +48,9 @@ internal static class UpdateService
 
     internal static void Tick()
     {
-        if (_phase == Phase.Checking)
+        if (_phase == Phase.Checking && _checkCompleted)
         {
+            _checkCompleted = false;
             if (_checkResultManifest != null)
                 ShowUpdatePrompt(_checkResultManifest);
             else if (_checkError != null)
@@ -56,6 +59,14 @@ internal static class UpdateService
                 _checkError = null;
                 _phase = Phase.Idle;
             }
+            else
+            {
+                if (_manualCheckRequested)
+                    MelonLogger.Msg($"[Voogle Route] You are on the latest version (v{ModInfo.Version}).");
+                _phase = Phase.Idle;
+            }
+
+            _manualCheckRequested = false;
         }
 
         if (_downloadFinished)
@@ -71,6 +82,21 @@ internal static class UpdateService
         UpdateDialogUi.Destroy();
     }
 
+    internal static void RequestVersionCheck()
+    {
+        if (!ModConfig.CheckForUpdates.Value)
+        {
+            MelonLogger.Msg("[Voogle Route] Enable update checks in Voogle Route Settings first.");
+            return;
+        }
+
+        if (_phase is Phase.Downloading or Phase.Restarting)
+            return;
+
+        _manualCheckRequested = true;
+        StartVersionCheck();
+    }
+
     private static void HookQuit()
     {
         if (_quitHooked)
@@ -84,10 +110,14 @@ internal static class UpdateService
 
     private static void StartVersionCheck()
     {
-        if (_phase != Phase.Idle)
+        if (_phase == Phase.Downloading || _phase == Phase.Restarting)
+            return;
+
+        if (_phase == Phase.Checking)
             return;
 
         _phase = Phase.Checking;
+        _checkCompleted = false;
         _checkResultManifest = null;
         _checkError = null;
 
@@ -116,59 +146,63 @@ internal static class UpdateService
             {
                 _checkError = ex.Message;
             }
+            finally
+            {
+                _checkCompleted = true;
+            }
         });
     }
 
     private static void ShowUpdatePrompt(UpdateManifest manifest)
     {
         _checkResultManifest = null;
+
+        if (ModConfig.AutoDownloadUpdates.Value)
+        {
+            MelonLogger.Msg($"[Voogle Route] Update v{manifest.Version} found — downloading automatically.");
+            BeginDownload(manifest, restartWhenDone: false);
+            return;
+        }
+
         _phase = Phase.PromptUpdate;
 
         var message =
             $"Update available (v{ModInfo.Version} → v{manifest.Version}).\n\n" +
             "Would you like to install and restart the game?";
 
-        _dialogManifest = manifest;
         UpdateDialogUi.ShowPrimary(
             message,
-            (UnityEngine.Events.UnityAction)OnLaterClicked,
-            (UnityEngine.Events.UnityAction)OnNowClicked);
+            (UnityAction)(() => OnLaterClicked(manifest)),
+            (UnityAction)(() => OnNowClicked(manifest)));
     }
 
-    private static void OnLaterClicked()
+    private static void OnLaterClicked(UpdateManifest manifest)
     {
-        if (_phase != Phase.PromptUpdate || _dialogManifest == null)
+        if (_phase != Phase.PromptUpdate)
             return;
+
+        if (ModConfig.AutoDownloadUpdates.Value)
+        {
+            BeginDownload(manifest, restartWhenDone: false);
+            return;
+        }
 
         _phase = Phase.PromptBackground;
         UpdateDialogUi.ShowBackgroundPrompt(
             "Would you like to download in background for next restart of the game?",
-            (UnityEngine.Events.UnityAction)OnBackgroundNo,
-            (UnityEngine.Events.UnityAction)OnBackgroundYes);
+            (UnityAction)OnBackgroundNo,
+            (UnityAction)(() => OnBackgroundYes(manifest)));
     }
 
-    private static void OnNowClicked()
-    {
-        if (_dialogManifest == null)
-            return;
-
-        BeginDownload(_dialogManifest, restartWhenDone: true);
-    }
+    private static void OnNowClicked(UpdateManifest manifest) => BeginDownload(manifest, restartWhenDone: true);
 
     private static void OnBackgroundNo()
     {
         UpdateDialogUi.Hide();
-        _dialogManifest = null;
         _phase = Phase.Idle;
     }
 
-    private static void OnBackgroundYes()
-    {
-        if (_dialogManifest == null)
-            return;
-
-        BeginDownload(_dialogManifest, restartWhenDone: false);
-    }
+    private static void OnBackgroundYes(UpdateManifest manifest) => BeginDownload(manifest, restartWhenDone: false);
 
     private static void BeginDownload(UpdateManifest manifest, bool restartWhenDone)
     {
@@ -178,6 +212,7 @@ internal static class UpdateService
 
         if (restartWhenDone)
         {
+            UpdateDialogUi.EnsureCreated();
             UpdateDialogUi.SetStatus("Downloading update…");
             UpdateDialogUi.SetButtonsEnabled(false);
         }
@@ -222,7 +257,6 @@ internal static class UpdateService
             return;
         }
 
-        _dialogManifest = null;
         UpdateInstaller.ScheduleInstall(UpdatePaths.StagingFilePath, manifest);
 
         if (restartWhenDone)
@@ -234,6 +268,30 @@ internal static class UpdateService
         }
 
         MelonLogger.Msg($"[Voogle Route] v{manifest.Version} downloaded — install on next game exit.");
+
+        if (ModConfig.PromptInstallUpdate.Value)
+        {
+            _phase = Phase.PromptUpdate;
+            UpdateDialogUi.ShowPrimary(
+                $"Update v{manifest.Version} is ready.\n\nInstall and restart the game now?",
+                (UnityAction)OnPostDownloadInstallLater,
+                (UnityAction)OnPostDownloadInstallNow);
+            return;
+        }
+
         _phase = Phase.Idle;
+    }
+
+    private static void OnPostDownloadInstallLater()
+    {
+        UpdateDialogUi.Hide();
+        _phase = Phase.Idle;
+    }
+
+    private static void OnPostDownloadInstallNow()
+    {
+        _phase = Phase.Restarting;
+        UpdateDialogUi.SetStatus("Restarting…");
+        UpdateInstaller.QuitAndRestartAfterInstall();
     }
 }

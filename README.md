@@ -32,7 +32,6 @@
 
 - [Big Ambitions](https://store.steampowered.com/app/1331550/Big_Ambitions/) **EA 0.10** (other versions untested)
 - [MelonLoader](https://melonwiki.xyz/) (Il2Cpp)
-- **No** BAUI-Framework required
 
 ---
 

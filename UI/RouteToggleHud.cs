@@ -27,6 +27,7 @@ public static class RouteToggleHud
     private static Image? _autoWalkButtonImage;
     private static TextMeshProUGUI? _autoWalkLabel;
     private static TextMeshProUGUI? _panelTitleLabel;
+    private static TextMeshProUGUI? _settingsButtonLabel;
 
     // Cache d'état : aucun travail UI tant que rien ne change.
     private static bool _lastActive;
@@ -97,6 +98,8 @@ public static class RouteToggleHud
         _panelTitleLabel.alignment = TextAlignmentOptions.Left;
         _panelTitleLabel.raycastTarget = false;
         GameUiStyle.ApplyTitleFont(_panelTitleLabel);
+
+        CreateSettingsButton(header, layout);
 
         CreateActionButton(panel, "RouteButton", new Vector2(layout.LeftButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
             layout.ButtonHeight, layout.Scale, (UnityEngine.Events.UnityAction)OnRouteToggleClicked,
@@ -208,6 +211,8 @@ public static class RouteToggleHud
     {
         if (_panelTitleLabel != null)
             _panelTitleLabel.text = ModLocalization.Get(StringKey.PanelTitle);
+        if (_settingsButtonLabel != null)
+            _settingsButtonLabel.text = ModLocalization.Get(StringKey.SettingsButton);
         _forceApply = true;
         RefreshVisual();
     }
@@ -313,7 +318,46 @@ public static class RouteToggleHud
         _autoWalkButtonImage = null;
         _autoWalkLabel = null;
         _panelTitleLabel = null;
+        _settingsButtonLabel = null;
     }
+
+    private static void CreateSettingsButton(RectTransform header, NavPanelLayout.Metrics layout)
+    {
+        var scale = layout.Scale;
+        var btnW = 72f * scale;
+        var btnH = 28f * scale;
+        var pad = 8f * scale;
+
+        var rect = CreateRect(header, "SettingsButton");
+        rect.anchorMin = new Vector2(1f, 0.5f);
+        rect.anchorMax = new Vector2(1f, 0.5f);
+        rect.pivot = new Vector2(1f, 0.5f);
+        rect.sizeDelta = new Vector2(btnW, btnH);
+        rect.anchoredPosition = new Vector2(-pad, 0f);
+
+        var buttonImage = rect.gameObject.AddComponent<Image>();
+        GameUiStyle.ApplyButtonGrey(buttonImage);
+
+        var button = rect.gameObject.AddComponent<Button>();
+        button.targetGraphic = buttonImage;
+        button.onClick.AddListener((UnityEngine.Events.UnityAction)OnSettingsClicked);
+
+        var labelGo = CreateRect(rect, "Label");
+        labelGo.anchorMin = Vector2.zero;
+        labelGo.anchorMax = Vector2.one;
+        labelGo.offsetMin = new Vector2(4f * scale, 0f);
+        labelGo.offsetMax = new Vector2(-4f * scale, 0f);
+        _settingsButtonLabel = labelGo.gameObject.AddComponent<TextMeshProUGUI>();
+        _settingsButtonLabel.text = ModLocalization.Get(StringKey.SettingsButton);
+        _settingsButtonLabel.fontSize = 11f * scale;
+        _settingsButtonLabel.fontStyle = FontStyles.UpperCase;
+        _settingsButtonLabel.alignment = TextAlignmentOptions.Center;
+        _settingsButtonLabel.color = Color.white;
+        _settingsButtonLabel.raycastTarget = false;
+        GameUiStyle.ApplyButtonFont(_settingsButtonLabel);
+    }
+
+    private static void OnSettingsClicked() => RouteSettingsUi.Toggle();
 
     private static RectTransform CreateRect(Transform parent, string name)
     {

@@ -28,19 +28,20 @@ internal static class AutoWalkService
         _lastIssueTime = -999f;
     }
 
-    public static void Tick(bool canNavigate, PathResult path)
+    /// <returns>True if auto-walk was turned off because the player reached the destination.</returns>
+    public static bool Tick(bool canNavigate, PathResult path)
     {
         if (!ModConfig.AutoWalkEnabled.Value)
         {
             Reset();
-            return;
+            return false;
         }
 
         if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
-            return;
+            return false;
 
         if (!canNavigate || !path.Success)
-            return;
+            return false;
 
         if (NavigationTargetTracker.LastChangeTime != _lastTargetChangeTime)
         {
@@ -51,25 +52,25 @@ internal static class AutoWalkService
         }
 
         if (!MovementModeDetector.TryGetPlayerOrigin(out var playerPos))
-            return;
+            return false;
 
         var player = PlayerHelper.PlayerController;
         if (player == null)
-            return;
+            return false;
 
         try
         {
             if (player.NavigationDisabled)
-                return;
+                return false;
         }
         catch
         {
-            return;
+            return false;
         }
 
         var waypoints = BuildWaypoints(path, NavigationTargetTracker.ActiveTarget);
         if (waypoints.Length == 0)
-            return;
+            return false;
         SyncWaypointIndex(waypoints, playerPos);
 
         var walkTarget = waypoints[_waypointIndex];
@@ -85,10 +86,25 @@ internal static class AutoWalkService
         var finalDest = NavigationTargetTracker.ActiveTarget;
         if (_waypointIndex >= waypoints.Length - 1 &&
             HorizontalDistance(playerPos, finalDest) < ReachRadius + 1.5f)
-            return;
+        {
+            DisableAtDestination();
+            return true;
+        }
 
         if (ShouldIssueDestination(walkTarget, distToWalkTarget))
             IssueWalkTo(player, walkTarget);
+
+        return false;
+    }
+
+    private static void DisableAtDestination()
+    {
+        if (!ModConfig.AutoWalkEnabled.Value)
+            return;
+
+        ModConfig.AutoWalkEnabled.Value = false;
+        ModConfig.Save();
+        Reset();
     }
 
     private static Vector3[] BuildWaypoints(PathResult path, Vector3 finalTarget)

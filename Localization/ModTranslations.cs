@@ -170,7 +170,7 @@ internal static class ModTranslations
         string turnArrival,
         string turnFollowRoute)
     {
-        ByLocale[locale] = new Dictionary<StringKey, string>
+        var table = new Dictionary<StringKey, string>
         {
             [StringKey.PanelTitle] = panelTitle,
             [StringKey.RouteOn] = routeOn,
@@ -193,5 +193,7 @@ internal static class ModTranslations
             [StringKey.TurnArrival] = turnArrival,
             [StringKey.TurnFollowRoute] = turnFollowRoute,
         };
+        SettingsStrings.MergeInto(table, locale);
+        ByLocale[locale] = table;
     }
 }

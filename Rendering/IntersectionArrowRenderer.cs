@@ -67,6 +67,17 @@ public static class IntersectionArrowRenderer
         }
     }
 
+    public static void ApplyStyle()
+    {
+        foreach (var handle in Pool)
+        {
+            if (!handle.Active)
+                continue;
+
+            ApplyArrowColor(handle.Line);
+        }
+    }
+
     public static void Destroy()
     {
         if (_root != null)
