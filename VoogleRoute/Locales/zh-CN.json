@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "路线 开",
+  "voogle_route_route_off": "路线 关",
+  "voogle_route_autowalk": "自动步行",
+  "voogle_route_walk_on": "步行 开",
+  "voogle_route_settings_title": "VOOGLE ROUTE 设置",
+  "voogle_route_setting_route_color": "路线颜色",
+  "voogle_route_setting_choose_color": "选择颜色",
+  "voogle_route_setting_close": "关闭",
+  "voogle_route_color_neon_blue": "霓虹蓝",
+  "voogle_route_color_green": "绿色",
+  "voogle_route_color_orange": "橙色",
+  "voogle_route_color_magenta": "品红",
+  "voogle_route_color_white": "白色",
+  "voogle_route_options_route": "显示路线",
+  "voogle_route_options_autowalk": "自动步行至目的地"
+}

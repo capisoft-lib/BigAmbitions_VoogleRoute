@@ -1,157 +1,81 @@
 # Voogle Route
 
-[![MelonLoader](https://img.shields.io/badge/MelonLoader-required-orange)](https://melonwiki.xyz/)
-[![Game](https://img.shields.io/badge/Big%20Ambitions-EA%200.10-blue)](https://store.steampowered.com/app/1331550/Big_Ambitions/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+**Voogle Route** extends **Voogle Maps** in Big Ambitions: set a destination on the city map, then follow a glowing **on-ground route line** on foot or in a vehicle, with optional **auto-walk**.
 
-**Voogle Route** is a MelonLoader mod for [Big Ambitions](https://store.steampowered.com/app/1331550/Big_Ambitions/) that extends **Voogle Maps** with on-ground navigation: route lines, turn guidance while driving, intersection arrows, and optional auto-walk—all localized in the game’s **22** interface languages.
+Built on the official **Big Ambitions Modding SDK** (EA 0.11 Experimental). No MelonLoader.
 
-| Download | Link |
-|----------|------|
-| **Nexus Mods** (recommended for players) | [Voogle Route on Nexus](https://www.nexusmods.com/bigambitions/mods/0) *(update URL in `Directory.Build.props` when live)* |
-| **GitHub Releases** | [Latest release](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/latest) |
-| **Auto-update manifest** | [`latest.json`](https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json) |
-
-> **Note:** Update the Nexus mod ID in [`Directory.Build.props`](Directory.Build.props) when your Nexus page is live.
-
----
+| | |
+|---|---|
+| **Game** | Big Ambitions EA **0.11 Experimental** |
+| **Distribution** | [Steam Workshop](https://steamcommunity.com/app/2977660/workshop/) — subscribe, then enable in the in-game **Mods** menu |
+| **Languages** | All **22** Big Ambitions interface languages |
+| **Author** | [capisoft-lib](https://github.com/capisoft-lib) — community mod, not affiliated with Hovgaard Games |
 
 ## Features
 
-- **Route line** on the ground (color/width configurable)
-- **ROUTE ON / ROUTE OFF** toggle on the **VOOGLE ROUTE** panel
-- **Turn HUD** in vehicles (distance + instruction)
-- **Intersection arrows** on the path ahead
-- **Auto-walk** on foot (**AUTO WALK / WALK ON**)
-- Hides during **subway** rides and invalid navigation contexts
-- UI strings follow the in-game language (same locale as vanilla)
+- **Route line on the ground** — neon path to your map destination; separate styling on foot vs. in a vehicle
+- **Road-aware driving routes** — vehicle paths follow the city's road network
+- **Auto-walk** — walk the route automatically (`WALK ON`); stops if you take manual control
+- **VOOGLE ROUTE panel** — bottom-left BizPhone-style UI (`ROUTE ON / ROUTE OFF`)
+- **Custom line color** — presets or the in-game color picker (gear icon)
+- Hidden in the **subway** and when navigation is unavailable
 
----
-
-## Requirements
-
-- [Big Ambitions](https://store.steampowered.com/app/1331550/Big_Ambitions/) **EA 0.10** (other versions untested)
-- [MelonLoader](https://melonwiki.xyz/) (Il2Cpp)
-
----
-
-## Installation
-
-### From Nexus Mods
-
-1. Install [MelonLoader](https://melonwiki.xyz/) for Big Ambitions.
-2. Download **Voogle Route** from [Nexus Mods](https://www.nexusmods.com/bigambitions/mods/0).
-3. Extract **`VoogleRoute.dll`** into:
-
-   ```
-   <Steam>\steamapps\common\Big Ambitions\Mods\
-   ```
-
-4. Remove **`OnMapGps.dll`** if you still have the old mod.
-5. Launch the game — console should show: `Voogle Route v0.10.0 loaded.`
-
-### From GitHub
-
-1. Open [Releases](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/latest).
-2. Download **`VoogleRoute.dll`** from the release assets.
-3. Copy it to `Big Ambitions/Mods/` as above.
-
----
-
-## Usage
-
-1. Set a destination on **Voogle Maps** (city map) as usual.
-2. Use the **VOOGLE ROUTE** panel (bottom-left):
-   - **ROUTE ON** — show the ground route line
-   - **ROUTE OFF** — hide the line (turn HUD/arrows may still show)
-   - **AUTO WALK / WALK ON** — automatic walking along the NavMesh path
-3. When driving, follow the top banner and ground arrows.
-
-MelonLoader preferences: category **Voogle Route**.
-
----
-
-## Building from source
-
-```powershell
-# Optional: custom game install path
-$env:BIG_AMBITIONS_DIR = "C:\Program Files (x86)\Steam\steamapps\common\Big Ambitions"
-
-dotnet build VoogleRoute.csproj -c Release
-```
-
-Release build also:
-
-- Updates [`latest.json`](latest.json) at the repo root
-- Copies artifacts to `releases/<version>/` (`VoogleRoute.dll` + `latest.json`)
-
-Close the game before building if copy-to-`Mods/` is enabled and the DLL is locked.
-
----
-
-## Auto-update (`latest.json`)
-
-The root **[`latest.json`](latest.json)** file is the machine-readable **latest version manifest** for future update checkers (in-game notifier, external launcher, etc.).
-
-| Field | Purpose |
-|-------|---------|
-| `version` | Mod semver (`0.10.0`) |
-| `gameVersion` | Target Big Ambitions EA (`0.10`) |
-| `manifestUrl` | Stable URL to this file on `main` |
-| `latestDownloadUrl` | GitHub “latest release” DLL asset |
-| `downloadUrl` | Version-pinned GitHub asset (`v0.10.0`) |
-| `nexusUrl` / `nexusModId` | Primary player download on Nexus |
-| `sha256` | Optional integrity hash (set when publishing) |
-
-C# schema: [`Update/UpdateManifest.cs`](Update/UpdateManifest.cs)  
-Stub checker: [`Update/UpdateChecker.cs`](Update/UpdateChecker.cs)
-
-**Bump a release**
-
-1. Set `<ModVersion>` in [`Directory.Build.props`](Directory.Build.props).
-2. Add an entry to [`CHANGELOG.md`](CHANGELOG.md).
-3. `dotnet build -c Release`
-4. Commit `latest.json`, tag `v0.10.0`, create a GitHub Release with `VoogleRoute.dll`.
-5. Upload the same DLL to Nexus Mods.
-
----
-
-## Project layout
+## Repository layout
 
 ```
-VoogleRoute/
-├── latest.json              # Auto-update manifest (committed)
-├── Directory.Build.props    # Version + GitHub/Nexus URLs
-├── CHANGELOG.md
-├── releases/                # Local release bundles (Nexus upload helpers)
-├── src (project root)
-│   ├── Plugin.cs
-│   ├── Localization/        # 22-language UI tables
-│   ├── Navigation/
-│   ├── Rendering/
-│   ├── UI/
-│   └── Update/              # Manifest schema + future updater
-└── docs/
-    └── REVERSE_ENGINEERING.md
+VoogleRoute/          ← mod sources (drop into SDK Assets/Mods/VoogleRoute/)
+  Scripts/
+  Locales/
+  Data/
+  ModManifest.asset
+  Thumbnail.png
+releases/             ← Steam Workshop copy per version
+tools/                ← locale generator
 ```
 
+## Player install
+
+Subscribe on **Steam Workshop**, then enable **Voogle Route** in the game's **Mods** menu.
+
+## Development
+
+Requires the [Big Ambitions Modding SDK](https://github.com/HovgaardGames/BigAmbitionsModding) (Unity **2022.3.62f2**) and a local game install for imported assemblies.
+
+1. Clone this repository.
+2. Copy or symlink the `VoogleRoute/` folder into your SDK project at `Assets/Mods/VoogleRoute/`.
+3. Import game DLLs via the SDK setup flow.
+4. Build with **Big Ambitions → Mod Builder → Build + Install** on `VoogleRoute`, or run your project's batch build script.
+
+Output installs to:
+
+`%LocalLow%\Hovgaard Games\Big Ambitions\ModsLocal\VoogleRoute\`
+
+## Migrating from MelonLoader (0.10)
+
+The MelonLoader builds (`v0.10.0`, `v0.10.1`) are **legacy**. Remove MelonLoader and `VoogleRoute.dll` from `Big Ambitions/Mods/`, then use the Workshop / SDK build for 0.11. See [legacy/README.md](legacy/README.md).
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## Licence
+
+See [LICENSE](LICENSE).
+
 ---
 
-## Documentation
+# Voogle Route (français)
 
-- [Reverse engineering notes](docs/REVERSE_ENGINEERING.md)
-- [Publishing this repo](docs/PUBLISHING.md)
+Mod **SDK Big Ambitions** : ligne d'itinéraire au sol, marche auto et couleur personnalisable pour les destinations **Voogle Maps**.
 
----
+| | |
+|---|---|
+| **Jeu** | Big Ambitions EA **0.11 Experimental** |
+| **Installation** | **Steam Workshop** — s'abonner, puis activer dans le menu **Mods** |
+| **Langues** | Les **22** langues d'interface du jeu |
 
-## Known limitations
+### Développement
 
-- Routes use **NavMesh** walkable areas, not exact traffic lane centers.
-- Vehicle paths are indicative (same NavMesh basis as on foot in v1).
-- Not affiliated with Hovgaard Games.
+Copier le dossier `VoogleRoute/` dans `Assets/Mods/VoogleRoute/` d'un projet SDK, puis builder via le Mod Builder Unity.
 
----
-
-## License
-
-[MIT](LICENSE) — see [LICENSE](LICENSE).
+Les versions MelonLoader 0.10 sont archivées : voir [legacy/README.md](legacy/README.md).

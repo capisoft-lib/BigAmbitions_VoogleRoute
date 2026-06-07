@@ -1,41 +1,55 @@
 name: Bug report
-description: Something does not work in-game
+description: Report a problem with Voogle Route (SDK / Steam Workshop)
 title: "[Bug]: "
 labels: ["bug"]
 body:
-  - type: input
-    id: version
-    attributes:
-      label: Voogle Route version
-      placeholder: "0.10.0"
-    validations:
-      required: true
-  - type: input
-    id: game
+  - type: dropdown
+    id: game_version
     attributes:
       label: Big Ambitions version
-      placeholder: "EA 0.10"
+      options:
+        - EA 0.11 Experimental
+        - EA 0.10 (MelonLoader legacy — unsupported)
+        - Other
     validations:
       required: true
+
+  - type: input
+    id: mod_version
+    attributes:
+      label: Voogle Route version
+      description: From the Mods menu or GitHub release tag (e.g. 0.11.0)
+      placeholder: "0.11.0"
+    validations:
+      required: true
+
   - type: textarea
     id: steps
     attributes:
       label: Steps to reproduce
+      placeholder: |
+        1. Subscribe on Workshop and enable in Mods
+        2. Set a destination on Voogle Maps
+        3. ...
     validations:
       required: true
+
   - type: textarea
     id: expected
     attributes:
       label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
   - type: textarea
     id: logs
     attributes:
-      label: MelonLoader log excerpt
-      description: From `MelonLoader/Latest.log` around the issue
-  - type: checkboxes
-    id: nexus
-    attributes:
-      label: Download source
-      options:
-        - label: I installed from Nexus Mods
-        - label: I installed from GitHub Releases
+      label: Logs or screenshots
+      description: Player log path — %LocalLow%\Hovgaard Games\Big Ambitions\Player.log

@@ -1,8 +1,8 @@
 name: Release
 
-# Attach pre-built VoogleRoute.dll from releases/<version>/ when you push a tag.
-# Build locally first: dotnet build VoogleRoute.csproj -c Release
-# CI cannot compile without Big Ambitions Il2Cpp assemblies on the runner.
+# Tag v* to publish a GitHub release with source manifest + Workshop copy.
+# Built mod DLL is produced locally via the Big Ambitions SDK Mod Builder (Unity).
+# Steam Workshop upload is done from the game editor / Steamworks — not in CI.
 
 on:
   push:
@@ -24,16 +24,17 @@ jobs:
         run: |
           $tag = "$env:GITHUB_REF_NAME"
           $version = $tag -replace '^v',''
-          echo "version=$version" >> $env:GITHUB_OUTPUT
-          $dll = "releases/$version/VoogleRoute.dll"
-          if (-not (Test-Path $dll)) {
-            throw "Missing $dll — run 'dotnet build -c Release' locally and commit or upload the DLL before tagging."
+          $expected = (Get-Content VERSION -Raw).Trim()
+          if ($version -ne $expected) {
+            throw "Tag version '$version' != VERSION file '$expected'"
           }
+          echo "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            releases/${{ steps.ver.outputs.version }}/VoogleRoute.dll
             latest.json
+            releases/${{ steps.ver.outputs.version }}/short-description.txt
+            releases/${{ steps.ver.outputs.version }}/full-description.md
           generate_release_notes: true

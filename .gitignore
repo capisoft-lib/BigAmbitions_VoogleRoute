@@ -1,20 +1,22 @@
-# Build
-bin/
+# Unity / SDK build artifacts (when developing inside a cloned SDK project)
+Library/
+Temp/
+Obj/
 obj/
+Logs/
+Output/
+*.csproj
+*.sln
 *.user
-*.suo
-
-# IDE
+*.userprefs
 .vs/
-.idea/
 
-# OS
-Thumbs.db
+# OS / IDE
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/
 
-# Local game path overrides (optional)
-*.local.props
-
-# Do not commit pre-built DLLs at repo root (use GitHub Releases instead)
-# Uncomment if you prefer not to track release binaries:
-# releases/**/*.dll
+# Player-local mod data (not source)
+line_color.txt
+WaypointDumps/

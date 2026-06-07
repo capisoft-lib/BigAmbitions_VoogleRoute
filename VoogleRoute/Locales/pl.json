@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "TRASA ON",
+  "voogle_route_route_off": "TRASA OFF",
+  "voogle_route_autowalk": "AUTO CHÓD",
+  "voogle_route_walk_on": "CHÓD ON",
+  "voogle_route_settings_title": "USTAWIENIA VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Kolor linii trasy",
+  "voogle_route_setting_choose_color": "WYBIERZ KOLOR",
+  "voogle_route_setting_close": "ZAMKNIJ",
+  "voogle_route_color_neon_blue": "Neonowy niebieski",
+  "voogle_route_color_green": "Zielony",
+  "voogle_route_color_orange": "Pomarańczowy",
+  "voogle_route_color_magenta": "Magenta",
+  "voogle_route_color_white": "Biały",
+  "voogle_route_options_route": "Pokaż linię trasy",
+  "voogle_route_options_autowalk": "Automatycznie idź do celu"
+}

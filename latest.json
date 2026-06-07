@@ -1,16 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.10.0",
-  "gameVersion": "0.10",
+  "version": "0.11.0",
+  "gameVersion": "0.11",
   "author": "capisoft-lib",
-  "dllName": "VoogleRoute.dll",
-  "nexusUrl": "https://www.nexusmods.com/bigambitions/mods/0",
-  "nexusModId": 0,
-  "downloadUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/download/v0.10.0/VoogleRoute.dll",
-  "latestDownloadUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/latest/download/VoogleRoute.dll",
+  "distribution": "steam-workshop",
+  "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "sha256": null,
-  "releaseNotes": "See CHANGELOG.md for v0.10.0."
+  "releaseNotes": "SDK rewrite for Big Ambitions EA 0.11 Experimental. Subscribe on Steam Workshop and enable in the Mods menu."
 }

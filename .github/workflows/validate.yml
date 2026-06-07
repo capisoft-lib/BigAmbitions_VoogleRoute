@@ -13,30 +13,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Sync latest.json with Directory.Build.props
+      - name: Sync VERSION, latest.json, and ModManifest
         shell: pwsh
         run: |
-          [xml]$props = Get-Content Directory.Build.props
-          $modVersion = @($props.Project.PropertyGroup.ModVersion | Where-Object { $_ })[0]
-          $gameEa = @($props.Project.PropertyGroup.ModGameEa | Where-Object { $_ })[0]
-          $repo = @($props.Project.PropertyGroup.ModGitHubRepository | Where-Object { $_ })[0]
-
+          $version = (Get-Content VERSION -Raw).Trim()
           $latest = Get-Content latest.json -Raw | ConvertFrom-Json
-          if ($latest.version -ne $modVersion) {
-            throw "latest.json version '$($latest.version)' != ModVersion '$modVersion'. Run: dotnet build -c Release"
+          if ($latest.version -ne $version) {
+            throw "latest.json version '$($latest.version)' != VERSION '$version'"
           }
-          if ($latest.gameVersion -ne $gameEa) {
-            throw "latest.json gameVersion '$($latest.gameVersion)' != ModGameEa '$gameEa'"
+          if ($latest.gameVersion -ne "0.11") {
+            throw "latest.json gameVersion must be '0.11' for SDK builds"
           }
-          if ($latest.manifestUrl -notmatch [regex]::Escape($repo)) {
-            Write-Warning "manifestUrl may not match ModGitHubRepository ($repo)"
+
+          $manifestPath = "VoogleRoute/ModManifest.asset"
+          if (-not (Test-Path $manifestPath)) {
+            throw "Missing $manifestPath"
           }
-          Write-Host "OK: Voogle Route v$modVersion (game EA $gameEa)"
+          $manifest = Get-Content $manifestPath -Raw
+          if ($manifest -notmatch "Version: $version") {
+            throw "ModManifest.asset Version must be '$version' (found mismatch in $manifestPath)"
+          }
+          Write-Host "OK: Voogle Route v$version (game EA $($latest.gameVersion))"
 
       - name: Check CHANGELOG mentions version
         shell: pwsh
         run: |
-          $ver = ([xml](Get-Content Directory.Build.props)).Project.PropertyGroup.ModVersion | Select-Object -First 1
+          $ver = (Get-Content VERSION -Raw).Trim()
           if ((Get-Content CHANGELOG.md -Raw) -notmatch [regex]::Escape($ver)) {
-            Write-Warning "CHANGELOG.md does not mention $ver"
+            throw "CHANGELOG.md does not mention $ver"
           }
+
+      - name: Check locale files
+        shell: pwsh
+        run: |
+          $en = Get-Content VoogleRoute/Locales/en.json -Raw | ConvertFrom-Json
+          $files = Get-ChildItem VoogleRoute/Locales/*.json
+          if ($files.Count -lt 22) {
+            throw "Expected 22 locale files, found $($files.Count)"
+          }
+          Write-Host "OK: $($files.Count) locale files, $($en.PSObject.Properties.Name.Count) keys in en.json"

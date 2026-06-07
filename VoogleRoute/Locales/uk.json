@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "МАРШРУТ УВІМК",
+  "voogle_route_route_off": "МАРШРУТ ВИМК",
+  "voogle_route_autowalk": "АВТО ХОДЬБА",
+  "voogle_route_walk_on": "ХОДЬБА УВІМК",
+  "voogle_route_settings_title": "НАЛАШТУВАННЯ VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Колір лінії маршруту",
+  "voogle_route_setting_choose_color": "ОБРАТИ КОЛІР",
+  "voogle_route_setting_close": "ЗАКРИТИ",
+  "voogle_route_color_neon_blue": "Неоновий синій",
+  "voogle_route_color_green": "Зелений",
+  "voogle_route_color_orange": "Помаранчевий",
+  "voogle_route_color_magenta": "Пурпурний",
+  "voogle_route_color_white": "Білий",
+  "voogle_route_options_route": "Показувати лінію маршруту",
+  "voogle_route_options_autowalk": "Автоматично йти до пункту призначення"
+}

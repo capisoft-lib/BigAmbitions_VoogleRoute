@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "TRASA ZAP",
+  "voogle_route_route_off": "TRASA VYP",
+  "voogle_route_autowalk": "AUTO CHŮZE",
+  "voogle_route_walk_on": "CHŮZE ZAP",
+  "voogle_route_settings_title": "NASTAVENÍ VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Barva linie trasy",
+  "voogle_route_setting_choose_color": "VYBRAT BARVU",
+  "voogle_route_setting_close": "ZAVŘÍT",
+  "voogle_route_color_neon_blue": "Neonově modrá",
+  "voogle_route_color_green": "Zelená",
+  "voogle_route_color_orange": "Oranžová",
+  "voogle_route_color_magenta": "Purpurová",
+  "voogle_route_color_white": "Bílá",
+  "voogle_route_options_route": "Zobrazit linii trasy",
+  "voogle_route_options_autowalk": "Automaticky jít do cíle"
+}

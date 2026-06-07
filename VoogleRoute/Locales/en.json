@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "ROUTE ON",
+  "voogle_route_route_off": "ROUTE OFF",
+  "voogle_route_autowalk": "AUTO-WALK",
+  "voogle_route_walk_on": "WALK ON",
+  "voogle_route_settings_title": "VOOGLE ROUTE SETTINGS",
+  "voogle_route_setting_route_color": "Route line color",
+  "voogle_route_setting_choose_color": "CHOOSE COLOR",
+  "voogle_route_setting_close": "CLOSE",
+  "voogle_route_color_neon_blue": "Neon blue",
+  "voogle_route_color_green": "Green",
+  "voogle_route_color_orange": "Orange",
+  "voogle_route_color_magenta": "Magenta",
+  "voogle_route_color_white": "White",
+  "voogle_route_options_route": "Show route line",
+  "voogle_route_options_autowalk": "Auto-walk to destination"
+}

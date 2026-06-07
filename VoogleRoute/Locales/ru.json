@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "МАРШРУТ ВКЛ",
+  "voogle_route_route_off": "МАРШРУТ ВЫКЛ",
+  "voogle_route_autowalk": "АВТО ХОДЬБА",
+  "voogle_route_walk_on": "ХОДЬБА ВКЛ",
+  "voogle_route_settings_title": "НАСТРОЙКИ VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Цвет линии маршрута",
+  "voogle_route_setting_choose_color": "ВЫБРАТЬ ЦВЕТ",
+  "voogle_route_setting_close": "ЗАКРЫТЬ",
+  "voogle_route_color_neon_blue": "Неоновый синий",
+  "voogle_route_color_green": "Зелёный",
+  "voogle_route_color_orange": "Оранжевый",
+  "voogle_route_color_magenta": "Пурпурный",
+  "voogle_route_color_white": "Белый",
+  "voogle_route_options_route": "Показывать линию маршрута",
+  "voogle_route_options_autowalk": "Автоматически идти к цели"
+}

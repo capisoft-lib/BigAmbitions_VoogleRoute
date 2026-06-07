@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "REITTI PÄÄLLÄ",
+  "voogle_route_route_off": "REITTI POIS",
+  "voogle_route_autowalk": "AUTO KÄVELY",
+  "voogle_route_walk_on": "KÄVELY PÄÄLLÄ",
+  "voogle_route_settings_title": "VOOGLE ROUTE ASETUKSET",
+  "voogle_route_setting_route_color": "Reittiviivan väri",
+  "voogle_route_setting_choose_color": "VALITSE VÄRI",
+  "voogle_route_setting_close": "SULJE",
+  "voogle_route_color_neon_blue": "Neoninsininen",
+  "voogle_route_color_green": "Vihreä",
+  "voogle_route_color_orange": "Oranssi",
+  "voogle_route_color_magenta": "Magenta",
+  "voogle_route_color_white": "Valkoinen",
+  "voogle_route_options_route": "Näytä reittiviiva",
+  "voogle_route_options_autowalk": "Kävele automaattisesti määränpäähän"
+}

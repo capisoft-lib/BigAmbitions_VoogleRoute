@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "ROTA ON",
+  "voogle_route_route_off": "ROTA OFF",
+  "voogle_route_autowalk": "AUTO ANDAR",
+  "voogle_route_walk_on": "ANDAR ON",
+  "voogle_route_settings_title": "CONFIGURAÇÕES VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Cor da linha de rota",
+  "voogle_route_setting_choose_color": "ESCOLHER COR",
+  "voogle_route_setting_close": "FECHAR",
+  "voogle_route_color_neon_blue": "Azul neon",
+  "voogle_route_color_green": "Verde",
+  "voogle_route_color_orange": "Laranja",
+  "voogle_route_color_magenta": "Magenta",
+  "voogle_route_color_white": "Branco",
+  "voogle_route_options_route": "Mostrar linha de rota",
+  "voogle_route_options_autowalk": "Andar automaticamente até o destino"
+}

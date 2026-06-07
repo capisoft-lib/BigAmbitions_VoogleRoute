@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "ΔΙΑΔΡΟΜΗ ON",
+  "voogle_route_route_off": "ΔΙΑΔΡΟΜΗ OFF",
+  "voogle_route_autowalk": "ΑΥΤΟ ΠΟΡΕΙΑ",
+  "voogle_route_walk_on": "ΠΟΡΕΙΑ ON",
+  "voogle_route_settings_title": "ΡΥΘΜΙΣΕΙΣ VOOGLE ROUTE",
+  "voogle_route_setting_route_color": "Χρώμα γραμμής διαδρομής",
+  "voogle_route_setting_choose_color": "ΕΠΙΛΟΓΗ ΧΡΩΜΑΤΟΣ",
+  "voogle_route_setting_close": "ΚΛΕΙΣΙΜΟ",
+  "voogle_route_color_neon_blue": "Νέον μπλε",
+  "voogle_route_color_green": "Πράσινο",
+  "voogle_route_color_orange": "Πορτοκαλί",
+  "voogle_route_color_magenta": "Ματζέντα",
+  "voogle_route_color_white": "Λευκό",
+  "voogle_route_options_route": "Εμφάνιση γραμμής διαδρομής",
+  "voogle_route_options_autowalk": "Αυτόματη πορεία προς τον προορισμό"
+}

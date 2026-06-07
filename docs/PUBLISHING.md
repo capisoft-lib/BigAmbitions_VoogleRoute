@@ -1,52 +1,25 @@
 # Publishing Voogle Route
 
-Public repository: **[capisoft-lib/BigAmbitions_VoogleRoute](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute)**
+## Steam Workshop (primary — EA 0.11)
 
-Versioning and auto-update URLs are driven by [`Directory.Build.props`](../Directory.Build.props) (`ModVersion`, `ModGitHubRepository`, Nexus fields). A Release build regenerates [`latest.json`](../latest.json).
+1. Build the mod locally via the Big Ambitions SDK Mod Builder (`Output/VoogleRoute/`).
+2. Upload through the game's Workshop tools / Hovgaard publishing flow.
+3. Copy workshop text from `releases/<version>/`:
+   - `short-description.txt` — summary field
+   - `full-description.md` — BBCode body (use `[b]`, `[list]`, `[url]` only — no `[size=]` tags)
 
-## Bump a release
+## GitHub releases
 
-1. Set `<ModVersion>` and add a [`CHANGELOG.md`](../CHANGELOG.md) entry.
-2. `dotnet build VoogleRoute.csproj -c Release`
-3. Commit `latest.json`, tag `v0.10.0`, push:
+1. Bump `VERSION`, `latest.json`, `VoogleRoute/ModManifest.asset`, and `CHANGELOG.md`.
+2. Update `releases/<version>/` workshop copy if needed.
+3. Commit on `main`, then tag: `git tag v0.11.0 && git push origin v0.11.0`
+4. CI attaches `latest.json` and release copy files. Built DLL is **not** produced in CI (requires Unity + game assemblies).
 
-```powershell
-git add latest.json CHANGELOG.md Directory.Build.props
-git commit -m "Release v0.10.0"
-git tag v0.10.0
-git push origin main --tags
-```
+## Version checklist
 
-The [`release.yml`](../.github/workflows/release.yml) workflow attaches `releases/<version>/VoogleRoute.dll` and `latest.json` when the tag is pushed. Build locally first so `releases/0.10.0/VoogleRoute.dll` exists.
-
-Asset name on GitHub must be **`VoogleRoute.dll`**:
-
-`https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/latest/download/VoogleRoute.dll`
-
-## Auto-update manifest
-
-Clients fetch:
-
-`https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json`
-
-| Field | Purpose |
-|-------|---------|
-| `version` | Compare to `ModInfo.Version` |
-| `latestDownloadUrl` | GitHub latest release DLL |
-| `nexusUrl` | Player download on Nexus |
-| `sha256` | Optional integrity check when publishing |
-
-C# schema: [`Update/UpdateManifest.cs`](../Update/UpdateManifest.cs) — stub: [`Update/UpdateChecker.cs`](../Update/UpdateChecker.cs).
-
-## Nexus Mods
-
-When the mod page is live, set `ModNexusUrl` and `ModNexusModId` in `Directory.Build.props`, then `dotnet build -c Release`.
-
-Upload copy from:
-
-- `releases/<version>/short-description.txt`
-- `releases/<version>/full-description.md`
-
-## Do not commit
-
-`bin/`, `obj/`, local `*.local.props`, or game/MelonLoader DLLs.
+| File | Field |
+|------|--------|
+| `VERSION` | `0.11.0` |
+| `latest.json` | `version`, `gameVersion` |
+| `VoogleRoute/ModManifest.asset` | `Version:` |
+| `CHANGELOG.md` | `## [0.11.0]` section |

@@ -1,0 +1,18 @@
+{
+  "voogle_route_panel_title": "VOOGLE ROUTE",
+  "voogle_route_route_on": "ROUTE AAN",
+  "voogle_route_route_off": "ROUTE UIT",
+  "voogle_route_autowalk": "AUTO LOOP",
+  "voogle_route_walk_on": "LOOP AAN",
+  "voogle_route_settings_title": "VOOGLE ROUTE INSTELLINGEN",
+  "voogle_route_setting_route_color": "Kleur routelijn",
+  "voogle_route_setting_choose_color": "KIES KLEUR",
+  "voogle_route_setting_close": "SLUITEN",
+  "voogle_route_color_neon_blue": "Neonblauw",
+  "voogle_route_color_green": "Groen",
+  "voogle_route_color_orange": "Oranje",
+  "voogle_route_color_magenta": "Magenta",
+  "voogle_route_color_white": "Wit",
+  "voogle_route_options_route": "Routelijn tonen",
+  "voogle_route_options_autowalk": "Automatisch naar bestemming lopen"
+}
