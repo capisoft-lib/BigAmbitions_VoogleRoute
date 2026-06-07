@@ -1,22 +1,50 @@
-# Unity / SDK build artifacts (when developing inside a cloned SDK project)
+# Build outputs
+bin/
+obj/
+Obj/
+Output/
 Library/
 Temp/
-Obj/
-obj/
 Logs/
-Output/
+*.dll
+*.pdb
+*.exe
+
+# Unity / IDE generated
 *.csproj
 *.sln
 *.user
 *.userprefs
 .vs/
+.idea/
 
-# OS / IDE
+# OS
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/
 
-# Player-local mod data (not source)
-line_color.txt
+# Secrets and local config — never commit
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+local.paths.json
+*.local.props
+secrets/
+
+# Reverse-engineering / game extraction artifacts
+il2cpp_dump/
+tools/il2cpp_dump/
 WaypointDumps/
+*_dump.csv
+waypoints_dump.csv
+
+# Player-local mod data
+line_color.txt
+
+# Pre-build release binaries (Workshop / CI policy: no DLLs on main)
+releases/**/*.dll
+
+# Logs and scratch
+*.log
+build-*.log
