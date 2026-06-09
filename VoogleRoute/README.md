@@ -1,6 +1,6 @@
 # Voogle Route
 
-Big Ambitions mod (EA 0.11+) — GPS route line on the map, vehicle pathfinding on the traffic graph, optional auto-walk on foot.
+Big Ambitions mod (EA 0.11+) — on-ground GPS route line to your **Voogle Maps** destination, optional auto-walk on foot.
 
 | Property | Value |
 |----------|-------|
@@ -8,17 +8,32 @@ Big Ambitions mod (EA 0.11+) — GPS route line on the map, vehicle pathfinding 
 | **Unity** | **2022.3.62f2** with [Big Ambitions Modding SDK](https://github.com/hovgaardgames/bigambitions) |
 | **Mod ID** | `VoogleRoute` |
 | **Requires** | [`LIB_BaPlayerLocation`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) |
+| **Vehicle routing** | [`VoogleRoute.Pathfinding`](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding) (git submodule) |
+
+## Features
+
+- **Route line on the ground** — neon path to your map destination; separate styling on foot vs. in a vehicle
+- **Road-aware driving routes** — vehicle paths use the shared PathFinding library (see linked repo)
+- **Auto-walk** — walk the route automatically; stops if you take manual control
+- **VOOGLE ROUTE panel** — bottom-left UI (`ROUTE ON / ROUTE OFF`, color picker)
+- Hidden in the **subway** and when navigation is unavailable
+
+Routing algorithm, enhanced traffic graph, and CSV format are documented in the **[PathFinding repository](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)** — not here.
 
 ## Clone (developers)
 
-This folder is the `VoogleRoute/` directory inside the [BigAmbitions_VoogleRoute](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute) repository. Clone with submodules:
+This folder is `VoogleRoute/` inside [BigAmbitions_VoogleRoute](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute). Clone with submodules:
 
 ```bash
 git clone --recurse-submodules https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.git
 cd BigAmbitions_VoogleRoute/VoogleRoute
 ```
 
-PathFinding sources live in the git submodule `PathFinding/` → [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding).
+| Repository | Role |
+|------------|------|
+| [BigAmbitions_VoogleRoute](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute) | Mod sources, locales, shipped CSV data, graph generator tools |
+| [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding) | `PathFinding/` submodule — routing DLL sources |
+| [BigAmbitions_LIB_BaPlayerLocation](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) | Player position / movement mode (required at runtime) |
 
 ## Install into your SDK
 
@@ -31,7 +46,7 @@ PathFinding sources live in the git submodule `PathFinding/` → [BigAmbitions_V
 
    Or run `tools/install-into-sdk.ps1` from each mod folder (after `git submodule update --init`).
 
-2. Build the pathfinding DLL:
+2. Build the PathFinding DLL into `Dependencies/`:
 
    ```powershell
    .\tools\build-pathfinding.ps1
@@ -41,30 +56,7 @@ PathFinding sources live in the git submodule `PathFinding/` → [BigAmbitions_V
 4. **Mod Builder → Build & Install** for `LIB_BaPlayerLocation`, then `VoogleRoute`.
 5. Enable **LIB BA Player Location** and **Voogle Route** in the in-game mod menu.
 
-## Pathfinding
-
-Vehicle routing calls `VoogleRoute.Pathfinding.dll` from `Dependencies/` (netstandard2.1).
-
-```
-Unity mod (VoogleRoute.dll)
-  → RoutePathfinder / RouteGraphStore
-  → Dependencies/VoogleRoute.Pathfinding.dll
-  ← built from PathFinding/ submodule
-```
-
-| Layer | Role |
-|-------|------|
-| **PathFinding/** | git submodule — routing algorithm sources |
-| **Dependencies/** | precompiled DLLs shipped with the mod |
-| **Data/** | CSV traffic graph loaded at runtime |
-| **Scripts/** | Unity glue (NavMesh on foot, CSV + DLL for vehicles) |
-
-After editing `PathFinding/`:
-
-```powershell
-.\tools\build-pathfinding.ps1
-# then Mod Builder → Build & Install
-```
+To change routing logic, edit the **PathFinding** submodule and rebuild — see its README.
 
 ## Configuration
 
@@ -74,14 +66,24 @@ Copy `config.json.example` to:
 %USERPROFILE%\AppData\LocalLow\...\BigAmbitions\ModsLocal\VoogleRoute\config.json
 ```
 
+| Key | Meaning |
+|-----|---------|
+| `logging` | Verbose mod logs |
+| `log_level` | `error`, `warn`, `info` |
+| `show_line_detection` | Debug overlay (uses PathFinding corridor helpers) |
+| `route_line_color` | RGBA line color |
+
+In-game toggles (route line, auto-walk) are in the mod options panel.
+
 ## Repository layout
 
 ```text
-PathFinding/                git submodule (algorithm sources)
-Dependencies/               VoogleRoute.Pathfinding.dll + System.Text.Json
-Data/                       traffic graph CSV
-Scripts/                    Unity mod code
-tools/build-pathfinding.ps1 dotnet build → Dependencies/
+PathFinding/                git submodule → PathFinding repo
+Dependencies/               VoogleRoute.Pathfinding.dll (built) + System.Text.Json
+Data/                       big_ambitions_enhanced_routes.csv (input to PathFinding)
+Scripts/                    Unity glue — NavMesh on foot, DLL + CSV for vehicles
+Locales/
+tools/build-pathfinding.ps1 build submodule → Dependencies/
 ```
 
 ## License

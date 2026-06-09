@@ -25,81 +25,17 @@ Workshop description copy for each release lives in [`releases/<version>/`](rele
 ## Features
 
 - **Route line on the ground** — neon path to your map destination; separate styling on foot vs. in a vehicle
-- **Road-aware driving routes** — vehicle paths follow the city's **Gley traffic waypoint graph**, enriched with synthetic turns (see below)
+- **Road-aware driving routes** — vehicle paths use the shared **[PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)** library (enhanced Gley graph + A*)
 - **Auto-walk** — walk the route automatically (`WALK ON`); stops if you take manual control
 - **VOOGLE ROUTE panel** — bottom-left BizPhone-style UI (`ROUTE ON / ROUTE OFF`)
 - **Custom line color** — presets or the in-game color picker (gear icon)
 - Hidden in the **subway** and when navigation is unavailable
 
-## Enhanced driving graph
+## Vehicle routing (PathFinding)
 
-Vanilla **Gley Traffic System** waypoints model forward lane connectivity well, but they do **not** expose every **left turn** or **U-turn** a driver needs at intersections. Voogle Route ships a precomputed graph extension so vehicle routing can turn onto cross streets instead of only going straight.
+Algorithm, enhanced traffic graph, CSV schema, and A* details live in the separate **[BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)** repository (git submodule at `VoogleRoute/PathFinding/`).
 
-### Pipeline overview
-
-```
-In-game Gley waypoints (CurrentSceneData.allWaypoints)
-        │
-        ▼  export to CSV (listIndex, name, position, neighbors, …)
-        │
-        ▼  tools/generate_enhanced_route_graph.py
-        │     • keep all base Gley edges (edgeType=base, source=gley)
-        │     • detect intersection exits/entries per road lane
-        │     • add synthetic_turn / left  (green curves on map)
-        │     • add synthetic_turn / uturn (orange curves on map)
-        │
-        ▼  VoogleRoute/Data/big_ambitions_enhanced_routes.csv
-        │
-        ▼  at runtime: TrafficWaypointGraph + EnhancedRouteEdges
-              merges synthetic edges into the live Gley graph for A*
-```
-
-### Step 1 — Extract the base graph
-
-We dump the city's **Gley** `Waypoint[]` graph to a CSV with one row per waypoint:
-
-- `listIndex`, `name`, `posX` / `posY` / `posZ`, `neighbors` (semicolon-separated indices), `disabled`
-
-That CSV is the **raw traffic graph** the game uses for NPC traffic. Connectors (`Connector`, `CConnect`) and disabled nodes are filtered during enhancement.
-
-### Step 2 — Generate synthetic turns
-
-[`tools/generate_enhanced_route_graph.py`](tools/generate_enhanced_route_graph.py) reads the dump and writes:
-
-- `big_ambitions_enhanced_routes.csv` — base edges + synthetic maneuvers
-- `big_ambitions_enhanced_route_graph.svg` — visual QA map (see below)
-
-**Left turns (`maneuver=left`)**
-
-- Consider only **leftmost driving lanes** at each road (lane-direction clustering).
-- At each intersection **exit** waypoint, pair with nearby **entry** waypoints on other roads.
-- Keep candidates where the signed turn angle is **+28° to +142°** (left turn in our coordinate system).
-- Skip pairs already reachable through the base graph (short BFS).
-- Store a quadratic **control point** (Bezier) for smooth on-ground rendering.
-
-**U-turns (`maneuver=uturn`)**
-
-- **Parallel corridor pairs** (e.g. Roads 10↔11, 47↔48): one authorized ~180° link per intersection station between opposite carriageways.
-- **Internal multi-lane roads** (4-lane axes): U-turn from leftmost exit back to leftmost entry on the same road when geometry is ~145°–181°.
-- U-turn edges are whitelisted at runtime — generic ~180° turns on the base graph remain blocked.
-
-Manual exclusions (bad auto-detections) are maintained as blocklists in the generator (`EXCLUDED_SYNTHETIC_ROAD_PAIRS`, `EXCLUDED_SYNTHETIC_WAYPOINT_PAIRS`, …). An interactive HTML picker (`*_picker.html`) helps review individual `turn-FROM-TO` curves.
-
-Regenerate after a game update that changes city traffic data:
-
-```bash
-python tools/generate_enhanced_route_graph.py <waypoints_dump.csv> VoogleRoute/Data/big_ambitions_enhanced_routes.csv docs/big_ambitions_enhanced_route_graph.svg
-```
-
-### Step 3 — Runtime merge
-
-At city load, [`TrafficWaypointGraph`](VoogleRoute/Scripts/Navigation/TrafficWaypointGraph.cs) builds forward edges from live Gley data, then [`EnhancedRouteEdges`](VoogleRoute/Scripts/Navigation/EnhancedRouteEdges.cs) loads `synthetic_turn` rows from the shipped CSV and appends them. U-turn rows also register in `_authorizedUturnEdges` so only those reversals are allowed during pathfinding.
-
-### Map visualization
-
-Grey polylines = original **Gley** edges. Green curves = **left turns**. Orange curves = **U-turns**. Hover IDs follow `turn-<fromIndex>-<toIndex>`.
-
-![Big Ambitions enhanced route graph — base Gley edges (grey), synthetic left turns (green), U-turns (orange)](docs/big_ambitions_enhanced_route_graph.svg)
+This repo ships the **CSV data** (`VoogleRoute/Data/`) and **generator tools** (`tools/generate_enhanced_route_graph.py`, `docs/*.svg`). The mod loads the CSV through the PathFinding DLL at runtime.
 
 ## Repository layout
 
@@ -166,13 +102,8 @@ Mod **Steam Workshop** pour Big Ambitions EA **0.11 Experimental** : ligne d'iti
 2. Activer **Voogle Route** dans le menu **Mods**  
 3. Définir une destination sur Voogle Maps → panneau **VOOGLE ROUTE**
 
-### Graphe routier enrichi
+### Routage véhicule
 
-1. **Extraction** — export CSV des waypoints **Gley** (`CurrentSceneData.allWaypoints`)  
-2. **Enrichissement** — `tools/generate_enhanced_route_graph.py` ajoute les virages **gauche** (verts) et **demi-tours** (orange) manquants  
-3. **Livraison** — `VoogleRoute/Data/big_ambitions_enhanced_routes.csv`  
-4. **Runtime** — fusion dans `TrafficWaypointGraph` pour le routage véhicule
-
-Carte SVG : [docs/big_ambitions_enhanced_route_graph.svg](docs/big_ambitions_enhanced_route_graph.svg)
+Voir le dépôt **[BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)** (graphe enrichi, A*, format CSV). Ce dépôt fournit les données (`VoogleRoute/Data/`) et les outils de génération (`tools/`).
 
 Les builds MelonLoader 0.10 sont archivés : [legacy/README.md](legacy/README.md).
