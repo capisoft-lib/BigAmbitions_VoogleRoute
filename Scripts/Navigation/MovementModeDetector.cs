@@ -40,7 +40,7 @@ namespace VoogleRoute.Navigation
         internal static bool TryGetPathOrigin(out Vector3 origin)
         {
             origin = default;
-            if (!PlayerLocationSession.IsAvailable)
+            if (!PlayerLocationSession.IsLibraryActive || !PlayerLocationSession.IsAvailable)
                 return false;
 
             return CurrentMode switch

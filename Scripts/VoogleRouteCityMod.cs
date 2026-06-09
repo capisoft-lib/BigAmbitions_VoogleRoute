@@ -20,7 +20,9 @@ namespace VoogleRoute
         public Task OnLoadAsync(ModContext context)
         {
             _context = context;
-            ModLog.Info("Voogle Route city load starting | mod_id=" + context.ModId);
+            ModLog.Info(
+                "Voogle Route city load | mod_id=" + context.ModId +
+                " | required_mod=LIB_BaPlayerLocation");
 
             ModConfig.Initialize(context);
             VoogleRouteLoop.Initialize(context);
@@ -36,6 +38,7 @@ namespace VoogleRoute
             RouteLineRenderer.EnsureCreated();
             RouteToggleHud.EnsureCreated();
             RouteSettingsUi.EnsureCreated();
+            RouteRecalcBanner.EnsureCreated();
 
             ModLog.Info("Voogle Route city load complete.");
             return Task.CompletedTask;
@@ -57,6 +60,7 @@ namespace VoogleRoute
             VoogleRouteLoop.Shutdown();
             RouteToggleHud.Destroy();
             RouteSettingsUi.Destroy();
+            RouteRecalcBanner.Destroy();
             RouteLineRenderer.Destroy();
             ModLog.Info("UI and route renderers destroyed.");
 

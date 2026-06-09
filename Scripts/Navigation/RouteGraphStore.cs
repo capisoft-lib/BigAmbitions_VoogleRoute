@@ -8,8 +8,6 @@ namespace VoogleRoute.Navigation
     /// </summary>
     internal static class RouteGraphStore
     {
-        private const string RelativeCsvPath = "Data/big_ambitions_enhanced_routes.csv";
-
         private static RouteGraph _graph;
 
         internal static bool IsReady => _graph != null;
@@ -24,15 +22,25 @@ namespace VoogleRoute.Navigation
             }
         }
 
+        internal static void WarmUp()
+        {
+            if (_graph != null)
+                return;
+
+            TryEnsureLoaded();
+        }
+
         internal static bool TryEnsureLoaded()
         {
             if (_graph != null)
                 return true;
 
-            var path = Path.Combine(ModStoragePaths.ModRootDirectory, RelativeCsvPath);
+            var path = ModStoragePaths.PathInModRoot(ModStoragePaths.EnhancedRoutesCsv);
             if (!File.Exists(path))
             {
-                ModLog.Error("Route CSV not found: " + path);
+                ModLog.Error(
+                    "Route CSV not found | tried=" + path +
+                    " mod_root=" + ModStoragePaths.ModRootDirectory);
                 return false;
             }
 

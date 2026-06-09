@@ -39,7 +39,7 @@ namespace VoogleRoute
 
             try
             {
-                var logsDir = Path.Combine(ModStoragePaths.ModRootDirectory, "Logs");
+                var logsDir = ModStoragePaths.PathInModRoot(ModStoragePaths.LogsFolder);
                 Directory.CreateDirectory(logsDir);
 
                 var fileName = "voogle-route_" +

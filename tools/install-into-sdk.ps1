@@ -32,19 +32,26 @@ From the mod repo root run:
 }
 
 $modItems = @(
-    "Scripts", "Locales", "Data", "Dependencies", "PathFinding", "tools",
+    "Scripts", "Locales", "Data", "Dependencies", "Plugins", "PathFinding", "tools",
     "ModManifest.asset", "ModManifest.asset.meta",
     "VoogleRoute.asmdef", "VoogleRoute.asmdef.meta",
     "Thumbnail.png", "Thumbnail.png.meta",
     "config.json.example", "config.json.example.meta",
-    "Scripts.meta", "Locales.meta", "Data.meta", "Dependencies.meta"
+    "Scripts.meta", "Locales.meta", "Data.meta", "Dependencies.meta", "Plugins.meta", "PathFinding.meta"
 )
+
+$folderMetaSource = Join-Path (Split-Path $repoRoot -Parent) "VoogleRoute.meta"
 
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 foreach ($item in $modItems) {
     $source = Join-Path $repoRoot $item
     if (-not (Test-Path $source)) { continue }
     Copy-Item $source -Destination (Join-Path $dest $item) -Recurse -Force
+}
+
+$modsFolderMetaDest = Join-Path $SdkPath "Assets\Mods\VoogleRoute.meta"
+if (Test-Path $folderMetaSource) {
+    Copy-Item $folderMetaSource -Destination $modsFolderMetaDest -Force
 }
 
 Write-Host "Installed VoogleRoute -> $dest"

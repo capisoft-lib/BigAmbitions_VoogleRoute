@@ -9,7 +9,6 @@ namespace VoogleRoute
 {
     internal static class ModConfigStore
     {
-        private const string ConfigFileName = "config.json";
         private const string LegacyLineColorFileName = "line_color.txt";
 
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
@@ -26,7 +25,8 @@ namespace VoogleRoute
 
         internal static ModConfigData Data => _data;
 
-        internal static string ConfigFilePath => ModStoragePaths.FileInModRoot(ConfigFileName);
+        internal static string ConfigFilePath =>
+            ModStoragePaths.FileInModRoot(ModStoragePaths.ConfigFileName);
 
         internal static void Load()
         {
@@ -124,7 +124,7 @@ namespace VoogleRoute
 
         private static bool TryMigrateLineColor()
         {
-            var path = ModStoragePaths.FileInModRoot(LegacyLineColorFileName);
+            var path = ModStoragePaths.PathInModRoot(LegacyLineColorFileName);
             if (!File.Exists(path))
                 return false;
 

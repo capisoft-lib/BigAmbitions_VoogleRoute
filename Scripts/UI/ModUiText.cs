@@ -21,6 +21,8 @@ namespace VoogleRoute.UI
         internal static string ColorPresetOrange => Loc("voogle_route_color_orange", "Orange");
         internal static string ColorPresetMagenta => Loc("voogle_route_color_magenta", "Magenta");
         internal static string ColorPresetWhite => Loc("voogle_route_color_white", "White");
+        internal static string RouteRecalculating =>
+            Loc("voogle_route_recalculating", "Recalculating route...");
 
         internal static void PollLanguageChange()
         {
@@ -36,6 +38,7 @@ namespace VoogleRoute.UI
             _activeLocale = locale;
             RouteToggleHud.RefreshLocalizedText();
             RouteSettingsUi.RefreshLocalizedText();
+            RouteRecalcBanner.RefreshLocalizedText();
         }
 
         private static string Loc(string key, string fallback)

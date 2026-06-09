@@ -3,7 +3,7 @@ using VoogleRoute.Navigation;
 
 namespace VoogleRoute.Live
 {
-    /// <summary>INFO log when GPS state, position, or heading changes (via LIB_BaPlayerLocation).</summary>
+    /// <summary>INFO log when LIB_BaPlayerLocation delivers a pose change via <see cref="Navigation.PlayerLocationSession"/>.</summary>
     internal static class PlayerLocationLogger
     {
         internal static void Initialize() => PlayerLocationSession.Changed += OnLocationChanged;
@@ -19,8 +19,8 @@ namespace VoogleRoute.Live
             }
 
             var state = PlayerLocationSnapshotMapper.ToLegacyState(snapshot.MovementKind);
-            ModLog.Info(
-                "GPS state=" + PlayerLocationSnapshotMapper.FormatState(state) +
+            ModLog.Debug(
+                "LIB GPS | state=" + PlayerLocationSnapshotMapper.FormatState(state) +
                 " pos=(" + PlayerLocationSnapshotMapper.FormatPosition(snapshot.Position) + ")" +
                 " heading=" + PlayerLocationSnapshotMapper.FormatHeading(snapshot.HeadingDeg));
         }

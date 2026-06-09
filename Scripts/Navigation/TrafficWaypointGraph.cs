@@ -58,6 +58,10 @@ namespace VoogleRoute.Navigation
 
         private Dictionary<long, Vector3> _enhancedTurnControls;
 
+        private Dictionary<long, float> _enhancedEdgeLengths;
+
+        private Dictionary<long, float> _enhancedTurnAngles;
+
         private HashSet<long> _authorizedUturnEdges;
 
 
@@ -202,6 +206,13 @@ namespace VoogleRoute.Navigation
             control = default;
             return _enhancedTurnControls != null &&
                    _enhancedTurnControls.TryGetValue(EdgeKey(from, to), out control);
+        }
+
+        internal bool TryGetEnhancedTurnAbsAngle(int from, int to, out float absDegrees)
+        {
+            absDegrees = 0f;
+            return _enhancedTurnAngles != null &&
+                   _enhancedTurnAngles.TryGetValue(EdgeKey(from, to), out absDegrees);
         }
 
         internal bool IsAuthorizedUturnEdge(int from, int to) =>
@@ -975,7 +986,13 @@ namespace VoogleRoute.Navigation
             _junctionZone = junctionZone;
 
             _routingIndex = TrafficRoutingIndex.Build(
-                size, _positions, _edges, _laneChangeEdges, _reverseEdges, array, junctionZone);
+                size,
+                _positions,
+                _edges,
+                _laneChangeEdges,
+                array,
+                _enhancedTurnControls,
+                _enhancedEdgeLengths);
 
         }
 
@@ -1049,6 +1066,8 @@ namespace VoogleRoute.Navigation
         private void ApplyEnhancedRouteEdges(int size)
         {
             _enhancedTurnControls = new Dictionary<long, Vector3>();
+            _enhancedEdgeLengths = new Dictionary<long, float>();
+            _enhancedTurnAngles = new Dictionary<long, float>();
             _authorizedUturnEdges = new HashSet<long>();
             var turns = EnhancedRouteEdges.LoadSyntheticTurns(size, _authorizedUturnEdges);
             if (turns == null || turns.Count == 0)
@@ -1075,13 +1094,20 @@ namespace VoogleRoute.Navigation
                     continue;
 
                 builders[edge.From].Add(edge.To);
-                _enhancedTurnControls[EdgeKey(edge.From, edge.To)] = edge.Control;
+                var key = EdgeKey(edge.From, edge.To);
+                _enhancedTurnControls[key] = edge.Control;
+                if (edge.ArcLengthMeters > 0f)
+                    _enhancedEdgeLengths[key] = edge.ArcLengthMeters;
+                if (edge.AbsAngleDegrees > 0f)
+                    _enhancedTurnAngles[key] = edge.AbsAngleDegrees;
                 added++;
             }
 
             if (added == 0)
             {
                 _enhancedTurnControls.Clear();
+                _enhancedEdgeLengths.Clear();
+                _enhancedTurnAngles.Clear();
                 return;
             }
 

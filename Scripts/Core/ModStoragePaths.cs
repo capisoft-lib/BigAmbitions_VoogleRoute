@@ -1,27 +1,66 @@
+using System;
 using System.IO;
+using BAModAPI;
 using UnityEngine;
 
 namespace VoogleRoute
 {
+    /// <summary>
+    /// All mod files (config, logs, data) live under <see cref="ModContext.ModRootPath"/>.
+    /// ModsLocal is never touched unless the game itself installs the mod there (then ModRootPath points at it).
+    /// </summary>
     internal static class ModStoragePaths
     {
         internal const string ModId = "VoogleRoute";
+        internal const string ModsLocalFolder = "ModsLocal";
+        internal const string LogsFolder = "Logs";
+        internal const string ConfigFileName = "config.json";
+        internal const string EnhancedRoutesCsv = "Data/big_ambitions_enhanced_routes.csv";
 
+        private static string _modRoot;
         private static bool _migrationDone;
 
         internal static string ModRootDirectory
         {
             get
             {
-                EnsureMigrated();
-                var path = Path.Combine(Application.persistentDataPath, "ModsLocal", ModId);
-                Directory.CreateDirectory(path);
-                return path;
+                if (!string.IsNullOrWhiteSpace(_modRoot))
+                    return _modRoot;
+
+                return FallbackModsLocalRoot();
             }
         }
 
+        internal static void Initialize(ModContext context)
+        {
+            _modRoot = string.IsNullOrWhiteSpace(context?.ModRootPath)
+                ? null
+                : context.ModRootPath;
+            EnsureMigrated();
+        }
+
+        internal static void Shutdown() => _modRoot = null;
+
+        internal static string PathInModRoot(string relativePath) =>
+            CombineRelative(ModRootDirectory, relativePath);
+
         internal static string FileInModRoot(string fileName) =>
-            Path.Combine(ModRootDirectory, fileName);
+            PathInModRoot(fileName);
+
+        private static string FallbackModsLocalRoot()
+        {
+            var path = Path.Combine(Application.persistentDataPath, ModsLocalFolder, ModId);
+            Directory.CreateDirectory(path);
+            return path;
+        }
+
+        private static string CombineRelative(string root, string relativePath)
+        {
+            if (Path.IsPathRooted(relativePath))
+                throw new ArgumentException("Path must be relative to the mod root.", nameof(relativePath));
+
+            return Path.Combine(root, relativePath);
+        }
 
         private static void EnsureMigrated()
         {
@@ -34,18 +73,18 @@ namespace VoogleRoute
             if (string.IsNullOrWhiteSpace(persistent))
                 return;
 
-            var newRoot = Path.Combine(persistent, "ModsLocal", ModId);
-            Directory.CreateDirectory(newRoot);
+            var root = ModRootDirectory;
+            Directory.CreateDirectory(root);
 
             var legacyRoot = Path.Combine(persistent, ModId);
             if (Directory.Exists(legacyRoot))
             {
-                CopyTreeIfMissing(legacyRoot, newRoot);
+                CopyTreeIfMissing(legacyRoot, root);
                 TryDeleteLegacyPath(legacyRoot);
             }
 
             var legacyLineColor = Path.Combine(persistent, "VoogleRoute_line_color.txt");
-            var newLineColor = Path.Combine(newRoot, "line_color.txt");
+            var newLineColor = Path.Combine(root, "line_color.txt");
             if (CopyFileIfMissing(legacyLineColor, newLineColor))
                 TryDeleteLegacyPath(legacyLineColor);
         }
@@ -54,6 +93,10 @@ namespace VoogleRoute
         {
             if (!File.Exists(source) || File.Exists(destination))
                 return false;
+
+            var dir = Path.GetDirectoryName(destination);
+            if (!string.IsNullOrEmpty(dir))
+                Directory.CreateDirectory(dir);
 
             File.Copy(source, destination);
             return true;

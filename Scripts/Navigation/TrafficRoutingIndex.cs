@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using GleyTrafficSystem;
 using UnityEngine;
+using VoogleRoute.Pathfinding.Geometry;
+using VoogleRoute.Pathfinding.Routing;
 
 namespace VoogleRoute.Navigation
 {
     /// <summary>
-    /// Graphe routier prétraité : segments (longueur + vitesse), intersections, pénalités de virage.
+    /// Graphe routier prétraité : coûts de segment (longueur / arc CSV, facteur vitesse).
     /// Les coûts sont en mètres effectifs pour l'A*.
     /// </summary>
     internal sealed class TrafficRoutingIndex
@@ -14,14 +16,12 @@ namespace VoogleRoute.Navigation
         private const float ReferenceSpeedKmh = 50f;
         private const float LaneChangeBaseMeters = 22f;
 
-        private const float JunctionLaneChangePenaltyMeters = 14f;
-
         private readonly Vector3[] _positions;
         private readonly int[][] _forwardNeighbors;
         private readonly int[][] _laneChangeNeighbors;
         private readonly float[][] _forwardCosts;
         private readonly float[][] _laneChangeCosts;
-        private readonly bool[] _intersectionNode;
+        private readonly Dictionary<long, float> _edgeLengths;
 
         private TrafficRoutingIndex(
             Vector3[] positions,
@@ -29,14 +29,14 @@ namespace VoogleRoute.Navigation
             int[][] laneChangeNeighbors,
             float[][] forwardCosts,
             float[][] laneChangeCosts,
-            bool[] intersectionNode)
+            Dictionary<long, float> edgeLengths)
         {
             _positions = positions;
             _forwardNeighbors = forwardNeighbors;
             _laneChangeNeighbors = laneChangeNeighbors;
             _forwardCosts = forwardCosts;
             _laneChangeCosts = laneChangeCosts;
-            _intersectionNode = intersectionNode;
+            _edgeLengths = edgeLengths ?? new Dictionary<long, float>();
         }
 
         internal static TrafficRoutingIndex Build(
@@ -44,14 +44,15 @@ namespace VoogleRoute.Navigation
             Vector3[] positions,
             int[][] forwardEdges,
             int[][] laneChangeEdges,
-            int[][] reverseEdges,
             Waypoint[] waypoints,
-            bool[] junctionZone)
+            Dictionary<long, Vector3> turnControls = null,
+            Dictionary<long, float> edgeLengths = null)
         {
             var maxSpeed = BuildMaxSpeed(size, waypoints);
-            var intersectionNode = BuildIntersectionNodes(size, forwardEdges, reverseEdges, junctionZone);
-            var forwardCosts = BuildEdgeCosts(size, positions, forwardEdges, maxSpeed, isLaneChange: false);
-            var laneChangeCosts = BuildEdgeCosts(size, positions, laneChangeEdges, maxSpeed, isLaneChange: true);
+            var forwardCosts = BuildEdgeCosts(
+                size, positions, forwardEdges, maxSpeed, isLaneChange: false, turnControls, edgeLengths);
+            var laneChangeCosts = BuildEdgeCosts(
+                size, positions, laneChangeEdges, maxSpeed, isLaneChange: true, null, null);
 
             return new TrafficRoutingIndex(
                 positions,
@@ -59,15 +60,39 @@ namespace VoogleRoute.Navigation
                 laneChangeEdges,
                 forwardCosts,
                 laneChangeCosts,
-                intersectionNode);
+                edgeLengths);
         }
 
         internal float GetForwardTravelCost(int from, int to, int incomingFrom)
         {
             var cost = LookupCost(_forwardNeighbors, _forwardCosts, from, to);
-            if (incomingFrom >= 0)
-                cost += GetTurnPenalty(incomingFrom, from, to);
+            if (cost < 0f)
+                cost = LookupCost(_laneChangeNeighbors, _laneChangeCosts, from, to);
+            if (cost < 0f)
+                cost = FlatLength(_positions[from], _positions[to]);
+
             return cost;
+        }
+
+        internal bool IsLaneChange(int from, int to) =>
+            ContainsEdge(_laneChangeNeighbors, from, to);
+
+        private static bool ContainsEdge(int[][] neighbors, int from, int to)
+        {
+            if (from < 0 || from >= neighbors.Length)
+                return false;
+
+            var next = neighbors[from];
+            if (next == null)
+                return false;
+
+            for (var i = 0; i < next.Length; i++)
+            {
+                if (next[i] == to)
+                    return true;
+            }
+
+            return false;
         }
 
         internal float EstimatePathCost(IReadOnlyList<int> path)
@@ -108,42 +133,14 @@ namespace VoogleRoute.Navigation
             return maxSpeed;
         }
 
-        private static bool[] BuildIntersectionNodes(
-            int size,
-            int[][] forwardEdges,
-            int[][] reverseEdges,
-            bool[] junctionZone)
-        {
-            var nodes = new bool[size];
-            for (var i = 0; i < size; i++)
-            {
-                if (junctionZone != null && junctionZone[i])
-                {
-                    nodes[i] = true;
-                    continue;
-                }
-
-                var fwd = forwardEdges[i];
-                var rev = reverseEdges[i];
-                if (fwd != null && fwd.Length >= 2)
-                {
-                    nodes[i] = true;
-                    continue;
-                }
-
-                if (rev != null && rev.Length >= 2)
-                    nodes[i] = true;
-            }
-
-            return nodes;
-        }
-
         private static float[][] BuildEdgeCosts(
             int size,
             Vector3[] positions,
             int[][] neighbors,
             float[] maxSpeed,
-            bool isLaneChange)
+            bool isLaneChange,
+            Dictionary<long, Vector3> turnControls,
+            Dictionary<long, float> edgeLengths)
         {
             var costs = new float[size][];
             for (var from = 0; from < size; from++)
@@ -161,7 +158,7 @@ namespace VoogleRoute.Navigation
                     var to = next[i];
                     row[i] = isLaneChange
                         ? ComputeLaneChangeCost(positions, from, to, maxSpeed)
-                        : ComputeSegmentCost(positions, from, to, maxSpeed);
+                        : ComputeSegmentCost(positions, from, to, maxSpeed, turnControls, edgeLengths);
                 }
 
                 costs[from] = row;
@@ -170,14 +167,39 @@ namespace VoogleRoute.Navigation
             return costs;
         }
 
-        private static float ComputeSegmentCost(Vector3[] positions, int from, int to, float[] maxSpeed)
+        private static float ComputeSegmentCost(
+            Vector3[] positions,
+            int from,
+            int to,
+            float[] maxSpeed,
+            Dictionary<long, Vector3> turnControls,
+            Dictionary<long, float> edgeLengths)
         {
-            var length = FlatLength(positions[from], positions[to]);
+            var key = EdgeKey(from, to);
+            float length;
+            if (edgeLengths != null && edgeLengths.TryGetValue(key, out var csvLength) && csvLength > 0f)
+            {
+                length = csvLength;
+            }
+            else if (turnControls != null && turnControls.TryGetValue(key, out var control))
+            {
+                var fromV = new Vec3(positions[from].x, positions[from].y, positions[from].z);
+                var toV = new Vec3(positions[to].x, positions[to].y, positions[to].z);
+                var ctrlV = new Vec3(control.x, control.y, control.z);
+                length = ManeuverGeometry.SyntheticTurnTravelMeters(fromV, toV, ctrlV);
+            }
+            else
+            {
+                length = FlatLength(positions[from], positions[to]);
+            }
+
             var speed = from >= 0 && from < maxSpeed.Length
                 ? Mathf.Max(maxSpeed[from], 12f)
                 : DefaultSpeedKmh;
             return length * (ReferenceSpeedKmh / speed);
         }
+
+        private static long EdgeKey(int from, int to) => ((long)from << 32) ^ (uint)to;
 
         private static float ComputeLaneChangeCost(Vector3[] positions, int from, int to, float[] maxSpeed)
         {
@@ -192,12 +214,12 @@ namespace VoogleRoute.Navigation
         private float LookupCost(int[][] neighbors, float[][] costs, int from, int to)
         {
             if (from < 0 || from >= neighbors.Length)
-                return FlatLength(_positions[from], _positions[to]);
+                return -1f;
 
             var next = neighbors[from];
             var row = costs[from];
             if (next == null || row == null)
-                return FlatLength(_positions[from], _positions[to]);
+                return -1f;
 
             for (var i = 0; i < next.Length; i++)
             {
@@ -205,48 +227,7 @@ namespace VoogleRoute.Navigation
                     return row[i];
             }
 
-            return FlatLength(_positions[from], _positions[to]);
-        }
-
-        private float GetTurnPenalty(int incoming, int at, int to)
-        {
-            if (!_intersectionNode[at])
-                return 0f;
-
-            var signed = SignedTurnDegrees(incoming, at, to);
-            var abs = Mathf.Abs(signed);
-
-            if (abs < 22f)
-                return 0f;
-            if (abs < 50f)
-                return 5f;
-            if (abs < 100f)
-                return 13f;
-            if (abs < 150f)
-                return 30f;
-
-            return 55f;
-        }
-
-        private float SignedTurnDegrees(int incoming, int at, int to)
-        {
-            if (incoming < 0 || at < 0 || to < 0 ||
-                incoming >= _positions.Length || at >= _positions.Length || to >= _positions.Length)
-                return 0f;
-
-            var inDir = FlatDir(_positions[incoming], _positions[at]);
-            var outDir = FlatDir(_positions[at], _positions[to]);
-            if (inDir.sqrMagnitude < 0.01f || outDir.sqrMagnitude < 0.01f)
-                return 0f;
-
-            return Vector3.SignedAngle(inDir, outDir, Vector3.up);
-        }
-
-        private static Vector3 FlatDir(Vector3 from, Vector3 to)
-        {
-            var d = to - from;
-            d.y = 0f;
-            return d.sqrMagnitude > 0.01f ? d.normalized : Vector3.zero;
+            return -1f;
         }
 
         private static float FlatLength(Vector3 a, Vector3 b)

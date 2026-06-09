@@ -64,7 +64,7 @@ Output: `%LocalLow%\Hovgaard Games\Big Ambitions\ModsLocal\VoogleRoute\`
 
 ## Configuration
 
-Copy `config.json.example` to `ModsLocal/VoogleRoute/config.json` (see file for keys).
+Optional `config.json` lives next to the mod content (`ModContext.ModRootPath`). For a local SDK build that installs to `ModsLocal`, copy `config.json.example` to `ModsLocal/VoogleRoute/config.json`. Steam Workshop installs use the subscribed mod folder automatically (see file for keys).
 
 ## Changelog / licence
 

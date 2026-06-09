@@ -43,12 +43,14 @@ namespace VoogleRoute
         internal static void Initialize(ModContext context)
         {
             _context = context;
+            ModStoragePaths.Initialize(context);
             ModConfigStore.Load();
             ApplyFromStore();
             ModLog.Initialize(context);
 
             ModLog.Info(
-                "Config initialized | path=" + ModConfigStore.ConfigFilePath +
+                "Config initialized | mod_root=" + ModStoragePaths.ModRootDirectory +
+                " config=" + ModConfigStore.ConfigFilePath +
                 " found=" + ModConfigStore.ConfigFileFound +
                 " logging=" + LoggingEnabled +
                 " log_level=" + LogLevel.ToString().ToLowerInvariant() +
@@ -70,6 +72,7 @@ namespace VoogleRoute
             if (_context != null)
                 OptionsService.RemoveModOptions(_context.ModId);
             _context = null;
+            ModStoragePaths.Shutdown();
         }
     
         internal static void SetRouteLineEnabled(bool value)

@@ -2,6 +2,32 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.3] - 2026-06-09
+
+### Fixed
+
+- **Steam Workshop paths**: all runtime files (`Data/`, `config.json`, `Logs/`) use `ModContext.ModRootPath` only — no parallel `ModsLocal/<ModId>/` folder
+- **LIB_BaPlayerLocation**: same content vs user path split for `subscriber_config.json`
+- Mod Builder now copies `Data/` into `Output/<ModId>/` for Workshop uploads
+- Async vehicle recalc banner no longer stuck when a pending recalc is cancelled
+
+## [0.11.2] - 2026-06-09
+
+### Changed
+
+- Runtime file paths centralized in `ModStoragePaths`
+- Requires **LIB BA Player Location** `0.11.1+`
+
+### Fixed
+
+- Reliable file logging when `config.json` has `"logging": true` (ModsLocal dev install only until 0.11.3)
+
+## [0.11.1] - 2026-06-08
+
+### Changed
+
+- Requires **LIB_BaPlayerLocation** as the sole player-position dependency (legacy BaPlayerLocation dev mods removed)
+
 ## [0.11.0] - 2026-06-07
 
 ### Added
@@ -38,6 +64,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.3]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.3
 [0.11.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.0
 [0.10.1]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.10.1
 [0.10.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.10.0

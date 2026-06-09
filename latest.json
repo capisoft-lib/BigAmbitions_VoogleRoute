@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.11.0",
+  "version": "0.11.3",
   "gameVersion": "0.11",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "SDK rewrite for Big Ambitions EA 0.11 Experimental. Subscribe on Steam Workshop and enable in the Mods menu."
+  "releaseNotes": "0.11.3: Steam Workshop runtime paths (ModRootPath), LIB BA Player Location 0.11.1+ required, async recalc banner fix. Subscribe on Steam Workshop and enable both mods."
 }

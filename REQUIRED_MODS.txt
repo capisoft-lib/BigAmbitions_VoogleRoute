@@ -1,0 +1,8 @@
+LIB_BaPlayerLocation
+
+Workshop publish checklist:
+1. Upload LIB_BaPlayerLocation first (ModId must match exactly).
+2. Upload VoogleRoute 0.11.2+ and state LIB BA Player Location 0.11.1+ is required in the Workshop description.
+3. Players must subscribe to AND enable both mods.
+
+VoogleRoute does not probe player position itself. Navigation is blocked until LIB_BaPlayerLocation is active.
