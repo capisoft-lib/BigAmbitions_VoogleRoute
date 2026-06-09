@@ -1,10 +1,9 @@
-using Helpers;
+using BaPlayerLocation.Subscriber;
 using UnityEngine;
-using VoogleRoute;
+using VoogleRoute.Live;
 
 namespace VoogleRoute.Navigation
 {
-    
     internal enum MovementMode
     {
         OnFoot,
@@ -12,95 +11,75 @@ namespace VoogleRoute.Navigation
         Subway,
         Unavailable
     }
-    
+
+    /// <summary>Movement mode and path origin derived from <see cref="PlayerLocationSession"/> only.</summary>
     internal static class MovementModeDetector
     {
         internal static MovementMode CurrentMode { get; private set; } = MovementMode.Unavailable;
         internal static MovementMode PreviousMode { get; private set; } = MovementMode.Unavailable;
-    
-        internal static void Tick()
+
+        internal static void Reset()
+        {
+            CurrentMode = MovementMode.Unavailable;
+            PreviousMode = MovementMode.Unavailable;
+        }
+
+        internal static void Apply(PlayerLocationSnapshot snapshot)
         {
             PreviousMode = CurrentMode;
-    
-            if (SubwaySystem.IsRiding)
-            {
-                CurrentMode = MovementMode.Subway;
-                return;
-            }
-    
-            try
-            {
-                if (!GameManager.IsInitialized || GameManager.Instance?.playerController == null)
-                {
-                    CurrentMode = MovementMode.Unavailable;
-                    return;
-                }
-    
-                CurrentMode = PlayerHelper.IsUsingVehicle ? MovementMode.Vehicle : MovementMode.OnFoot;
-            }
-            catch
-            {
-                CurrentMode = MovementMode.Unavailable;
-            }
+            CurrentMode = snapshot.IsAvailable
+                ? PlayerLocationSnapshotMapper.ToMovementMode(snapshot.MovementKind)
+                : MovementMode.Unavailable;
         }
-    
-        internal static bool ModeChangedSinceLastTick() => CurrentMode != PreviousMode;
-    
+
+        internal static bool ModeChangedSinceLastApply => CurrentMode != PreviousMode;
+
         internal static bool ShouldShowHudButton() =>
             CurrentMode == MovementMode.OnFoot || CurrentMode == MovementMode.Vehicle;
-    
+
         internal static bool TryGetPathOrigin(out Vector3 origin)
         {
             origin = default;
-            if (CurrentMode == MovementMode.Subway || CurrentMode == MovementMode.Unavailable)
+            if (!PlayerLocationSession.IsAvailable)
                 return false;
 
-            if (CurrentMode == MovementMode.Vehicle)
-                return TryGetVehiclePose(out origin, out _);
-
-            return TryGetPlayerOrigin(out origin);
+            return CurrentMode switch
+            {
+                MovementMode.Vehicle => TryGetVehiclePose(out origin, out _),
+                MovementMode.OnFoot => TryGetPlayerOrigin(out origin),
+                _ => false
+            };
         }
 
         internal static bool TryGetVehiclePose(out Vector3 position, out Vector3 forward)
         {
             position = default;
             forward = Vector3.forward;
-            try
-            {
-                var vehicle = GameManager.Instance?.selectedVehicle;
-                if (vehicle == null)
-                    return false;
 
-                position = vehicle.FrontPoint;
-                forward = vehicle.transform.forward;
-                forward.y = 0f;
-                if (forward.sqrMagnitude < 0.01f)
-                    forward = vehicle.transform.forward;
-                forward.Normalize();
-                return true;
-            }
-            catch
-            {
+            var snapshot = PlayerLocationSession.Snapshot;
+            if (!snapshot.IsAvailable || snapshot.MovementKind != MovementKind.Car)
                 return false;
-            }
+
+            position = snapshot.Position;
+            return PlayerLocationSnapshotMapper.TryGetForward(
+                snapshot.MovementKind,
+                snapshot.HeadingDeg,
+                out forward);
         }
-    
+
         internal static bool TryGetPlayerOrigin(out Vector3 origin)
         {
             origin = default;
-            try
-            {
-                var player = PlayerHelper.PlayerController;
-                if (player == null)
-                    return false;
-    
-                origin = player.transform.position;
-                return true;
-            }
-            catch
-            {
+
+            var snapshot = PlayerLocationSession.Snapshot;
+            if (!snapshot.IsAvailable)
                 return false;
-            }
+
+            if (snapshot.MovementKind is not (MovementKind.Walk or MovementKind.Indoor))
+                return false;
+
+            origin = snapshot.Position;
+            return origin.sqrMagnitude > 0.01f;
         }
     }
 }

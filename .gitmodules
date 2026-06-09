@@ -1,0 +1,3 @@
+[submodule "VoogleRoute/PathFinding"]
+	path = VoogleRoute/PathFinding
+	url = https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding.git

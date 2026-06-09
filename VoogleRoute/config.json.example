@@ -1,0 +1,6 @@
+{
+  "logging": false,
+  "log_level": "error",
+  "show_line_detection": true,
+  "route_line_color": [0, 0.7058824, 1, 0.92]
+}

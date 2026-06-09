@@ -1,5 +1,7 @@
 using BAModAPI;
+using BaPlayerLocation.Subscriber;
 using UnityEngine;
+using VoogleRoute.Live;
 using VoogleRoute.Navigation;
 using VoogleRoute.Rendering;
 using VoogleRoute.UI;
@@ -11,18 +13,34 @@ namespace VoogleRoute
         private static bool _wasOutdoor = true;
         private static bool _lastNavigationContextActive;
         private static bool _lastNavigationWanted;
+        private static bool _forceRouteRecalc;
         private static float _nextHudRefresh;
         private static bool _legacyTurnHudPurged;
+        private static float _lastDestinationChangeTime = -1f;
+        private static PathResult _activePath;
 
         internal static void Initialize(ModContext context)
         {
             _ = context;
+
+            ModLog.Info("VoogleRoute loop initializing.");
+            PlayerLocationSession.Initialize();
+            PlayerLocationSession.Changed += OnPlayerLocationChanged;
+            PlayerLocationLogger.Initialize();
+            ModLog.Info("VoogleRoute loop initialized.");
         }
 
         internal static void Shutdown()
         {
+            ModLog.Info("VoogleRoute loop shutting down.");
+            PlayerLocationSession.Changed -= OnPlayerLocationChanged;
+            PlayerLocationLogger.Shutdown();
+            PlayerLocationSession.Shutdown();
+            _activePath = PathResult.None;
             _lastNavigationContextActive = false;
             _lastNavigationWanted = false;
+            _lastDestinationChangeTime = -1f;
+            ModLog.Info("VoogleRoute loop shut down.");
         }
 
         internal static void Tick()
@@ -53,55 +71,104 @@ namespace VoogleRoute
             }
 
             if (!_lastNavigationContextActive)
-                PathFinderService.InvalidateCache();
+            {
+                RouteLineRenderer.InvalidateDisplayCache();
+                _forceRouteRecalc = true;
+            }
+
             _lastNavigationContextActive = true;
 
             var navigationWanted = ModConfig.WantsRouteComputation;
-            if (_lastNavigationWanted && !navigationWanted)
-                PathFinderService.InvalidateCache();
-            _lastNavigationWanted = navigationWanted;
+            if (_lastNavigationWanted != navigationWanted)
+            {
+                InvalidateRouteCache();
+                _lastNavigationWanted = navigationWanted;
+            }
 
-            if (navigationWanted)
-                DestinationResolver.Poll();
+            if (navigationWanted && GameState.IsWorldReady())
+                PollDestination();
 
             var outdoor = GameState.IsOutdoor();
             if (outdoor != _wasOutdoor)
             {
                 _wasOutdoor = outdoor;
-                PathFinderService.InvalidateCache();
+                InvalidateRouteCache();
+                RefreshRouteIfNavigating();
             }
 
-            MovementModeDetector.Tick();
-            if (MovementModeDetector.ModeChangedSinceLastTick())
-            {
-                PathFinderService.InvalidateCache();
-                if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
-                    AutoWalkService.Reset();
-            }
-
-            var canNavigate = CanNavigate();
-            var routeLineEnabled = ModConfig.RouteLineEnabled;
-
-            if (!routeLineEnabled)
+            if (!ModConfig.RouteLineEnabled)
                 RouteLineRenderer.Hide();
 
-            var showLine = canNavigate && routeLineEnabled;
+            if (_forceRouteRecalc)
+                RefreshRouteIfNavigating();
 
+            var canNavigate = CanNavigate();
             if (!canNavigate || !navigationWanted)
             {
                 CleanupNavigationState();
                 return;
             }
 
-            var path = PathFinderService.GetRoute();
+            if (AutoWalkService.Tick(canNavigate, _activePath))
+                RouteToggleHud.RefreshVisual();
+        }
+
+        private static void OnPlayerLocationChanged(PlayerLocationSnapshot snapshot)
+        {
+            _ = snapshot;
+
+            if (!GameState.IsPlayable() || !GameState.ShouldRunNavigationSystems())
+                return;
+
+            if (MovementModeDetector.ModeChangedSinceLastApply)
+            {
+                InvalidateRouteCache();
+                if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
+                    AutoWalkService.Reset();
+            }
+
+            RefreshRouteIfNavigating();
+        }
+
+        private static void PollDestination()
+        {
+            DestinationResolver.Poll();
+
+            if (!ModConfig.WantsRouteComputation)
+                return;
+
+            if (NavigationTargetTracker.LastChangeTime == _lastDestinationChangeTime)
+                return;
+
+            _lastDestinationChangeTime = NavigationTargetTracker.LastChangeTime;
+            InvalidateRouteCache();
+            RefreshRouteIfNavigating();
+        }
+
+        private static void RefreshRouteIfNavigating()
+        {
+            var navigationWanted = ModConfig.WantsRouteComputation;
+            var canNavigate = CanNavigate();
+            var showLine = canNavigate && navigationWanted && ModConfig.RouteLineEnabled;
+
+            if (!canNavigate || !navigationWanted)
+            {
+                CleanupNavigationState();
+                _activePath = PathResult.None;
+                return;
+            }
+
+            if (_forceRouteRecalc && showLine &&
+                PathFinderService.TryGetCachedRouteForDisplay(out var previewPath))
+                RouteLineRenderer.ShowPath(previewPath);
+
+            _activePath = PathFinderService.GetRoute(_forceRouteRecalc);
+            _forceRouteRecalc = false;
 
             if (showLine)
-                RouteLineRenderer.ShowPath(path);
+                RouteLineRenderer.ShowPath(_activePath);
             else
                 RouteLineRenderer.Hide();
-
-            if (AutoWalkService.Tick(canNavigate, path))
-                RouteToggleHud.RefreshVisual();
         }
 
         private static bool CanNavigate()
@@ -125,13 +192,19 @@ namespace VoogleRoute
 
             _lastNavigationContextActive = false;
             CleanupNavigationState();
+        }
+
+        private static void InvalidateRouteCache()
+        {
             PathFinderService.InvalidateCache();
+            _forceRouteRecalc = true;
         }
 
         private static void CleanupNavigationState()
         {
             RouteLineRenderer.Hide();
             AutoWalkService.Reset();
+            _activePath = PathResult.None;
         }
 
         private static bool ShouldRefreshHud()

@@ -1,5 +1,6 @@
 using System;
 using UI;
+using VoogleRoute;
 using UnityEngine;
 
 namespace VoogleRoute.UI
@@ -45,7 +46,7 @@ namespace VoogleRoute.UI
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[VoogleRoute] Color picker unavailable: " + ex.Message);
+                ModLog.Error("Color picker unavailable", ex);
                 return false;
             }
         }

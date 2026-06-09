@@ -30,36 +30,6 @@ namespace VoogleRoute.Navigation
             return Decimate(list, 8f, maxPoints);
         }
 
-        internal static List<int> SimplifyPathIndices(
-            TrafficWaypointGraph graph,
-            IReadOnlyList<int> path)
-        {
-            if (path.Count < 3)
-                return new List<int>(path);
-
-            var work = new List<int>(path);
-            var changed = true;
-            var passes = 0;
-
-            while (changed && passes < 6 && work.Count >= 3)
-            {
-                changed = false;
-                passes++;
-
-                for (var i = 1; i < work.Count - 1; i++)
-                {
-                    if (!graph.ShouldCollapseJunctionWaypoint(work[i - 1], work[i], work[i + 1]))
-                        continue;
-
-                    work.RemoveAt(i);
-                    changed = true;
-                    break;
-                }
-            }
-
-            return work;
-        }
-
         internal static Vector3[] TrimBehindOrigin(Vector3[] points, Vector3 origin, float keepBehindMeters) =>
             TrimBehindOrigin(points, origin, Vector3.zero, keepBehindMeters, useForward: false);
 

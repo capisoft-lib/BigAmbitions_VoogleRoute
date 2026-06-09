@@ -39,7 +39,10 @@ namespace VoogleRoute.UI
         internal static void EnsureCreated()
         {
             if (_root != null)
+            {
+                ModLog.Info("Settings UI already present.");
                 return;
+            }
 
             foreach (var legacyName in new[]
                      {
@@ -159,6 +162,7 @@ namespace VoogleRoute.UI
 
             _root.SetActive(false);
             RefreshLocalizedText();
+            ModLog.Info("Settings UI created (route color picker).");
         }
 
         internal static void Open()

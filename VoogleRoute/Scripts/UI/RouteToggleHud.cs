@@ -87,6 +87,7 @@ namespace VoogleRoute.UI
 
             _forceApply = true;
             RefreshVisual();
+            ModLog.Info("HUD route toggle panel created.");
         }
 
         private static void CreateActionButton(

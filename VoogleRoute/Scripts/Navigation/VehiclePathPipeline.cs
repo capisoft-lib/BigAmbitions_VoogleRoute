@@ -1,78 +1,50 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using VoogleRoute.Rendering;
 
 namespace VoogleRoute.Navigation
 {
     internal static class VehiclePathPipeline
     {
-        private const int GleyMaxSkeletonPoints = 48;
-
         private static Vector3[] _cachedSourceCorners;
-        private static Vector3[] _cachedGleyLine;
+        private static Vector3[] _cachedLine;
 
-        internal static void InvalidateGleyLineCache()
+        internal static void InvalidateRouteLineCache()
         {
             _cachedSourceCorners = null;
-            _cachedGleyLine = null;
+            _cachedLine = null;
         }
 
         internal static Vector3[] BuildLinePoints(
-            Vector3[] navCorners,
+            Vector3[] routeCorners,
             Vector3 vehicleOrigin,
             Vector3 worldTarget,
             NavMeshQueryFilter filter)
         {
-            if (VehicleRouteCalculator.LastPathFromGley)
-            {
-                var gleyLine = BuildGleyPolyline(navCorners);
-                return gleyLine.Length >= 2 ? gleyLine : System.Array.Empty<Vector3>();
-            }
+            _ = vehicleOrigin;
+            _ = worldTarget;
+            _ = filter;
 
-            var cornerPoints = CopyCorners(navCorners);
-            var smoothed = PathGeometry.SmoothCorners(cornerPoints, 8f);
-            var onRoad = VehiclePathHelper.ProjectOntoRoadNetwork(smoothed.ToArray(), filter);
-            var projected = GroundProjector.ProjectToGround(onRoad, ModConfig.VehicleGroundOffset, filter);
-            var fallbackLine = VehiclePathArrival.ApplyDisplayLine(vehicleOrigin, worldTarget, projected);
-            return fallbackLine.Length >= 2 ? fallbackLine : projected;
-        }
-
-        /// <summary>
-        /// Pathfinder polyline already includes CSV quadratic beziers for synthetic turns.
-        /// </summary>
-        private static Vector3[] BuildGleyPolyline(Vector3[] pathCorners)
-        {
-            if (pathCorners == null || pathCorners.Length < 2)
+            if (!VehicleRouteCalculator.LastPathFromCsv)
                 return System.Array.Empty<Vector3>();
 
-            if (ReferenceEquals(pathCorners, _cachedSourceCorners) && _cachedGleyLine != null)
-                return _cachedGleyLine;
+            if (routeCorners == null || routeCorners.Length < 2)
+                return System.Array.Empty<Vector3>();
+
+            if (ReferenceEquals(routeCorners, _cachedSourceCorners) && _cachedLine != null)
+                return _cachedLine;
 
             var yOff = ModConfig.VehicleGroundOffset;
-            var list = new List<Vector3>(pathCorners.Length);
-            for (var i = 0; i < pathCorners.Length; i++)
+            var line = new Vector3[routeCorners.Length];
+            for (var i = 0; i < routeCorners.Length; i++)
             {
-                var p = pathCorners[i];
+                var p = routeCorners[i];
                 p.y += yOff;
-                list.Add(p);
+                line[i] = p;
             }
 
-            var result = PathGeometry.DecimateColinear(list, 6f, GleyMaxSkeletonPoints);
-            if (result.Length < 2)
-                result = list.ToArray();
-
-            _cachedSourceCorners = pathCorners;
-            _cachedGleyLine = result;
-            return result;
-        }
-
-        private static Vector3[] CopyCorners(Vector3[] corners)
-        {
-            var copy = new Vector3[corners.Length];
-            for (var i = 0; i < corners.Length; i++)
-                copy[i] = corners[i];
-            return copy;
+            _cachedSourceCorners = routeCorners;
+            _cachedLine = line;
+            return line;
         }
     }
 }

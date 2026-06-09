@@ -105,11 +105,12 @@ Grey polylines = original **Gley** edges. Green curves = **left turns**. Orange 
 
 ```
 VoogleRoute/              ← mod sources (drop into SDK Assets/Mods/VoogleRoute/)
+  PathFinding/            ← git submodule → BigAmbitions_VoogleRoute.PathFinding
+  Dependencies/           ← VoogleRoute.Pathfinding.dll + System.Text.Json
   Scripts/
   Locales/
   Data/                   ← big_ambitions_enhanced_routes.csv
-  ModManifest.asset
-  Thumbnail.png
+  tools/build-pathfinding.ps1
 docs/                     ← route graph SVG, publishing notes
 releases/                 ← Steam Workshop copy per version
 tools/                    ← locale + graph generators
@@ -118,12 +119,24 @@ legacy/                   ← MelonLoader 0.10 archive pointer
 
 ## Development
 
-Requires the [Big Ambitions Modding SDK](https://github.com/HovgaardGames/BigAmbitionsModding) (Unity **2022.3.62f2**) and a local game install for imported assemblies.
+Requires the [Big Ambitions Modding SDK](https://github.com/HovgaardGames/BigAmbitionsModding) (Unity **2022.3.62f2**), [`LIB_BaPlayerLocation`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation), and a local game install for imported assemblies.
 
-1. Clone this repository.
-2. Copy or symlink the `VoogleRoute/` folder into your SDK project at `Assets/Mods/VoogleRoute/`.
-3. Import game DLLs via the SDK setup flow.
-4. Build with **Big Ambitions → Mod Builder → Build + Install** on `VoogleRoute`.
+1. Clone with submodules:
+
+   ```bash
+   git clone --recurse-submodules https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.git
+   ```
+
+2. Copy or symlink `VoogleRoute/` into your SDK at `Assets/Mods/VoogleRoute/` (and install `LIB_BaPlayerLocation` the same way).
+3. Build the pathfinding DLL:
+
+   ```powershell
+   cd VoogleRoute
+   .\tools\build-pathfinding.ps1
+   ```
+
+4. Import game DLLs via the SDK setup flow.
+5. **Mod Builder → Build + Install** for `LIB_BaPlayerLocation`, then `VoogleRoute`.
 
 Output installs to:
 

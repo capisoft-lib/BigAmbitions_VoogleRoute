@@ -1,4 +1,5 @@
 using UnityEngine;
+using VoogleRoute;
 
 namespace VoogleRoute.Navigation
 {
@@ -22,6 +23,7 @@ namespace VoogleRoute.Navigation
             HasTarget = true;
             LastSource = MapSource;
             LastChangeTime = Time.unscaledTime;
+            ModLog.Info("Map GPS target set: " + target);
             PathFinderService.NotifyMapDestinationChanged();
         }
     
@@ -33,6 +35,7 @@ namespace VoogleRoute.Navigation
             HasTarget = false;
             LastSource = reason;
             LastChangeTime = Time.unscaledTime;
+            ModLog.Info("Map GPS target cleared: " + reason);
         }
     }
 }

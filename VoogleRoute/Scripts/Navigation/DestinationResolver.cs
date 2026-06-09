@@ -1,3 +1,4 @@
+using System;
 using Buildings;
 using Helpers;
 using UnityEngine;
@@ -16,7 +17,7 @@ namespace VoogleRoute.Navigation
     
         internal static void Poll()
         {
-            if (!GameState.ShouldRunNavigationSystems() || !GameState.IsWorldReady())
+            if (!GameState.IsWorldReady())
                 return;
     
             if (Time.unscaledTime - _lastPollTime < 0.25f)
@@ -53,10 +54,12 @@ namespace VoogleRoute.Navigation
     
                 if (TryResolveWorldPosition(address, out var worldPos))
                     NavigationTargetTracker.SetMapGpsTarget(worldPos);
+                else
+                    ModLog.Info("Map destination unresolved: " + address);
             }
-            catch
+            catch (Exception ex)
             {
-                // Guiders / ville pas prêts.
+                ModLog.Error("Map destination sync failed", ex);
             }
         }
     
@@ -145,17 +148,10 @@ namespace VoogleRoute.Navigation
             var hasReference = false;
             Vector3 reference = default;
     
-            try
+            if (PlayerLocationSession.IsAvailable)
             {
-                if (PlayerHelper.PlayerController != null)
-                {
-                    reference = PlayerHelper.PlayerController.transform.position;
-                    hasReference = true;
-                }
-            }
-            catch
-            {
-                // ignore
+                reference = PlayerLocationSession.Snapshot.Position;
+                hasReference = reference.sqrMagnitude > 0.01f;
             }
     
             for (var i = 0; i < doors.Length; i++)

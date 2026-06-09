@@ -10,6 +10,8 @@ namespace VoogleRoute.Rendering
         {
             FootRouteLineRenderer.EnsureCreated();
             VehicleRouteLineRenderer.EnsureCreated();
+            RouteLineDetectionRenderer.EnsureCreated();
+            ModLog.Info("Route line renderers initialized (foot + vehicle).");
         }
 
         internal static void ApplyStyle()
@@ -37,18 +39,28 @@ namespace VoogleRoute.Rendering
                 VehicleRouteLineRenderer.Hide();
                 FootRouteLineRenderer.ShowPath(path);
             }
+
+            RouteLineDetectionRenderer.ShowPath(path);
         }
 
         internal static void Hide()
         {
             FootRouteLineRenderer.Hide();
             VehicleRouteLineRenderer.Hide();
+            RouteLineDetectionRenderer.Hide();
+        }
+
+        internal static void InvalidateDisplayCache()
+        {
+            _lastRenderMode = MovementMode.Unavailable;
+            LineRendererPathCache.Reset();
         }
 
         internal static void Destroy()
         {
             FootRouteLineRenderer.Destroy();
             VehicleRouteLineRenderer.Destroy();
+            RouteLineDetectionRenderer.Destroy();
         }
     }
 }
