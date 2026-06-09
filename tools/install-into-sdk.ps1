@@ -32,7 +32,7 @@ From the mod repo root run:
 }
 
 $modItems = @(
-    "Scripts", "Locales", "Data", "Dependencies", "PathFinding",
+    "Scripts", "Locales", "Data", "Dependencies", "PathFinding", "tools",
     "ModManifest.asset", "ModManifest.asset.meta",
     "VoogleRoute.asmdef", "VoogleRoute.asmdef.meta",
     "Thumbnail.png", "Thumbnail.png.meta",
