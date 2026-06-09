@@ -12,7 +12,7 @@ This repository is **public**. Do not commit:
 
 ## Shipped data
 
-`VoogleRoute/Data/big_ambitions_enhanced_routes.csv` is **intentional mod data** (derived traffic graph for routing). It is not a secret, but it is tied to a specific game map version — regenerate after major city updates.
+Route graph CSV is **intentional mod data** (synced from the [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding) submodule into `Data/`). It is not a secret, but it is tied to a specific game map version — regenerate in PathFinding after major city updates.
 
 ## Reporting
 

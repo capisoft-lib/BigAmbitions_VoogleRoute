@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Sync VERSION, latest.json, and ModManifest
         shell: pwsh
@@ -25,7 +27,7 @@ jobs:
             throw "latest.json gameVersion must be '0.11' for SDK builds"
           }
 
-          $manifestPath = "VoogleRoute/ModManifest.asset"
+          $manifestPath = "ModManifest.asset"
           if (-not (Test-Path $manifestPath)) {
             throw "Missing $manifestPath"
           }
@@ -46,9 +48,20 @@ jobs:
       - name: Check locale files
         shell: pwsh
         run: |
-          $en = Get-Content VoogleRoute/Locales/en.json -Raw | ConvertFrom-Json
-          $files = Get-ChildItem VoogleRoute/Locales/*.json
+          $en = Get-Content Locales/en.json -Raw | ConvertFrom-Json
+          $files = Get-ChildItem Locales/*.json
           if ($files.Count -lt 22) {
             throw "Expected 22 locale files, found $($files.Count)"
           }
           Write-Host "OK: $($files.Count) locale files, $($en.PSObject.Properties.Name.Count) keys in en.json"
+
+      - name: Check PathFinding submodule
+        shell: pwsh
+        run: |
+          if (-not (Test-Path PathFinding/VoogleRoute.Pathfinding.csproj)) {
+            throw "PathFinding submodule missing or not initialized"
+          }
+          if (-not (Test-Path PathFinding/data/big_ambitions_enhanced_routes.csv)) {
+            throw "PathFinding route data missing"
+          }
+          Write-Host "OK: PathFinding submodule present"

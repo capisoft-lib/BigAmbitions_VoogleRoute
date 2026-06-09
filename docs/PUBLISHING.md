@@ -10,7 +10,7 @@
 
 ## GitHub releases
 
-1. Bump `VERSION`, `latest.json`, `VoogleRoute/ModManifest.asset`, and `CHANGELOG.md`.
+1. Bump `VERSION`, `latest.json`, `ModManifest.asset`, and `CHANGELOG.md`.
 2. Update `releases/<version>/` workshop copy if needed.
 3. Commit on `main`, then tag: `git tag v0.11.0 && git push origin v0.11.0`
 4. CI attaches `latest.json` and release copy files. Built DLL is **not** produced in CI (requires Unity + game assemblies).
@@ -21,5 +21,5 @@
 |------|--------|
 | `VERSION` | `0.11.0` |
 | `latest.json` | `version`, `gameVersion` |
-| `VoogleRoute/ModManifest.asset` | `Version:` |
+| `ModManifest.asset` | `Version:` |
 | `CHANGELOG.md` | `## [0.11.0]` section |

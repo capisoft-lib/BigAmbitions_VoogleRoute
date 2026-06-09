@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$repoRoot = Split-Path $PSScriptRoot -Parent
+$repoRoot = (Get-Item $PSScriptRoot).Parent.FullName
 $dest = Join-Path $SdkPath "Assets\Mods\VoogleRoute"
 
 if (-not (Test-Path (Join-Path $SdkPath "Assets\Mods"))) {
@@ -27,13 +27,24 @@ if (-not (Test-Path (Join-Path $repoRoot "PathFinding\VoogleRoute.Pathfinding.cs
 PathFinding submodule not initialized in this clone.
 From the mod repo root run:
   git submodule update --init --recursive
-  .\VoogleRoute\tools\build-pathfinding.ps1
+  .\tools\build-pathfinding.ps1
 "@
 }
 
-$exclude = @(".git", "tools", "Output", "bin", "obj")
-Get-ChildItem $repoRoot -Force | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object {
-    Copy-Item $_.FullName -Destination $dest -Recurse -Force
+$modItems = @(
+    "Scripts", "Locales", "Data", "Dependencies", "PathFinding",
+    "ModManifest.asset", "ModManifest.asset.meta",
+    "VoogleRoute.asmdef", "VoogleRoute.asmdef.meta",
+    "Thumbnail.png", "Thumbnail.png.meta",
+    "config.json.example", "config.json.example.meta",
+    "Scripts.meta", "Locales.meta", "Data.meta", "Dependencies.meta"
+)
+
+New-Item -ItemType Directory -Force -Path $dest | Out-Null
+foreach ($item in $modItems) {
+    $source = Join-Path $repoRoot $item
+    if (-not (Test-Path $source)) { continue }
+    Copy-Item $source -Destination (Join-Path $dest $item) -Recurse -Force
 }
 
 Write-Host "Installed VoogleRoute -> $dest"
