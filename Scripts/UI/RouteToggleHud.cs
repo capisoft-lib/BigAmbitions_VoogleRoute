@@ -24,6 +24,7 @@ namespace VoogleRoute.UI
         private static TextMeshProUGUI _panelTitleLabel;
 
         private static bool _lastActive;
+        private static bool _lastIndoor;
         private static bool _lastRouteOn;
         private static bool _lastWalkOn;
         private static bool _lastOnFoot;
@@ -156,7 +157,10 @@ namespace VoogleRoute.UI
                 _panelRect.anchoredPosition = NavPanelLayout.GetScreenPosition(offsetY);
             }
 
-            var active = GameState.ShouldShowNavigationPanel() && MovementModeDetector.ShouldShowHudButton();
+            var indoor = GameState.IsIndoorNavigationContext();
+            var active = indoor
+                ? GameState.ShouldShowIndoorNavigationPanel()
+                : GameState.ShouldShowNavigationPanel() && MovementModeDetector.ShouldShowHudButton();
             if (_forceApply || active != _lastActive)
             {
                 _lastActive = active;
@@ -169,11 +173,12 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            var routeOn = ModConfig.RouteLineEnabled;
-            var walkOn = ModConfig.AutoWalkEnabled;
+            var routeOn = indoor ? ModConfig.IndoorRouteLineEnabled : ModConfig.RouteLineEnabled;
+            var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
             var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            if (_forceApply || routeOn != _lastRouteOn || walkOn != _lastWalkOn || onFoot != _lastOnFoot)
+            if (_forceApply || indoor != _lastIndoor || routeOn != _lastRouteOn || walkOn != _lastWalkOn || onFoot != _lastOnFoot)
             {
+                _lastIndoor = indoor;
                 _lastRouteOn = routeOn;
                 _lastWalkOn = walkOn;
                 _lastOnFoot = onFoot;
@@ -193,17 +198,20 @@ namespace VoogleRoute.UI
             if (_panelTitleLabel != null)
                 _panelTitleLabel.text = ModUiText.PanelTitle;
 
-            var routeOn = ModConfig.RouteLineEnabled;
+            var indoor = GameState.IsIndoorNavigationContext();
+            var routeOn = indoor ? ModConfig.IndoorRouteLineEnabled : ModConfig.RouteLineEnabled;
             if (routeOn)
                 GameUiStyle.ApplyButtonBlue(_routeButtonImage);
             else
                 GameUiStyle.ApplyButtonGrey(_routeButtonImage);
-            _routeLabel.text = routeOn ? ModUiText.RouteOn : ModUiText.RouteOff;
+            _routeLabel.text = indoor
+                ? (routeOn ? ModUiText.WayOutOn : ModUiText.WayOutOff)
+                : (routeOn ? ModUiText.RouteOn : ModUiText.RouteOff);
             _routeLabel.color = ButtonLabelColor;
 
-            var walkOn = ModConfig.AutoWalkEnabled;
+            var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
             var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            if (!onFoot)
+            if (!onFoot && !indoor)
             {
                 GameUiStyle.ApplyButtonGrey(_autoWalkButtonImage);
                 _autoWalkLabel.text = ModUiText.AutoWalk;
@@ -215,7 +223,9 @@ namespace VoogleRoute.UI
                     GameUiStyle.ApplyButtonGreen(_autoWalkButtonImage);
                 else
                     GameUiStyle.ApplyButtonGrey(_autoWalkButtonImage);
-                _autoWalkLabel.text = walkOn ? ModUiText.WalkOn : ModUiText.AutoWalk;
+                _autoWalkLabel.text = indoor
+                    ? (walkOn ? ModUiText.GetOutOn : ModUiText.GetOut)
+                    : (walkOn ? ModUiText.WalkOn : ModUiText.AutoWalk);
                 _autoWalkLabel.color = ButtonLabelColor;
             }
         }
@@ -309,6 +319,15 @@ namespace VoogleRoute.UI
 
         private static void OnRouteClicked()
         {
+            if (GameState.IsIndoorNavigationContext())
+            {
+                ModConfig.SetIndoorRouteLineEnabled(!ModConfig.IndoorRouteLineEnabled);
+                if (!ModConfig.IndoorRouteLineEnabled)
+                    RouteLineRenderer.Hide();
+                RefreshVisual();
+                return;
+            }
+
             ModConfig.SetRouteLineEnabled(!ModConfig.RouteLineEnabled);
             if (!ModConfig.RouteLineEnabled)
                 RouteLineRenderer.Hide();
@@ -319,6 +338,15 @@ namespace VoogleRoute.UI
 
         private static void OnAutoWalkClicked()
         {
+            if (GameState.IsIndoorNavigationContext())
+            {
+                ModConfig.SetIndoorAutoWalkEnabled(!ModConfig.IndoorAutoWalkEnabled);
+                if (!ModConfig.IndoorAutoWalkEnabled)
+                    IndoorAutoWalkService.Reset();
+                RefreshVisual();
+                return;
+            }
+
             if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                 return;
 

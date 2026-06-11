@@ -36,6 +36,7 @@ namespace VoogleRoute
         internal static void Shutdown()
         {
             ModLog.Info("VoogleRoute loop shutting down.");
+            IndoorNavigationService.Reset();
             PlayerLocationSession.Changed -= OnPlayerLocationChanged;
             PlayerLocationLogger.Shutdown();
             PlayerLocationSession.Shutdown();
@@ -67,10 +68,22 @@ namespace VoogleRoute
 
             if (!GameState.IsPlayable())
             {
+                IndoorNavigationService.Reset();
                 OnNavigationContextEnded();
                 _lastNavigationWanted = false;
                 return;
             }
+
+            if (GameState.IsIndoorNavigationContext())
+            {
+                if (_lastNavigationContextActive)
+                    OnNavigationContextEnded();
+
+                IndoorNavigationService.Tick();
+                return;
+            }
+
+            IndoorNavigationService.Reset();
 
             if (ModConfig.WantsRouteComputation && GameState.IsWorldReady())
                 SyncMapDestination();
@@ -132,7 +145,18 @@ namespace VoogleRoute
         {
             _ = snapshot;
 
-            if (!GameState.IsPlayable() || !GameState.ShouldRunNavigationSystems())
+            if (!GameState.IsPlayable())
+                return;
+
+            if (GameState.IsIndoorNavigationContext())
+            {
+                if (MovementModeDetector.ModeChangedSinceLastApply)
+                    IndoorPathFinderService.InvalidateCache();
+
+                return;
+            }
+
+            if (!GameState.ShouldRunNavigationSystems())
                 return;
 
             if (MovementModeDetector.ModeChangedSinceLastApply)

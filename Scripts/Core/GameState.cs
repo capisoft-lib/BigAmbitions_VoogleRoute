@@ -1,5 +1,8 @@
+using BaPlayerLocation.Subscriber;
+using Parking.UndergroundParking;
 using UI.MiniMenu;
 using UI.Smartphone;
+using VoogleRoute.Navigation;
 
 namespace VoogleRoute
 {
@@ -21,6 +24,29 @@ namespace VoogleRoute
     
             return true;
         }
+
+        internal static bool IsIndoorNavigationContext()
+        {
+            if (!IsPlayable() || IsOverlayBlockingNavigation())
+                return false;
+
+            try
+            {
+                if (UndergroundParkingManager.IsInsideParking)
+                    return false;
+            }
+            catch
+            {
+                // ignore
+            }
+
+            if (!PlayerLocationSession.IsAvailable)
+                return false;
+
+            return PlayerLocationSession.Snapshot.MovementKind == MovementKind.Indoor;
+        }
+
+        internal static bool ShouldShowIndoorNavigationPanel() => IsIndoorNavigationContext();
     
         internal static bool ShouldShowNavigationPanel() => ShouldRunNavigationSystems();
     

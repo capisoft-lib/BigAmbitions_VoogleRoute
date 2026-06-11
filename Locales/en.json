@@ -15,5 +15,11 @@
     "voogle_route_color_white":  "White",
     "voogle_route_options_route":  "Show route line",
     "voogle_route_options_autowalk":  "Auto-walk to destination",
+    "voogle_route_options_indoor_route":  "Indoor route line to exit",
+    "voogle_route_options_indoor_autowalk":  "Indoor auto-walk to exit",
+    "voogle_route_way_out_on":  "WAY OUT",
+    "voogle_route_way_out_off":  "WAY OUT OFF",
+    "voogle_route_get_out":  "GET OUT",
+    "voogle_route_get_out_on":  "GET OUT ON",
     "voogle_route_recalculating":  "Recalculating route..."
 }

@@ -15,11 +15,15 @@ namespace VoogleRoute
     
         private const string RouteLineKey = "route_line";
         private const string AutoWalkKey = "auto_walk";
+        private const string IndoorRouteLineKey = "indoor_route";
+        private const string IndoorAutoWalkKey = "indoor_autowalk";
     
         private static ModContext _context;
     
         internal static bool RouteLineEnabled { get; private set; } = true;
         internal static bool AutoWalkEnabled { get; private set; }
+        internal static bool IndoorRouteLineEnabled { get; private set; } = true;
+        internal static bool IndoorAutoWalkEnabled { get; private set; }
     
         internal static float FootLineWidth { get; private set; } = 0.3f;
         internal static float FootGroundOffset { get; private set; } = 0.40f;
@@ -33,6 +37,7 @@ namespace VoogleRoute
         internal static float NavHudOffsetY { get; private set; } = 16f;
     
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
+        internal static bool IndoorWantsRouteComputation => IndoorRouteLineEnabled || IndoorAutoWalkEnabled;
 
         private static Color _lineColor = new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
 
@@ -55,12 +60,16 @@ namespace VoogleRoute
                 " logging=" + LoggingEnabled +
                 " log_level=" + LogLevel.ToString().ToLowerInvariant() +
                 " route_line=" + RouteLineEnabled +
-                " auto_walk=" + AutoWalkEnabled);
+                " auto_walk=" + AutoWalkEnabled +
+                " indoor_route=" + IndoorRouteLineEnabled +
+                " indoor_autowalk=" + IndoorAutoWalkEnabled);
 
             var options = new ModOptions()
                 .AddHeader("voogle_route_panel_title")
                 .AddToggle(RouteLineKey, "voogle_route_options_route", RouteLineEnabled, OnRouteLineOptionChanged)
-                .AddToggle(AutoWalkKey, "voogle_route_options_autowalk", AutoWalkEnabled, OnAutoWalkOptionChanged);
+                .AddToggle(AutoWalkKey, "voogle_route_options_autowalk", AutoWalkEnabled, OnAutoWalkOptionChanged)
+                .AddToggle(IndoorRouteLineKey, "voogle_route_options_indoor_route", IndoorRouteLineEnabled, OnIndoorRouteLineOptionChanged)
+                .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled, OnIndoorAutoWalkOptionChanged);
 
             OptionsService.Register(context.ModId, options);
             ModLog.Info("Mod options registered (route line, auto-walk).");
@@ -86,10 +95,28 @@ namespace VoogleRoute
             AutoWalkEnabled = value;
             ModLog.Info("Auto-walk = " + value);
         }
+
+        internal static void SetIndoorRouteLineEnabled(bool value)
+        {
+            IndoorRouteLineEnabled = value;
+            ModConfigStore.SetIndoorRouteLineEnabled(value);
+            ModLog.Info("Indoor route line = " + value);
+        }
+
+        internal static void SetIndoorAutoWalkEnabled(bool value)
+        {
+            IndoorAutoWalkEnabled = value;
+            ModConfigStore.SetIndoorAutoWalkEnabled(value);
+            ModLog.Info("Indoor auto-walk = " + value);
+        }
     
         private static void OnRouteLineOptionChanged(bool value) => SetRouteLineEnabled(value);
     
         private static void OnAutoWalkOptionChanged(bool value) => SetAutoWalkEnabled(value);
+
+        private static void OnIndoorRouteLineOptionChanged(bool value) => SetIndoorRouteLineEnabled(value);
+
+        private static void OnIndoorAutoWalkOptionChanged(bool value) => SetIndoorAutoWalkEnabled(value);
 
         internal static void SetRouteLineColor(Color color)
         {
@@ -111,6 +138,8 @@ namespace VoogleRoute
                 LogLevel = ModLog.ParseLevel(data.LogLevel);
                 ShowLineDetection = data.ShowLineDetection;
                 _lineColor = ReadLineColor(data.RouteLineColor);
+                IndoorRouteLineEnabled = data.IndoorRoute;
+                IndoorAutoWalkEnabled = data.IndoorAutowalk;
             }
             catch (Exception ex)
             {

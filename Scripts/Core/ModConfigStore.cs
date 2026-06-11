@@ -85,6 +85,18 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetIndoorRouteLineEnabled(bool value)
+        {
+            _data.IndoorRoute = value;
+            Save();
+        }
+
+        internal static void SetIndoorAutoWalkEnabled(bool value)
+        {
+            _data.IndoorAutowalk = value;
+            Save();
+        }
+
         private static ModConfigData CreateDefaultData()
         {
             return new ModConfigData
@@ -92,7 +104,9 @@ namespace VoogleRoute
                 Logging = false,
                 LogLevel = "error",
                 ShowLineDetection = false,
-                RouteLineColor = DefaultRouteLineColor()
+                RouteLineColor = DefaultRouteLineColor(),
+                IndoorRoute = true,
+                IndoorAutowalk = false
             };
         }
 
@@ -178,5 +192,11 @@ namespace VoogleRoute
 
         [JsonPropertyName("route_line_color")]
         public float[] RouteLineColor { get; set; }
+
+        [JsonPropertyName("indoor_route")]
+        public bool IndoorRoute { get; set; } = true;
+
+        [JsonPropertyName("indoor_autowalk")]
+        public bool IndoorAutowalk { get; set; }
     }
 }

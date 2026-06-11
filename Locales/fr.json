@@ -15,5 +15,11 @@
     "voogle_route_color_white":  "Blanc",
     "voogle_route_options_route":  "Afficher la ligne au sol",
     "voogle_route_options_autowalk":  "Marche auto vers la destination",
+    "voogle_route_options_indoor_route":  "Ligne intérieure vers la sortie",
+    "voogle_route_options_indoor_autowalk":  "Marche auto intérieure vers la sortie",
+    "voogle_route_way_out_on":  "WAY OUT",
+    "voogle_route_way_out_off":  "WAY OUT OFF",
+    "voogle_route_get_out":  "GET OUT",
+    "voogle_route_get_out_on":  "GET OUT ON",
     "voogle_route_recalculating":  "Recalcul de l\u0027itinÃ©raire en cours"
 }
