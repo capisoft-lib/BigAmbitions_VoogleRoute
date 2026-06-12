@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "gameVersion": "0.11",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "0.11.4: Indoor navigation (route line + auto-walk to exit), city map (M) route overlay and click-to-set destination, improved bridge and center-deck vehicle routing. Requires LIB BA Player Location 0.11.1+."
+  "releaseNotes": "0.11.5: Auto-drive skip travel with confirmation popup (ETA, arrival time, distance), configurable base taxi multiplier, and full auto-drive locale coverage. Requires LIB BA Player Location 0.11.1+."
 }

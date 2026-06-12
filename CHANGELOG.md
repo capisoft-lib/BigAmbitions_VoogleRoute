@@ -2,6 +2,16 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.5] - 2026-06-12
+
+### Added
+
+- **Auto-drive skip travel** — in a vehicle, tap **AUTO-DRIVE** on the panel to open a confirmation popup, then skip time to arrive near your map destination (vanilla time-machine flow)
+- **Confirmation popup** — shows estimated travel time, arrival time (`HH:mm`), and distance; **ESC** or cancel closes the dialog
+- **Base taxi multiplier** — mod option slider (1–10×) with live value next to the control; affects skip-travel duration
+- **Auto-drive path following** — optional in-vehicle guidance along the road network (Pure Pursuit)
+- **Locales** — auto-drive strings in all **22** supported languages
+
 ## [0.11.4] - 2026-06-12
 
 ### Added
@@ -76,6 +86,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.5]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.5
 [0.11.4]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.4
 [0.11.3]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.3
 [0.11.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.0
