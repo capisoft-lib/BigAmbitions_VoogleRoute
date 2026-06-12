@@ -1,6 +1,12 @@
 using BaPlayerLocation.Subscriber;
+using Helpers;
+using PlayerActivity;
 using Parking.UndergroundParking;
+using UI;
+using UI.InteriorDesigner;
 using UI.MiniMenu;
+using UI.Purchase;
+using UI.PurchaseVehicle;
 using UI.Smartphone;
 using VoogleRoute.Navigation;
 
@@ -88,6 +94,29 @@ namespace VoogleRoute
                     return true;
     
                 if (MiniMenu.IsOpen)
+                    return true;
+
+                if (InteriorDesignerUI.IsOpen || PurchaseUI.IsPanelOpen || PurchaseVehicleUI.IsPanelOpen)
+                    return true;
+
+                if (PlayerActivityUI.IsPanelOpen)
+                    return true;
+
+                if (InstanceBehavior<UIs>.IsInitialized)
+                {
+                    var hud = InstanceBehavior<UIs>.Instance?.playerHUD;
+                    if (hud != null)
+                    {
+                        if (hud.dialogUI.isPanelOpen || hud.manageCargoUI.isPanelOpen || hud.jobOfferPanel.isPanelOpen)
+                            return true;
+                    }
+
+                    if (InstanceBehavior<UIs>.Instance.notificationsListUI != null
+                        && InstanceBehavior<UIs>.Instance.notificationsListUI.isVisible)
+                        return true;
+                }
+
+                if (BuildingPreview.isPreviewing)
                     return true;
             }
             catch

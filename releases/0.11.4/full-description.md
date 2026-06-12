@@ -2,7 +2,7 @@
 
 [b]Voogle Route[/b] extends [b]Voogle Maps[/b]: set a destination on the city map as usual, then follow a clear [b]on-ground route line[/b] in the world. Works on foot and in vehicles, with optional [b]auto-walk[/b] when you're walking.
 
-Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]Mods[/b] menu.
+Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Player Location[/b] in the in-game [b]Mods[/b] menu.
 
 [b]Localization:[/b] The panel and settings follow your game language — all [b]22[/b] Big Ambitions interface languages supported.
 
@@ -12,9 +12,9 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [b]What's new in 0.11.4[/b]
 
 [list]
-[*][b]Indoor navigation[/b] — when you're inside a building, optional route line and auto-walk guide you to the exit ([b]WAY OUT[/b] / [b]GET OUT[/b] on the panel; separate toggles under [b]Mods[/b])
-[*][b]City map overlay[/b] — open the city map ([b]M[/b]) to see your route line on the map; [b]click[/b] the map to set a new Voogle destination
-[*][b]Bridge and center-deck routes[/b] — improved vehicle pathfinding over bridges and the downtown center deck
+[*][b]Indoor navigation[/b] — optional route line and auto-walk guide you to the building exit ([b]WAY OUT[/b] / [b]GET OUT[/b] on the panel; toggles under [b]Mods[/b])
+[*][b]City map overlay[/b] — open the city map ([b]M[/b]) to see your route line; [b]click[/b] the map to set a new Voogle destination
+[*][b]Bridge and center-deck routing[/b] — updated road graph for reliable vehicle paths over bridges, the downtown deck, and cross-river routes (including toward the industrial side)
 [/list]
 
 
@@ -24,10 +24,24 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*][b]Route line on the ground[/b] — neon path from you to your map destination; separate styling on foot vs. in a vehicle
 [*][b]Road-aware driving routes[/b] — vehicle paths follow the city's road network instead of cutting across blocks
 [*][b]Auto-walk[/b] — walk the route automatically ([b]WALK ON[/b]); stops if you take manual control
+[*][b]Indoor guidance[/b] — route line and auto-walk to the nearest exit when you are inside a building
+[*][b]City map route display[/b] — your active route shown on the full city map ([b]M[/b])
 [*][b]VOOGLE ROUTE panel[/b] — bottom-left, styled like BizPhone apps ([b]ROUTE ON / ROUTE OFF[/b])
 [*][b]Custom line color[/b] — presets (neon blue, green, orange, magenta, white) or the in-game color picker (gear icon)
 [*]Automatically hidden in the [b]subway[/b] and when navigation isn't available
 [*]Does [b]not[/b] replace Voogle Maps — adds guidance on top of your map destination
+[/list]
+
+
+[b]Road network and bridges[/b]
+
+Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic waypoints — not straight lines across the map.
+
+[list]
+[*][b]Bridge paths[/b] — routes can cross the river and use bridge lanes instead of failing or cutting through blocks
+[*][b]Center deck[/b] — improved handling on the elevated downtown deck and connector roads
+[*][b]Long cross-city drives[/b] — better connectivity for trips that span multiple districts (e.g. downtown to industrial areas)
+[*]Guidance is a [b]driving line[/b] on the road network, not turn-by-turn lane GPS
 [/list]
 
 
@@ -47,7 +61,7 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 
 [list]
 [*][b]Game:[/b] Big Ambitions EA [b]0.11 Experimental[/b]
-[*][b]Required mod:[/b] [b]LIB BA Player Location[/b] (separate Workshop item — must be subscribed and enabled)
+[*][b]Required mod:[/b] [b]LIB BA Player Location[/b] (separate Workshop item — subscribe and enable before Voogle Route)
 [*][b]Setup:[/b] Enable both mods in the [b]Mods[/b] menu
 [*][b]Saves:[/b] Reads your map destination only; does not alter progression
 [/list]
@@ -59,6 +73,7 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*]On foot, routes use walkable [b]NavMesh[/b] areas.
 [*]No route display during [b]subway[/b] rides.
 [*]Vehicle routes are [b]guidance lines[/b], not lane-perfect GPS.
+[*]A few rare road segments may still need graph updates in future releases.
 [/list]
 
 

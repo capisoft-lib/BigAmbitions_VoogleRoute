@@ -81,6 +81,12 @@ namespace VoogleRoute.UI
 
         internal static void Tick()
         {
+            if (GameState.IsOverlayBlockingNavigation())
+            {
+                ForceHide();
+                return;
+            }
+
             if (_root == null || !_root.activeSelf || !_hideRequested || _shownAtUnscaled < 0f)
                 return;
 

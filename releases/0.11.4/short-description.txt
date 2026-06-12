@@ -1,1 +1,1 @@
-Voogle Route 0.11.4: indoor nav to exit, city map (M) route overlay + click destination, bridge/center-deck driving routes. Requires LIB BA Player Location. 22 languages. EA 0.11.
+Voogle Route: on-ground path to your Voogle destination — foot or car, auto-walk, indoor exit guidance, city map (M) overlay. Bridge and cross-river driving routes. Requires LIB BA Player Location. 22 languages. EA 0.11.

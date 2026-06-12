@@ -7,6 +7,7 @@ namespace VoogleRoute.Navigation
     internal static class IndoorAutoWalkService
     {
         private const float ReachRadius = 4.5f;
+        private const float ExitYieldRadius = 3.5f;
         private const float MinWaypointSpacing = 8f;
         private const float ReissueIntervalSeconds = 2.5f;
         private const float MinReissueMoveSq = 2f * 2f;
@@ -71,6 +72,12 @@ namespace VoogleRoute.Navigation
             if (waypoints.Length == 0)
                 return false;
 
+            if (HorizontalDistance(playerPos, exitTarget) < ExitYieldRadius)
+            {
+                YieldForVanillaExit();
+                return true;
+            }
+
             SyncWaypointIndex(waypoints, playerPos);
 
             var walkTarget = waypoints[_waypointIndex];
@@ -96,9 +103,15 @@ namespace VoogleRoute.Navigation
             return false;
         }
 
-        private static void DisableAtExit() => DisableAutoWalk();
+        private static void DisableAtExit() => YieldForVanillaExit();
 
         private static void DisableFromUserInput() => DisableAutoWalk();
+
+        private static void YieldForVanillaExit()
+        {
+            PlayerNavigationRelease.Release();
+            DisableAutoWalk();
+        }
 
         private static void DisableAutoWalk()
         {

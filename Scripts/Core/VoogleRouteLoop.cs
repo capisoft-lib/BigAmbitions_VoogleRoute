@@ -1,6 +1,7 @@
 using System;
 using BAModAPI;
 using BaPlayerLocation.Subscriber;
+using Buildings;
 using UnityEngine;
 using VoogleRoute.Live;
 using VoogleRoute.Navigation;
@@ -25,6 +26,8 @@ namespace VoogleRoute
         private static float _nextFootLineRefresh;
         private static float _nextFootPathRecalc;
         private static Action<bool> _onCityMapToggled;
+        private static Action<Address> _onEnterBuilding;
+        private static Action<Address> _onExitBuilding;
 
         internal static void Initialize(ModContext context)
         {
@@ -38,6 +41,12 @@ namespace VoogleRoute
             _onCityMapToggled = MapOverlayDiagnostics.OnCityMapToggled;
             GlobalEvents.onCityMapToggle =
                 (Action<bool>)Delegate.Combine(GlobalEvents.onCityMapToggle, _onCityMapToggled);
+            _onEnterBuilding = OnEnterBuilding;
+            _onExitBuilding = OnExitBuilding;
+            GlobalEvents.onEnterBuilding =
+                (Action<Address>)Delegate.Combine(GlobalEvents.onEnterBuilding, _onEnterBuilding);
+            GlobalEvents.onExitBuilding =
+                (Action<Address>)Delegate.Combine(GlobalEvents.onExitBuilding, _onExitBuilding);
             ModLog.Info("VoogleRoute loop initialized.");
         }
 
@@ -49,6 +58,20 @@ namespace VoogleRoute
                 GlobalEvents.onCityMapToggle =
                     (Action<bool>)Delegate.Remove(GlobalEvents.onCityMapToggle, _onCityMapToggled);
                 _onCityMapToggled = null;
+            }
+
+            if (_onEnterBuilding != null)
+            {
+                GlobalEvents.onEnterBuilding =
+                    (Action<Address>)Delegate.Remove(GlobalEvents.onEnterBuilding, _onEnterBuilding);
+                _onEnterBuilding = null;
+            }
+
+            if (_onExitBuilding != null)
+            {
+                GlobalEvents.onExitBuilding =
+                    (Action<Address>)Delegate.Remove(GlobalEvents.onExitBuilding, _onExitBuilding);
+                _onExitBuilding = null;
             }
 
             IndoorNavigationService.Reset();
@@ -198,6 +221,23 @@ namespace VoogleRoute
 
             _nextFootPathRecalc = now + ModConfig.RecalcIntervalSeconds;
             RefreshRouteIfNavigating("foot_interval");
+        }
+
+        private static void OnEnterBuilding(Address address)
+        {
+            _ = address;
+            AutoWalkService.Reset();
+            if (ModConfig.AutoWalkEnabled)
+                ModConfig.SetAutoWalkEnabled(false);
+            RouteSettingsUi.Close();
+        }
+
+        private static void OnExitBuilding(Address address)
+        {
+            _ = address;
+            IndoorNavigationService.Reset();
+            PlayerNavigationRelease.Release();
+            RouteSettingsUi.Close();
         }
 
         private static void OnPlayerLocationChanged(PlayerLocationSnapshot snapshot)

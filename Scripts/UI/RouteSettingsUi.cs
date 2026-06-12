@@ -184,11 +184,22 @@ namespace VoogleRoute.UI
 
         internal static void TickOverlay()
         {
+            UpdateVisibility();
+
             if (!_loweredForPicker)
                 return;
 
             if (!VanillaColorPicker.IsOpen)
                 RestoreCanvasSortOrder();
+        }
+
+        internal static void UpdateVisibility()
+        {
+            if (_root == null)
+                return;
+
+            if (GameState.IsOverlayBlockingNavigation() && IsOpen)
+                Close();
         }
 
         internal static void Toggle()

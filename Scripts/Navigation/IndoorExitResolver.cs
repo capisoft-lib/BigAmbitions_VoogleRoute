@@ -65,8 +65,10 @@ namespace VoogleRoute.Navigation
 
         private static Vector3 GetWalkTarget(ExitZone zone)
         {
-            if (zone.playerSpawnPoint != null)
-                return zone.playerSpawnPoint.position;
+            // Match vanilla NPC exit behaviour: walk to the despawner trigger inside the building.
+            // playerSpawnPoint is outside and is not reachable from indoor navmesh.
+            if (zone.despawner != null)
+                return zone.despawner.transform.position;
 
             if (zone.door != null)
                 return zone.door.position;
