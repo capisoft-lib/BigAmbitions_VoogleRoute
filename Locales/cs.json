@@ -3,6 +3,8 @@
   "voogle_route_route_on": "TRASA ZAP",
   "voogle_route_route_off": "TRASA VYP",
   "voogle_route_autowalk": "AUTO CHŮZE",
+  "voogle_route_autodrive": "Auto jízda",
+  "voogle_route_drive_on": "Jízda zap",
   "voogle_route_walk_on": "CHŮZE ZAP",
   "voogle_route_settings_title": "NASTAVENÍ VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Barva linie trasy",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Automaticky jít do cíle",
   "voogle_route_options_indoor_route": "Vnitřní linie trasy k východu",
   "voogle_route_options_indoor_autowalk": "Automatická chůze k východu",
+  "voogle_route_options_base_taxi_multiplier": "Základní násobitel taxi",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "VÝCHOD",
   "voogle_route_way_out_off": "VÝCHOD VYP",
   "voogle_route_get_out": "VYJÍT",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Přepočítávání trasy...",
   "voogle_route_map_dest_title": "Nastavit cíl",
   "voogle_route_map_dest_confirm": "NASTAVIT CÍL",
-  "voogle_route_map_dest_cancel": "ZRUŠIT"
+  "voogle_route_map_dest_cancel": "ZRUŠIT",
+  "voogle_route_autodrive_popup_title": "AUTO JÍZDA",
+  "voogle_route_autodrive_popup_body": "Odhadovaná doba jízdy: ~{minutes}\nOdhadovaný příjezd: {arrival}\nVzdálenost: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "JET",
+  "voogle_route_autodrive_popup_cancel": "ZRUŠIT",
+  "voogle_route_autodrive_no_route": "Žádná trasa do cíle.",
+  "voogle_route_autodrive_too_close": "Už jste blízko cíle.",
+  "voogle_route_autodrive_busy": "Přeskok času již probíhá."
 }

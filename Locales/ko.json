@@ -3,6 +3,8 @@
   "voogle_route_route_on": "경로 ON",
   "voogle_route_route_off": "경로 OFF",
   "voogle_route_autowalk": "자동 걷기",
+  "voogle_route_autodrive": "자동 운전",
+  "voogle_route_drive_on": "운전 ON",
   "voogle_route_walk_on": "걷기 ON",
   "voogle_route_settings_title": "VOOGLE ROUTE 설정",
   "voogle_route_setting_route_color": "경로 선 색상",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "목적지까지 자동 걷기",
   "voogle_route_options_indoor_route": "출구까지 실내 경로 선",
   "voogle_route_options_indoor_autowalk": "출구까지 실내 자동 걷기",
+  "voogle_route_options_base_taxi_multiplier": "기본 택시 배율",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "출구",
   "voogle_route_way_out_off": "출구 끔",
   "voogle_route_get_out": "나가기",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "경로 재계산 중...",
   "voogle_route_map_dest_title": "목적지 설정",
   "voogle_route_map_dest_confirm": "목적지 설정",
-  "voogle_route_map_dest_cancel": "취소"
+  "voogle_route_map_dest_cancel": "취소",
+  "voogle_route_autodrive_popup_title": "자동 운전",
+  "voogle_route_autodrive_popup_body": "예상 이동 시간: ~{minutes}\n예상 도착 시간: {arrival}\n거리: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "운전",
+  "voogle_route_autodrive_popup_cancel": "취소",
+  "voogle_route_autodrive_no_route": "목적지로 가는 경로가 없습니다.",
+  "voogle_route_autodrive_too_close": "이미 목적지 근처에 있습니다.",
+  "voogle_route_autodrive_busy": "시간 건너뛰기가 이미 진행 중입니다."
 }

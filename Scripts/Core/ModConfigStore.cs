@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using UnityEngine;
-
 namespace VoogleRoute
 {
     internal static class ModConfigStore
@@ -97,6 +96,12 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetBaseTaxiMultiplier(int value)
+        {
+            _data.BaseTaxiMultiplier = Mathf.Clamp(value, 1, 10);
+            Save();
+        }
+
         private static ModConfigData CreateDefaultData()
         {
             return new ModConfigData
@@ -106,7 +111,8 @@ namespace VoogleRoute
                 ShowLineDetection = false,
                 RouteLineColor = DefaultRouteLineColor(),
                 IndoorRoute = true,
-                IndoorAutowalk = false
+                IndoorAutowalk = false,
+                BaseTaxiMultiplier = 2
             };
         }
 
@@ -120,6 +126,9 @@ namespace VoogleRoute
 
             if (data.RouteLineColor == null || data.RouteLineColor.Length < 4)
                 data.RouteLineColor = DefaultRouteLineColor();
+
+            if (data.BaseTaxiMultiplier < 1)
+                data.BaseTaxiMultiplier = 2;
         }
 
         private static float[] DefaultRouteLineColor() =>
@@ -198,5 +207,8 @@ namespace VoogleRoute
 
         [JsonPropertyName("indoor_autowalk")]
         public bool IndoorAutowalk { get; set; }
+
+        [JsonPropertyName("base_taxi_multiplier")]
+        public int BaseTaxiMultiplier { get; set; } = 2;
     }
 }

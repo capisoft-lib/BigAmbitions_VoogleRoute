@@ -19,6 +19,7 @@ namespace VoogleRoute
         private const string AutoWalkKey = "auto_walk";
         private const string IndoorRouteLineKey = "indoor_route";
         private const string IndoorAutoWalkKey = "indoor_autowalk";
+        private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
     
         private static ModContext _context;
     
@@ -48,6 +49,7 @@ namespace VoogleRoute
         internal static Color LineColor => _lineColor;
         internal static bool LoggingEnabled { get; private set; }
         internal static ModLogLevel LogLevel { get; private set; } = ModLogLevel.Error;
+        internal static int BaseTaxiMultiplier { get; private set; } = 2;
 
         internal static void Initialize(ModContext context)
         {
@@ -74,7 +76,10 @@ namespace VoogleRoute
                 .AddToggle(RouteLineKey, "voogle_route_options_route", RouteLineEnabled, OnRouteLineOptionChanged)
                 .AddToggle(AutoWalkKey, "voogle_route_options_autowalk", AutoWalkEnabled, OnAutoWalkOptionChanged)
                 .AddToggle(IndoorRouteLineKey, "voogle_route_options_indoor_route", IndoorRouteLineEnabled, OnIndoorRouteLineOptionChanged)
-                .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled, OnIndoorAutoWalkOptionChanged);
+                .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled, OnIndoorAutoWalkOptionChanged)
+                .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
+                    BaseTaxiMultiplier, OnBaseTaxiMultiplierChanged,
+                    "voogle_route_options_base_taxi_multiplier_value");
 
             OptionsService.Register(context.ModId, options);
             ModLog.Info("Mod options registered (outdoor + indoor route line and auto-walk).");
@@ -153,6 +158,19 @@ namespace VoogleRoute
 
         private static void OnIndoorAutoWalkOptionChanged(bool value) => SetIndoorAutoWalkEnabled(value);
 
+        private static void OnBaseTaxiMultiplierChanged(int value) => SetBaseTaxiMultiplier(value);
+
+        internal static void SetBaseTaxiMultiplier(int value)
+        {
+            var clamped = Mathf.Clamp(value, 1, 10);
+            if (BaseTaxiMultiplier == clamped)
+                return;
+
+            BaseTaxiMultiplier = clamped;
+            ModConfigStore.SetBaseTaxiMultiplier(clamped);
+            ModLog.Info("Base taxi multiplier = " + clamped);
+        }
+
         internal static void SetRouteLineColor(Color color)
         {
             _lineColor = new Color(color.r, color.g, color.b, Mathf.Clamp01(color.a <= 0f ? RouteNeonBlueA : color.a));
@@ -175,6 +193,7 @@ namespace VoogleRoute
                 _lineColor = ReadLineColor(data.RouteLineColor);
                 IndoorRouteLineEnabled = data.IndoorRoute;
                 IndoorAutoWalkEnabled = data.IndoorAutowalk;
+                BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
             }
             catch (Exception ex)
             {

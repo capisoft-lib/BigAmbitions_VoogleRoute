@@ -3,6 +3,8 @@
   "voogle_route_route_on": "路线 开",
   "voogle_route_route_off": "路线 关",
   "voogle_route_autowalk": "自动步行",
+  "voogle_route_autodrive": "自动驾驶",
+  "voogle_route_drive_on": "驾驶 开",
   "voogle_route_walk_on": "步行 开",
   "voogle_route_settings_title": "VOOGLE ROUTE 设置",
   "voogle_route_setting_route_color": "路线颜色",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "自动步行至目的地",
   "voogle_route_options_indoor_route": "室内至出口的路线",
   "voogle_route_options_indoor_autowalk": "室内自动步行至出口",
+  "voogle_route_options_base_taxi_multiplier": "基础出租车倍率",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "出口",
   "voogle_route_way_out_off": "出口关",
   "voogle_route_get_out": "出去",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "正在重新计算路线...",
   "voogle_route_map_dest_title": "设置目的地",
   "voogle_route_map_dest_confirm": "设置目的地",
-  "voogle_route_map_dest_cancel": "取消"
+  "voogle_route_map_dest_cancel": "取消",
+  "voogle_route_autodrive_popup_title": "自动驾驶",
+  "voogle_route_autodrive_popup_body": "预计行程时间：~{minutes}\n预计到达时间：{arrival}\n距离：~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "驾驶",
+  "voogle_route_autodrive_popup_cancel": "取消",
+  "voogle_route_autodrive_no_route": "没有通往目的地的路线。",
+  "voogle_route_autodrive_too_close": "您已接近目的地。",
+  "voogle_route_autodrive_busy": "时间快进已在进行中。"
 }

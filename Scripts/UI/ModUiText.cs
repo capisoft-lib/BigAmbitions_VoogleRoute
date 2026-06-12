@@ -35,6 +35,62 @@ namespace VoogleRoute.UI
             Loc("voogle_route_map_dest_confirm", "SET DESTINATION");
         internal static string MapDestCancel =>
             Loc("voogle_route_map_dest_cancel", "CANCEL");
+        internal static string AutoDrivePopupTitle =>
+            Loc("voogle_route_autodrive_popup_title", "AUTO-DRIVE");
+        internal static string AutoDrivePopupBody =>
+            Loc("voogle_route_autodrive_popup_body", "Estimated travel time: ~{minutes}\nEstimated arrival: {arrival}\nDistance: ~{distance} m");
+        internal static string AutoDriveConfirm =>
+            Loc("voogle_route_autodrive_popup_confirm", "DRIVE");
+        internal static string AutoDriveCancel =>
+            Loc("voogle_route_autodrive_popup_cancel", "CANCEL");
+
+        internal static string FormatAutoDrivePopupBody(float travelMinutes, float distanceMeters)
+        {
+            var minutesText = FormatTravelMinutes(travelMinutes);
+            var arrivalText = FormatArrivalTime(travelMinutes);
+            var distanceText = Mathf.Max(0, Mathf.RoundToInt(distanceMeters)).ToString();
+            return AutoDrivePopupBody
+                .Replace("{minutes}", minutesText)
+                .Replace("{arrival}", arrivalText)
+                .Replace("{distance}", distanceText);
+        }
+
+        private static string FormatTravelMinutes(float travelMinutes)
+        {
+            var total = Mathf.Max(1, Mathf.RoundToInt(travelMinutes));
+            if (total < 60)
+                return total + " min";
+
+            var hours = total / 60;
+            var minutes = total % 60;
+            return minutes > 0 ? hours + " h " + minutes + " min" : hours + " h";
+        }
+
+        private static string FormatArrivalTime(float travelMinutes)
+        {
+            try
+            {
+                var save = SaveGameManager.Current;
+                if (save != null)
+                {
+                    var currentMinutes = Mathf.RoundToInt(save.Hour * 60f + save.Minute);
+                    var arrivalMinutes = currentMinutes + Mathf.Max(1, Mathf.RoundToInt(travelMinutes));
+                    arrivalMinutes %= 24 * 60;
+                    if (arrivalMinutes < 0)
+                        arrivalMinutes += 24 * 60;
+
+                    var hour = arrivalMinutes / 60;
+                    var minute = arrivalMinutes % 60;
+                    return hour.ToString("00") + ":" + minute.ToString("00");
+                }
+            }
+            catch
+            {
+                // Save data can be unavailable while scenes or UI overlays are transitioning.
+            }
+
+            return "--:--";
+        }
 
         internal static void PollLanguageChange()
         {
@@ -51,6 +107,7 @@ namespace VoogleRoute.UI
             RouteToggleHud.RefreshLocalizedText();
             RouteSettingsUi.RefreshLocalizedText();
             RouteRecalcBanner.RefreshLocalizedText();
+            AutoDriveConfirmPopup.RefreshLocalizedText();
         }
 
         private static string Loc(string key, string fallback)

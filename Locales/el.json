@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ΔΙΑΔΡΟΜΗ ON",
   "voogle_route_route_off": "ΔΙΑΔΡΟΜΗ OFF",
   "voogle_route_autowalk": "ΑΥΤΟ ΠΟΡΕΙΑ",
+  "voogle_route_autodrive": "Αυτό οδήγηση",
+  "voogle_route_drive_on": "Οδήγηση ON",
   "voogle_route_walk_on": "ΠΟΡΕΙΑ ON",
   "voogle_route_settings_title": "ΡΥΘΜΙΣΕΙΣ VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Χρώμα γραμμής διαδρομής",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Αυτόματη πορεία προς τον προορισμό",
   "voogle_route_options_indoor_route": "Εσωτερική γραμμή προς την έξοδο",
   "voogle_route_options_indoor_autowalk": "Αυτόματη πορεία προς την έξοδο",
+  "voogle_route_options_base_taxi_multiplier": "Βασικός πολλαπλασιαστής ταξί",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ΕΞΟΔΟΣ",
   "voogle_route_way_out_off": "ΕΞΟΔΟΣ OFF",
   "voogle_route_get_out": "ΒΓΕΣ",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Επανυπολογισμός διαδρομής...",
   "voogle_route_map_dest_title": "Ορισμός προορισμού",
   "voogle_route_map_dest_confirm": "ΟΡΙΣΜΟΣ ΠΡΟΟΡΙΣΜΟΥ",
-  "voogle_route_map_dest_cancel": "ΑΚΥΡΩΣΗ"
+  "voogle_route_map_dest_cancel": "ΑΚΥΡΩΣΗ",
+  "voogle_route_autodrive_popup_title": "ΑΥΤΟ ΟΔΗΓΗΣΗ",
+  "voogle_route_autodrive_popup_body": "Εκτιμώμενος χρόνος ταξιδιού: ~{minutes}\nΕκτιμώμενη άφιξη: {arrival}\nΑπόσταση: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "ΟΔΗΓΗΣΕ",
+  "voogle_route_autodrive_popup_cancel": "ΑΚΥΡΩΣΗ",
+  "voogle_route_autodrive_no_route": "Δεν υπάρχει διαδρομή προς τον προορισμό.",
+  "voogle_route_autodrive_too_close": "Είστε ήδη κοντά στον προορισμό.",
+  "voogle_route_autodrive_busy": "Η γρήγορη προώθηση χρόνου είναι ήδη σε εξέλιξη."
 }

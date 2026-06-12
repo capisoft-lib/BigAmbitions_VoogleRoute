@@ -3,6 +3,8 @@
   "voogle_route_route_on": "TRASA ON",
   "voogle_route_route_off": "TRASA OFF",
   "voogle_route_autowalk": "AUTO CHÓD",
+  "voogle_route_autodrive": "Auto-jazda",
+  "voogle_route_drive_on": "Jazda ON",
   "voogle_route_walk_on": "CHÓD ON",
   "voogle_route_settings_title": "USTAWIENIA VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Kolor linii trasy",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Automatycznie idź do celu",
   "voogle_route_options_indoor_route": "Linia trasy wewnątrz do wyjścia",
   "voogle_route_options_indoor_autowalk": "Automatyczne przejście do wyjścia",
+  "voogle_route_options_base_taxi_multiplier": "Bazowy mnożnik taksówki",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "WYJŚCIE",
   "voogle_route_way_out_off": "WYJŚCIE WYŁ",
   "voogle_route_get_out": "WYJDŹ",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Przeliczanie trasy...",
   "voogle_route_map_dest_title": "Ustaw cel",
   "voogle_route_map_dest_confirm": "USTAW CEL",
-  "voogle_route_map_dest_cancel": "ANULUJ"
+  "voogle_route_map_dest_cancel": "ANULUJ",
+  "voogle_route_autodrive_popup_title": "AUTO-JAZDA",
+  "voogle_route_autodrive_popup_body": "Szacowany czas podróży: ~{minutes}\nSzacowana godzina przyjazdu: {arrival}\nDystans: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "JEDŹ",
+  "voogle_route_autodrive_popup_cancel": "ANULUJ",
+  "voogle_route_autodrive_no_route": "Brak trasy do celu.",
+  "voogle_route_autodrive_too_close": "Jesteś już blisko celu.",
+  "voogle_route_autodrive_busy": "Przyspieszenie czasu już trwa."
 }

@@ -3,6 +3,8 @@
   "voogle_route_route_on": "REITTI PÄÄLLÄ",
   "voogle_route_route_off": "REITTI POIS",
   "voogle_route_autowalk": "AUTO KÄVELY",
+  "voogle_route_autodrive": "Autoajo",
+  "voogle_route_drive_on": "Ajo päällä",
   "voogle_route_walk_on": "KÄVELY PÄÄLLÄ",
   "voogle_route_settings_title": "VOOGLE ROUTE ASETUKSET",
   "voogle_route_setting_route_color": "Reittiviivan väri",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Kävele automaattisesti määränpäähän",
   "voogle_route_options_indoor_route": "Sisäreittiviiva uloskäynnille",
   "voogle_route_options_indoor_autowalk": "Automaattinen kävely uloskäynnille",
+  "voogle_route_options_base_taxi_multiplier": "Taksin peruskerroin",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ULOSKÄYNTI",
   "voogle_route_way_out_off": "ULOSKÄYNTI POIS",
   "voogle_route_get_out": "POIS",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Lasketaan reittiä uudelleen...",
   "voogle_route_map_dest_title": "Aseta määränpää",
   "voogle_route_map_dest_confirm": "ASETA MÄÄRÄNPÄÄ",
-  "voogle_route_map_dest_cancel": "PERUUTA"
+  "voogle_route_map_dest_cancel": "PERUUTA",
+  "voogle_route_autodrive_popup_title": "AUTOAJO",
+  "voogle_route_autodrive_popup_body": "Arvioitu matka-aika: ~{minutes}\nArvioitu saapuminen: {arrival}\nMatka: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "AJA",
+  "voogle_route_autodrive_popup_cancel": "PERUUTA",
+  "voogle_route_autodrive_no_route": "Ei reittiä määränpäähän.",
+  "voogle_route_autodrive_too_close": "Olet jo lähellä määränpäätä.",
+  "voogle_route_autodrive_busy": "Ajan hyppy on jo käynnissä."
 }

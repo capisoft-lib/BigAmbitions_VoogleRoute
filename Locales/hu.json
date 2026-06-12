@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ÚTVONAL BE",
   "voogle_route_route_off": "ÚTVONAL KI",
   "voogle_route_autowalk": "AUTO SÉTA",
+  "voogle_route_autodrive": "Autóvezetés",
+  "voogle_route_drive_on": "Vezetés be",
   "voogle_route_walk_on": "SÉTA BE",
   "voogle_route_settings_title": "VOOGLE ROUTE BEÁLLÍTÁSOK",
   "voogle_route_setting_route_color": "Útvonalvonal színe",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Automatikus séta a célhoz",
   "voogle_route_options_indoor_route": "Beltéri útvonalvonal a kijárathoz",
   "voogle_route_options_indoor_autowalk": "Automatikus séta a kijárathoz",
+  "voogle_route_options_base_taxi_multiplier": "Alap taxi szorzó",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "KIJÁRAT",
   "voogle_route_way_out_off": "KIJÁRAT KI",
   "voogle_route_get_out": "KI",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Útvonal újraszámítása...",
   "voogle_route_map_dest_title": "Cél beállítása",
   "voogle_route_map_dest_confirm": "CÉL BEÁLLÍTÁSA",
-  "voogle_route_map_dest_cancel": "MÉGSE"
+  "voogle_route_map_dest_cancel": "MÉGSE",
+  "voogle_route_autodrive_popup_title": "AUTÓVEZETÉS",
+  "voogle_route_autodrive_popup_body": "Becsült utazási idő: ~{minutes}\nBecsült érkezés: {arrival}\nTávolság: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "VEZETÉS",
+  "voogle_route_autodrive_popup_cancel": "MÉGSE",
+  "voogle_route_autodrive_no_route": "Nincs útvonal a célhoz.",
+  "voogle_route_autodrive_too_close": "Már a cél közelében van.",
+  "voogle_route_autodrive_busy": "Az időugrás már folyamatban van."
 }

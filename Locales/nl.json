@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ROUTE AAN",
   "voogle_route_route_off": "ROUTE UIT",
   "voogle_route_autowalk": "AUTO LOOP",
+  "voogle_route_autodrive": "Auto rijden",
+  "voogle_route_drive_on": "Rijden aan",
   "voogle_route_walk_on": "LOOP AAN",
   "voogle_route_settings_title": "VOOGLE ROUTE INSTELLINGEN",
   "voogle_route_setting_route_color": "Kleur routelijn",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Automatisch naar bestemming lopen",
   "voogle_route_options_indoor_route": "Binnenroutelijn naar uitgang",
   "voogle_route_options_indoor_autowalk": "Automatisch binnen naar uitgang",
+  "voogle_route_options_base_taxi_multiplier": "Basis taxivermenigvuldiger",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "UITGANG",
   "voogle_route_way_out_off": "UITGANG UIT",
   "voogle_route_get_out": "ERUIT",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Route herberekenen...",
   "voogle_route_map_dest_title": "Bestemming instellen",
   "voogle_route_map_dest_confirm": "BESTEMMING INSTELLEN",
-  "voogle_route_map_dest_cancel": "ANNULEREN"
+  "voogle_route_map_dest_cancel": "ANNULEREN",
+  "voogle_route_autodrive_popup_title": "AUTO RIJDEN",
+  "voogle_route_autodrive_popup_body": "Geschatte reistijd: ~{minutes}\nGeschatte aankomst: {arrival}\nAfstand: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "RIJDEN",
+  "voogle_route_autodrive_popup_cancel": "ANNULEREN",
+  "voogle_route_autodrive_no_route": "Geen route naar de bestemming.",
+  "voogle_route_autodrive_too_close": "Je bent al dicht bij de bestemming.",
+  "voogle_route_autodrive_busy": "Tijdsversnelling is al bezig."
 }

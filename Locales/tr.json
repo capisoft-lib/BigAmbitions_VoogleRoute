@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ROTA AÇIK",
   "voogle_route_route_off": "ROTA KAPALI",
   "voogle_route_autowalk": "OTO YÜRÜ",
+  "voogle_route_autodrive": "Otomatik sürüş",
+  "voogle_route_drive_on": "Sürüş açık",
   "voogle_route_walk_on": "YÜRÜ AÇIK",
   "voogle_route_settings_title": "VOOGLE ROUTE AYARLARI",
   "voogle_route_setting_route_color": "Rota çizgisi rengi",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Hedefe otomatik yürü",
   "voogle_route_options_indoor_route": "Çıkışa iç mekan rota çizgisi",
   "voogle_route_options_indoor_autowalk": "Çıkışa iç mekan otomatik yürüme",
+  "voogle_route_options_base_taxi_multiplier": "Temel taksi çarpanı",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ÇIKIŞ",
   "voogle_route_way_out_off": "ÇIKIŞ KAPALI",
   "voogle_route_get_out": "ÇIK",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Rota yeniden hesaplanıyor...",
   "voogle_route_map_dest_title": "Hedef belirle",
   "voogle_route_map_dest_confirm": "HEDEF BELİRLE",
-  "voogle_route_map_dest_cancel": "İPTAL"
+  "voogle_route_map_dest_cancel": "İPTAL",
+  "voogle_route_autodrive_popup_title": "OTOMATİK SÜRÜŞ",
+  "voogle_route_autodrive_popup_body": "Tahmini seyahat süresi: ~{minutes}\nTahmini varış: {arrival}\nMesafe: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "SÜR",
+  "voogle_route_autodrive_popup_cancel": "İPTAL",
+  "voogle_route_autodrive_no_route": "Hedefe giden rota yok.",
+  "voogle_route_autodrive_too_close": "Zaten hedefe yakınsınız.",
+  "voogle_route_autodrive_busy": "Zaman atlama zaten devam ediyor."
 }

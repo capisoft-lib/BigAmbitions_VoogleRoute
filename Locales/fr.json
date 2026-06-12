@@ -3,6 +3,8 @@
   "voogle_route_route_on": "Itinéraire ON",
   "voogle_route_route_off": "Itinéraire OFF",
   "voogle_route_autowalk": "Marche auto",
+  "voogle_route_autodrive": "Conduite auto",
+  "voogle_route_drive_on": "Conduite ON",
   "voogle_route_walk_on": "Marche ON",
   "voogle_route_settings_title": "RÉGLAGES VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Couleur de la ligne",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Marche auto vers la destination",
   "voogle_route_options_indoor_route": "Ligne intérieure vers la sortie",
   "voogle_route_options_indoor_autowalk": "Marche auto intérieure vers la sortie",
+  "voogle_route_options_base_taxi_multiplier": "Multiplicateur taxi de base",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "SORTIE",
   "voogle_route_way_out_off": "SORTIE OFF",
   "voogle_route_get_out": "SORTIR",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Recalcul de l'itinéraire...",
   "voogle_route_map_dest_title": "Définir la destination",
   "voogle_route_map_dest_confirm": "DÉFINIR LA DESTINATION",
-  "voogle_route_map_dest_cancel": "ANNULER"
+  "voogle_route_map_dest_cancel": "ANNULER",
+  "voogle_route_autodrive_popup_title": "CONDUITE AUTO",
+  "voogle_route_autodrive_popup_body": "Temps de trajet estimé : ~{minutes}\nArrivée estimée : {arrival}\nDistance : ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "CONDUIRE",
+  "voogle_route_autodrive_popup_cancel": "ANNULER",
+  "voogle_route_autodrive_no_route": "Aucun itinéraire vers la destination.",
+  "voogle_route_autodrive_too_close": "Vous êtes déjà proche de la destination.",
+  "voogle_route_autodrive_busy": "Avance rapide du temps déjà en cours."
 }

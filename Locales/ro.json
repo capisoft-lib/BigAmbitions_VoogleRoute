@@ -3,6 +3,8 @@
   "voogle_route_route_on": "RUTĂ ON",
   "voogle_route_route_off": "RUTĂ OFF",
   "voogle_route_autowalk": "AUTO MERS",
+  "voogle_route_autodrive": "Conducere auto",
+  "voogle_route_drive_on": "Conducere ON",
   "voogle_route_walk_on": "MERS ON",
   "voogle_route_settings_title": "SETĂRI VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Culoarea liniei de rută",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Mers automat spre destinație",
   "voogle_route_options_indoor_route": "Linie de rută interioară spre ieșire",
   "voogle_route_options_indoor_autowalk": "Mers automat spre ieșire",
+  "voogle_route_options_base_taxi_multiplier": "Multiplicator taxi de bază",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "IEȘIRE",
   "voogle_route_way_out_off": "IEȘIRE OFF",
   "voogle_route_get_out": "IEȘI",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Recalculare rută...",
   "voogle_route_map_dest_title": "Setează destinația",
   "voogle_route_map_dest_confirm": "SETEAZĂ DESTINAȚIA",
-  "voogle_route_map_dest_cancel": "ANULEAZĂ"
+  "voogle_route_map_dest_cancel": "ANULEAZĂ",
+  "voogle_route_autodrive_popup_title": "CONDUCERE AUTO",
+  "voogle_route_autodrive_popup_body": "Timp de călătorie estimat: ~{minutes}\nSosire estimată: {arrival}\nDistanță: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "CONDUCERE",
+  "voogle_route_autodrive_popup_cancel": "ANULEAZĂ",
+  "voogle_route_autodrive_no_route": "Nu există rută către destinație.",
+  "voogle_route_autodrive_too_close": "Sunteți deja aproape de destinație.",
+  "voogle_route_autodrive_busy": "Saltul temporal este deja în curs."
 }

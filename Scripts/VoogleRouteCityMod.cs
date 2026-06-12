@@ -60,6 +60,7 @@ namespace VoogleRoute
             VoogleRouteLoop.Shutdown();
             AutoDriveLog.Shutdown();
             RouteToggleHud.Destroy();
+            AutoDriveConfirmPopup.Destroy();
             RouteSettingsUi.Destroy();
             RouteRecalcBanner.Destroy();
             RouteLineRenderer.Destroy();

@@ -134,7 +134,7 @@ namespace VoogleRoute.Navigation
             return dx * dx + dz * dz;
         }
 
-        private static float PolylineLength(Vector3[] points)
+        internal static float PolylineLength(Vector3[] points)
         {
             var len = 0f;
             for (var i = 1; i < points.Length; i++)

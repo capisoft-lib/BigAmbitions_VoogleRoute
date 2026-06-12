@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ROUTE AN",
   "voogle_route_route_off": "ROUTE AUS",
   "voogle_route_autowalk": "AUTO-GEHEN",
+  "voogle_route_autodrive": "Autofahrt",
+  "voogle_route_drive_on": "Fahren an",
   "voogle_route_walk_on": "GEHEN AN",
   "voogle_route_settings_title": "VOOGLE ROUTE EINSTELLUNGEN",
   "voogle_route_setting_route_color": "Routenlinienfarbe",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "Automatisch zum Ziel laufen",
   "voogle_route_options_indoor_route": "Innenroutenlinie zum Ausgang",
   "voogle_route_options_indoor_autowalk": "Automatisch im Gebäude zum Ausgang",
+  "voogle_route_options_base_taxi_multiplier": "Basis-Taxi-Multiplikator",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "AUSGANG",
   "voogle_route_way_out_off": "AUSGANG AUS",
   "voogle_route_get_out": "RAUS",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "Route wird neu berechnet...",
   "voogle_route_map_dest_title": "Ziel setzen",
   "voogle_route_map_dest_confirm": "ZIEL SETZEN",
-  "voogle_route_map_dest_cancel": "ABBRECHEN"
+  "voogle_route_map_dest_cancel": "ABBRECHEN",
+  "voogle_route_autodrive_popup_title": "AUTOFAHRT",
+  "voogle_route_autodrive_popup_body": "Geschätzte Fahrzeit: ~{minutes}\nGeschätzte Ankunft: {arrival}\nEntfernung: ~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "FAHREN",
+  "voogle_route_autodrive_popup_cancel": "ABBRECHEN",
+  "voogle_route_autodrive_no_route": "Keine Route zum Ziel.",
+  "voogle_route_autodrive_too_close": "Du bist bereits in der Nähe des Ziels.",
+  "voogle_route_autodrive_busy": "Zeitsprung läuft bereits."
 }

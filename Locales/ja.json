@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ルート ON",
   "voogle_route_route_off": "ルート OFF",
   "voogle_route_autowalk": "自動歩行",
+  "voogle_route_autodrive": "自動運転",
+  "voogle_route_drive_on": "運転 ON",
   "voogle_route_walk_on": "歩行 ON",
   "voogle_route_settings_title": "VOOGLE ROUTE 設定",
   "voogle_route_setting_route_color": "ルート線の色",
@@ -17,6 +19,8 @@
   "voogle_route_options_autowalk": "目的地まで自動歩行",
   "voogle_route_options_indoor_route": "出口への屋内ルート線",
   "voogle_route_options_indoor_autowalk": "出口への屋内自動歩行",
+  "voogle_route_options_base_taxi_multiplier": "基本タクシー倍率",
+  "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "出口",
   "voogle_route_way_out_off": "出口 OFF",
   "voogle_route_get_out": "出る",
@@ -24,5 +28,12 @@
   "voogle_route_recalculating": "ルートを再計算中...",
   "voogle_route_map_dest_title": "目的地を設定",
   "voogle_route_map_dest_confirm": "目的地を設定",
-  "voogle_route_map_dest_cancel": "キャンセル"
+  "voogle_route_map_dest_cancel": "キャンセル",
+  "voogle_route_autodrive_popup_title": "自動運転",
+  "voogle_route_autodrive_popup_body": "推定移動時間：~{minutes}\n推定到着時刻：{arrival}\n距離：~{distance} m",
+  "voogle_route_autodrive_popup_confirm": "運転",
+  "voogle_route_autodrive_popup_cancel": "キャンセル",
+  "voogle_route_autodrive_no_route": "目的地へのルートがありません。",
+  "voogle_route_autodrive_too_close": "すでに目的地の近くにいます。",
+  "voogle_route_autodrive_busy": "時間スキップがすでに実行中です。"
 }

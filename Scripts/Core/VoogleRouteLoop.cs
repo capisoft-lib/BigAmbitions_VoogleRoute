@@ -100,6 +100,7 @@ namespace VoogleRoute
             ModUiText.PollLanguageChange();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
+            AutoDriveConfirmPopup.TickOverlay();
 
             if (ShouldRefreshHud())
                 RouteToggleHud.UpdateVisibility();
