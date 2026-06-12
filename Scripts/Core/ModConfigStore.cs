@@ -112,6 +112,12 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetForceCarSideEnabled(bool value)
+        {
+            _data.ForceCarSide = value;
+            Save();
+        }
+
         internal static void StripBookmarkDataAndSave()
         {
             _data.Bookmarks = null;
@@ -129,6 +135,7 @@ namespace VoogleRoute
                 RouteLineColor = DefaultRouteLineColor(),
                 IndoorRoute = true,
                 IndoorAutowalk = false,
+                ForceCarSide = false,
                 BaseTaxiMultiplier = 2
             };
         }
@@ -230,6 +237,9 @@ namespace VoogleRoute
 
         [JsonPropertyName("indoor_autowalk")]
         public bool IndoorAutowalk { get; set; }
+
+        [JsonPropertyName("force_car_side")]
+        public bool ForceCarSide { get; set; }
 
         [JsonPropertyName("base_taxi_multiplier")]
         public int BaseTaxiMultiplier { get; set; } = 2;

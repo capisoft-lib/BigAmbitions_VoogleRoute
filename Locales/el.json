@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Αυτόματη πορεία προς τον προορισμό",
   "voogle_route_options_indoor_route": "Εσωτερική γραμμή προς την έξοδο",
   "voogle_route_options_indoor_autowalk": "Αυτόματη πορεία προς την έξοδο",
+  "voogle_route_options_force_car_side": "???????? ???? ?????? ??? ???????",
   "voogle_route_options_base_taxi_multiplier": "Βασικός πολλαπλασιαστής ταξί",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ΕΞΟΔΟΣ",

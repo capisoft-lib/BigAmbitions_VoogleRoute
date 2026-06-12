@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Hedefe otomatik yürü",
   "voogle_route_options_indoor_route": "Çıkışa iç mekan rota çizgisi",
   "voogle_route_options_indoor_autowalk": "Çıkışa iç mekan otomatik yürüme",
+  "voogle_route_options_force_car_side": "Bina tarafinda rota",
   "voogle_route_options_base_taxi_multiplier": "Temel taksi çarpanı",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ÇIKIŞ",

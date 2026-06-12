@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Automatikus séta a célhoz",
   "voogle_route_options_indoor_route": "Beltéri útvonalvonal a kijárathoz",
   "voogle_route_options_indoor_autowalk": "Automatikus séta a kijárathoz",
+  "voogle_route_options_force_car_side": "�tvonal az �p�let oldal�n",
   "voogle_route_options_base_taxi_multiplier": "Alap taxi szorzó",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "KIJÁRAT",

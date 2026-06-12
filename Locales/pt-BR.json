@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Andar automaticamente até o destino",
   "voogle_route_options_indoor_route": "Linha interna até a saída",
   "voogle_route_options_indoor_autowalk": "Caminhar automaticamente até a saída",
+  "voogle_route_options_force_car_side": "Rota pelo lado do pr�dio",
   "voogle_route_options_base_taxi_multiplier": "Multiplicador base de táxi",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "SAÍDA",

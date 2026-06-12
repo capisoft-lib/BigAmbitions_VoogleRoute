@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Automatisch naar bestemming lopen",
   "voogle_route_options_indoor_route": "Binnenroutelijn naar uitgang",
   "voogle_route_options_indoor_autowalk": "Automatisch binnen naar uitgang",
+  "voogle_route_options_force_car_side": "Route aan gebouwzijde",
   "voogle_route_options_base_taxi_multiplier": "Basis taxivermenigvuldiger",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "UITGANG",

@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Automatisch zum Ziel laufen",
   "voogle_route_options_indoor_route": "Innenroutenlinie zum Ausgang",
   "voogle_route_options_indoor_autowalk": "Automatisch im Geb√§ude zum Ausgang",
+  "voogle_route_options_force_car_side": "Route auf Geb‰udeseite",
   "voogle_route_options_base_taxi_multiplier": "Basis-Taxi-Multiplikator",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "AUSGANG",

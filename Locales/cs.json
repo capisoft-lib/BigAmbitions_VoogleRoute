@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Automaticky jít do cíle",
   "voogle_route_options_indoor_route": "Vnitřní linie trasy k východu",
   "voogle_route_options_indoor_autowalk": "Automatická chůze k východu",
+  "voogle_route_options_force_car_side": "Trasa po strane budovy",
   "voogle_route_options_base_taxi_multiplier": "Základní násobitel taxi",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "VÝCHOD",

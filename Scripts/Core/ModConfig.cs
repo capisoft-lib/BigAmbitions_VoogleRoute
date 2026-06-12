@@ -20,6 +20,7 @@ namespace VoogleRoute
         private const string IndoorRouteLineKey = "indoor_route";
         private const string IndoorAutoWalkKey = "indoor_autowalk";
         private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
+        private const string ForceCarSideKey = "force_car_side";
     
         private static ModContext _context;
     
@@ -27,6 +28,7 @@ namespace VoogleRoute
         internal static bool AutoWalkEnabled { get; private set; }
         internal static bool IndoorRouteLineEnabled { get; private set; } = true;
         internal static bool IndoorAutoWalkEnabled { get; private set; }
+        internal static bool ForceCarSideEnabled { get; private set; }
     
         internal static float FootLineWidth { get; private set; } = 0.3f;
         internal static float IndoorFootLineWidth { get; private set; } = 0.12f;
@@ -79,6 +81,7 @@ namespace VoogleRoute
                 .AddToggle(AutoWalkKey, "voogle_route_options_autowalk", AutoWalkEnabled, OnAutoWalkOptionChanged)
                 .AddToggle(IndoorRouteLineKey, "voogle_route_options_indoor_route", IndoorRouteLineEnabled, OnIndoorRouteLineOptionChanged)
                 .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled, OnIndoorAutoWalkOptionChanged)
+                .AddToggle(ForceCarSideKey, "voogle_route_options_force_car_side", ForceCarSideEnabled, OnForceCarSideOptionChanged)
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
                     BaseTaxiMultiplier, OnBaseTaxiMultiplierChanged,
                     "voogle_route_options_base_taxi_multiplier_value");
@@ -146,6 +149,8 @@ namespace VoogleRoute
 
         private static void OnIndoorAutoWalkOptionChanged(bool value) => SetIndoorAutoWalkEnabled(value);
 
+        private static void OnForceCarSideOptionChanged(bool value) => SetForceCarSideEnabled(value);
+
         private static void OnBaseTaxiMultiplierChanged(int value) => SetBaseTaxiMultiplier(value);
 
         internal static void SetBaseTaxiMultiplier(int value)
@@ -157,6 +162,17 @@ namespace VoogleRoute
             BaseTaxiMultiplier = clamped;
             ModConfigStore.SetBaseTaxiMultiplier(clamped);
             ModLog.Info("Base taxi multiplier = " + clamped);
+        }
+
+        internal static void SetForceCarSideEnabled(bool value)
+        {
+            if (ForceCarSideEnabled == value)
+                return;
+
+            ForceCarSideEnabled = value;
+            ModConfigStore.SetForceCarSideEnabled(value);
+            PathFinderService.InvalidateCache("force_car_side=" + value);
+            ModLog.Info("Force car side = " + value);
         }
 
         internal static void SetRouteLineColor(Color color)
@@ -181,6 +197,7 @@ namespace VoogleRoute
                 _lineColor = ReadLineColor(data.RouteLineColor);
                 IndoorRouteLineEnabled = data.IndoorRoute;
                 IndoorAutoWalkEnabled = data.IndoorAutowalk;
+                ForceCarSideEnabled = data.ForceCarSide;
                 BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
             }
             catch (Exception ex)

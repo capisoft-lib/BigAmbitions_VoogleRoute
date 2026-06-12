@@ -47,7 +47,8 @@ namespace VoogleRoute.Navigation
                 Forward = ToVec3(forward),
                 HasPose = hasPose,
                 ForcedStartWaypoint = -1,
-                ForcedEndWaypoint = -1
+                ForcedEndWaypoint = -1,
+                ForceBuildingSide = ModConfig.ForceCarSideEnabled
             };
 
             if (!WaypointPathfinder.TryFindBestRoute(graph, query, out var routeResult))

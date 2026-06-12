@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Kävele automaattisesti määränpäähän",
   "voogle_route_options_indoor_route": "Sisäreittiviiva uloskäynnille",
   "voogle_route_options_indoor_autowalk": "Automaattinen kävely uloskäynnille",
+  "voogle_route_options_force_car_side": "Reitti rakennuksen puolella",
   "voogle_route_options_base_taxi_multiplier": "Taksin peruskerroin",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ULOSKÄYNTI",

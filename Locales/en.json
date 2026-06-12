@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Auto-walk to destination",
   "voogle_route_options_indoor_route": "Indoor route line to exit",
   "voogle_route_options_indoor_autowalk": "Indoor auto-walk to exit",
+  "voogle_route_options_force_car_side": "Car route on building side",
   "voogle_route_options_base_taxi_multiplier": "Base taxi multiplier",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "WAY OUT",

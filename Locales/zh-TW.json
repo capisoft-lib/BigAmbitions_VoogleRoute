@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "自動步行至目的地",
   "voogle_route_options_indoor_route": "室內至出口的路線",
   "voogle_route_options_indoor_autowalk": "室內自動步行至出口",
+  "voogle_route_options_force_car_side": "沿建築物一側行車路線",
   "voogle_route_options_base_taxi_multiplier": "基礎計程車倍率",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "出口",

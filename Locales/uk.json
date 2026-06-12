@@ -19,6 +19,7 @@
   "voogle_route_options_autowalk": "Автоматично йти до пункту призначення",
   "voogle_route_options_indoor_route": "Лінія маршруту всередині до виходу",
   "voogle_route_options_indoor_autowalk": "Автохідьба всередині до виходу",
+  "voogle_route_options_force_car_side": "Маршрут з боку будівлі",
   "voogle_route_options_base_taxi_multiplier": "Базовий множник таксі",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
   "voogle_route_way_out_on": "ВИХІД",
