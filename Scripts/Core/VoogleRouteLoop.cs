@@ -205,7 +205,8 @@ namespace VoogleRoute
             if (AutoWalkService.Tick(canNavigate, _activePath))
                 RouteToggleHud.RefreshVisual();
 
-            if (AutoDriveService.Tick(canNavigate, _activePath))
+            AutoDriveService.CacheNavigationContext(canNavigate, _activePath);
+            if (AutoDriveService.ConsumeHudRefreshPending())
                 RouteToggleHud.RefreshVisual();
         }
 

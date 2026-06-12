@@ -5,7 +5,7 @@ namespace VoogleRoute.Navigation
 {
     internal static class AutoDriveService
     {
-        private const float MinWaypointSpacing = 14f;
+        private const float MinWaypointSpacing = 6f;
         private const float ArrivalDisableMeters = 22f;
         private const float ArrivalSpeedMps = 1.4f;
         private const float EnableGraceSeconds = 0.6f;
@@ -14,6 +14,18 @@ namespace VoogleRoute.Navigation
         private static float _enabledAt = -999f;
         private static Vector3[] _cachedWaypoints = System.Array.Empty<Vector3>();
         private static bool _wasEnabled;
+        private static bool _cachedCanNavigate;
+        private static PathResult _cachedPath;
+        private static bool _hudRefreshPending;
+
+        internal static bool ConsumeHudRefreshPending()
+        {
+            if (!_hudRefreshPending)
+                return false;
+
+            _hudRefreshPending = false;
+            return true;
+        }
 
         internal static void Reset()
         {
@@ -31,7 +43,13 @@ namespace VoogleRoute.Navigation
             AutoDriveDiagnostics.OnEnabled();
         }
 
-        internal static bool Tick(bool canNavigate, PathResult path)
+        internal static void CacheNavigationContext(bool canNavigate, PathResult path)
+        {
+            _cachedCanNavigate = canNavigate;
+            _cachedPath = path;
+        }
+
+        internal static void PhysicsTick()
         {
             if (!ModConfig.AutoDriveEnabled)
             {
@@ -40,13 +58,19 @@ namespace VoogleRoute.Navigation
                     _wasEnabled = false;
                     AutoDriveDiagnostics.OnDisabled("toggle_off");
                     Reset();
+                    _hudRefreshPending = true;
                 }
 
-                return false;
+                return;
             }
 
             _wasEnabled = true;
+            if (TickDrive(_cachedCanNavigate, _cachedPath))
+                _hudRefreshPending = true;
+        }
 
+        private static bool TickDrive(bool canNavigate, PathResult path)
+        {
             if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
             {
                 AutoDriveDiagnostics.LogBlockedOnce(
@@ -75,7 +99,7 @@ namespace VoogleRoute.Navigation
                 ManualVehicleInputDetector.HasManualVehicleInput())
             {
                 AutoDriveDiagnostics.OnDisabled("manual_input");
-                DisableFromUserInput();
+                DisableAutoDrive();
                 return true;
             }
 
@@ -91,9 +115,9 @@ namespace VoogleRoute.Navigation
             if (!VehicleInputApplicator.TryGetPlayerVehicle(out var vehicle))
                 return false;
 
-            if (!MovementModeDetector.TryGetVehiclePose(out var position, out var forward))
+            if (!vehicle.TryGetKinematics(out var position, out var forward))
             {
-                AutoDriveDiagnostics.LogBlockedOnce("TryGetVehiclePose failed");
+                AutoDriveDiagnostics.LogBlockedOnce("TryGetKinematics failed (no transform)");
                 return false;
             }
 
@@ -101,15 +125,15 @@ namespace VoogleRoute.Navigation
             if (waypoints.Length < 2)
             {
                 AutoDriveDiagnostics.LogBlockedOnce(
-                    "too few waypoints after decimation count=" + waypoints.Length +
-                    " raw=" + path.Points.Length);
+                    "too few waypoints count=" + waypoints.Length + " raw=" + path.Points.Length);
                 return false;
             }
 
             var speed = vehicle.Speed;
             var finalTarget = NavigationTargetTracker.ActiveTarget;
             var follow = VehiclePathFollower.Evaluate(waypoints, position, forward, speed, finalTarget);
-            var command = VehicleDriveController.Compute(follow, speed);
+            var obstacleBrake = VehicleObstacleProbe.ComputeBrakeRequest(vehicle.Transform, speed);
+            var command = VehicleDriveController.Compute(follow, speed, obstacleBrake);
             VehicleInputApplicator.Apply(vehicle, command);
 
             AutoDriveDiagnostics.LogApplyThrottled(
@@ -118,27 +142,25 @@ namespace VoogleRoute.Navigation
                 command.Brakes,
                 command.Steering,
                 follow.CrossTrackMeters,
+                follow.SignedCrossTrackMeters,
                 follow.HeadingErrorDegrees,
                 follow.DistanceToDestination,
                 follow.OffRoute,
+                obstacleBrake,
                 waypoints.Length);
 
             if (follow.OffRoute)
-                AutoDriveDiagnostics.LogStatusThrottled("off-route crossTrack=" + follow.CrossTrackMeters.ToString("F1"));
+                AutoDriveDiagnostics.LogStatusThrottled("off-route xtrack=" + follow.CrossTrackMeters.ToString("F1"));
 
             if (follow.DistanceToDestination <= ArrivalDisableMeters && speed <= ArrivalSpeedMps)
             {
                 AutoDriveDiagnostics.OnDisabled("arrived");
-                DisableAtDestination();
+                DisableAutoDrive();
                 return true;
             }
 
             return false;
         }
-
-        private static void DisableAtDestination() => DisableAutoDrive();
-
-        private static void DisableFromUserInput() => DisableAutoDrive();
 
         private static void DisableAutoDrive()
         {

@@ -31,26 +31,26 @@ namespace VoogleRoute.Navigation
             {
                 if (TryReadVehicleAction("Throttle", out var throttle) && throttle > ThrottleBrakeThreshold)
                 {
-                    ModLog.Info("[AutoDrive] manual throttle=" + throttle.ToString("F2"));
+                AutoDriveLog.Write("manual throttle=" + throttle.ToString("F2"));
                     return true;
                 }
 
                 if (TryReadVehicleAction("Brakes", out var brakes) && brakes > ThrottleBrakeThreshold)
                 {
-                    ModLog.Info("[AutoDrive] manual brakes=" + brakes.ToString("F2"));
+                AutoDriveLog.Write("manual brakes=" + brakes.ToString("F2"));
                     return true;
                 }
 
                 if (TryReadVehicleAction("Brake", out brakes) && brakes > ThrottleBrakeThreshold)
                 {
-                    ModLog.Info("[AutoDrive] manual brake=" + brakes.ToString("F2"));
+                AutoDriveLog.Write("manual brake=" + brakes.ToString("F2"));
                     return true;
                 }
 
                 if (TryReadVehicleAction("Steering", out var steering) &&
                     Mathf.Abs(steering) > SteeringThreshold)
                 {
-                    ModLog.Info("[AutoDrive] manual steering=" + steering.ToString("F2"));
+                AutoDriveLog.Write("manual steering=" + steering.ToString("F2"));
                     return true;
                 }
             }

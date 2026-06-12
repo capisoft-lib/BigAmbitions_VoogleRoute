@@ -7,20 +7,43 @@ namespace VoogleRoute.Navigation
         internal readonly struct VehicleHandle
         {
             internal global::NWH.VehiclePhysics2.VehicleController Physics { get; }
+            internal Transform Transform { get; }
             internal string VehicleKind { get; }
 
-            internal VehicleHandle(global::NWH.VehiclePhysics2.VehicleController physics, string vehicleKind)
+            internal VehicleHandle(
+                global::NWH.VehiclePhysics2.VehicleController physics,
+                Transform transform,
+                string vehicleKind)
             {
                 Physics = physics;
+                Transform = transform;
                 VehicleKind = vehicleKind;
             }
 
             internal float Speed => Physics != null ? Physics.Speed : 0f;
+
+            internal bool TryGetKinematics(out Vector3 position, out Vector3 forward)
+            {
+                position = default;
+                forward = Vector3.forward;
+
+                var t = Transform;
+                if (t == null)
+                    return false;
+
+                position = t.position;
+                forward = t.forward;
+                forward.y = 0f;
+                if (forward.sqrMagnitude < 0.01f)
+                    return false;
+
+                forward.Normalize();
+                return true;
+            }
         }
 
         private static global::NWH.VehiclePhysics2.VehicleController _activePhysics;
         private static bool _inputLocked;
-        private static bool _loggedBinding;
 
         internal static bool TryGetPlayerVehicle(out VehicleHandle handle)
         {
@@ -49,14 +72,15 @@ namespace VoogleRoute.Navigation
 
                 if (vehicle is CarController car && car.vehicleController?.input != null)
                 {
-                    handle = new VehicleHandle(car.vehicleController, "CarController");
+                    var t = car.vehicleController.transform;
+                    handle = new VehicleHandle(car.vehicleController, t, "CarController");
                     return true;
                 }
 
                 var physics = ((Component)vehicle).GetComponent<global::NWH.VehiclePhysics2.VehicleController>();
                 if (physics?.input != null)
                 {
-                    handle = new VehicleHandle(physics, vehicle.GetType().Name);
+                    handle = new VehicleHandle(physics, physics.transform, vehicle.GetType().Name);
                     return true;
                 }
 
@@ -86,27 +110,13 @@ namespace VoogleRoute.Navigation
                 input.autoSetInput = false;
                 _inputLocked = true;
                 _activePhysics = physics;
-                _loggedBinding = false;
                 AutoDriveDiagnostics.LogStatusThrottled(
                     "input takeover | vehicle=" + handle.VehicleKind);
-            }
-
-            if (!_loggedBinding)
-            {
-                _loggedBinding = true;
-                AutoDriveDiagnostics.LogInputBinding(
-                    input.autoSetInput,
-                    true,
-                    true,
-                    true);
             }
 
             input.Throttle = command.Throttle;
             input.Brakes = command.Brakes;
             input.Steering = command.Steering;
-
-            if (physics.steering != null)
-                physics.steering.externallyAddedAngle = 0f;
 
             ManualVehicleInputDetector.SuppressBriefly();
         }
@@ -120,9 +130,6 @@ namespace VoogleRoute.Navigation
             {
                 if (_activePhysics?.input != null)
                     _activePhysics.input.autoSetInput = true;
-
-                if (_activePhysics?.steering != null)
-                    _activePhysics.steering.externallyAddedAngle = 0f;
             }
             catch
             {
@@ -131,7 +138,6 @@ namespace VoogleRoute.Navigation
 
             _inputLocked = false;
             _activePhysics = null;
-            _loggedBinding = false;
         }
     }
 }

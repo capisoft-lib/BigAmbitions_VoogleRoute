@@ -4,9 +4,9 @@ namespace VoogleRoute.Navigation
 {
     internal static class VehiclePathFollower
     {
-        private const float MinLookaheadMeters = 6f;
-        private const float MaxLookaheadMeters = 24f;
-        private const float TurnPreviewMeters = 40f;
+        private const float MinLookaheadMeters = 8f;
+        private const float MaxLookaheadMeters = 18f;
+        private const float TurnPreviewMeters = 35f;
 
         private static int _progressSegment;
 
@@ -14,9 +14,11 @@ namespace VoogleRoute.Navigation
         {
             internal Vector3 LookaheadTarget;
             internal float CrossTrackMeters;
+            internal float SignedCrossTrackMeters;
             internal float HeadingErrorDegrees;
             internal float UpcomingTurnDegrees;
             internal float DistanceToDestination;
+            internal float SegmentHeadingDegrees;
             internal bool OffRoute;
         }
 
@@ -43,34 +45,58 @@ namespace VoogleRoute.Navigation
                 path,
                 position,
                 forward,
-                ref _progressSegment);
+                ref _progressSegment,
+                maxSegmentJump: 2,
+                lookAheadGateMeters: 28f);
 
             var segStart = path[_progressSegment];
             var segEnd = path[Mathf.Min(_progressSegment + 1, path.Length - 1)];
-            var crossTrack = Mathf.Sqrt(
-                PathGeometry.HorizontalDistSqToSegment(position, segStart, segEnd, out _));
+            var signedCrossTrack = ComputeSignedCrossTrack(position, segStart, segEnd);
+            var crossTrack = Mathf.Abs(signedCrossTrack);
 
-            var lookahead = ComputeLookaheadDistance(speedMps);
+            var segDir = FlatDir(segStart, segEnd);
+            var segmentHeading = segDir.sqrMagnitude > 0.01f
+                ? Mathf.Atan2(segDir.x, segDir.z) * Mathf.Rad2Deg
+                : 0f;
+
+            var lookahead = ComputeLookaheadDistance(speedMps, crossTrack);
             var target = SampleLookaheadPoint(path, position, _progressSegment, lookahead);
             var headingError = ComputeHeadingError(position, forward, target);
             var upcomingTurn = EstimateUpcomingTurn(path, _progressSegment, TurnPreviewMeters);
             var distToDest = HorizontalDistance(position, finalDestination);
-            var offRoute = crossTrack > 25f ||
-                           !PathGeometry.IsWithinRouteCorridor(position, path, 30f);
+            var offRoute = crossTrack > 18f &&
+                           !PathGeometry.IsWithinRouteCorridor(position, path, 22f);
 
             return new FollowState
             {
                 LookaheadTarget = target,
                 CrossTrackMeters = crossTrack,
+                SignedCrossTrackMeters = signedCrossTrack,
                 HeadingErrorDegrees = headingError,
                 UpcomingTurnDegrees = upcomingTurn,
                 DistanceToDestination = distToDest,
+                SegmentHeadingDegrees = segmentHeading,
                 OffRoute = offRoute
             };
         }
 
-        private static float ComputeLookaheadDistance(float speedMps) =>
-            Mathf.Clamp(4f + speedMps * 0.55f, MinLookaheadMeters, MaxLookaheadMeters);
+        private static float ComputeLookaheadDistance(float speedMps, float crossTrackMeters)
+        {
+            var baseDist = Mathf.Clamp(6f + speedMps * 0.75f, MinLookaheadMeters, MaxLookaheadMeters);
+            if (crossTrackMeters > 3f)
+                baseDist = Mathf.Max(MinLookaheadMeters, baseDist - crossTrackMeters * 0.35f);
+            return baseDist;
+        }
+
+        private static float ComputeSignedCrossTrack(Vector3 position, Vector3 segA, Vector3 segB)
+        {
+            PathGeometry.HorizontalDistSqToSegment(position, segA, segB, out var t);
+            var closest = Vector3.Lerp(segA, segB, t);
+            var pathDir = FlatDir(segA, segB);
+            var error = position - closest;
+            error.y = 0f;
+            return Vector3.Cross(pathDir, error).y;
+        }
 
         private static Vector3 SampleLookaheadPoint(
             Vector3[] path,

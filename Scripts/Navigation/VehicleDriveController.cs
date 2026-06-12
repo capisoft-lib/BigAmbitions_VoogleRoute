@@ -4,70 +4,83 @@ namespace VoogleRoute.Navigation
 {
     internal static class VehicleDriveController
     {
-        private const float MaxCruiseMps = 12f;
+        private const float MaxCruiseMps = 7.5f;
         private const float ArrivalSlowZoneMeters = 35f;
         private const float ArrivalStopMeters = 14f;
+        private const float StanleyCrossGain = 1.35f;
+        private const float StanleySoftSpeed = 2.2f;
+        private const float MaxSteerRadians = 0.55f;
 
         private static float _lastSteering;
 
         internal static void Reset() => _lastSteering = 0f;
 
-        internal static VehicleDriveCommand Compute(VehiclePathFollower.FollowState state, float speedMps)
+        internal static VehicleDriveCommand Compute(
+            VehiclePathFollower.FollowState state,
+            float speedMps,
+            float obstacleBrake)
         {
-            var targetSpeed = ComputeTargetSpeed(state);
+            var targetSpeed = ComputeTargetSpeed(state, obstacleBrake);
             if (state.OffRoute)
-                targetSpeed = Mathf.Min(targetSpeed, 4f);
+                targetSpeed = Mathf.Min(targetSpeed, 3.5f);
 
             var throttle = 0f;
-            var brakes = 0f;
+            var brakes = obstacleBrake;
 
             if (state.DistanceToDestination <= ArrivalStopMeters)
             {
+                targetSpeed = Mathf.Min(targetSpeed, 2.5f);
                 if (speedMps > 0.8f)
-                    brakes = Mathf.Clamp01((speedMps - 0.5f) / 4f);
-                else
-                    brakes = speedMps > 0.15f ? 0.35f : 0f;
+                    brakes = Mathf.Max(brakes, Mathf.Clamp01((speedMps - 0.5f) / 3.5f));
             }
-            else if (speedMps < targetSpeed - 1.2f)
+            else if (speedMps < targetSpeed - 0.8f)
             {
-                throttle = Mathf.Clamp01((targetSpeed - speedMps) / 7f);
+                throttle = Mathf.Clamp01((targetSpeed - speedMps) / 4.5f);
             }
-            else if (speedMps > targetSpeed + 0.8f)
+            else if (speedMps > targetSpeed + 0.5f)
             {
-                brakes = Mathf.Clamp01((speedMps - targetSpeed) / 5f);
+                brakes = Mathf.Max(brakes, Mathf.Clamp01((speedMps - targetSpeed) / 4f));
             }
 
-            var steerRaw = state.HeadingErrorDegrees * 0.028f +
-                           Mathf.Clamp(state.CrossTrackMeters * 0.04f, 0f, 8f) *
-                           Mathf.Sign(state.HeadingErrorDegrees);
+            var headingRad = state.HeadingErrorDegrees * Mathf.Deg2Rad;
+            var crossRad = Mathf.Atan(
+                (StanleyCrossGain * state.SignedCrossTrackMeters) /
+                (speedMps + StanleySoftSpeed));
+            var steerRaw = (headingRad + crossRad) / MaxSteerRadians;
             steerRaw = Mathf.Clamp(steerRaw, -1f, 1f);
 
-            const float maxSteerDelta = 0.12f;
+            if (Mathf.Abs(state.HeadingErrorDegrees) < 4f && state.CrossTrackMeters < 1.5f)
+                steerRaw *= 0.35f;
+
+            const float maxSteerDelta = 0.22f;
             var steering = Mathf.Clamp(
                 Mathf.MoveTowards(_lastSteering, steerRaw, maxSteerDelta),
                 -1f,
                 1f);
             _lastSteering = steering;
 
-            if (Mathf.Abs(state.HeadingErrorDegrees) > 75f && speedMps > 3f)
+            if (Mathf.Abs(state.HeadingErrorDegrees) > 55f && speedMps > 2.5f)
             {
                 throttle = 0f;
-                brakes = Mathf.Max(brakes, 0.45f);
+                brakes = Mathf.Max(brakes, 0.55f);
             }
 
-            return new VehicleDriveCommand(throttle, brakes, steering);
+            if (obstacleBrake > 0.55f)
+                throttle = 0f;
+
+            return new VehicleDriveCommand(throttle, Mathf.Clamp01(brakes), steering);
         }
 
-        private static float ComputeTargetSpeed(VehiclePathFollower.FollowState state)
+        private static float ComputeTargetSpeed(VehiclePathFollower.FollowState state, float obstacleBrake)
         {
             var turn = state.UpcomingTurnDegrees;
             var turnFactor = turn switch
             {
-                <= 15f => 1f,
-                <= 35f => 0.82f,
-                <= 55f => 0.62f,
-                <= 75f => 0.45f,
-                _ => 0.3f
+                <= 12f => 1f,
+                <= 28f => 0.78f,
+                <= 45f => 0.58f,
+                <= 65f => 0.42f,
+                _ => 0.28f
             };
 
             var target = MaxCruiseMps * turnFactor;
@@ -75,11 +88,14 @@ namespace VoogleRoute.Navigation
             if (state.DistanceToDestination < ArrivalSlowZoneMeters)
             {
                 var arrivalFactor = Mathf.Clamp01(state.DistanceToDestination / ArrivalSlowZoneMeters);
-                target = Mathf.Min(target, Mathf.Lerp(3f, MaxCruiseMps, arrivalFactor));
+                target = Mathf.Min(target, Mathf.Lerp(2.5f, MaxCruiseMps, arrivalFactor));
             }
 
-            if (state.CrossTrackMeters > 4f)
-                target = Mathf.Min(target, 7f);
+            if (state.CrossTrackMeters > 2.5f)
+                target = Mathf.Min(target, 5f);
+
+            if (obstacleBrake > 0.05f)
+                target = Mathf.Min(target, Mathf.Lerp(MaxCruiseMps, 2f, obstacleBrake));
 
             return target;
         }
