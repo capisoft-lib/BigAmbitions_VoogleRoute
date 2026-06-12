@@ -2,6 +2,7 @@ using System;
 using BAModAPI;
 using BigAmbitions.Mods;
 using UnityEngine;
+using VoogleRoute.Navigation;
 using VoogleRoute.UI;
 
 namespace VoogleRoute
@@ -115,6 +116,10 @@ namespace VoogleRoute
 
             AutoDriveEnabled = value;
             ModLog.Info("Auto-drive = " + value);
+            if (value)
+                AutoDriveService.NotifyEnabled();
+            else
+                AutoDriveService.Reset();
             RouteToggleHud.RefreshVisual();
         }
 

@@ -189,6 +189,10 @@ namespace VoogleRoute
             var canNavigate = CanNavigate();
             if (!canNavigate || !navigationWanted)
             {
+                if (ModConfig.AutoDriveEnabled)
+                    AutoDriveDiagnostics.LogBlockedOnce(
+                        "navigation loop exit canNav=" + canNavigate +
+                        " wanted=" + navigationWanted);
                 CleanupNavigationState();
                 return;
             }

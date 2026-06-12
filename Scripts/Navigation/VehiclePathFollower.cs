@@ -55,8 +55,8 @@ namespace VoogleRoute.Navigation
             var headingError = ComputeHeadingError(position, forward, target);
             var upcomingTurn = EstimateUpcomingTurn(path, _progressSegment, TurnPreviewMeters);
             var distToDest = HorizontalDistance(position, finalDestination);
-            var offRoute = crossTrack > 12f ||
-                           !PathGeometry.IsWithinRouteCorridor(position, path, 16f);
+            var offRoute = crossTrack > 25f ||
+                           !PathGeometry.IsWithinRouteCorridor(position, path, 30f);
 
             return new FollowState
             {

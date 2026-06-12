@@ -8,9 +8,12 @@ namespace VoogleRoute.Navigation
         private const float MinWaypointSpacing = 14f;
         private const float ArrivalDisableMeters = 22f;
         private const float ArrivalSpeedMps = 1.4f;
+        private const float EnableGraceSeconds = 0.6f;
 
         private static float _lastTargetChangeTime = -1f;
+        private static float _enabledAt = -999f;
         private static Vector3[] _cachedWaypoints = System.Array.Empty<Vector3>();
+        private static bool _wasEnabled;
 
         internal static void Reset()
         {
@@ -18,27 +21,60 @@ namespace VoogleRoute.Navigation
             VehicleDriveController.Reset();
             VehicleInputApplicator.Release();
             _cachedWaypoints = System.Array.Empty<Vector3>();
+            AutoDriveDiagnostics.ClearBlockReason();
+        }
+
+        internal static void NotifyEnabled()
+        {
+            _enabledAt = Time.unscaledTime;
+            _wasEnabled = true;
+            AutoDriveDiagnostics.OnEnabled();
         }
 
         internal static bool Tick(bool canNavigate, PathResult path)
         {
             if (!ModConfig.AutoDriveEnabled)
             {
-                Reset();
+                if (_wasEnabled)
+                {
+                    _wasEnabled = false;
+                    AutoDriveDiagnostics.OnDisabled("toggle_off");
+                    Reset();
+                }
+
                 return false;
             }
 
-            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
-                return false;
+            _wasEnabled = true;
 
-            if (!canNavigate || !path.Success)
+            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
             {
+                AutoDriveDiagnostics.LogBlockedOnce(
+                    "movement mode is " + MovementModeDetector.CurrentMode + " (need Vehicle)");
                 VehicleInputApplicator.Release();
                 return false;
             }
 
-            if (ManualVehicleInputDetector.HasManualVehicleInput())
+            if (!canNavigate)
             {
+                AutoDriveDiagnostics.LogBlockedOnce("canNavigate=false (check GPS target + LIB)");
+                VehicleInputApplicator.Release();
+                return false;
+            }
+
+            if (!path.Success || path.Points == null || path.Points.Length < 2)
+            {
+                AutoDriveDiagnostics.LogBlockedOnce(
+                    "path invalid success=" + path.Success +
+                    " points=" + (path.Points?.Length ?? 0));
+                VehicleInputApplicator.Release();
+                return false;
+            }
+
+            if (Time.unscaledTime - _enabledAt >= EnableGraceSeconds &&
+                ManualVehicleInputDetector.HasManualVehicleInput())
+            {
+                AutoDriveDiagnostics.OnDisabled("manual_input");
                 DisableFromUserInput();
                 return true;
             }
@@ -49,26 +85,50 @@ namespace VoogleRoute.Navigation
                 VehiclePathFollower.Reset();
                 VehicleDriveController.Reset();
                 _cachedWaypoints = System.Array.Empty<Vector3>();
+                AutoDriveDiagnostics.LogStatusThrottled("destination changed, path reset");
             }
 
-            if (!VehicleInputApplicator.TryGetPlayerCar(out var car))
+            if (!VehicleInputApplicator.TryGetPlayerVehicle(out var vehicle))
                 return false;
 
             if (!MovementModeDetector.TryGetVehiclePose(out var position, out var forward))
+            {
+                AutoDriveDiagnostics.LogBlockedOnce("TryGetVehiclePose failed");
                 return false;
+            }
 
             var waypoints = BuildWaypoints(path, NavigationTargetTracker.ActiveTarget);
             if (waypoints.Length < 2)
+            {
+                AutoDriveDiagnostics.LogBlockedOnce(
+                    "too few waypoints after decimation count=" + waypoints.Length +
+                    " raw=" + path.Points.Length);
                 return false;
+            }
 
-            var speed = car.vehicleController.Speed;
+            var speed = vehicle.Speed;
             var finalTarget = NavigationTargetTracker.ActiveTarget;
             var follow = VehiclePathFollower.Evaluate(waypoints, position, forward, speed, finalTarget);
             var command = VehicleDriveController.Compute(follow, speed);
-            VehicleInputApplicator.Apply(car, command);
+            VehicleInputApplicator.Apply(vehicle, command);
+
+            AutoDriveDiagnostics.LogApplyThrottled(
+                speed,
+                command.Throttle,
+                command.Brakes,
+                command.Steering,
+                follow.CrossTrackMeters,
+                follow.HeadingErrorDegrees,
+                follow.DistanceToDestination,
+                follow.OffRoute,
+                waypoints.Length);
+
+            if (follow.OffRoute)
+                AutoDriveDiagnostics.LogStatusThrottled("off-route crossTrack=" + follow.CrossTrackMeters.ToString("F1"));
 
             if (follow.DistanceToDestination <= ArrivalDisableMeters && speed <= ArrivalSpeedMps)
             {
+                AutoDriveDiagnostics.OnDisabled("arrived");
                 DisableAtDestination();
                 return true;
             }

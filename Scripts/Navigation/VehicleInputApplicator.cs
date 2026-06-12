@@ -1,66 +1,112 @@
-using System.Reflection;
 using UnityEngine;
 
 namespace VoogleRoute.Navigation
 {
     internal static class VehicleInputApplicator
     {
-        private static readonly BindingFlags InstanceFlags = BindingFlags.Public | BindingFlags.Instance;
-
-        private static CarController _activeCar;
-        private static bool _inputLocked;
-        private static PropertyInfo _autoSetInputProp;
-        private static PropertyInfo _throttleProp;
-        private static PropertyInfo _brakesProp;
-        private static PropertyInfo _steeringProp;
-        private static PropertyInfo _externallyAddedAngleProp;
-
-        internal static bool TryGetPlayerCar(out CarController car)
+        internal readonly struct VehicleHandle
         {
-            car = null;
+            internal global::NWH.VehiclePhysics2.VehicleController Physics { get; }
+            internal string VehicleKind { get; }
+
+            internal VehicleHandle(global::NWH.VehiclePhysics2.VehicleController physics, string vehicleKind)
+            {
+                Physics = physics;
+                VehicleKind = vehicleKind;
+            }
+
+            internal float Speed => Physics != null ? Physics.Speed : 0f;
+        }
+
+        private static global::NWH.VehiclePhysics2.VehicleController _activePhysics;
+        private static bool _inputLocked;
+        private static bool _loggedBinding;
+
+        internal static bool TryGetPlayerVehicle(out VehicleHandle handle)
+        {
+            handle = default;
 
             try
             {
                 if (!GameManager.IsInitialized)
+                {
+                    AutoDriveDiagnostics.LogBlockedOnce("GameManager not initialized");
                     return false;
+                }
 
                 var vehicle = GameManager.Instance?.selectedVehicle;
-                if (vehicle == null || !vehicle.controlledByPlayer)
+                if (vehicle == null)
+                {
+                    AutoDriveDiagnostics.LogBlockedOnce("no selectedVehicle");
                     return false;
+                }
 
-                car = vehicle as CarController;
-                return car != null && car.vehicleController?.input != null;
+                if (!vehicle.controlledByPlayer)
+                {
+                    AutoDriveDiagnostics.LogBlockedOnce("vehicle not controlledByPlayer");
+                    return false;
+                }
+
+                if (vehicle is CarController car && car.vehicleController?.input != null)
+                {
+                    handle = new VehicleHandle(car.vehicleController, "CarController");
+                    return true;
+                }
+
+                var physics = ((Component)vehicle).GetComponent<global::NWH.VehiclePhysics2.VehicleController>();
+                if (physics?.input != null)
+                {
+                    handle = new VehicleHandle(physics, vehicle.GetType().Name);
+                    return true;
+                }
+
+                AutoDriveDiagnostics.LogBlockedOnce(
+                    "no NWH VehicleController on " + vehicle.GetType().Name);
+                return false;
             }
-            catch
+            catch (System.Exception ex)
             {
+                AutoDriveDiagnostics.LogBlockedOnce("TryGetPlayerVehicle exception: " + ex.Message);
                 return false;
             }
         }
 
-        internal static void Apply(CarController car, VehicleDriveCommand command)
+        internal static void Apply(VehicleHandle handle, VehicleDriveCommand command)
         {
-            var physics = car.vehicleController;
-            if (physics == null)
-                return;
-
-            var input = physics.input;
+            var physics = handle.Physics;
+            var input = physics?.input;
             if (input == null)
-                return;
-
-            if (!_inputLocked || _activeCar != car)
             {
-                CacheInputReflection(input.GetType(), physics.steering?.GetType());
-                SetBool(input, _autoSetInputProp, false);
-                _inputLocked = true;
-                _activeCar = car;
+                AutoDriveDiagnostics.LogBlockedOnce("vehicle input is null");
+                return;
             }
 
-            SetFloat(input, _throttleProp, command.Throttle);
-            SetFloat(input, _brakesProp, command.Brakes);
-            SetFloat(input, _steeringProp, command.Steering);
+            if (!_inputLocked || _activePhysics != physics)
+            {
+                input.autoSetInput = false;
+                _inputLocked = true;
+                _activePhysics = physics;
+                _loggedBinding = false;
+                AutoDriveDiagnostics.LogStatusThrottled(
+                    "input takeover | vehicle=" + handle.VehicleKind);
+            }
+
+            if (!_loggedBinding)
+            {
+                _loggedBinding = true;
+                AutoDriveDiagnostics.LogInputBinding(
+                    input.autoSetInput,
+                    true,
+                    true,
+                    true);
+            }
+
+            input.Throttle = command.Throttle;
+            input.Brakes = command.Brakes;
+            input.Steering = command.Steering;
 
             if (physics.steering != null)
-                SetFloat(physics.steering, _externallyAddedAngleProp, 0f);
+                physics.steering.externallyAddedAngle = 0f;
 
             ManualVehicleInputDetector.SuppressBriefly();
         }
@@ -72,11 +118,11 @@ namespace VoogleRoute.Navigation
 
             try
             {
-                if (_activeCar?.vehicleController?.input != null)
-                    SetBool(_activeCar.vehicleController.input, _autoSetInputProp, true);
+                if (_activePhysics?.input != null)
+                    _activePhysics.input.autoSetInput = true;
 
-                if (_activeCar?.vehicleController?.steering != null)
-                    SetFloat(_activeCar.vehicleController.steering, _externallyAddedAngleProp, 0f);
+                if (_activePhysics?.steering != null)
+                    _activePhysics.steering.externallyAddedAngle = 0f;
             }
             catch
             {
@@ -84,34 +130,8 @@ namespace VoogleRoute.Navigation
             }
 
             _inputLocked = false;
-            _activeCar = null;
-        }
-
-        private static void CacheInputReflection(System.Type inputType, System.Type steeringType)
-        {
-            _autoSetInputProp ??= inputType.GetProperty("autoSetInput", InstanceFlags);
-            _throttleProp ??= inputType.GetProperty("Throttle", InstanceFlags);
-            _brakesProp ??= inputType.GetProperty("Brakes", InstanceFlags);
-            _steeringProp ??= inputType.GetProperty("Steering", InstanceFlags);
-
-            if (steeringType != null)
-                _externallyAddedAngleProp ??= steeringType.GetProperty("externallyAddedAngle", InstanceFlags);
-        }
-
-        private static void SetFloat(object target, PropertyInfo prop, float value)
-        {
-            if (target == null || prop == null)
-                return;
-
-            prop.SetValue(target, value);
-        }
-
-        private static void SetBool(object target, PropertyInfo prop, bool value)
-        {
-            if (target == null || prop == null)
-                return;
-
-            prop.SetValue(target, value);
+            _activePhysics = null;
+            _loggedBinding = false;
         }
     }
 }

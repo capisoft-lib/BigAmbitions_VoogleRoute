@@ -14,10 +14,10 @@ namespace VoogleRoute.Navigation
 
         internal static VehicleDriveCommand Compute(VehiclePathFollower.FollowState state, float speedMps)
         {
-            if (state.OffRoute)
-                return VehicleDriveCommand.Stop;
-
             var targetSpeed = ComputeTargetSpeed(state);
+            if (state.OffRoute)
+                targetSpeed = Mathf.Min(targetSpeed, 4f);
+
             var throttle = 0f;
             var brakes = 0f;
 
