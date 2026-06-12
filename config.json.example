@@ -2,5 +2,7 @@
   "logging": false,
   "log_level": "error",
   "show_line_detection": false,
-  "route_line_color": [0, 0.7058824, 1, 0.92]
+  "route_line_color": [0, 0.7058824, 1, 0.92],
+  "indoor_route": true,
+  "indoor_autowalk": false
 }

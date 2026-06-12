@@ -39,7 +39,11 @@ namespace VoogleRoute.Navigation
                 if (IsInvalidAddress(address))
                 {
                     if (NavigationTargetTracker.HasMapGpsTarget)
+                    {
+                        ModLog.Info("Map destination cleared (customDestination empty).");
                         NavigationTargetTracker.ClearMapGpsTarget("map destination cleared");
+                    }
+
                     _hasLastAddress = false;
                     _lastResolvedAddress = null;
                     return;
@@ -53,7 +57,10 @@ namespace VoogleRoute.Navigation
                 _hasLastAddress = true;
     
                 if (TryResolveWorldPosition(address, out var worldPos))
+                {
+                    ModLog.Info("Map destination synced: " + address + " -> " + worldPos);
                     NavigationTargetTracker.SetMapGpsTarget(worldPos);
+                }
                 else
                     ModLog.Info("Map destination unresolved: " + address);
             }

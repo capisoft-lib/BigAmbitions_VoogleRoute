@@ -2,6 +2,7 @@ using System;
 using BAModAPI;
 using BigAmbitions.Mods;
 using UnityEngine;
+using VoogleRoute.UI;
 
 namespace VoogleRoute
 {
@@ -26,10 +27,11 @@ namespace VoogleRoute
         internal static bool IndoorAutoWalkEnabled { get; private set; }
     
         internal static float FootLineWidth { get; private set; } = 0.3f;
+        internal static float IndoorFootLineWidth { get; private set; } = 0.12f;
         internal static float FootGroundOffset { get; private set; } = 0.40f;
         internal static float VehicleLineWidth { get; private set; } = 0.22f;
         internal static float VehicleGroundOffset { get; private set; } = 0.40f;
-        internal static float RecalcIntervalSeconds { get; private set; } = 0.75f;
+        internal static float RecalcIntervalSeconds { get; private set; } = 0.4f;
         internal static float VehicleRecalcIntervalSeconds { get; private set; } = 10f;
         internal static bool ShowPartialPaths { get; private set; }
         internal static bool ShowLineDetection { get; private set; }
@@ -72,7 +74,7 @@ namespace VoogleRoute
                 .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled, OnIndoorAutoWalkOptionChanged);
 
             OptionsService.Register(context.ModId, options);
-            ModLog.Info("Mod options registered (route line, auto-walk).");
+            ModLog.Info("Mod options registered (outdoor + indoor route line and auto-walk).");
         }
     
         internal static void Shutdown()
@@ -86,28 +88,44 @@ namespace VoogleRoute
     
         internal static void SetRouteLineEnabled(bool value)
         {
+            if (RouteLineEnabled == value)
+                return;
+
             RouteLineEnabled = value;
             ModLog.Info("Route line = " + value);
+            RouteToggleHud.RefreshVisual();
         }
     
         internal static void SetAutoWalkEnabled(bool value)
         {
+            if (AutoWalkEnabled == value)
+                return;
+
             AutoWalkEnabled = value;
             ModLog.Info("Auto-walk = " + value);
+            RouteToggleHud.RefreshVisual();
         }
 
         internal static void SetIndoorRouteLineEnabled(bool value)
         {
+            if (IndoorRouteLineEnabled == value)
+                return;
+
             IndoorRouteLineEnabled = value;
             ModConfigStore.SetIndoorRouteLineEnabled(value);
             ModLog.Info("Indoor route line = " + value);
+            RouteToggleHud.RefreshVisual();
         }
 
         internal static void SetIndoorAutoWalkEnabled(bool value)
         {
+            if (IndoorAutoWalkEnabled == value)
+                return;
+
             IndoorAutoWalkEnabled = value;
             ModConfigStore.SetIndoorAutoWalkEnabled(value);
             ModLog.Info("Indoor auto-walk = " + value);
+            RouteToggleHud.RefreshVisual();
         }
     
         private static void OnRouteLineOptionChanged(bool value) => SetRouteLineEnabled(value);

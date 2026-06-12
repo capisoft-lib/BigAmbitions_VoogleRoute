@@ -32,6 +32,8 @@ namespace VoogleRoute.Navigation
         private static MovementMode _lastMode = MovementMode.Unavailable;
         private static PathResult _cached;
         private static bool _cacheValid;
+        private static MovementMode _cachedMode = MovementMode.Unavailable;
+        private static MovementMode _lastFinalPointsMode = MovementMode.Unavailable;
         private static PathResult _lastGoodVehiclePath;
         private static readonly object AsyncGate = new object();
         private static int _cacheGeneration;
@@ -43,6 +45,7 @@ namespace VoogleRoute.Navigation
         private static string _asyncRequestSource = "unknown";
         private static string _asyncRecalcReason = "unknown";
         private static bool _mapDestinationRecalcPending;
+        private static float _lastFootRecalcTime = -999f;
 
         internal static Vector3[] LastFinalPoints { get; private set; } = System.Array.Empty<Vector3>();
         internal static bool RouteWasRecalculated { get; private set; }
@@ -57,13 +60,30 @@ namespace VoogleRoute.Navigation
 
         internal static bool TryGetCachedRouteForDisplay(out PathResult path)
         {
-            if (_cacheValid && _cached.Success && _cached.Points != null && _cached.Points.Length >= 2)
+            var mode = MovementModeDetector.CurrentMode;
+
+            if (_cacheValid &&
+                _cached.Success &&
+                _cachedMode == mode &&
+                _cached.Points != null &&
+                _cached.Points.Length >= 2)
             {
                 path = _cached;
                 return true;
             }
 
-            if (LastFinalPoints.Length >= 2)
+            if (mode == MovementMode.Vehicle &&
+                _lastGoodVehiclePath.Success &&
+                _lastGoodVehiclePath.Points != null &&
+                _lastGoodVehiclePath.Points.Length >= 2)
+            {
+                path = _lastGoodVehiclePath;
+                return true;
+            }
+
+            if (IsAsyncRecalcInProgress &&
+                _lastFinalPointsMode == mode &&
+                LastFinalPoints.Length >= 2)
             {
                 path = new PathResult
                 {
@@ -77,12 +97,21 @@ namespace VoogleRoute.Navigation
             return false;
         }
 
+        internal static void EnsureCacheMatchesMovementMode()
+        {
+            var mode = MovementModeDetector.CurrentMode;
+            if (!_cacheValid || _cachedMode == mode)
+                return;
+
+            InvalidateCache("movement_mode_mismatch");
+        }
+
         internal static PathResult GetRoute(bool forceRecalc = false, string requestSource = "unknown")
         {
             var totalTimer = RouteRecalcDiagnostics.StartTimer();
             RouteWasRecalculated = false;
 
-            if (!GameState.ShouldRunNavigationSystems())
+            if (!GameState.ShouldRunPathfinding())
                 return FinishSilent(totalTimer, requestSource, SilentEmpty());
 
             if (!NavigationTargetTracker.HasTarget)
@@ -109,8 +138,11 @@ namespace VoogleRoute.Navigation
             var targetChanged = _mapDestinationRecalcPending ||
                 Time.unscaledTime - NavigationTargetTracker.LastChangeTime < 0.05f;
             var targetMoved = (target - _lastTarget).sqrMagnitude > 1f;
+            var footIntervalDue = mode == MovementMode.OnFoot &&
+                Time.unscaledTime - _lastFootRecalcTime >= ModConfig.RecalcIntervalSeconds;
 
             if (!forceRecalc &&
+                !footIntervalDue &&
                 !cacheMiss &&
                 !modeChanged &&
                 withinCorridor &&
@@ -123,6 +155,9 @@ namespace VoogleRoute.Navigation
             }
 
             var leftCorridor = !cacheMiss && !withinCorridor;
+            if (footIntervalDue)
+                forceRecalc = true;
+
             var recalcReason = RouteRecalcDiagnostics.BuildRecalcReason(
                 forceRecalc,
                 modeChanged,
@@ -143,9 +178,10 @@ namespace VoogleRoute.Navigation
                     requestSource,
                     recalcReason,
                     totalTimer))
-                return _cached;
+                return ResolveDisplayCacheDuringRecalc(mode, target);
 
-            var showBanner = leftCorridor || forceRecalc || targetChanged || targetMoved;
+            var showBanner = mode == MovementMode.Vehicle &&
+                (leftCorridor || forceRecalc || targetChanged || targetMoved);
             if (showBanner)
                 RouteRecalcBanner.Show();
 
@@ -154,6 +190,8 @@ namespace VoogleRoute.Navigation
 
             _lastTarget = target;
             RouteWasRecalculated = true;
+            if (mode == MovementMode.OnFoot)
+                _lastFootRecalcTime = Time.unscaledTime;
 
             var sampleOrigin = origin;
             if (MovementModeDetector.TryGetPlayerOrigin(out var feet))
@@ -197,16 +235,38 @@ namespace VoogleRoute.Navigation
             RouteRecalcBanner.RequestHide();
 
             if (generation != _cacheGeneration ||
-                !GameState.ShouldRunNavigationSystems() ||
+                !GameState.ShouldRunPathfinding() ||
                 !NavigationTargetTracker.HasTarget)
                 return false;
 
             RouteWasRecalculated = true;
+            var completedMode = MovementModeDetector.CurrentMode;
             LastFinalPoints = pending.Points ?? System.Array.Empty<Vector3>();
-            if (MovementModeDetector.CurrentMode == MovementMode.Vehicle && pending.Success)
+            _lastFinalPointsMode = completedMode;
+            if (completedMode == MovementMode.OnFoot)
+                _lastFootRecalcTime = Time.unscaledTime;
+            if (completedMode == MovementMode.Vehicle && pending.Success)
                 _lastGoodVehiclePath = pending;
 
-            Cache(pending);
+            if (!pending.Success &&
+                completedMode == MovementMode.Vehicle &&
+                TryReturnLastGoodVehiclePath(NavigationTargetTracker.ActiveTarget))
+            {
+                RouteRecalcDiagnostics.LogRecalc(
+                    requestSource,
+                    recalcReason + "|async|kept_last_good",
+                    MovementModeDetector.CurrentMode,
+                    0f,
+                    RouteRecalcDiagnostics.LastPathfindMs,
+                    0f,
+                    _cached.Points?.Length ?? 0,
+                    RoutePathfindKind.FullAStar,
+                    true);
+                _asyncRefreshPending = true;
+                return true;
+            }
+
+            Cache(pending, completedMode);
             RouteRecalcDiagnostics.LogRecalc(
                 requestSource,
                 recalcReason + "|async",
@@ -399,7 +459,9 @@ namespace VoogleRoute.Navigation
                     pathfindMs,
                     RouteRecalcDiagnostics.LastPathfindKind,
                     "status=" + status);
-                return Cache(Empty());
+                LastFinalPoints = System.Array.Empty<Vector3>();
+                _lastFinalPointsMode = MovementMode.Unavailable;
+                return Cache(Empty(), mode);
             }
 
             var isPartial = status == NavMeshPathStatus.PathPartial;
@@ -413,7 +475,9 @@ namespace VoogleRoute.Navigation
                     pathfindMs,
                     RouteRecalcDiagnostics.LastPathfindKind,
                     "partial=true");
-                return Cache(Empty());
+                LastFinalPoints = System.Array.Empty<Vector3>();
+                _lastFinalPointsMode = MovementMode.Unavailable;
+                return Cache(Empty(), mode);
             }
 
             if (navCorners.Length == 0)
@@ -426,7 +490,9 @@ namespace VoogleRoute.Navigation
                     pathfindMs,
                     RouteRecalcDiagnostics.LastPathfindKind,
                     "corners=0");
-                return Cache(Empty());
+                LastFinalPoints = System.Array.Empty<Vector3>();
+                _lastFinalPointsMode = MovementMode.Unavailable;
+                return Cache(Empty(), mode);
             }
 
             var pipelineTimer = RouteRecalcDiagnostics.StartTimer();
@@ -437,6 +503,7 @@ namespace VoogleRoute.Navigation
 
             var success = linePoints.Length >= 2;
             LastFinalPoints = linePoints;
+            _lastFinalPointsMode = mode;
             var result = new PathResult
             {
                 Success = success,
@@ -458,7 +525,7 @@ namespace VoogleRoute.Navigation
                 RouteRecalcDiagnostics.LastPathfindKind,
                 success);
 
-            return Cache(result);
+            return Cache(result, mode);
         }
 
         internal static void NotifyMapDestinationChanged()
@@ -468,6 +535,7 @@ namespace VoogleRoute.Navigation
             _cacheValid = false;
             _lastGoodVehiclePath = PathResult.None;
             LastFinalPoints = System.Array.Empty<Vector3>();
+            _lastFinalPointsMode = MovementMode.Unavailable;
             _mapDestinationRecalcPending = true;
             RouteRecalcDiagnostics.LogCacheInvalidated("map_destination_changed");
         }
@@ -479,7 +547,11 @@ namespace VoogleRoute.Navigation
             _cached = Empty();
             _cacheValid = false;
             _lastMode = MovementMode.Unavailable;
+            _lastFootRecalcTime = -999f;
             _lastGoodVehiclePath = PathResult.None;
+            LastFinalPoints = System.Array.Empty<Vector3>();
+            _cachedMode = MovementMode.Unavailable;
+            _lastFinalPointsMode = MovementMode.Unavailable;
             PathGeometry.ResetVehicleLineTrimState();
             VehiclePathPipeline.InvalidateRouteLineCache();
             RouteRecalcDiagnostics.LogCacheInvalidated(reason);
@@ -508,8 +580,20 @@ namespace VoogleRoute.Navigation
 
             _cached = _lastGoodVehiclePath;
             _cacheValid = true;
+            _cachedMode = MovementMode.Vehicle;
             RouteWasRecalculated = false;
             return true;
+        }
+
+        private static PathResult ResolveDisplayCacheDuringRecalc(MovementMode mode, Vector3 target)
+        {
+            if (_cacheValid && _cached.Success && _cachedMode == mode)
+                return _cached;
+
+            if (mode == MovementMode.Vehicle && TryReturnLastGoodVehiclePath(target))
+                return _cached;
+
+            return Empty();
         }
 
         private static PathResult FinishSilent(Stopwatch timer, string requestSource, PathResult result)
@@ -519,10 +603,17 @@ namespace VoogleRoute.Navigation
             return result;
         }
 
-        private static PathResult Cache(PathResult result)
+        private static PathResult Cache(PathResult result, MovementMode mode)
         {
             _cached = result;
             _cacheValid = true;
+            _cachedMode = mode;
+            if (result.Success && result.Points != null && result.Points.Length >= 2)
+            {
+                LastFinalPoints = result.Points;
+                _lastFinalPointsMode = mode;
+            }
+
             return result;
         }
 

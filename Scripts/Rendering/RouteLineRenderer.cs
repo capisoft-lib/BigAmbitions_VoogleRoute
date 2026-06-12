@@ -10,18 +10,31 @@ namespace VoogleRoute.Rendering
         {
             FootRouteLineRenderer.EnsureCreated();
             VehicleRouteLineRenderer.EnsureCreated();
+            CityMapRouteLineRenderer.EnsureCreated();
             RouteLineDetectionRenderer.EnsureCreated();
-            ModLog.Info("Route line renderers initialized (foot + vehicle).");
+            ModLog.Info("Route line renderers initialized (foot + vehicle + city map).");
         }
 
         internal static void ApplyStyle()
         {
             FootRouteLineRenderer.ApplyStyle();
             VehicleRouteLineRenderer.ApplyStyle();
+            CityMapRouteLineRenderer.ApplyStyle();
         }
 
         internal static void ShowPath(PathResult path)
         {
+            if (GameState.IsCityMapOpen())
+            {
+                FootRouteLineRenderer.Hide();
+                VehicleRouteLineRenderer.Hide();
+                RouteLineDetectionRenderer.Hide();
+                CityMapRouteLineRenderer.ShowPath(path);
+                return;
+            }
+
+            CityMapRouteLineRenderer.Hide();
+
             var mode = MovementModeDetector.CurrentMode;
             if (mode != _lastRenderMode)
             {
@@ -47,6 +60,7 @@ namespace VoogleRoute.Rendering
         {
             FootRouteLineRenderer.Hide();
             VehicleRouteLineRenderer.Hide();
+            CityMapRouteLineRenderer.Hide();
             RouteLineDetectionRenderer.Hide();
         }
 
@@ -60,6 +74,7 @@ namespace VoogleRoute.Rendering
         {
             FootRouteLineRenderer.Destroy();
             VehicleRouteLineRenderer.Destroy();
+            CityMapRouteLineRenderer.Destroy();
             RouteLineDetectionRenderer.Destroy();
         }
     }

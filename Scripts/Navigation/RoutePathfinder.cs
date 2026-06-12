@@ -61,6 +61,11 @@ namespace VoogleRoute.Navigation
                 appendDestination: ToVec3(destination));
 
             corners = ToUnity(points);
+            if (corners.Length < 2)
+                corners = new[] { origin, destination };
+            else
+                corners = VehiclePathArrival.Apply(origin, destination, corners);
+
             var success = corners.Length >= 2;
             RouteRecalcDiagnostics.RecordPathfind(
                 success ? RoutePathfindKind.FullAStar : RoutePathfindKind.Failed,

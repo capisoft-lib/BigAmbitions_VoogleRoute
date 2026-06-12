@@ -49,6 +49,33 @@ namespace VoogleRoute
         internal static bool ShouldShowIndoorNavigationPanel() => IsIndoorNavigationContext();
     
         internal static bool ShouldShowNavigationPanel() => ShouldRunNavigationSystems();
+
+        internal static bool IsCityMapOpen()
+        {
+            try
+            {
+                return CityMap.IsOpen;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>Route overlay on the 3D city map (M) — independent from ground navigation.</summary>
+        internal static bool ShouldRunMapRouteOverlay()
+        {
+            if (!IsPlayable())
+                return false;
+
+            return IsCityMapOpen();
+        }
+
+        /// <summary>Pathfinding for ground HUD or city-map overlay (map open blocks HUD nav, not map route).</summary>
+        internal static bool ShouldRunPathfinding()
+        {
+            return ShouldRunNavigationSystems() || ShouldRunMapRouteOverlay();
+        }
     
         internal static bool IsOverlayBlockingNavigation()
         {

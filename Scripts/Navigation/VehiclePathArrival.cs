@@ -7,7 +7,7 @@ namespace VoogleRoute.Navigation
     internal static class VehiclePathArrival
     {
         private const float ImmediateArrivalMeters = 22f;
-        private const float ArrivalZoneMeters = 48f;
+        private const float ArrivalZoneMeters = 96f;
         private const float DetourRatioThreshold = 1.85f;
 
         internal static Vector3[] Apply(Vector3 origin, Vector3 destination, Vector3[] path)

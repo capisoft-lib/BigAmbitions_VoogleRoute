@@ -1,3 +1,4 @@
+using System;
 using BAModAPI;
 using BaPlayerLocation.Subscriber;
 using UnityEngine;
@@ -20,6 +21,10 @@ namespace VoogleRoute
         private static bool _destinationRecalcPending;
         private static PathResult _activePath;
         private static bool _warnedMissingLibrary;
+        private static bool _wasMapOverlayActive;
+        private static float _nextFootLineRefresh;
+        private static float _nextFootPathRecalc;
+        private static Action<bool> _onCityMapToggled;
 
         internal static void Initialize(ModContext context)
         {
@@ -30,12 +35,22 @@ namespace VoogleRoute
             PlayerLocationSession.Changed += OnPlayerLocationChanged;
             PlayerLocationLogger.Initialize();
             RouteGraphStore.WarmUp();
+            _onCityMapToggled = MapOverlayDiagnostics.OnCityMapToggled;
+            GlobalEvents.onCityMapToggle =
+                (Action<bool>)Delegate.Combine(GlobalEvents.onCityMapToggle, _onCityMapToggled);
             ModLog.Info("VoogleRoute loop initialized.");
         }
 
         internal static void Shutdown()
         {
             ModLog.Info("VoogleRoute loop shutting down.");
+            if (_onCityMapToggled != null)
+            {
+                GlobalEvents.onCityMapToggle =
+                    (Action<bool>)Delegate.Remove(GlobalEvents.onCityMapToggle, _onCityMapToggled);
+                _onCityMapToggled = null;
+            }
+
             IndoorNavigationService.Reset();
             PlayerLocationSession.Changed -= OnPlayerLocationChanged;
             PlayerLocationLogger.Shutdown();
@@ -88,9 +103,30 @@ namespace VoogleRoute
             if (ModConfig.WantsRouteComputation && GameState.IsWorldReady())
                 SyncMapDestination();
 
+            var mapOverlayActive = GameState.ShouldRunMapRouteOverlay();
+            if (mapOverlayActive)
+            {
+                if (!_wasMapOverlayActive)
+                {
+                    _wasMapOverlayActive = true;
+                    PathFinderService.EnsureCacheMatchesMovementMode();
+                    _forceRouteRecalc = true;
+                    MapOverlayDiagnostics.LogNavigateState("overlay_started");
+                }
+
+                TickMapRouteOverlay();
+            }
+            else if (_wasMapOverlayActive)
+            {
+                _wasMapOverlayActive = false;
+                MapOverlayDiagnostics.LogRouteHidden("overlay_ended");
+                CityMapRouteLineRenderer.Hide();
+            }
+
             if (!GameState.ShouldRunNavigationSystems())
             {
-                OnNavigationContextEnded();
+                if (!mapOverlayActive)
+                    OnNavigationContextEnded();
                 return;
             }
 
@@ -137,8 +173,31 @@ namespace VoogleRoute
             if (PathFinderService.TickAsyncRecalc() || PathFinderService.ConsumeAsyncRefreshRequest())
                 RefreshRouteDisplayFromCache();
 
+            TickFootRouteRefresh(canNavigate, navigationWanted);
+
             if (AutoWalkService.Tick(canNavigate, _activePath))
                 RouteToggleHud.RefreshVisual();
+        }
+
+        private static void TickFootRouteRefresh(bool canNavigate, bool navigationWanted)
+        {
+            if (!canNavigate || !navigationWanted ||
+                MovementModeDetector.CurrentMode != MovementMode.OnFoot)
+                return;
+
+            var now = Time.unscaledTime;
+
+            if (ModConfig.RouteLineEnabled && _activePath.Success && now >= _nextFootLineRefresh)
+            {
+                _nextFootLineRefresh = now + 0.12f;
+                RouteLineRenderer.ShowPath(_activePath);
+            }
+
+            if (now < _nextFootPathRecalc)
+                return;
+
+            _nextFootPathRecalc = now + ModConfig.RecalcIntervalSeconds;
+            RefreshRouteIfNavigating("foot_interval");
         }
 
         private static void OnPlayerLocationChanged(PlayerLocationSnapshot snapshot)
@@ -157,7 +216,15 @@ namespace VoogleRoute
             }
 
             if (!GameState.ShouldRunNavigationSystems())
+            {
+                if (GameState.ShouldRunMapRouteOverlay() && MovementModeDetector.ModeChangedSinceLastApply)
+                {
+                    InvalidateRouteCache("movement_mode_changed_map");
+                    _forceRouteRecalc = true;
+                }
+
                 return;
+            }
 
             if (MovementModeDetector.ModeChangedSinceLastApply)
             {
@@ -262,6 +329,8 @@ namespace VoogleRoute
         {
             PathFinderService.InvalidateCache(reason);
             _forceRouteRecalc = true;
+            _activePath = PathResult.None;
+            RouteLineRenderer.Hide();
         }
 
         private static void CleanupNavigationState()
@@ -292,6 +361,111 @@ namespace VoogleRoute
                 RouteLineRenderer.ShowPath(_activePath);
             else
                 RouteLineRenderer.Hide();
+        }
+
+        private static void TickMapRouteOverlay()
+        {
+            if (!ModConfig.WantsRouteComputation)
+            {
+                MapOverlayDiagnostics.LogOverlayBlocked("route_computation_disabled");
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            if (_destinationRecalcPending && TryRefreshDestinationRecalc())
+                _destinationRecalcPending = false;
+
+            if (!ModConfig.RouteLineEnabled)
+            {
+                MapOverlayDiagnostics.LogOverlayBlocked("route_line_disabled");
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            var canNavigate = CanNavigate();
+            MapOverlayDiagnostics.MaybeLogPeriodicStatus(true, canNavigate);
+
+            if (!canNavigate)
+            {
+                MapOverlayDiagnostics.LogOverlayBlocked(DescribeNavigateBlockReason());
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            if (PathFinderService.TickAsyncRecalc() || PathFinderService.ConsumeAsyncRefreshRequest())
+                RefreshMapRouteDisplayFromCache();
+            else if (_forceRouteRecalc && !PathFinderService.IsAsyncRecalcInProgress)
+                RefreshMapRouteIfNavigating("map_overlay_resume");
+            else if (!PathFinderService.IsAsyncRecalcInProgress)
+                RefreshMapRouteDisplayFromCache();
+        }
+
+        private static string DescribeNavigateBlockReason()
+        {
+            if (!PlayerLocationSession.IsLibraryActive)
+                return "lib_ba_player_location_inactive";
+
+            if (!NavigationTargetTracker.HasMapGpsTarget)
+                return "no_map_gps_target";
+
+            if (NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
+                return "destination_source_not_map(" + NavigationTargetTracker.LastSource + ")";
+
+            if (MovementModeDetector.CurrentMode == MovementMode.Subway)
+                return "movement_subway";
+
+            if (MovementModeDetector.CurrentMode is not (MovementMode.OnFoot or MovementMode.Vehicle))
+                return "movement_unavailable(" + MovementModeDetector.CurrentMode + ")";
+
+            return "unknown";
+        }
+
+        private static void RefreshMapRouteIfNavigating(string requestSource = "map_overlay")
+        {
+            if (!CanNavigate() || !ModConfig.WantsRouteComputation)
+            {
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            if (PathFinderService.IsAsyncRecalcInProgress)
+                return;
+
+            var showLine = ModConfig.RouteLineEnabled;
+
+            if (_forceRouteRecalc &&
+                showLine &&
+                PathFinderService.TryGetCachedRouteForDisplay(out var previewPath))
+                RouteLineRenderer.ShowPath(previewPath);
+
+            var path = PathFinderService.GetRoute(_forceRouteRecalc, requestSource);
+            _forceRouteRecalc = false;
+
+            if (!showLine)
+            {
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            if (path.Success)
+                RouteLineRenderer.ShowPath(path);
+            else if (!PathFinderService.IsAsyncRecalcInProgress)
+                CityMapRouteLineRenderer.Hide();
+        }
+
+        private static void RefreshMapRouteDisplayFromCache()
+        {
+            if (!CanNavigate() || !ModConfig.WantsRouteComputation)
+            {
+                CityMapRouteLineRenderer.Hide();
+                return;
+            }
+
+            if (ModConfig.RouteLineEnabled &&
+                PathFinderService.TryGetCachedRouteForDisplay(out var path))
+                RouteLineRenderer.ShowPath(path);
+            else
+                CityMapRouteLineRenderer.Hide();
         }
 
         private static bool ShouldRefreshHud()

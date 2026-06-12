@@ -27,6 +27,12 @@ namespace VoogleRoute.UI
         internal static string ColorPresetWhite => Loc("voogle_route_color_white", "White");
         internal static string RouteRecalculating =>
             Loc("voogle_route_recalculating", "Recalculating route...");
+        internal static string MapDestTitle =>
+            Loc("voogle_route_map_dest_title", "Set destination");
+        internal static string MapDestConfirm =>
+            Loc("voogle_route_map_dest_confirm", "SET DESTINATION");
+        internal static string MapDestCancel =>
+            Loc("voogle_route_map_dest_cancel", "CANCEL");
 
         internal static void PollLanguageChange()
         {

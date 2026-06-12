@@ -19,8 +19,6 @@ namespace VoogleRoute.Navigation
             if (HasTarget && (ActiveTarget - target).sqrMagnitude < 0.25f)
                 return;
 
-            CityMapHelper.CloseIfOpen();
-
             ActiveTarget = target;
             HasTarget = true;
             LastSource = MapSource;

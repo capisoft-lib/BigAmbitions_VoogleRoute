@@ -137,15 +137,25 @@ namespace VoogleRoute.Rendering
             if (!path.Success || points.Length < 2)
                 return System.Array.Empty<Vector3>();
 
-            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
-                return points;
+            if (MovementModeDetector.CurrentMode == MovementMode.Vehicle)
+            {
+                if (!MovementModeDetector.TryGetVehiclePose(out var pose, out var forward))
+                    return points;
 
-            if (!MovementModeDetector.TryGetVehiclePose(out var pose, out var forward))
-                return points;
+                const float trimBehindVehicleMeters = 6f;
+                var trimmed = PathGeometry.TrimBehindOrigin(points, pose, forward, trimBehindVehicleMeters);
+                return trimmed.Length >= 2 ? trimmed : points;
+            }
 
-            const float trimBehindVehicleMeters = 6f;
-            var trimmed = PathGeometry.TrimBehindOrigin(points, pose, forward, trimBehindVehicleMeters);
-            return trimmed.Length >= 2 ? trimmed : points;
+            if (MovementModeDetector.CurrentMode == MovementMode.OnFoot &&
+                MovementModeDetector.TryGetPlayerOrigin(out var footPose))
+            {
+                const float trimBehindFootMeters = 2f;
+                var trimmed = PathGeometry.TrimBehindOrigin(points, footPose, trimBehindFootMeters);
+                return trimmed.Length >= 2 ? trimmed : points;
+            }
+
+            return points;
         }
 
         private static bool IsSameCenterline(Vector3[] points)

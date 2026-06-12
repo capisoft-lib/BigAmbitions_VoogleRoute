@@ -65,7 +65,8 @@ namespace VoogleRoute.Rendering
             var points = path.Points ?? System.Array.Empty<Vector3>();
             if (!path.Success || points.Length < 2)
             {
-                if (_lastGoodDisplayPoints != null && _lastGoodDisplayPoints.Length >= 2)
+                if (!PathFinderService.RouteWasRecalculated &&
+                    _lastGoodDisplayPoints != null && _lastGoodDisplayPoints.Length >= 2)
                 {
                     _root.SetActive(true);
                     return;
@@ -128,6 +129,28 @@ namespace VoogleRoute.Rendering
                 displayPoints = trimmed;
 
             return displayPoints.Length >= 2 ? displayPoints : points;
+        }
+
+        /// <summary>World vehicle line geometry for the city map — no navmesh re-snap.</summary>
+        internal static bool TryGetDisplayPointsForMap(Vector3[] pathPoints, out Vector3[] displayPoints)
+        {
+            Vector3[] source = null;
+            if (pathPoints != null && pathPoints.Length >= 2)
+                source = pathPoints;
+            else if (_lastGoodDisplayPoints != null && _lastGoodDisplayPoints.Length >= 2)
+                source = _lastGoodDisplayPoints;
+
+            if (source == null)
+            {
+                displayPoints = null;
+                return false;
+            }
+
+            displayPoints = new Vector3[source.Length];
+            for (var i = 0; i < source.Length; i++)
+                displayPoints[i] = source[i];
+
+            return true;
         }
 
         internal static void Hide()

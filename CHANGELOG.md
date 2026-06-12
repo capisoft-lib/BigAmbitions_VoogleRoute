@@ -2,6 +2,18 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.4] - 2026-06-12
+
+### Added
+
+- **Indoor navigation** — route line and optional auto-walk to the building exit when you are inside (separate Mods toggles; panel shows **WAY OUT** / **GET OUT**)
+- **City map overlay** — route line on the in-game city map (**M**); click the map to set a Voogle destination with confirm/cancel popup
+- **Bridge and center-deck routing** — updated enhanced route graph for reliable vehicle paths over bridges and the downtown deck
+
+### Fixed
+
+- **Locales** — UTF-8 fixes for all 22 languages; new strings for indoor nav, map destination, and recalc banner
+
 ## [0.11.3] - 2026-06-09
 
 ### Fixed
@@ -64,6 +76,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.4]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.4
 [0.11.3]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.3
 [0.11.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.0
 [0.10.1]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.10.1
