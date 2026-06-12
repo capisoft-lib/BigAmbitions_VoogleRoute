@@ -10,7 +10,7 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v16";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v17";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
         /// <summary>Wider than RouteToggleHud (370) — header/frame via GameStylePanelChrome.Build scale.</summary>
@@ -149,6 +149,8 @@ namespace VoogleRoute.UI
             _titleLabel.color = GameUiStyle.TitleColor;
             _titleLabel.alignment = TextAlignmentOptions.Left;
             GameUiStyle.ApplyTitleFont(_titleLabel);
+
+            CreateHeaderHistoryButton(header, _textScale);
 
             BuildQuickRows(chrome.Panel, _textScale);
             BuildSearchBar(chrome.Panel, _textScale);
@@ -611,12 +613,51 @@ namespace VoogleRoute.UI
 
         private static void ApplyHeaderTitleInsets(RectTransform rect, float scale)
         {
+            var iconReserve = 32f * scale + 8f * scale;
             rect.offsetMin = new Vector2(
                 NavPanelLayout.HeaderTextPaddingX * scale,
                 NavPanelLayout.HeaderTextPaddingY * scale);
             rect.offsetMax = new Vector2(
-                -NavPanelLayout.HeaderTextPaddingX * scale,
+                -NavPanelLayout.HeaderTextPaddingX * scale - iconReserve,
                 -NavPanelLayout.HeaderTextPaddingY * scale);
+        }
+
+        private static void CreateHeaderHistoryButton(RectTransform header, float scale)
+        {
+            var size = 32f * scale;
+            var pad = 8f * scale;
+
+            var rect = CreateRect(header, "HistoryButton");
+            rect.anchorMin = new Vector2(1f, 0.5f);
+            rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.sizeDelta = new Vector2(size, size);
+            rect.anchoredPosition = new Vector2(-pad, NavPanelLayout.SettingsIconOffsetY * scale);
+
+            var buttonImage = GameUiStyle.CreateButtonGraphic(
+                rect, scale, GameUiStyle.ApplyButtonGrey, 1f, bleedBottom: false);
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = buttonImage;
+            GameUiStyle.BindButtonClick(button, (UnityAction)(() => VisitHistoryPanel.Toggle()));
+
+            var iconGo = CreateRect(rect, "Icon");
+            Stretch(iconGo);
+            iconGo.offsetMin = new Vector2(7f * scale, 7f * scale);
+            iconGo.offsetMax = new Vector2(-7f * scale, -7f * scale);
+            var icon = iconGo.gameObject.AddComponent<Image>();
+            icon.raycastTarget = false;
+            if (!GameUiStyle.TryApplyOverlayIcon(icon, GameUiStyle.ApplyHistoryIcon))
+            {
+                var fallbackGo = CreateRect(iconGo, "Fallback");
+                Stretch(fallbackGo);
+                var fallback = fallbackGo.gameObject.AddComponent<TextMeshProUGUI>();
+                fallback.text = "\u23F1";
+                fallback.fontSize = 18f * scale;
+                fallback.alignment = TextAlignmentOptions.Center;
+                fallback.color = Color.white;
+                fallback.raycastTarget = false;
+                GameUiStyle.ApplyTitleFont(fallback);
+            }
         }
 
         private static TextMeshProUGUI CreateButtonLabel(RectTransform button, float scale)
@@ -1216,7 +1257,8 @@ namespace VoogleRoute.UI
                          "VoogleRoute_BookmarksPanel_v12",
                          "VoogleRoute_BookmarksPanel_v13",
                          "VoogleRoute_BookmarksPanel_v14",
-                         "VoogleRoute_BookmarksPanel_v15"
+                         "VoogleRoute_BookmarksPanel_v15",
+                         "VoogleRoute_BookmarksPanel_v16"
                      })
             {
                 var legacy = GameObject.Find(name);

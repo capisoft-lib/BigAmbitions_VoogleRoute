@@ -58,6 +58,7 @@ namespace VoogleRoute
             BookmarkFileStore.Load(ModConfigStore.Data);
             BookmarkStore.LoadFromConfig(BookmarkFileStore.Bookmarks);
             QuickBookmarkStore.LoadFromConfig(BookmarkFileStore.QuickBookmarks);
+            VisitHistoryStore.LoadFromConfig(BookmarkFileStore.VisitHistory);
             ApplyFromStore();
             ModLog.Initialize(context);
 

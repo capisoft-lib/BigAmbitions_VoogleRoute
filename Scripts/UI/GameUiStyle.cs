@@ -44,6 +44,7 @@ namespace VoogleRoute.UI
         private static Sprite _addIcon;
         private static Sprite _carIcon;
         private static Sprite _focusIcon;
+        private static Sprite _historyIcon;
         private static TMP_FontAsset _fontRegular;
         private static TMP_FontAsset _fontBold;
         private static TMP_FontAsset _fontMedium;
@@ -200,6 +201,60 @@ namespace VoogleRoute.UI
                 image.sprite = null;
                 image.color = White;
             }
+        }
+
+        internal static void ApplyHistoryIcon(Image image)
+        {
+            if (_historyIcon != null)
+            {
+                image.sprite = _historyIcon;
+                image.color = White;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = White;
+            }
+        }
+
+        internal const float HeaderCloseButtonSize = 30f;
+        internal const float HeaderCloseButtonOffsetX = -5f;
+        internal const float HeaderCloseButtonOffsetY = 1f;
+
+        internal static Button CreateHeaderCloseButton(Transform header, float scale, UnityAction onClick)
+        {
+            var go = new GameObject("CloseButton", typeof(RectTransform));
+            go.transform.SetParent(header, false);
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(1f, 0.5f);
+            rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(HeaderCloseButtonOffsetX * scale, HeaderCloseButtonOffsetY);
+            rect.sizeDelta = new Vector2(HeaderCloseButtonSize, HeaderCloseButtonSize);
+
+            var image = CreateButtonGraphic(rect, scale, ApplyButtonRed, bleedBottom: false);
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = image;
+            BindButtonClick(button, onClick);
+
+            var labelGo = new GameObject("Label", typeof(RectTransform));
+            labelGo.transform.SetParent(rect, false);
+            var labelRect = labelGo.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+            var text = labelGo.AddComponent<TextMeshProUGUI>();
+            text.text = "\u00d7";
+            text.fontSize = 22f * scale;
+            text.fontStyle = FontStyles.Bold;
+            text.color = Color.white;
+            text.alignment = TextAlignmentOptions.Center;
+            text.raycastTarget = false;
+            ApplyButtonFont(text);
+            return button;
         }
 
         /// <summary>White overlay icon on a colored button; hides the image when no sprite is available.</summary>
@@ -392,6 +447,7 @@ namespace VoogleRoute.UI
             ResolvePreferredPinIcon();
             ResolvePreferredAddIcon();
             ResolvePreferredCarIcon();
+            ResolvePreferredHistoryIcon();
         }
 
         private static void ResolvePreferredPinIcon()
@@ -601,6 +657,42 @@ namespace VoogleRoute.UI
 
             if (_focusIcon == null && IsFocusIconName(s.name))
                 _focusIcon = s;
+
+            if (_historyIcon == null && IsHistoryIconName(s.name))
+                _historyIcon = s;
+        }
+
+        private static void ResolvePreferredHistoryIcon()
+        {
+            if (_historyIcon != null)
+                return;
+
+            if (TryFindSpriteExact(new[]
+                {
+                    "icon-history",
+                    "icon-clock",
+                    "icon-time",
+                    "icon-recent"
+                }, out _historyIcon))
+                return;
+
+            TryFindSpriteNameContains("history", out _historyIcon, "story");
+        }
+
+        private static bool IsHistoryIconName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            if (string.Equals(name, "icon-history", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-clock", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-time", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-recent", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return name.IndexOf("history", StringComparison.OrdinalIgnoreCase) >= 0
+                   || (name.IndexOf("clock", StringComparison.OrdinalIgnoreCase) >= 0
+                       && name.IndexOf("alarm", StringComparison.OrdinalIgnoreCase) < 0);
         }
 
         private static bool IsFocusIconName(string name)

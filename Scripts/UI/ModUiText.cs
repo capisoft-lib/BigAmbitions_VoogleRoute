@@ -73,6 +73,10 @@ namespace VoogleRoute.UI
             };
         internal static string BookmarksPickHint =>
             Loc("voogle_route_bookmarks_pick_hint", "Click a location on the map.");
+        internal static string VisitHistoryTitle =>
+            Loc("voogle_route_visit_history_title", "HISTORY");
+        internal static string VisitHistoryAdd =>
+            Loc("voogle_route_visit_history_add", "ADD");
         internal static string BookmarkAddTitle =>
             Loc("voogle_route_bookmark_add_title", "Add bookmark");
         internal static string BookmarkNamePlaceholder =>
@@ -153,6 +157,7 @@ namespace VoogleRoute.UI
             AutoDriveConfirmPopup.RefreshLocalizedText();
             CityMapBookmarksPanel.RefreshLocalizedText();
             CityMapBookmarkAddDialog.RefreshLocalizedText();
+            VisitHistoryPanel.RefreshLocalizedText();
         }
 
         private static string Loc(string key, string fallback)

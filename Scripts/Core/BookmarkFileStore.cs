@@ -16,6 +16,8 @@ namespace VoogleRoute
 
     internal static IReadOnlyList<BookmarkConfigEntry> Bookmarks => _data.Bookmarks;
 
+    internal static IReadOnlyList<BookmarkConfigEntry> VisitHistory => _data.VisitHistory;
+
     internal static QuickBookmarksConfig QuickBookmarks => _data.QuickBookmarks;
 
     internal static void Load(ModConfigData legacyConfig = null)
@@ -58,10 +60,17 @@ namespace VoogleRoute
       Write();
     }
 
+    internal static void SetVisitHistory(List<BookmarkConfigEntry> visitHistory)
+    {
+      _data.VisitHistory = visitHistory ?? new List<BookmarkConfigEntry>();
+      Write();
+    }
+
     private static BookmarkFileData CreateDefaultData() =>
       new BookmarkFileData
       {
         Bookmarks = new List<BookmarkConfigEntry>(),
+        VisitHistory = new List<BookmarkConfigEntry>(),
         QuickBookmarks = new QuickBookmarksConfig()
       };
 
@@ -72,6 +81,9 @@ namespace VoogleRoute
 
       if (data.Bookmarks == null)
         data.Bookmarks = new List<BookmarkConfigEntry>();
+
+      if (data.VisitHistory == null)
+        data.VisitHistory = new List<BookmarkConfigEntry>();
 
       if (data.QuickBookmarks == null)
         data.QuickBookmarks = new QuickBookmarksConfig();
@@ -123,6 +135,8 @@ namespace VoogleRoute
   internal sealed class BookmarkFileData
   {
     public List<BookmarkConfigEntry> Bookmarks { get; set; }
+
+    public List<BookmarkConfigEntry> VisitHistory { get; set; }
 
     public QuickBookmarksConfig QuickBookmarks { get; set; }
   }

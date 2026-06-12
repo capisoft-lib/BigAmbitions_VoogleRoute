@@ -13,7 +13,8 @@ namespace VoogleRoute.Navigation
         LastHome,
         LastShop,
         Vehicle,
-        Bookmark
+        Bookmark,
+        History
     }
 
     internal struct BookmarkDistanceRowKey : System.IEquatable<BookmarkDistanceRowKey>

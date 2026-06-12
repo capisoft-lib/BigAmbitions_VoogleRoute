@@ -28,6 +28,21 @@ namespace VoogleRoute
             }
 
             sb.Append("  ],\n");
+            sb.Append("  \"visit_history\": [\n");
+
+            var history = data?.VisitHistory;
+            if (history != null)
+            {
+                for (var i = 0; i < history.Count; i++)
+                {
+                    AppendBookmarkEntry(sb, "    ", history[i], inv);
+                    if (i < history.Count - 1)
+                        sb.Append(',');
+                    sb.Append('\n');
+                }
+            }
+
+            sb.Append("  ],\n");
             sb.Append("  \"quick_bookmarks\": {\n");
             AppendQuickBookmarkProperty(sb, "    ", "last_car", data?.QuickBookmarks?.LastCar, inv);
             sb.Append(",\n");
@@ -45,6 +60,7 @@ namespace VoogleRoute
             var data = new BookmarkFileData
             {
                 Bookmarks = ParseBookmarkArray(json, "bookmarks"),
+                VisitHistory = ParseBookmarkArray(json, "visit_history"),
                 QuickBookmarks = new QuickBookmarksConfig
                 {
                     LastCar = ParseQuickBookmark(json, "last_car"),

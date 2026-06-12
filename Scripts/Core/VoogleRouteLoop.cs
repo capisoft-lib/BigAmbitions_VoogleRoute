@@ -113,6 +113,8 @@ namespace VoogleRoute
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
             AutoDriveConfirmPopup.TickOverlay();
+            VisitHistoryPanel.Tick();
+            VisitHistoryPanel.TickOverlay();
             CityMapBookmarksPanel.Tick();
             CityMapClickService.Tick();
 
@@ -245,11 +247,13 @@ namespace VoogleRoute
             if (ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(false);
             RouteSettingsUi.Close();
+            VisitHistoryPanel.Close();
         }
 
         private static void OnEnterBuildingDelayed(Address address)
         {
             QuickBookmarkStore.OnEnterBuildingDelayed(address);
+            VisitHistoryStore.OnEnterBuildingDelayed(address);
         }
 
         private static void OnExitBuilding(Address address)

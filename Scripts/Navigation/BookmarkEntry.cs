@@ -69,5 +69,20 @@ namespace VoogleRoute.Navigation
 
             return false;
         }
+
+        internal bool SamePlaceAs(BookmarkEntry other)
+        {
+            if (other == null)
+                return false;
+
+            if (HasAddress && other.HasAddress)
+                return StreetNumber == other.StreetNumber &&
+                       string.Equals(StreetName, other.StreetName, System.StringComparison.OrdinalIgnoreCase);
+
+            if (HasWorldPosition && other.HasWorldPosition)
+                return (WorldPosition - other.WorldPosition).sqrMagnitude < 4f;
+
+            return false;
+        }
     }
 }

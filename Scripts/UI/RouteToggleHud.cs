@@ -11,7 +11,7 @@ namespace VoogleRoute.UI
     /// <summary>Panneau VOOGLE ROUTE — sprites et polices vanilla via <see cref="GameUiStyle"/>.</summary>
     internal static class RouteToggleHud
     {
-        private const string RootName = "VoogleRoute_HudRoot_v61";
+        private const string RootName = "VoogleRoute_HudRoot_v62";
 
         private static GameObject _root;
         private static RectTransform _panelRect;
@@ -79,6 +79,7 @@ namespace VoogleRoute.UI
 
             CreateBookmarkPinButton(header, layout);
             CreateAddBookmarkButton(header, layout);
+            CreateHistoryButton(header, layout);
             CreateSettingsButton(header, layout);
 
             CreateActionButton(chrome.Panel, "RouteButton", new Vector2(layout.LeftButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
@@ -194,7 +195,7 @@ namespace VoogleRoute.UI
             _forceApply = false;
 
             if (active && !RouteSettingsUi.IsOpen && !AutoDriveConfirmPopup.IsOpen &&
-                !CityMapBookmarkAddDialog.IsOpen && !GameState.IsCityMapOpen())
+                !CityMapBookmarkAddDialog.IsOpen && !VisitHistoryPanel.IsOpen && !GameState.IsCityMapOpen())
                 ModUiFocus.ReleaseForMovement();
         }
 
@@ -270,7 +271,8 @@ namespace VoogleRoute.UI
                          "VoogleRoute_HudRoot_v57",
                          "VoogleRoute_HudRoot_v58",
                          "VoogleRoute_HudRoot_v59",
-                         "VoogleRoute_HudRoot_v60"
+                         "VoogleRoute_HudRoot_v60",
+                         "VoogleRoute_HudRoot_v61"
                      })
             {
                 var legacy = GameObject.Find(name);
@@ -300,7 +302,7 @@ namespace VoogleRoute.UI
             var size = 32f * scale;
             var pad = 8f * scale;
             var gap = 4f * scale;
-            return pad + size + gap + size + gap + size + pad;
+            return pad + (size + gap) * 4 + pad;
         }
 
         private static void CreateBookmarkPinButton(RectTransform header, NavPanelLayout.Metrics layout)
@@ -335,6 +337,22 @@ namespace VoogleRoute.UI
                 out _);
         }
 
+        private static void CreateHistoryButton(RectTransform header, NavPanelLayout.Metrics layout)
+        {
+            CreateHeaderIconButton(
+                header,
+                layout,
+                "HistoryButton",
+                HeaderIconSlot.History,
+                GameUiStyle.ApplyButtonGrey,
+                image => GameUiStyle.TryApplyOverlayIcon(image, GameUiStyle.ApplyHistoryIcon),
+                "\u23F1",
+                Color.white,
+                (UnityAction)(() => VisitHistoryPanel.Toggle()),
+                out _,
+                out _);
+        }
+
         private static void CreateSettingsButton(RectTransform header, NavPanelLayout.Metrics layout)
         {
             CreateHeaderIconButton(
@@ -354,8 +372,9 @@ namespace VoogleRoute.UI
         private enum HeaderIconSlot
         {
             Settings = 0,
-            AddBookmark = 1,
-            BookmarkPin = 2
+            History = 1,
+            AddBookmark = 2,
+            BookmarkPin = 3
         }
 
         private static void CreateHeaderIconButton(

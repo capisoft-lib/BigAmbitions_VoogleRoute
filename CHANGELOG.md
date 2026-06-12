@@ -2,6 +2,20 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.7] - 2026-06-13
+
+### Added
+
+- **Visit History panel** — last **50 buildings visited** (any type), most recent first; scrollable list with route distances
+- **History shortcuts** — clock icon on the **VOOGLE ROUTE** GPS header and on the city-map **BOOKMARKS** panel header
+- **Row actions** — **CENTER**, green **ADD** (opens bookmark dialog with building coordinates), and **SET** destination, matching bookmark row layout
+- **Persistence** — visit history stored in `bookmarks.json` under `visit_history` (deduplicated by address/position)
+- **Locales** — History title and ADD button strings (`en`, `fr`; other languages fall back to English)
+
+### Changed
+
+- **GPS header** — fourth toolbar icon (history) added alongside bookmark, last-car, and settings buttons
+
 ## [0.11.6] - 2026-06-13
 
 ### Added
@@ -116,6 +130,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.7]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.7
 [0.11.6]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.6
 [0.11.5]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.5
 [0.11.4]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.4

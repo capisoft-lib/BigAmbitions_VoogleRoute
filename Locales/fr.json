@@ -50,5 +50,7 @@
   "voogle_route_bookmark_name_placeholder": "Nom du favori",
   "voogle_route_bookmark_add_confirm": "AJOUTER",
   "voogle_route_bookmark_add_cancel": "ANNULER",
-  "voogle_route_bookmark_coords": "Coordonnées : {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordonnées : {x}, {z}",
+  "voogle_route_visit_history_title": "HISTORIQUE",
+  "voogle_route_visit_history_add": "AJOUTER"
 }
