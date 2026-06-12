@@ -2,6 +2,29 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.6] - 2026-06-13
+
+### Added
+
+- **Bookmarks panel** on the city map (**M**) — searchable list with **SET** destination, **CENTER** map, and route distance per row
+- **Custom bookmarks** — save named places from the panel or the HUD **+** button at your current position; persisted in `bookmarks.json` (auto-migrated from legacy `config.json` bookmark fields)
+- **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** auto-updated when you park, enter your home, or enter a business
+- **Owned vehicles** — parked motor vehicles listed automatically (outside warehouses)
+- **HUD shortcuts** — blue **+** saves a bookmark at your position; green **car** sets your route to the last parked vehicle
+- **Building-type icons** on bookmark rows
+- **Async distance labels** — route distances computed on a background thread while the bookmarks panel is open
+- **Locales** — bookmark UI strings in all **22** supported languages
+
+### Changed
+
+- **UI visual parity** — GPS panel, settings, popups, and bookmarks use vanilla-style frames, fonts, and button treatment (`GameStylePanelChrome`)
+- **Input handling** — mod UI blocks game hotkeys while typing in bookmark search or name fields
+- Default log level **error** when file logging is enabled (`config.json`)
+
+### Removed
+
+- Leftover experimental **auto-steering** sources (`VehiclePathFollower`, `VehicleDriveController`, etc.) and auto-drive diagnostic logs
+
 ## [0.11.5] - 2026-06-12
 
 ### Added
@@ -93,6 +116,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.6]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.6
 [0.11.5]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.5
 [0.11.4]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.4
 [0.11.3]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.3

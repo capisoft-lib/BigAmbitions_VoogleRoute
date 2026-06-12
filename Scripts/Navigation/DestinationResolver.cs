@@ -38,6 +38,10 @@ namespace VoogleRoute.Navigation
                 var address = game.customDestination;
                 if (IsInvalidAddress(address))
                 {
+                    if (NavigationTargetTracker.HasMapGpsTarget &&
+                        NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
+                        return;
+
                     if (NavigationTargetTracker.HasMapGpsTarget)
                     {
                         ModLog.Info("Map destination cleared (customDestination empty).");

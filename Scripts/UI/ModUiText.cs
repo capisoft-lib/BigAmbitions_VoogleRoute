@@ -1,5 +1,6 @@
 using Localizor;
 using UnityEngine;
+using VoogleRoute.Navigation;
 
 namespace VoogleRoute.UI
 {
@@ -43,6 +44,48 @@ namespace VoogleRoute.UI
             Loc("voogle_route_autodrive_popup_confirm", "DRIVE");
         internal static string AutoDriveCancel =>
             Loc("voogle_route_autodrive_popup_cancel", "CANCEL");
+        internal static string BookmarksTitle =>
+            Loc("voogle_route_bookmarks_title", "BOOKMARKS");
+        internal static string BookmarksSearchPlaceholder =>
+            Loc("voogle_route_bookmarks_search", "Search bookmarks...");
+        internal static string BookmarksAdd =>
+            Loc("voogle_route_bookmarks_add", "ADD BOOKMARK");
+        internal static string BookmarksClearAll =>
+            Loc("voogle_route_bookmarks_clear_all", "CLEAR ALL");
+        internal static string BookmarksSetDestination =>
+            Loc("voogle_route_bookmarks_set_dest", "SET");
+        internal static string BookmarksCenter =>
+            Loc("voogle_route_bookmarks_center", "CENTER");
+        internal static string QuickBookmarkLastCar =>
+            Loc("voogle_route_bookmarks_last_car", "Last Car");
+        internal static string QuickBookmarkLastHome =>
+            Loc("voogle_route_bookmarks_last_home", "Last Home");
+        internal static string QuickBookmarkLastShop =>
+            Loc("voogle_route_bookmarks_last_shop", "Last Shop");
+
+        internal static string QuickBookmarkLabel(QuickBookmarkKind kind) =>
+            kind switch
+            {
+                QuickBookmarkKind.LastCar => QuickBookmarkLastCar,
+                QuickBookmarkKind.LastHome => QuickBookmarkLastHome,
+                QuickBookmarkKind.LastShop => QuickBookmarkLastShop,
+                _ => ""
+            };
+        internal static string BookmarksPickHint =>
+            Loc("voogle_route_bookmarks_pick_hint", "Click a location on the map.");
+        internal static string BookmarkAddTitle =>
+            Loc("voogle_route_bookmark_add_title", "Add bookmark");
+        internal static string BookmarkNamePlaceholder =>
+            Loc("voogle_route_bookmark_name_placeholder", "Bookmark name");
+        internal static string BookmarkAddConfirm =>
+            Loc("voogle_route_bookmark_add_confirm", "ADD");
+        internal static string BookmarkAddCancel =>
+            Loc("voogle_route_bookmark_add_cancel", "CANCEL");
+
+        internal static string FormatBookmarkCoordinates(Vector3 worldPos) =>
+            Loc("voogle_route_bookmark_coords", "Coordinates: {x}, {z}")
+                .Replace("{x}", Mathf.RoundToInt(worldPos.x).ToString())
+                .Replace("{z}", Mathf.RoundToInt(worldPos.z).ToString());
 
         internal static string FormatAutoDrivePopupBody(float travelMinutes, float distanceMeters)
         {
@@ -108,6 +151,8 @@ namespace VoogleRoute.UI
             RouteSettingsUi.RefreshLocalizedText();
             RouteRecalcBanner.RefreshLocalizedText();
             AutoDriveConfirmPopup.RefreshLocalizedText();
+            CityMapBookmarksPanel.RefreshLocalizedText();
+            CityMapBookmarkAddDialog.RefreshLocalizedText();
         }
 
         private static string Loc(string key, string fallback)

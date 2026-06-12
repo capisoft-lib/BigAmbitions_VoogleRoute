@@ -86,9 +86,8 @@ namespace VoogleRoute.Rendering
                 _line.positionCount = elevated.Length;
                 _line.SetPositions(elevated);
                 LineRendererMaterial.Apply(_line);
+                MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
             }
-
-            MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
         }
 
         internal static void Hide()

@@ -11,7 +11,7 @@ namespace VoogleRoute.UI
     /// <summary>Panneau VOOGLE ROUTE — sprites et polices vanilla via <see cref="GameUiStyle"/>.</summary>
     internal static class RouteToggleHud
     {
-        private const string RootName = "VoogleRoute_HudRoot_v55";
+        private const string RootName = "VoogleRoute_HudRoot_v61";
 
         private static GameObject _root;
         private static RectTransform _panelRect;
@@ -66,7 +66,7 @@ namespace VoogleRoute.UI
             titleGo.anchorMax = Vector2.one;
             NavPanelLayout.ApplyHeaderTitleInsets(titleGo, layout);
             var titlePadY = NavPanelLayout.HeaderTextPaddingY * layout.Scale;
-            var titlePadRight = 44f * layout.Scale;
+            var titlePadRight = HeaderButtonsReserve(layout.Scale);
             titleGo.offsetMax = new Vector2(-titlePadRight, -titlePadY);
             _panelTitleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
             _panelTitleLabel.text = ModUiText.PanelTitle;
@@ -77,6 +77,8 @@ namespace VoogleRoute.UI
             _panelTitleLabel.raycastTarget = false;
             GameUiStyle.ApplyTitleFont(_panelTitleLabel);
 
+            CreateBookmarkPinButton(header, layout);
+            CreateAddBookmarkButton(header, layout);
             CreateSettingsButton(header, layout);
 
             CreateActionButton(chrome.Panel, "RouteButton", new Vector2(layout.LeftButtonX, layout.ButtonTopY), layout.HalfButtonWidth,
@@ -113,7 +115,7 @@ namespace VoogleRoute.UI
 
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = buttonImage;
-            button.onClick.AddListener(onClick);
+            GameUiStyle.BindButtonClick(button, onClick);
 
             var colors = button.colors;
             colors.normalColor = Color.white;
@@ -190,6 +192,10 @@ namespace VoogleRoute.UI
             }
 
             _forceApply = false;
+
+            if (active && !RouteSettingsUi.IsOpen && !AutoDriveConfirmPopup.IsOpen &&
+                !CityMapBookmarkAddDialog.IsOpen && !GameState.IsCityMapOpen())
+                ModUiFocus.ReleaseForMovement();
         }
 
         internal static void RefreshLocalizedText() => RefreshVisual();
@@ -259,7 +265,12 @@ namespace VoogleRoute.UI
                      {
                          "VoogleRoute_HudRoot_sdk",
                          "VoogleRoute_HudRoot_v1", "VoogleRoute_HudRoot_v50", "VoogleRoute_HudRoot_v51",
-                         "VoogleRoute_HudRoot_v52", "VoogleRoute_HudRoot_v53", "VoogleRoute_HudRoot_v54"
+                         "VoogleRoute_HudRoot_v52", "VoogleRoute_HudRoot_v53", "VoogleRoute_HudRoot_v54",
+                         "VoogleRoute_HudRoot_v55",                          "VoogleRoute_HudRoot_v56",
+                         "VoogleRoute_HudRoot_v57",
+                         "VoogleRoute_HudRoot_v58",
+                         "VoogleRoute_HudRoot_v59",
+                         "VoogleRoute_HudRoot_v60"
                      })
             {
                 var legacy = GameObject.Find(name);
@@ -284,40 +295,138 @@ namespace VoogleRoute.UI
             return go.AddComponent<RectTransform>();
         }
 
+        private static float HeaderButtonsReserve(float scale)
+        {
+            var size = 32f * scale;
+            var pad = 8f * scale;
+            var gap = 4f * scale;
+            return pad + size + gap + size + gap + size + pad;
+        }
+
+        private static void CreateBookmarkPinButton(RectTransform header, NavPanelLayout.Metrics layout)
+        {
+            CreateHeaderIconButton(
+                header,
+                layout,
+                "AddBookmarkButton",
+                HeaderIconSlot.BookmarkPin,
+                GameUiStyle.ApplyButtonBlue,
+                image => GameUiStyle.TryApplyOverlayIcon(image, GameUiStyle.ApplyAddIcon),
+                "+",
+                Color.white,
+                (UnityAction)OnBookmarkPinClicked,
+                out _,
+                out _);
+        }
+
+        private static void CreateAddBookmarkButton(RectTransform header, NavPanelLayout.Metrics layout)
+        {
+            CreateHeaderIconButton(
+                header,
+                layout,
+                "BookmarkPinButton",
+                HeaderIconSlot.AddBookmark,
+                GameUiStyle.ApplyButtonGreen,
+                image => GameUiStyle.TryApplyOverlayIcon(image, GameUiStyle.ApplyCarIcon),
+                "\u2295",
+                Color.white,
+                (UnityAction)OnLastVehicleClicked,
+                out _,
+                out _);
+        }
+
         private static void CreateSettingsButton(RectTransform header, NavPanelLayout.Metrics layout)
+        {
+            CreateHeaderIconButton(
+                header,
+                layout,
+                "SettingsButton",
+                HeaderIconSlot.Settings,
+                GameUiStyle.ApplyButtonGrey,
+                image => GameUiStyle.TryApplyOverlayIcon(image, GameUiStyle.ApplySettingsIcon),
+                "\u2699",
+                Color.white,
+                (UnityAction)(() => RouteSettingsUi.Toggle()),
+                out _,
+                out _);
+        }
+
+        private enum HeaderIconSlot
+        {
+            Settings = 0,
+            AddBookmark = 1,
+            BookmarkPin = 2
+        }
+
+        private static void CreateHeaderIconButton(
+            RectTransform header,
+            NavPanelLayout.Metrics layout,
+            string name,
+            HeaderIconSlot slot,
+            System.Action<Image> buttonStyle,
+            System.Func<Image, bool> applyIcon,
+            string fallbackGlyph,
+            Color fallbackColor,
+            UnityAction onClick,
+            out Button button,
+            out Image buttonImage)
         {
             var scale = layout.Scale;
             var size = 32f * scale;
             var pad = 8f * scale;
+            var gap = 4f * scale;
+            var rightInset = pad + (int)slot * (size + gap);
 
-            var rect = CreateRect(header, "SettingsButton");
+            var rect = CreateRect(header, name);
             rect.anchorMin = new Vector2(1f, 0.5f);
             rect.anchorMax = new Vector2(1f, 0.5f);
             rect.pivot = new Vector2(1f, 0.5f);
             rect.sizeDelta = new Vector2(size, size);
-            rect.anchoredPosition = new Vector2(-pad, NavPanelLayout.SettingsIconOffsetY * scale);
+            rect.anchoredPosition = new Vector2(-rightInset, NavPanelLayout.SettingsIconOffsetY * scale);
 
-            var buttonImage = GameUiStyle.CreateButtonGraphic(rect, scale, GameUiStyle.ApplyButtonGrey, 1f, bleedBottom: false);
-            var button = rect.gameObject.AddComponent<Button>();
+            buttonImage = GameUiStyle.CreateButtonGraphic(rect, scale, buttonStyle, 1f, bleedBottom: false);
+            button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = buttonImage;
-            button.onClick.AddListener((UnityAction)(() => RouteSettingsUi.Toggle()));
+            GameUiStyle.BindButtonClick(button, onClick);
 
             var iconGo = CreateRect(rect, "Icon");
             Stretch(iconGo, 7f * scale, 7f * scale);
             var icon = iconGo.gameObject.AddComponent<Image>();
             icon.raycastTarget = false;
-            GameUiStyle.ApplySettingsIcon(icon);
-
-            if (GameUiStyle.IsReady && icon.sprite == null)
+            if (!applyIcon(icon))
             {
-                var fallback = iconGo.gameObject.AddComponent<TextMeshProUGUI>();
-                fallback.text = "\u2699";
+                var fallbackGo = CreateRect(iconGo, "Fallback");
+                Stretch(fallbackGo, 0f, 0f);
+                var fallback = fallbackGo.gameObject.AddComponent<TextMeshProUGUI>();
+                fallback.text = fallbackGlyph;
                 fallback.fontSize = 18f * scale;
                 fallback.alignment = TextAlignmentOptions.Center;
-                fallback.color = GameUiStyle.TitleColor;
+                fallback.color = fallbackColor;
                 fallback.raycastTarget = false;
                 GameUiStyle.ApplyTitleFont(fallback);
             }
+        }
+
+        private static void OnBookmarkPinClicked() => BookmarkPickService.TryOpenDialogAtCurrentPosition();
+
+        private static void OnLastVehicleClicked()
+        {
+            if (ParkedVehicleDestinationService.TryNavigateToParkedVehicle())
+                return;
+
+            ModLog.Info("No parked vehicle position saved yet.");
+        }
+
+        private static void OnAddBookmarkClicked()
+        {
+            if (!GameState.IsCityMapOpen())
+            {
+                ModLog.Info("Open Voogle Maps to add a bookmark on the map.");
+                return;
+            }
+
+            CityMapBookmarksPanel.EnsureCreated();
+            CityMapBookmarksPanel.BeginPickMode();
         }
 
         private static void Stretch(RectTransform rect, float padX, float padY)

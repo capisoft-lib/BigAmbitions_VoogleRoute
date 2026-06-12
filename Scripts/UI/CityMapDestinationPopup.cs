@@ -40,7 +40,7 @@ namespace VoogleRoute.UI
             dimImg.raycastTarget = true;
             var dimBtn = dim.gameObject.AddComponent<Button>();
             dimBtn.targetGraphic = dimImg;
-            dimBtn.onClick.AddListener((UnityAction)Close);
+            dimBtn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)Close));
 
             var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, PanelHeight, "Panel");
             var scale = chrome.Scale;
@@ -66,7 +66,7 @@ namespace VoogleRoute.UI
 
             _addressLabel = body.gameObject.AddComponent<TextMeshProUGUI>();
             _addressLabel.fontSize = 20f * scale;
-            _addressLabel.color = GameUiStyle.TitleColor;
+            _addressLabel.color = GameUiStyle.BodyTextColor;
             _addressLabel.alignment = TextAlignmentOptions.Center;
             _addressLabel.enableWordWrapping = true;
             GameUiStyle.ApplyButtonFont(_addressLabel);
@@ -91,6 +91,8 @@ namespace VoogleRoute.UI
 
         internal static void Close()
         {
+            ModUiFocus.ReleaseForMovement();
+
             if (_root != null)
                 _root.SetActive(false);
 
@@ -130,7 +132,7 @@ namespace VoogleRoute.UI
             var img = GameUiStyle.CreateButtonGraphic(rect, scale, style);
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = img;
-            button.onClick.AddListener(onClick);
+            GameUiStyle.BindButtonClick(button, onClick);
 
             var labelGo = CreateRect(rect, "Label");
             labelGo.anchorMin = Vector2.zero;

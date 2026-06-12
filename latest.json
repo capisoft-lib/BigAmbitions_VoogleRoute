@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.11.5",
+  "version": "0.11.6",
   "gameVersion": "0.11",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "0.11.5: Auto-drive fast travel (time skip) with confirmation popup (ETA, arrival time, distance), configurable base taxi multiplier, and full locale coverage. Not auto-steering. Requires LIB BA Player Location 0.11.1+."
+  "releaseNotes": "0.11.6: City map bookmarks panel (custom + quick shortcuts + owned vehicles), HUD bookmark/last-car buttons, route distances in list, bookmarks.json storage, vanilla-style UI refresh. Requires LIB BA Player Location 0.11.1+."
 }

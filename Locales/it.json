@@ -35,5 +35,20 @@
   "voogle_route_autodrive_popup_cancel": "ANNULLA",
   "voogle_route_autodrive_no_route": "Nessun percorso verso la destinazione.",
   "voogle_route_autodrive_too_close": "Sei già vicino alla destinazione.",
-  "voogle_route_autodrive_busy": "Avanzamento rapido del tempo già in corso."
+  "voogle_route_autodrive_busy": "Avanzamento rapido del tempo già in corso.",
+  "voogle_route_bookmarks_title": "BOOKMARKS",
+  "voogle_route_bookmarks_search": "Search bookmarks...",
+  "voogle_route_bookmarks_add": "ADD BOOKMARK",
+  "voogle_route_bookmarks_clear_all": "CLEAR ALL",
+  "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_center": "CENTER",
+  "voogle_route_bookmarks_last_car": "Last Car",
+  "voogle_route_bookmarks_last_home": "Last Home",
+  "voogle_route_bookmarks_last_shop": "Last Shop",
+  "voogle_route_bookmarks_pick_hint": "Click a location on the map.",
+  "voogle_route_bookmark_add_title": "Add bookmark",
+  "voogle_route_bookmark_name_placeholder": "Bookmark name",
+  "voogle_route_bookmark_add_confirm": "ADD",
+  "voogle_route_bookmark_add_cancel": "CANCEL",
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
 }

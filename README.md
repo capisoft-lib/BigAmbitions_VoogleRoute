@@ -1,6 +1,6 @@
 # Voogle Route
 
-**Voogle Route** extends **Voogle Maps** in Big Ambitions: set a destination on the city map, then follow a glowing **on-ground route line** on foot or in a vehicle, with optional **auto-walk** and **auto-drive fast travel** (time skip) when driving.
+**Voogle Route** extends **Voogle Maps** in Big Ambitions: set a destination on the city map, then follow a glowing **on-ground route line** on foot or in a vehicle, with optional **auto-walk**, **auto-drive fast travel** (time skip), and a **city map bookmarks** panel for saved places.
 
 | | |
 |---|---|
@@ -26,11 +26,14 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)
 - **Auto-walk** — optional automatic walking along the route
 - **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only)
-- **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), and distance; **ESC** closes the dialog
-- **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`; adjusts skip-travel duration
+- **City map bookmarks** — on the city map (**M**): searchable list, **SET** / **CENTER**, route distance per row, **ADD BOOKMARK** by clicking the map
+- **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** (auto-tracked); owned parked vehicles listed automatically
+- **HUD shortcuts** — blue **+** saves a bookmark at your position; green **car** routes to your last parked vehicle
+- **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), and distance for auto-drive; **ESC** closes the dialog
+- **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`
 - **Indoor navigation** — optional route line and auto-walk to the building exit (**WAY OUT** / **GET OUT**)
 - **City map overlay** — route line on the city map (**M**); click to set a destination
-- **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, custom line color (gear icon)
+- **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, bookmark and last-car buttons, custom line color (gear icon)
 - Hidden in the **subway** and when navigation is unavailable
 
 ### Auto-drive fast travel (vehicle)
@@ -42,6 +45,17 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 3. Tap **AUTO-DRIVE** → review travel time, arrival time, and distance → confirm **DRIVE**.
 4. The game fades, teleports you near the destination on the road network, and advances time.
 5. Adjust skip duration under **Mods → Voogle Route → Base taxi multiplier** (or `base_taxi_multiplier` in `config.json`).
+
+### City map bookmarks
+
+Open the city map (**M**) to show the **BOOKMARKS** panel:
+
+1. **Custom bookmarks** — **ADD BOOKMARK**, then click the map, or tap **+** on the GPS panel to save your current position.
+2. **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** update as you park, enter home, or enter a business.
+3. **Owned vehicles** — parked motor vehicles appear in the list (not in warehouses).
+4. **SET** sets a Voogle destination; **CENTER** focuses the map; route **distance** is computed in the background.
+
+Bookmarks are stored in `bookmarks.json` next to the mod (auto-migrated from legacy `config.json` bookmark fields).
 
 Routing algorithm, graph data, and generator tools live in the **PathFinding** repository — not here.
 
@@ -79,9 +93,14 @@ Output: `%LocalLow%\Hovgaard Games\Big Ambitions\ModsLocal\VoogleRoute\`
 
 ## Configuration
 
-Optional `config.json` lives next to the mod content (`ModContext.ModRootPath`). For a local SDK build that installs to `ModsLocal`, copy `config.json.example` to `ModsLocal/VoogleRoute/config.json`. Steam Workshop installs use the subscribed mod folder automatically.
+Optional files live next to the mod content (`ModContext.ModRootPath`). For a local SDK build that installs to `ModsLocal`, copy the `.example` files to `ModsLocal/VoogleRoute/`. Steam Workshop installs use the subscribed mod folder automatically.
 
-Notable keys: `route_line_color`, `indoor_route`, `indoor_autowalk`, `base_taxi_multiplier` (default `2`, range 1–10).
+| File | Purpose |
+|------|---------|
+| `config.json` | Route color, indoor options, logging, `base_taxi_multiplier` |
+| `bookmarks.json` | Custom bookmarks and quick shortcuts (`Last Car` / `Home` / `Shop`) |
+
+Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk`, `base_taxi_multiplier` (default `2`, range 1–10), `log_level` (default `error` when logging is enabled).
 
 ## Changelog / licence
 
@@ -92,9 +111,11 @@ Notable keys: `route_line_color`, `indoor_route`, `indoor_autowalk`, `base_taxi_
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions EA **0.11** : ligne d'itinéraire au sol, marche auto, **voyage rapide auto** en véhicule (saut temporel — pas de conduite automatique le long de la ligne), navigation intérieure, carte ville (**M**), couleur personnalisable pour les destinations **Voogle Maps**.
+Mod **Steam Workshop** pour Big Ambitions EA **0.11** : ligne d'itinéraire au sol, marche auto, **voyage rapide auto** en véhicule (saut temporel), **favoris sur la carte ville** (**M**), navigation intérieure, couleur personnalisable pour les destinations **Voogle Maps**.
 
-En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi dans **Mods** ou `base_taxi_multiplier` dans `config.json`.
+Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
+
+En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi dans **Mods** ou `base_taxi_multiplier` dans `config.json`. Favoris dans `bookmarks.json`.
 
 **Routage véhicule :** voir [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding).
 

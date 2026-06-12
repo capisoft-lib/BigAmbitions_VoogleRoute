@@ -30,6 +30,8 @@ namespace VoogleRoute.Navigation
             CurrentMode = snapshot.IsAvailable
                 ? PlayerLocationSnapshotMapper.ToMovementMode(snapshot.MovementKind)
                 : MovementMode.Unavailable;
+
+            ParkedVehicleStore.OnMovementModeApplied(PreviousMode, CurrentMode, in snapshot);
         }
 
         internal static bool ModeChangedSinceLastApply => CurrentMode != PreviousMode;

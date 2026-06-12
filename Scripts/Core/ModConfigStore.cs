@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using UnityEngine;
+using VoogleRoute.Navigation;
+
 namespace VoogleRoute
 {
     internal static class ModConfigStore
@@ -62,8 +65,15 @@ namespace VoogleRoute
             try
             {
                 EnsureDefaults(_data);
+                _data.Bookmarks = null;
+                _data.QuickBookmarks = null;
+                var path = ConfigFilePath;
+                var directory = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(directory))
+                    Directory.CreateDirectory(directory);
+
                 var json = JsonSerializer.Serialize(_data, JsonOptions);
-                File.WriteAllText(ConfigFilePath, json);
+                File.WriteAllText(path, json);
                 _configFileFound = true;
             }
             catch
@@ -102,6 +112,13 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void StripBookmarkDataAndSave()
+        {
+            _data.Bookmarks = null;
+            _data.QuickBookmarks = null;
+            Save();
+        }
+
         private static ModConfigData CreateDefaultData()
         {
             return new ModConfigData
@@ -129,6 +146,12 @@ namespace VoogleRoute
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
+
+            if (data.Bookmarks == null)
+                data.Bookmarks = new List<BookmarkConfigEntry>();
+
+            if (data.QuickBookmarks == null)
+                data.QuickBookmarks = new QuickBookmarksConfig();
         }
 
         private static float[] DefaultRouteLineColor() =>
@@ -210,5 +233,11 @@ namespace VoogleRoute
 
         [JsonPropertyName("base_taxi_multiplier")]
         public int BaseTaxiMultiplier { get; set; } = 2;
+
+        [JsonPropertyName("bookmarks")]
+        public List<BookmarkConfigEntry> Bookmarks { get; set; }
+
+        [JsonPropertyName("quick_bookmarks")]
+        public QuickBookmarksConfig QuickBookmarks { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using VoogleRoute.UI;
 
 namespace VoogleRoute.Navigation
 {
-    /// <summary>Detects map taps (not drags) and opens the destination popup.</summary>
+    /// <summary>Detects map taps (not drags) for bookmark picking on the city map.</summary>
     internal static class CityMapClickService
     {
         private const float TapThresholdSq = 64f;
@@ -15,7 +15,12 @@ namespace VoogleRoute.Navigation
 
         internal static void Tick()
         {
-            if (!GameState.IsCityMapOpen() || CityMapDestinationPopup.IsOpen)
+            if (!GameState.IsCityMapOpen())
+                return;
+
+            if (!CityMapBookmarksPanel.IsPickMode ||
+                CityMapBookmarkAddDialog.IsOpen ||
+                CityMapBookmarksPanel.BlocksMapInput)
                 return;
 
             if (Input.GetMouseButtonDown(0))
@@ -40,13 +45,14 @@ namespace VoogleRoute.Navigation
             if (!TryRaycastMap(mousePos, out var hitPoint, out var building))
                 return;
 
-            if (!MapAddressResolver.TryResolveFromClick(hitPoint, building, out var address, out var label))
+            if (!MapAddressResolver.TryResolveBookmarkClick(hitPoint, building, out var address, out var label))
             {
-                ModLog.Info("Map click: no address near " + hitPoint);
+                ModLog.Info("Map click: could not resolve bookmark at " + hitPoint);
                 return;
             }
 
-            CityMapDestinationPopup.Show(address, label, hitPoint);
+            CityMapBookmarksPanel.CancelPickMode();
+            CityMapBookmarkAddDialog.Show(address, label, hitPoint, worldOnly: building == null);
         }
 
         private static bool TryRaycastMap(

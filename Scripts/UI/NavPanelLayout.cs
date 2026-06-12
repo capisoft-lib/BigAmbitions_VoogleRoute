@@ -34,6 +34,10 @@ namespace VoogleRoute.UI
         public const float BodyVisibleRight = 373f;
         public const float HeaderSliceBorderLeft = BodyVisibleLeft - 3f;
         public const float HeaderSliceBorderRight = 10f;
+        public const float ToggleHudHeaderLeftAdjust = -9f;
+        public const float ToggleHudHeaderRightAdjust = 1f;
+        public const float MainPanelHeaderTightenLeft = 3f;
+        public const float MainPanelHeaderTightenRight = 5f;
         public const float SettingsHeaderTightenPerSide = 2f;
         /// <summary>Élargit le header settings pour supprimer le gap latéral (px ref panel 370, négatif = plus large).</summary>
         public static float SettingsPanelHeaderWidenTrim => -(HeaderTrimWidthBase - HeaderLeftExtend);

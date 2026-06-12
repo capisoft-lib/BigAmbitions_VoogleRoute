@@ -70,7 +70,7 @@ namespace VoogleRoute.UI
             dimImg.raycastTarget = true;
             var dimBtn = dim.gameObject.AddComponent<Button>();
             dimBtn.targetGraphic = dimImg;
-            dimBtn.onClick.AddListener((UnityAction)Close);
+            dimBtn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)Close));
 
             var chrome = GameStylePanelChrome.Build(
                 _root.transform,
@@ -145,7 +145,7 @@ namespace VoogleRoute.UI
             var closeImg = GameUiStyle.CreateButtonGraphic(closeRow, scale, GameUiStyle.ApplyButtonBlue);
             var closeBtn = closeRow.gameObject.AddComponent<Button>();
             closeBtn.targetGraphic = closeImg;
-            closeBtn.onClick.AddListener((UnityAction)Close);
+            closeBtn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)Close));
 
             var closeLabelGo = CreateRect(closeRow, "Label");
             Stretch(closeLabelGo);
@@ -177,6 +177,8 @@ namespace VoogleRoute.UI
 
         internal static void Close()
         {
+            ModUiFocus.ReleaseForMovement();
+
             RestoreCanvasSortOrder();
             if (_root != null)
                 _root.SetActive(false);
@@ -350,11 +352,11 @@ namespace VoogleRoute.UI
             var btn = swatchRt.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
             var captured = color;
-            btn.onClick.AddListener((UnityAction)(() =>
+            btn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)(() =>
             {
                 ModConfig.SetRouteLineColor(captured);
                 RefreshColorSelection();
-            }));
+            })));
 
             var tipRt = CreateRect(column, "Tip");
             tipRt.anchorMin = new Vector2(0f, 0f);
@@ -386,7 +388,7 @@ namespace VoogleRoute.UI
             var img = GameUiStyle.CreateButtonGraphic(row, scale, style);
             var btn = row.gameObject.AddComponent<Button>();
             btn.targetGraphic = img;
-            btn.onClick.AddListener(onClick);
+            GameUiStyle.BindButtonClick(btn, onClick);
 
             var label = CreateLabel(row, "Label", 14f, FontStyles.UpperCase);
             label.text = labelText;

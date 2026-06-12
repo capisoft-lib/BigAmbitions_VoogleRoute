@@ -12,11 +12,15 @@ namespace VoogleRoute.UI
         private const float PanelWidth = 500f;
         private const float PanelHeight = 64f;
         private const float CenterYOffset = -78f;
+        private const int DefaultCanvasSortOrder = 9100;
+        private const int CityMapCanvasSortOrder = 11900;
 
         private static GameObject _root;
+        private static Canvas _canvas;
         private static TextMeshProUGUI _label;
         private static float _shownAtUnscaled = -1f;
         private static bool _hideRequested;
+        private static bool _allowOnCityMap;
 
         internal static void EnsureCreated()
         {
@@ -27,7 +31,8 @@ namespace VoogleRoute.UI
 
             _root = new GameObject(RootName);
             Object.DontDestroyOnLoad(_root);
-            GameStylePanelChrome.SetupOverlayCanvas(_root, 9100);
+            GameStylePanelChrome.SetupOverlayCanvas(_root, DefaultCanvasSortOrder);
+            _canvas = _root.GetComponent<Canvas>();
 
             var panel = new GameObject("Panel", typeof(RectTransform));
             panel.transform.SetParent(_root.transform, false);
@@ -69,19 +74,30 @@ namespace VoogleRoute.UI
             _root.SetActive(true);
         }
 
+        internal static void ShowOnCityMap()
+        {
+            _allowOnCityMap = true;
+            if (_canvas != null)
+                _canvas.sortingOrder = CityMapCanvasSortOrder;
+            Show();
+        }
+
         internal static void RequestHide() => _hideRequested = true;
 
         internal static void ForceHide()
         {
             _hideRequested = false;
             _shownAtUnscaled = -1f;
+            _allowOnCityMap = false;
+            if (_canvas != null)
+                _canvas.sortingOrder = DefaultCanvasSortOrder;
             if (_root != null)
                 _root.SetActive(false);
         }
 
         internal static void Tick()
         {
-            if (GameState.IsOverlayBlockingNavigation())
+            if (GameState.IsOverlayBlockingNavigation() && !_allowOnCityMap)
             {
                 ForceHide();
                 return;
@@ -111,6 +127,7 @@ namespace VoogleRoute.UI
             {
                 Object.Destroy(_root);
                 _root = null;
+                _canvas = null;
                 _label = null;
             }
         }

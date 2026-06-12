@@ -39,9 +39,9 @@ namespace VoogleRoute.Navigation
             Vector3 position,
             Quaternion rotation)
         {
+            _ = routeLaneHint;
             VehicleHelper.TeleportVehicle(vehicle, position, rotation);
             vehicle.SavePosition();
-            LogTeleportAlignment(vehicle, routeLaneHint, position, rotation);
         }
 
         private static bool TryFlattenDirection(Vector3 laneDirection, out Vector3 forward)
@@ -94,67 +94,11 @@ namespace VoogleRoute.Navigation
             return false;
         }
 
-        private static void LogTeleportAlignment(
-            VehicleController vehicle,
-            Vector3 routeLaneHint,
-            Vector3 plannedPosition,
-            Quaternion plannedRotation)
-        {
-            var actual = ReadVehiclePosition(vehicle);
-            var forward = plannedRotation * Vector3.forward;
-            forward.y = 0f;
-            if (forward.sqrMagnitude < 0.0001f)
-                forward = Vector3.forward;
-            else
-                forward.Normalize();
-
-            var right = Vector3.Cross(Vector3.up, forward);
-            var toActual = actual - routeLaneHint;
-            toActual.y = 0f;
-            var signedCross = Vector3.Dot(toActual, right);
-            var along = Vector3.Dot(toActual, forward);
-            var plannedDelta = plannedPosition - routeLaneHint;
-            plannedDelta.y = 0f;
-            var plannedCross = Vector3.Dot(plannedDelta, right);
-            var planGap = HorizontalDistance(actual, plannedPosition);
-
-            AutoDriveLog.Write(
-                "teleport | routeHint=" + Format(routeLaneHint) +
-                " planned=" + Format(plannedPosition) +
-                " actual=" + Format(actual) +
-                " planGap=" + planGap.ToString("F2") + "m" +
-                " | routeGap flat=" + toActual.magnitude.ToString("F2") + "m" +
-                " signedCross=" + signedCross.ToString("F2") + "m (+=right)" +
-                " along=" + along.ToString("F2") + "m" +
-                " | plannedCross=" + plannedCross.ToString("F2") + "m" +
-                " headingY=" + plannedRotation.eulerAngles.y.ToString("F1"));
-        }
-
-        private static Vector3 ReadVehiclePosition(VehicleController vehicle)
-        {
-            try
-            {
-                if (vehicle != null &&
-                    vehicle.TryGetComponent<NWH.VehiclePhysics2.VehicleController>(out var physics) &&
-                    physics.vehicleRigidbody != null)
-                    return physics.vehicleRigidbody.position;
-            }
-            catch
-            {
-                // ignore
-            }
-
-            return vehicle != null ? vehicle.transform.position : Vector3.zero;
-        }
-
         private static float HorizontalDistance(Vector3 a, Vector3 b)
         {
             a.y = 0f;
             b.y = 0f;
             return Vector3.Distance(a, b);
         }
-
-        private static string Format(Vector3 v) =>
-            "(" + v.x.ToString("F1") + "," + v.y.ToString("F1") + "," + v.z.ToString("F1") + ")";
     }
 }

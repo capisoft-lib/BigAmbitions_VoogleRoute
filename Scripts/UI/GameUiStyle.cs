@@ -1,6 +1,8 @@
 using System;
+using Helpers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace VoogleRoute.UI
@@ -14,6 +16,7 @@ namespace VoogleRoute.UI
         private const string BtnBlueName = "Gradient-Blue-Round";
         private const string BtnGreyName = "Gradient-Gray-Border-Round";
         private const string BtnGreenName = "Gradient-Green-Round";
+        private const string BtnRedName = "Gradient-Red-Round";
         private const string FontRegularName = "Rubik-Regular SDF";
         private const string FontBoldName = "Rubik-Bold SDF";
         private const string FontMediumName = "Rubik-Medium SDF";
@@ -21,6 +24,11 @@ namespace VoogleRoute.UI
         internal static readonly Color PanelColor = Color.white;
         internal static readonly Color White = Color.white;
         internal static readonly Color TitleColor = new Color(0.15f, 0.17f, 0.22f, 1f);
+        internal static readonly Color BodyTextColor = new Color(0.92f, 0.94f, 0.96f, 1f);
+        internal static readonly Color MutedBodyTextColor = new Color(0.75f, 0.78f, 0.82f, 1f);
+        internal static readonly Color CarPoiBackgroundColor = new Color(0.25f, 0.58f, 0.82f, 1f);
+
+        internal const float RowCloseButtonSize = 28f;
 
         private static bool _initialized;
         private static bool _wasReady;
@@ -30,7 +38,12 @@ namespace VoogleRoute.UI
         private static Sprite _btnBlue;
         private static Sprite _btnGrey;
         private static Sprite _btnGreen;
+        private static Sprite _btnRed;
         private static Sprite _settingsIcon;
+        private static Sprite _pinIcon;
+        private static Sprite _addIcon;
+        private static Sprite _carIcon;
+        private static Sprite _focusIcon;
         private static TMP_FontAsset _fontRegular;
         private static TMP_FontAsset _fontBold;
         private static TMP_FontAsset _fontMedium;
@@ -88,6 +101,13 @@ namespace VoogleRoute.UI
             image.pixelsPerUnitMultiplier = NavPanelLayout.ButtonPixelsPerUnit;
         }
 
+        internal static void ApplyButtonRed(Image image)
+        {
+            var vanillaRed = new Color(0.78f, 0.28f, 0.28f, 1f);
+            ApplySliced(image, _btnRed != null ? _btnRed : _btnGrey, vanillaRed);
+            image.pixelsPerUnitMultiplier = NavPanelLayout.ButtonPixelsPerUnit;
+        }
+
         internal static void ApplyTitleFont(TextMeshProUGUI text)
         {
             var font = _fontRegular != null ? _fontRegular : (_fontMedium != null ? _fontMedium : _fontBold);
@@ -107,15 +127,168 @@ namespace VoogleRoute.UI
             if (_settingsIcon != null)
             {
                 image.sprite = _settingsIcon;
-                image.color = TitleColor;
+                image.color = White;
                 image.preserveAspect = true;
                 image.type = Image.Type.Simple;
             }
             else
             {
                 image.sprite = null;
-                image.color = TitleColor;
+                image.color = White;
             }
+        }
+
+        internal static void ApplyPinIcon(Image image)
+        {
+            if (_pinIcon != null)
+            {
+                image.sprite = _pinIcon;
+                image.color = White;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = White;
+            }
+        }
+
+        internal static void ApplyAddIcon(Image image)
+        {
+            if (_addIcon != null)
+            {
+                image.sprite = _addIcon;
+                image.color = White;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = White;
+            }
+        }
+
+        internal static void ApplyCarIcon(Image image)
+        {
+            if (_carIcon != null)
+            {
+                image.sprite = _carIcon;
+                image.color = White;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = White;
+            }
+        }
+
+        internal static void ApplyFocusIcon(Image image)
+        {
+            if (_focusIcon != null)
+            {
+                image.sprite = _focusIcon;
+                image.color = White;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = White;
+            }
+        }
+
+        /// <summary>White overlay icon on a colored button; hides the image when no sprite is available.</summary>
+        internal static bool TryApplyOverlayIcon(Image image, Action<Image> applyIcon)
+        {
+            applyIcon(image);
+            var hasSprite = image.sprite != null;
+            image.enabled = hasSprite;
+            return hasSprite;
+        }
+
+        internal static bool TryApplyPinOverlayIcon(Image image)
+        {
+            ApplyPinIcon(image);
+            if (image.sprite != null)
+            {
+                image.enabled = true;
+                return true;
+            }
+
+            ApplyFocusIcon(image);
+            if (image.sprite != null)
+            {
+                image.enabled = true;
+                return true;
+            }
+
+            image.enabled = false;
+            return false;
+        }
+
+        internal static bool TryGetCarIcon(out Sprite sprite)
+        {
+            EnsureInitialized();
+            sprite = _carIcon;
+            return sprite != null;
+        }
+
+        internal static void ApplyPoiIconBackground(Image image, Color tint)
+        {
+            if (_iconBg != null)
+            {
+                image.sprite = _iconBg;
+                image.color = tint;
+                image.preserveAspect = true;
+                image.type = Image.Type.Simple;
+            }
+            else
+            {
+                image.sprite = null;
+                image.color = tint;
+            }
+        }
+
+        internal static void BindButtonClick(Button button, UnityAction onClick)
+        {
+            if (button == null || onClick == null)
+                return;
+
+            button.onClick.AddListener(ModUiFocus.Wrap(onClick));
+        }
+
+        internal static Button CreateRowCloseButton(Transform parent, float scale, UnityAction onClick)
+        {
+            var go = new GameObject("DeleteButton", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var rect = go.GetComponent<RectTransform>();
+
+            var image = CreateButtonGraphic(rect, scale, ApplyButtonRed, bleedBottom: false);
+            var button = go.AddComponent<Button>();
+            button.targetGraphic = image;
+            BindButtonClick(button, onClick);
+
+            var labelGo = new GameObject("Label", typeof(RectTransform));
+            labelGo.transform.SetParent(rect, false);
+            var labelRect = labelGo.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = Vector2.zero;
+            labelRect.offsetMax = Vector2.zero;
+            var text = labelGo.AddComponent<TextMeshProUGUI>();
+            text.text = "\u00d7";
+            text.fontSize = 20f * scale;
+            text.fontStyle = FontStyles.Bold;
+            text.color = Color.white;
+            text.alignment = TextAlignmentOptions.Center;
+            text.raycastTarget = false;
+            ApplyButtonFont(text);
+            return button;
         }
 
         internal static Image CreateButtonGraphic(
@@ -214,6 +387,185 @@ namespace VoogleRoute.UI
             {
                 // polices pas encore prêtes
             }
+
+            ResolvePreferredFocusIcon();
+            ResolvePreferredPinIcon();
+            ResolvePreferredAddIcon();
+            ResolvePreferredCarIcon();
+        }
+
+        private static void ResolvePreferredPinIcon()
+        {
+            if (TryFindSpriteExact(new[]
+                {
+                    "icon-pin",
+                    "map-pin",
+                    "icon-pushpin",
+                    "pushpin",
+                    "icon-location",
+                    "icon-locate",
+                    "icon-marker"
+                }, out var sprite))
+            {
+                _pinIcon = sprite;
+                return;
+            }
+
+            if (TryFindSpriteNameContains("pin", out sprite, "spin", "shop", "cart", "shipping")
+                || TryFindSpriteNameContains("location", out sprite)
+                || TryFindSpriteNameContains("marker", out sprite))
+            {
+                _pinIcon = sprite;
+            }
+        }
+
+        private static void ResolvePreferredAddIcon()
+        {
+            if (TryFindSpriteExact(new[] { "icon-add", "icon-plus", "plus", "add" }, out var sprite))
+                _addIcon = sprite;
+        }
+
+        private static void ResolvePreferredCarIcon()
+        {
+            if (TryGetVanillaVehiclePoiIcon(out var vanillaIcon))
+            {
+                _carIcon = vanillaIcon;
+                return;
+            }
+
+            if (TryFindSpriteExact(new[] { "icon-car", "icon-vehicle" }, out var sprite))
+                _carIcon = sprite;
+            else if (_carIcon != null && !IsTrustedCarIconName(_carIcon.name))
+                _carIcon = null;
+        }
+
+        private static bool TryGetVanillaVehiclePoiIcon(out Sprite sprite)
+        {
+            sprite = null;
+            try
+            {
+                if (!InstanceBehavior<GlobalReferences>.IsInitialized)
+                    return false;
+
+                sprite = InstanceBehavior<GlobalReferences>.Instance?.vehiclePOIIcon;
+                return sprite != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool IsTrustedCarIconName(string name) =>
+            string.Equals(name, "icon-car", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "icon-vehicle", StringComparison.OrdinalIgnoreCase);
+
+        private static bool TryFindSpriteExact(string[] names, out Sprite sprite)
+        {
+            sprite = null;
+            try
+            {
+                var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
+                foreach (var preferred in names)
+                {
+                    for (var i = 0; i < sprites.Length; i++)
+                    {
+                        var candidate = sprites[i];
+                        if (candidate != null &&
+                            string.Equals(candidate.name, preferred, StringComparison.OrdinalIgnoreCase))
+                        {
+                            sprite = candidate;
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return false;
+        }
+
+        private static bool TryFindSpriteNameContains(string needle, out Sprite sprite, params string[] exclude)
+        {
+            sprite = null;
+            try
+            {
+                var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
+                for (var i = 0; i < sprites.Length; i++)
+                {
+                    var candidate = sprites[i];
+                    if (candidate == null)
+                        continue;
+
+                    var name = candidate.name;
+                    if (name.IndexOf(needle, StringComparison.OrdinalIgnoreCase) < 0)
+                        continue;
+
+                    var skip = false;
+                    for (var j = 0; j < exclude.Length; j++)
+                    {
+                        if (name.IndexOf(exclude[j], StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                        continue;
+
+                    sprite = candidate;
+                    return true;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return false;
+        }
+
+        private static bool IsShoppingCartSpriteName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            return name.IndexOf("cart", StringComparison.OrdinalIgnoreCase) >= 0
+                   || name.IndexOf("shopping", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static void ResolvePreferredFocusIcon()
+        {
+            try
+            {
+                var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
+                foreach (var preferred in new[]
+                         {
+                             "icon-locate",
+                             "icon-target",
+                             "icon-crosshair"
+                         })
+                {
+                    for (var i = 0; i < sprites.Length; i++)
+                    {
+                        var sprite = sprites[i];
+                        if (sprite != null &&
+                            string.Equals(sprite.name, preferred, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _focusIcon = sprite;
+                            return;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
         }
 
         private static void CaptureSprite(Sprite s)
@@ -232,9 +584,83 @@ namespace VoogleRoute.UI
                 _btnGrey = s;
             if (s.name == BtnGreenName && _btnGreen == null)
                 _btnGreen = s;
+            if (s.name == BtnRedName && _btnRed == null)
+                _btnRed = s;
 
             if (_settingsIcon == null && IsSettingsIconName(s.name))
                 _settingsIcon = s;
+
+            if (_pinIcon == null && IsPinIconName(s.name))
+                _pinIcon = s;
+
+            if (_addIcon == null && IsAddIconName(s.name))
+                _addIcon = s;
+
+            if (_carIcon == null && IsCarIconName(s.name))
+                _carIcon = s;
+
+            if (_focusIcon == null && IsFocusIconName(s.name))
+                _focusIcon = s;
+        }
+
+        private static bool IsFocusIconName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            if (string.Equals(name, "icon-locate", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-target", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-crosshair", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            return name.IndexOf("crosshair", StringComparison.OrdinalIgnoreCase) >= 0
+                   || name.IndexOf("locate", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static bool IsCarIconName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            return IsTrustedCarIconName(name);
+        }
+
+        private static bool IsPinIconName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            if (string.Equals(name, "icon-pin", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "map-pin", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-pushpin", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "pushpin", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-location", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (name.IndexOf("spin", StringComparison.OrdinalIgnoreCase) >= 0)
+                return false;
+
+            return name.IndexOf("pushpin", StringComparison.OrdinalIgnoreCase) >= 0
+                   || name.IndexOf("map-pin", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        private static bool IsAddIconName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return false;
+
+            if (string.Equals(name, "icon-add", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "icon-plus", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(name, "plus", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            if (name.IndexOf("refresh", StringComparison.OrdinalIgnoreCase) >= 0
+                || name.IndexOf("sync", StringComparison.OrdinalIgnoreCase) >= 0
+                || name.IndexOf("spin", StringComparison.OrdinalIgnoreCase) >= 0)
+                return false;
+
+            return name.EndsWith("-add", StringComparison.OrdinalIgnoreCase)
+                   || name.EndsWith("-plus", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsSettingsIconName(string name)

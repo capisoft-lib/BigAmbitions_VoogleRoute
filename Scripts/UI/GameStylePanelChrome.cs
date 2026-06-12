@@ -1,3 +1,4 @@
+using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,24 @@ namespace VoogleRoute.UI
             scaler.scaleFactor = 1f;
 
             root.AddComponent<GraphicRaycaster>();
+            ApplyUiLayer(root);
+        }
+
+        /// <summary>Match vanilla UI layer so GameManager.HasInputSelected blocks hotkeys while typing.</summary>
+        internal static void ApplyUiLayer(GameObject root)
+        {
+            if (root == null)
+                return;
+
+            SetLayerRecursive(root, LayerHelper.UiLayerIndex);
+        }
+
+        private static void SetLayerRecursive(GameObject go, int layer)
+        {
+            go.layer = layer;
+            var transform = go.transform;
+            for (var i = 0; i < transform.childCount; i++)
+                SetLayerRecursive(transform.GetChild(i).gameObject, layer);
         }
 
         internal static BuiltChrome Build(
@@ -65,6 +84,118 @@ namespace VoogleRoute.UI
             chrome.Scale = scale;
             chrome.ContentInset = metrics.ContentInset;
             return chrome;
+        }
+
+        /// <summary>Centered Voogle modal popup — right edge fixed, left-only flush extension.</summary>
+        internal static void ApplyModalHeaderFrame(RectTransform header, float scale)
+        {
+            var leftExtend = NavPanelLayout.SettingsHeaderLeftFlush * scale;
+
+            header.anchorMin = new Vector2(0f, 1f);
+            header.anchorMax = new Vector2(1f, 1f);
+            header.pivot = new Vector2(0.5f, 1f);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = Vector2.zero;
+            header.offsetMin = new Vector2(-leftExtend, -NavPanelLayout.HeaderHeight);
+            header.offsetMax = Vector2.zero;
+        }
+
+        internal static void ApplyHudTrimHeader(
+            RectTransform header,
+            float panelWidth,
+            float headerExtraTrim = 0f)
+        {
+            var scale = panelWidth / NavPanelLayout.PanelWidth;
+            ApplyHeaderFrame(header, NavPanelLayout.CreateMetrics(scale), headerExtraTrim);
+        }
+
+        /// <summary>Reapply body bleed + default hud-trim header together (RouteToggleHud recipe).</summary>
+        internal static void RestorePanelChrome(RectTransform panel, float panelWidth, float headerExtraTrim = 0f)
+        {
+            var scale = panelWidth / NavPanelLayout.PanelWidth;
+            var background = panel.Find("Background") as RectTransform;
+            if (background != null)
+                NavPanelLayout.ApplyBodyFrame(background, scale);
+
+            var header = panel.Find("Header") as RectTransform;
+            if (header == null)
+                return;
+
+            if (header.parent != panel)
+                header.SetParent(panel, false);
+
+            ApplyHudTrimHeader(header, panelWidth, headerExtraTrim);
+        }
+
+        /// <summary>
+        /// Header aligned to NavPanelLayout visible body frame edges (ref panel 370).
+        /// Uses BodyVisibleLeft/Right — the calibrated reference, not bleed or toggle guesses.
+        /// </summary>
+        internal static void ApplyVisibleFrameHeader(RectTransform header, float scale)
+        {
+            if (header.parent is RectTransform parent && parent.name == "Background")
+                header.SetParent(parent.parent, false);
+
+            header.anchorMin = new Vector2(0f, 1f);
+            header.anchorMax = new Vector2(1f, 1f);
+            header.pivot = new Vector2(0.5f, 1f);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = Vector2.zero;
+
+            var leftInset = NavPanelLayout.BodyVisibleLeft * scale;
+            var rightExtend = (NavPanelLayout.BodyVisibleRight - NavPanelLayout.PanelWidth) * scale;
+            header.offsetMin = new Vector2(leftInset, -NavPanelLayout.HeaderHeight);
+            header.offsetMax = new Vector2(rightExtend, 0f);
+        }
+
+        /// <summary>
+        /// Parents the header on the bled body frame and insets it to the sprite corners.
+        /// Guarantees horizontal alignment between header bar and panel frame on tall docked panels.
+        /// </summary>
+        internal static void ApplyHeaderOnBodyFrame(RectTransform header, RectTransform background, float scale)
+        {
+            header.SetParent(background, false);
+            header.anchorMin = new Vector2(0f, 1f);
+            header.anchorMax = new Vector2(1f, 1f);
+            header.pivot = new Vector2(0.5f, 1f);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = Vector2.zero;
+            var leftInset = NavPanelLayout.MainPanelHeaderTightenLeft * scale;
+            var rightInset = NavPanelLayout.MainPanelHeaderTightenRight * scale;
+            header.offsetMin = new Vector2(leftInset, -NavPanelLayout.HeaderHeight);
+            header.offsetMax = new Vector2(-rightInset, 0f);
+        }
+
+        /// <summary>Toggle / docked HUD — header inset to visible frame borders (same as RouteToggleHud).</summary>
+        internal static void ApplyToggleHudHeaderFrame(RectTransform header, float scale)
+        {
+            var leftInset = NavPanelLayout.HeaderSliceBorderLeft * scale + NavPanelLayout.ToggleHudHeaderLeftAdjust;
+            var rightInset = NavPanelLayout.HeaderSliceBorderRight * scale + NavPanelLayout.ToggleHudHeaderRightAdjust;
+
+            header.anchorMin = new Vector2(0f, 1f);
+            header.anchorMax = new Vector2(1f, 1f);
+            header.pivot = new Vector2(0.5f, 1f);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = Vector2.zero;
+            header.offsetMin = new Vector2(leftInset, -NavPanelLayout.HeaderHeight);
+            header.offsetMax = new Vector2(-rightInset, 0f);
+        }
+
+        /// <summary>Main panel or wide HUD — header edges align with visible body frame (ref-pixel constants).</summary>
+        internal static void ApplyMainPanelHeaderFrame(RectTransform header)
+        {
+            var leftExtend = NavPanelLayout.FrameBleedWidth * 0.5f - NavPanelLayout.FrameOffsetX -
+                             NavPanelLayout.MainPanelHeaderTightenLeft;
+            var rightExtend = NavPanelLayout.FrameBleedWidth * 0.5f + NavPanelLayout.FrameOffsetX -
+                              NavPanelLayout.MainPanelHeaderTightenRight;
+
+            header.anchorMin = new Vector2(0f, 1f);
+            header.anchorMax = new Vector2(1f, 1f);
+            header.pivot = new Vector2(0.5f, 1f);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = Vector2.zero;
+            header.offsetMin = new Vector2(-leftExtend, -NavPanelLayout.HeaderHeight);
+            header.offsetMax = new Vector2(rightExtend, 0f);
         }
 
         internal static void ApplyHeaderFrameAligned(RectTransform header, in NavPanelLayout.Metrics metrics) =>

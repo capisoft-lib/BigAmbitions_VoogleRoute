@@ -62,12 +62,6 @@ namespace VoogleRoute.Navigation
                 return;
             }
 
-            if (ModConfig.AutoDriveEnabled)
-            {
-                ModConfig.SetAutoDriveEnabled(false);
-                AutoDriveService.Reset();
-            }
-
             host.StartCoroutine(TravelCoroutine(plan));
         }
 

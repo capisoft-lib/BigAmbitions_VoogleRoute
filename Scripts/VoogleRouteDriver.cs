@@ -1,5 +1,4 @@
 using UnityEngine;
-using VoogleRoute.Navigation;
 
 namespace VoogleRoute
 {
@@ -16,7 +15,5 @@ namespace VoogleRoute
         }
 
         private void Update() => VoogleRouteLoop.Tick();
-
-        private void FixedUpdate() => AutoDriveService.PhysicsTick();
     }
 }

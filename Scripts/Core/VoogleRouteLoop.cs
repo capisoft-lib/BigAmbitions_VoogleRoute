@@ -2,6 +2,7 @@ using System;
 using BAModAPI;
 using BaPlayerLocation.Subscriber;
 using Buildings;
+using Streets;
 using UnityEngine;
 using VoogleRoute.Live;
 using VoogleRoute.Navigation;
@@ -27,6 +28,7 @@ namespace VoogleRoute
         private static float _nextFootPathRecalc;
         private static Action<bool> _onCityMapToggled;
         private static Action<Address> _onEnterBuilding;
+        private static Action<Address> _onEnterBuildingDelayed;
         private static Action<Address> _onExitBuilding;
 
         internal static void Initialize(ModContext context)
@@ -42,9 +44,12 @@ namespace VoogleRoute
             GlobalEvents.onCityMapToggle =
                 (Action<bool>)Delegate.Combine(GlobalEvents.onCityMapToggle, _onCityMapToggled);
             _onEnterBuilding = OnEnterBuilding;
+            _onEnterBuildingDelayed = OnEnterBuildingDelayed;
             _onExitBuilding = OnExitBuilding;
             GlobalEvents.onEnterBuilding =
                 (Action<Address>)Delegate.Combine(GlobalEvents.onEnterBuilding, _onEnterBuilding);
+            GlobalEvents.onEnterBuildingDelayed =
+                (Action<Address>)Delegate.Combine(GlobalEvents.onEnterBuildingDelayed, _onEnterBuildingDelayed);
             GlobalEvents.onExitBuilding =
                 (Action<Address>)Delegate.Combine(GlobalEvents.onExitBuilding, _onExitBuilding);
             ModLog.Info("VoogleRoute loop initialized.");
@@ -65,6 +70,13 @@ namespace VoogleRoute
                 GlobalEvents.onEnterBuilding =
                     (Action<Address>)Delegate.Remove(GlobalEvents.onEnterBuilding, _onEnterBuilding);
                 _onEnterBuilding = null;
+            }
+
+            if (_onEnterBuildingDelayed != null)
+            {
+                GlobalEvents.onEnterBuildingDelayed =
+                    (Action<Address>)Delegate.Remove(GlobalEvents.onEnterBuildingDelayed, _onEnterBuildingDelayed);
+                _onEnterBuildingDelayed = null;
             }
 
             if (_onExitBuilding != null)
@@ -101,6 +113,8 @@ namespace VoogleRoute
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
             AutoDriveConfirmPopup.TickOverlay();
+            CityMapBookmarksPanel.Tick();
+            CityMapClickService.Tick();
 
             if (ShouldRefreshHud())
                 RouteToggleHud.UpdateVisibility();
@@ -190,10 +204,6 @@ namespace VoogleRoute
             var canNavigate = CanNavigate();
             if (!canNavigate || !navigationWanted)
             {
-                if (ModConfig.AutoDriveEnabled)
-                    AutoDriveDiagnostics.LogBlockedOnce(
-                        "navigation loop exit canNav=" + canNavigate +
-                        " wanted=" + navigationWanted);
                 CleanupNavigationState();
                 return;
             }
@@ -204,10 +214,6 @@ namespace VoogleRoute
             TickFootRouteRefresh(canNavigate, navigationWanted);
 
             if (AutoWalkService.Tick(canNavigate, _activePath))
-                RouteToggleHud.RefreshVisual();
-
-            AutoDriveService.CacheNavigationContext(canNavigate, _activePath);
-            if (AutoDriveService.ConsumeHudRefreshPending())
                 RouteToggleHud.RefreshVisual();
         }
 
@@ -236,12 +242,14 @@ namespace VoogleRoute
         {
             _ = address;
             AutoWalkService.Reset();
-            AutoDriveService.Reset();
             if (ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(false);
-            if (ModConfig.AutoDriveEnabled)
-                ModConfig.SetAutoDriveEnabled(false);
             RouteSettingsUi.Close();
+        }
+
+        private static void OnEnterBuildingDelayed(Address address)
+        {
+            QuickBookmarkStore.OnEnterBuildingDelayed(address);
         }
 
         private static void OnExitBuilding(Address address)
@@ -257,6 +265,10 @@ namespace VoogleRoute
             _ = snapshot;
 
             if (!GameState.IsPlayable())
+                return;
+
+            // City map pauses the game — position-based work runs once when the map opens.
+            if (GameState.IsCityMapOpen())
                 return;
 
             if (GameState.IsIndoorNavigationContext())
@@ -283,8 +295,6 @@ namespace VoogleRoute
                 InvalidateRouteCache("movement_mode_changed");
                 if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                     AutoWalkService.Reset();
-                if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
-                    AutoDriveService.Reset();
             }
 
             RefreshRouteIfNavigating("player_location");
@@ -361,7 +371,7 @@ namespace VoogleRoute
             if (!NavigationTargetTracker.HasMapGpsTarget)
                 return false;
 
-            if (NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
+            if (!NavigationTargetTracker.IsModNavigationSource)
                 return false;
 
             if (MovementModeDetector.CurrentMode == MovementMode.Subway)
@@ -392,7 +402,6 @@ namespace VoogleRoute
             RouteLineRenderer.Hide();
             RouteRecalcBanner.ForceHide();
             AutoWalkService.Reset();
-            AutoDriveService.Reset();
             _activePath = PathResult.None;
         }
 
@@ -438,7 +447,6 @@ namespace VoogleRoute
             }
 
             var canNavigate = CanNavigate();
-            MapOverlayDiagnostics.MaybeLogPeriodicStatus(true, canNavigate);
 
             if (!canNavigate)
             {
@@ -450,9 +458,7 @@ namespace VoogleRoute
             if (PathFinderService.TickAsyncRecalc() || PathFinderService.ConsumeAsyncRefreshRequest())
                 RefreshMapRouteDisplayFromCache();
             else if (_forceRouteRecalc && !PathFinderService.IsAsyncRecalcInProgress)
-                RefreshMapRouteIfNavigating("map_overlay_resume");
-            else if (!PathFinderService.IsAsyncRecalcInProgress)
-                RefreshMapRouteDisplayFromCache();
+                RefreshMapRouteIfNavigating("map_overlay_open");
         }
 
         private static string DescribeNavigateBlockReason()
@@ -463,7 +469,7 @@ namespace VoogleRoute
             if (!NavigationTargetTracker.HasMapGpsTarget)
                 return "no_map_gps_target";
 
-            if (NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
+            if (!NavigationTargetTracker.IsModNavigationSource)
                 return "destination_source_not_map(" + NavigationTargetTracker.LastSource + ")";
 
             if (MovementModeDetector.CurrentMode == MovementMode.Subway)

@@ -15,6 +15,7 @@ namespace VoogleRoute
         internal const string ModsLocalFolder = "ModsLocal";
         internal const string LogsFolder = "Logs";
         internal const string ConfigFileName = "config.json";
+        internal const string BookmarksFileName = "bookmarks.json";
         internal const string EnhancedRoutesCsv = "Data/big_ambitions_enhanced_routes.csv";
 
         private static string _modRoot;

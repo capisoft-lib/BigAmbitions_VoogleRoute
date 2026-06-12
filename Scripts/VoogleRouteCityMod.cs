@@ -39,6 +39,8 @@ namespace VoogleRoute
             RouteToggleHud.EnsureCreated();
             RouteSettingsUi.EnsureCreated();
             RouteRecalcBanner.EnsureCreated();
+            CityMapBookmarksPanel.EnsureCreated();
+            CityMapBookmarkAddDialog.EnsureCreated();
 
             ModLog.Info("Voogle Route city load complete.");
             return Task.CompletedTask;
@@ -58,16 +60,19 @@ namespace VoogleRoute
             }
 
             VoogleRouteLoop.Shutdown();
-            AutoDriveLog.Shutdown();
             RouteToggleHud.Destroy();
             AutoDriveConfirmPopup.Destroy();
             RouteSettingsUi.Destroy();
             RouteRecalcBanner.Destroy();
+            CityMapBookmarkAddDialog.Destroy();
+            CityMapBookmarksPanel.Destroy();
             RouteLineRenderer.Destroy();
             ModLog.Info("UI and route renderers destroyed.");
 
             DestinationResolver.Clear();
             NavigationTargetTracker.ClearMapGpsTarget("mod unload");
+            ParkedVehicleStore.Clear();
+            QuickBookmarkStore.Clear();
             ModConfig.Shutdown();
 
             ModLog.Info("Voogle Route city unload complete.");
