@@ -1,6 +1,6 @@
 [b]Voogle Route[/b]
 
-[b]Voogle Route[/b] extends [b]Voogle Maps[/b]: set a destination on the city map as usual, then follow a clear [b]on-ground route line[/b] in the world. Works on foot and in vehicles, with optional [b]auto-walk[/b] when you're walking and [b]auto-drive[/b] skip travel when you're driving.
+[b]Voogle Route[/b] extends [b]Voogle Maps[/b]: set a destination on the city map as usual, then follow a clear [b]on-ground route line[/b] in the world. Works on foot and in vehicles, with optional [b]auto-walk[/b] when you're walking and [b]auto-drive fast travel[/b] (time skip) when you're driving.
 
 Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Player Location[/b] in the in-game [b]Mods[/b] menu.
 
@@ -12,10 +12,9 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [b]What's new in 0.11.5[/b]
 
 [list]
-[*][b]Auto-drive skip travel[/b] — in a vehicle, tap [b]AUTO-DRIVE[/b] on the panel; confirm to skip time and arrive near your map destination
+[*][b]Auto-drive fast travel[/b] — in a vehicle, tap [b]AUTO-DRIVE[/b] on the panel; confirm to skip time and arrive near your map destination (not auto-steering)
 [*][b]Confirmation popup[/b] — estimated travel time, arrival time, and distance; [b]ESC[/b] or cancel closes the dialog
 [*][b]Base taxi multiplier[/b] — mod option (1–10×) with live value next to the slider; adjusts skip-travel duration
-[*][b]Auto-drive path following[/b] — optional in-vehicle guidance along the road network
 [/list]
 
 
@@ -25,7 +24,7 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]Route line on the ground[/b] — neon path from you to your map destination; separate styling on foot vs. in a vehicle
 [*][b]Road-aware driving routes[/b] — vehicle paths follow the city's road network instead of cutting across blocks
 [*][b]Auto-walk[/b] — walk the route automatically ([b]WALK ON[/b]); stops if you take manual control
-[*][b]Auto-drive[/b] — skip-travel to destination in a vehicle, or follow the route line with auto-steering
+[*][b]Auto-drive fast travel[/b] — time skip to your destination in a vehicle ([b]AUTO-DRIVE[/b] on the panel)
 [*][b]Indoor guidance[/b] — route line and auto-walk to the nearest exit when you are inside a building
 [*][b]City map route display[/b] — your active route shown on the full city map ([b]M[/b])
 [*][b]VOOGLE ROUTE panel[/b] — bottom-left, styled like BizPhone apps ([b]ROUTE ON / ROUTE OFF[/b])

@@ -1,1 +1,1 @@
-Voogle Route: on-ground path to your Voogle destination — foot or car, auto-walk, auto-drive skip travel, indoor exit guidance, city map (M) overlay. Requires LIB BA Player Location. 22 languages. EA 0.11.
+Voogle Route: on-ground path to your Voogle destination — foot or car, auto-walk, auto-drive fast travel (time skip), indoor exit guidance, city map (M) overlay. Requires LIB BA Player Location. 22 languages. EA 0.11.

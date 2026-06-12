@@ -6,11 +6,18 @@ All notable changes to **Voogle Route** are documented here.
 
 ### Added
 
-- **Auto-drive skip travel** — in a vehicle, tap **AUTO-DRIVE** on the panel to open a confirmation popup, then skip time to arrive near your map destination (vanilla time-machine flow)
-- **Confirmation popup** — shows estimated travel time, arrival time (`HH:mm`), and distance; **ESC** or cancel closes the dialog
-- **Base taxi multiplier** — mod option slider (1–10×) with live value next to the control; affects skip-travel duration
-- **Auto-drive path following** — optional in-vehicle guidance along the road network (Pure Pursuit)
-- **Locales** — auto-drive strings in all **22** supported languages
+- **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** on the panel to open a confirmation popup, then skip time and teleport near your map destination (vanilla `TimeMachine` + `UiFader` flow, road-network placement)
+- **Confirmation popup** — Voogle-style modal with estimated travel time, arrival time (`HH:mm`), and distance; **ESC**, dimmer click, or **CANCEL** closes without travelling
+- **Base taxi multiplier** — mod option slider (1–10×) with live `{value}x` next to the control; persisted as `base_taxi_multiplier` in `config.json`
+- **Locales** — auto-drive HUD, popup, errors, and multiplier value strings in all **22** supported languages
+
+### Changed
+
+- **VOOGLE ROUTE panel** — second button shows **AUTO-DRIVE** in vehicle mode (fast travel) instead of auto-walk
+
+### Removed
+
+- **In-vehicle auto-steering** — experimental path-following / Pure Pursuit driving was dropped; **0.11.5** ships fast travel only
 
 ## [0.11.4] - 2026-06-12
 
