@@ -23,6 +23,7 @@ namespace VoogleRoute
     
         internal static bool RouteLineEnabled { get; private set; } = true;
         internal static bool AutoWalkEnabled { get; private set; }
+        internal static bool AutoDriveEnabled { get; private set; }
         internal static bool IndoorRouteLineEnabled { get; private set; } = true;
         internal static bool IndoorAutoWalkEnabled { get; private set; }
     
@@ -38,7 +39,7 @@ namespace VoogleRoute
         internal static float HudButtonScale { get; private set; } = 1f;
         internal static float NavHudOffsetY { get; private set; } = 16f;
     
-        internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
+        internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled || AutoDriveEnabled;
         internal static bool IndoorWantsRouteComputation => IndoorRouteLineEnabled || IndoorAutoWalkEnabled;
 
         private static Color _lineColor = new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
@@ -63,6 +64,7 @@ namespace VoogleRoute
                 " log_level=" + LogLevel.ToString().ToLowerInvariant() +
                 " route_line=" + RouteLineEnabled +
                 " auto_walk=" + AutoWalkEnabled +
+                " auto_drive=" + AutoDriveEnabled +
                 " indoor_route=" + IndoorRouteLineEnabled +
                 " indoor_autowalk=" + IndoorAutoWalkEnabled);
 
@@ -103,6 +105,16 @@ namespace VoogleRoute
 
             AutoWalkEnabled = value;
             ModLog.Info("Auto-walk = " + value);
+            RouteToggleHud.RefreshVisual();
+        }
+
+        internal static void SetAutoDriveEnabled(bool value)
+        {
+            if (AutoDriveEnabled == value)
+                return;
+
+            AutoDriveEnabled = value;
+            ModLog.Info("Auto-drive = " + value);
             RouteToggleHud.RefreshVisual();
         }
 

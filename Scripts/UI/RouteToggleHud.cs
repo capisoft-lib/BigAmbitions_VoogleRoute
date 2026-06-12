@@ -27,7 +27,9 @@ namespace VoogleRoute.UI
         private static bool _lastIndoor;
         private static bool _lastRouteOn;
         private static bool _lastWalkOn;
+        private static bool _lastDriveOn;
         private static bool _lastOnFoot;
+        private static bool _lastInVehicle;
         private static float _lastOffsetY = float.NaN;
         private static bool _forceApply = true;
 
@@ -175,13 +177,18 @@ namespace VoogleRoute.UI
 
             var routeOn = indoor ? ModConfig.IndoorRouteLineEnabled : ModConfig.RouteLineEnabled;
             var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
+            var driveOn = ModConfig.AutoDriveEnabled;
             var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            if (_forceApply || indoor != _lastIndoor || routeOn != _lastRouteOn || walkOn != _lastWalkOn || onFoot != _lastOnFoot)
+            var inVehicle = MovementModeDetector.CurrentMode == MovementMode.Vehicle;
+            if (_forceApply || indoor != _lastIndoor || routeOn != _lastRouteOn || walkOn != _lastWalkOn ||
+                driveOn != _lastDriveOn || onFoot != _lastOnFoot || inVehicle != _lastInVehicle)
             {
                 _lastIndoor = indoor;
                 _lastRouteOn = routeOn;
                 _lastWalkOn = walkOn;
+                _lastDriveOn = driveOn;
                 _lastOnFoot = onFoot;
+                _lastInVehicle = inVehicle;
                 RefreshVisual();
             }
 
@@ -210,8 +217,19 @@ namespace VoogleRoute.UI
             _routeLabel.color = ButtonLabelColor;
 
             var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
+            var driveOn = ModConfig.AutoDriveEnabled;
             var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            if (!onFoot && !indoor)
+            var inVehicle = MovementModeDetector.CurrentMode == MovementMode.Vehicle;
+            if (inVehicle)
+            {
+                if (driveOn)
+                    GameUiStyle.ApplyButtonGreen(_autoWalkButtonImage);
+                else
+                    GameUiStyle.ApplyButtonGrey(_autoWalkButtonImage);
+                _autoWalkLabel.text = driveOn ? ModUiText.DriveOn : ModUiText.AutoDrive;
+                _autoWalkLabel.color = ButtonLabelColor;
+            }
+            else if (!onFoot && !indoor)
             {
                 GameUiStyle.ApplyButtonGrey(_autoWalkButtonImage);
                 _autoWalkLabel.text = ModUiText.AutoWalk;
@@ -343,6 +361,15 @@ namespace VoogleRoute.UI
                 ModConfig.SetIndoorAutoWalkEnabled(!ModConfig.IndoorAutoWalkEnabled);
                 if (!ModConfig.IndoorAutoWalkEnabled)
                     IndoorAutoWalkService.Reset();
+                RefreshVisual();
+                return;
+            }
+
+            if (MovementModeDetector.CurrentMode == MovementMode.Vehicle)
+            {
+                ModConfig.SetAutoDriveEnabled(!ModConfig.AutoDriveEnabled);
+                if (!ModConfig.AutoDriveEnabled)
+                    AutoDriveService.Reset();
                 RefreshVisual();
                 return;
             }

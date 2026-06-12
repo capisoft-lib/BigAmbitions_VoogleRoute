@@ -11,6 +11,8 @@ namespace VoogleRoute.UI
         internal static string RouteOn => Loc("voogle_route_route_on", "ROUTE ON");
         internal static string RouteOff => Loc("voogle_route_route_off", "ROUTE OFF");
         internal static string AutoWalk => Loc("voogle_route_autowalk", "AUTO-WALK");
+        internal static string AutoDrive => Loc("voogle_route_autodrive", "AUTO-DRIVE");
+        internal static string DriveOn => Loc("voogle_route_drive_on", "DRIVE ON");
         internal static string WalkOn => Loc("voogle_route_walk_on", "WALK ON");
         internal static string WayOutOn => Loc("voogle_route_way_out_on", "WAY OUT");
         internal static string WayOutOff => Loc("voogle_route_way_out_off", "WAY OUT OFF");

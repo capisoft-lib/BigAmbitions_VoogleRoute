@@ -200,6 +200,9 @@ namespace VoogleRoute
 
             if (AutoWalkService.Tick(canNavigate, _activePath))
                 RouteToggleHud.RefreshVisual();
+
+            if (AutoDriveService.Tick(canNavigate, _activePath))
+                RouteToggleHud.RefreshVisual();
         }
 
         private static void TickFootRouteRefresh(bool canNavigate, bool navigationWanted)
@@ -227,8 +230,11 @@ namespace VoogleRoute
         {
             _ = address;
             AutoWalkService.Reset();
+            AutoDriveService.Reset();
             if (ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(false);
+            if (ModConfig.AutoDriveEnabled)
+                ModConfig.SetAutoDriveEnabled(false);
             RouteSettingsUi.Close();
         }
 
@@ -271,6 +277,8 @@ namespace VoogleRoute
                 InvalidateRouteCache("movement_mode_changed");
                 if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                     AutoWalkService.Reset();
+                if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+                    AutoDriveService.Reset();
             }
 
             RefreshRouteIfNavigating("player_location");
@@ -378,6 +386,7 @@ namespace VoogleRoute
             RouteLineRenderer.Hide();
             RouteRecalcBanner.ForceHide();
             AutoWalkService.Reset();
+            AutoDriveService.Reset();
             _activePath = PathResult.None;
         }
 

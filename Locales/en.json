@@ -3,6 +3,8 @@
   "voogle_route_route_on": "ROUTE ON",
   "voogle_route_route_off": "ROUTE OFF",
   "voogle_route_autowalk": "AUTO-WALK",
+  "voogle_route_autodrive": "AUTO-DRIVE",
+  "voogle_route_drive_on": "DRIVE ON",
   "voogle_route_walk_on": "WALK ON",
   "voogle_route_settings_title": "VOOGLE ROUTE SETTINGS",
   "voogle_route_setting_route_color": "Route line color",
