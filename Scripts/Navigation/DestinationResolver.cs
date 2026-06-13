@@ -26,6 +26,24 @@ namespace VoogleRoute.Navigation
             _lastPollTime = Time.unscaledTime;
             SyncFromMapDestination();
         }
+
+        /// <summary>Sync tracker immediately after setting a vanilla map address (no poll wait).</summary>
+        internal static bool TrySyncAddressNow(Address address)
+        {
+            if (IsInvalidAddress(address))
+                return false;
+
+            _lastResolvedAddress = address;
+            _hasLastAddress = true;
+            _lastPollTime = Time.unscaledTime;
+
+            if (!TryResolveWorldPosition(address, out var worldPos))
+                return false;
+
+            ModLog.Info("Map destination synced (immediate): " + address + " -> " + worldPos);
+            NavigationTargetTracker.SetMapGpsTarget(worldPos);
+            return true;
+        }
     
         private static void SyncFromMapDestination()
         {

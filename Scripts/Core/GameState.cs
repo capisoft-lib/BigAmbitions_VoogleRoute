@@ -68,6 +68,71 @@ namespace VoogleRoute
             }
         }
 
+        /// <summary>Bookmarks panel: map open and no BizMan/purchase/dialog overlay on top.</summary>
+        internal static bool ShouldShowCityMapBookmarks()
+        {
+            if (!IsCityMapOpen())
+                return false;
+
+            return !IsCityMapSubOverlayOpen();
+        }
+
+        /// <summary>Visit history / map bookmarks: allow on city map unless a modal overlay is open.</summary>
+        internal static bool IsBlockingVisitHistory()
+        {
+            if (IsCityMapOpen())
+                return IsCityMapSubOverlayOpen();
+
+            return IsOverlayBlockingNavigation();
+        }
+
+        private static bool IsCityMapSubOverlayOpen()
+        {
+            try
+            {
+                if (FullMenu.IsOpen)
+                    return true;
+
+                if (MiniMenu.IsOpen)
+                    return true;
+
+                if (InteriorDesignerUI.IsOpen || PurchaseUI.IsPanelOpen || PurchaseVehicleUI.IsPanelOpen)
+                    return true;
+
+                if (PlayerActivityUI.IsPanelOpen)
+                    return true;
+
+                if (BuildingPreview.isPreviewing)
+                    return true;
+
+                if (HudConfirm.isOpen)
+                    return true;
+
+                if (InstanceBehavior<UIs>.IsInitialized)
+                {
+                    var uis = InstanceBehavior<UIs>.Instance;
+                    var hud = uis?.playerHUD;
+                    if (hud != null)
+                    {
+                        if (hud.dialogUI.isPanelOpen || hud.manageCargoUI.isPanelOpen || hud.jobOfferPanel.isPanelOpen)
+                            return true;
+
+                        if (hud.purchaseUI.isDoingPurchase)
+                            return true;
+                    }
+
+                    if (uis.notificationsListUI != null && uis.notificationsListUI.isVisible)
+                        return true;
+                }
+            }
+            catch
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>Route overlay on the 3D city map (M) — independent from ground navigation.</summary>
         internal static bool ShouldRunMapRouteOverlay()
         {

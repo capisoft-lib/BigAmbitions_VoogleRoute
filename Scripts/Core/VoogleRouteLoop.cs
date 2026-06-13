@@ -40,6 +40,7 @@ namespace VoogleRoute
             PlayerLocationSession.Changed += OnPlayerLocationChanged;
             PlayerLocationLogger.Initialize();
             RouteGraphStore.WarmUp();
+            SubwayStationStore.WarmUp();
             _onCityMapToggled = MapOverlayDiagnostics.OnCityMapToggled;
             GlobalEvents.onCityMapToggle =
                 (Action<bool>)Delegate.Combine(GlobalEvents.onCityMapToggle, _onCityMapToggled);
@@ -91,6 +92,7 @@ namespace VoogleRoute
             PlayerLocationLogger.Shutdown();
             PlayerLocationSession.Shutdown();
             RouteGraphStore.Invalidate();
+            SubwayStationStore.Invalidate();
             _activePath = PathResult.None;
             _lastNavigationContextActive = false;
             _lastNavigationWanted = false;
@@ -98,6 +100,8 @@ namespace VoogleRoute
             _destinationRecalcPending = false;
             _warnedMissingLibrary = false;
             RouteRecalcBanner.ForceHide();
+            NavigationArrivalService.Reset();
+            _wasSubwayRidingForNav = false;
             ModLog.Info("VoogleRoute loop shut down.");
         }
 
@@ -117,6 +121,11 @@ namespace VoogleRoute
             VisitHistoryPanel.TickOverlay();
             CityMapBookmarksPanel.Tick();
             CityMapClickService.Tick();
+
+            if (GameState.IsWorldReady() && !SubwayStationStore.TryEnsureLoaded())
+                SubwayStationStore.WarmUp();
+
+            BookmarkRouteDistanceService.TickMainThread();
 
             if (ShouldRefreshHud())
                 RouteToggleHud.UpdateVisibility();
@@ -204,6 +213,8 @@ namespace VoogleRoute
                 RefreshRouteIfNavigating("navigation_resume");
 
             var canNavigate = CanNavigate();
+            NavigationArrivalService.Tick();
+
             if (!canNavigate || !navigationWanted)
             {
                 CleanupNavigationState();
@@ -299,6 +310,16 @@ namespace VoogleRoute
                 InvalidateRouteCache("movement_mode_changed");
                 if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                     AutoWalkService.Reset();
+                else
+                    AutoWalkService.ResetSubwayState();
+            }
+
+            if (MovementModeDetector.CurrentMode == MovementMode.OnFoot &&
+                TryDetectSubwayRideCompleted())
+            {
+                AutoWalkService.OnSubwayRideCompleted();
+                InvalidateRouteCache("subway_ride_complete");
+                _forceRouteRecalc = true;
             }
 
             RefreshRouteIfNavigating("player_location");
@@ -531,6 +552,33 @@ namespace VoogleRoute
                 RouteLineRenderer.ShowPath(path);
             else
                 CityMapRouteLineRenderer.Hide();
+        }
+
+        private static bool _wasSubwayRidingForNav;
+
+        private static bool TryDetectSubwayRideCompleted()
+        {
+            var riding = false;
+            try
+            {
+                riding = SubwaySystem.IsRiding;
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (riding)
+            {
+                _wasSubwayRidingForNav = true;
+                return false;
+            }
+
+            if (!_wasSubwayRidingForNav)
+                return false;
+
+            _wasSubwayRidingForNav = false;
+            return true;
         }
 
         private static bool ShouldRefreshHud()

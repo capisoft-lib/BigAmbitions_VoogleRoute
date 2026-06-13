@@ -21,6 +21,10 @@ namespace VoogleRoute.UI
         internal static string GetOutOn => Loc("voogle_route_get_out_on", "GET OUT ON");
         internal static string SettingsTitle => Loc("voogle_route_settings_title", "VOOGLE ROUTE SETTINGS");
         internal static string SettingRouteLineColor => Loc("voogle_route_setting_route_color", "Route line color");
+        internal static string SettingFootRouteColor =>
+            Loc("voogle_route_setting_foot_route_color", "On-foot route color");
+        internal static string SettingVehicleRouteColor =>
+            Loc("voogle_route_setting_vehicle_route_color", "Vehicle route color");
         internal static string SettingChooseColor => Loc("voogle_route_setting_choose_color", "CHOOSE COLOR");
         internal static string SettingClose => Loc("voogle_route_setting_close", "CLOSE");
         internal static string ColorPresetNeonBlue => Loc("voogle_route_color_neon_blue", "Neon blue");
@@ -54,6 +58,10 @@ namespace VoogleRoute.UI
             Loc("voogle_route_bookmarks_clear_all", "CLEAR ALL");
         internal static string BookmarksSetDestination =>
             Loc("voogle_route_bookmarks_set_dest", "SET");
+        internal static string BookmarksDrive =>
+            Loc("voogle_route_bookmarks_drive", "DRIVE");
+        internal static string BookmarksWalk =>
+            Loc("voogle_route_bookmarks_walk", "WALK");
         internal static string BookmarksCenter =>
             Loc("voogle_route_bookmarks_center", "CENTER");
         internal static string QuickBookmarkLastCar =>

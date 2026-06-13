@@ -9,6 +9,7 @@ namespace VoogleRoute.Navigation
         None,
         FullAStar,
         NavMeshFoot,
+        NavMeshFootSubway,
         Failed
     }
 

@@ -13,6 +13,10 @@ namespace VoogleRoute.Navigation
         internal bool Success;
         internal bool IsPartial;
         internal Vector3[] Points;
+        internal RoutePathSegment[] Segments;
+        internal SubwayNavigationHint Subway;
+
+        internal bool UsesSubway => Subway.Active;
 
         internal static PathResult None
         {
@@ -20,6 +24,8 @@ namespace VoogleRoute.Navigation
             {
                 var r = new PathResult();
                 r.Points = System.Array.Empty<Vector3>();
+                r.Segments = System.Array.Empty<RoutePathSegment>();
+                r.Subway = SubwayNavigationHint.None;
                 return r;
             }
         }
@@ -423,8 +429,32 @@ namespace VoogleRoute.Navigation
             }
             else
             {
-                calculateOk = FootRouteCalculator.TryCalculate(origin, target, sampleOrigin, NavPath, out pathFilterUsed);
-                status = calculateOk ? NavPath.status : NavMeshPathStatus.PathInvalid;
+                if (FootSubwayRoutePlanner.TryBuildRoute(origin, target, sampleOrigin, out var footResult))
+                {
+                    RouteRecalcDiagnostics.RecordPathfind(
+                        footResult.UsesSubway ? RoutePathfindKind.NavMeshFootSubway : RoutePathfindKind.NavMeshFoot,
+                        RouteRecalcDiagnostics.ElapsedMs(pathfindTimer));
+
+                    if (footResult.Success && footResult.Points != null && footResult.Points.Length >= 2)
+                    {
+                        LastFinalPoints = footResult.Points;
+                        _lastFinalPointsMode = mode;
+                        RouteRecalcDiagnostics.LogRecalc(
+                            requestSource,
+                            recalcReason + (footResult.UsesSubway ? "|subway" : string.Empty),
+                            mode,
+                            RouteRecalcDiagnostics.ElapsedMs(totalTimer),
+                            RouteRecalcDiagnostics.ElapsedMs(pathfindTimer),
+                            0f,
+                            footResult.Points.Length,
+                            footResult.UsesSubway ? RoutePathfindKind.NavMeshFootSubway : RoutePathfindKind.NavMeshFoot,
+                            true);
+                        return Cache(footResult, mode);
+                    }
+                }
+
+                calculateOk = FootRouteCalculator.TryCalculate(
+                    origin, target, sampleOrigin, NavPath, out pathFilterUsed, out status);
                 navCorners = calculateOk && NavPath.corners != null
                     ? NavPath.corners
                     : System.Array.Empty<Vector3>();
@@ -508,7 +538,16 @@ namespace VoogleRoute.Navigation
             {
                 Success = success,
                 IsPartial = isPartial,
-                Points = linePoints
+                Points = linePoints,
+                Segments = new[]
+                {
+                    new RoutePathSegment
+                    {
+                        Kind = RoutePathSegmentKind.Foot,
+                        Points = linePoints
+                    }
+                },
+                Subway = SubwayNavigationHint.None
             };
 
             if (mode == MovementMode.Vehicle && success)
@@ -554,6 +593,7 @@ namespace VoogleRoute.Navigation
             _lastFinalPointsMode = MovementMode.Unavailable;
             PathGeometry.ResetVehicleLineTrimState();
             VehiclePathPipeline.InvalidateRouteLineCache();
+            AutoWalkService.ResetSubwayState();
             RouteRecalcDiagnostics.LogCacheInvalidated(reason);
         }
 
@@ -621,6 +661,8 @@ namespace VoogleRoute.Navigation
         {
             var r = new PathResult();
             r.Points = System.Array.Empty<Vector3>();
+            r.Segments = System.Array.Empty<RoutePathSegment>();
+            r.Subway = SubwayNavigationHint.None;
             return r;
         }
 

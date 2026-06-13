@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "KÄVELY PÄÄLLÄ",
   "voogle_route_settings_title": "VOOGLE ROUTE ASETUKSET",
   "voogle_route_setting_route_color": "Reittiviivan väri",
+  "voogle_route_setting_foot_route_color": "Reitti jalan color",
+  "voogle_route_setting_vehicle_route_color": "Vehicle route color",
   "voogle_route_setting_choose_color": "VALITSE VÄRI",
   "voogle_route_setting_close": "SULJE",
   "voogle_route_color_neon_blue": "Neoninsininen",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "Ei reittiä määränpäähän.",
   "voogle_route_autodrive_too_close": "Olet jo lähellä määränpäätä.",
   "voogle_route_autodrive_busy": "Ajan hyppy on jo käynnissä.",
+  "voogle_route_autodrive_not_in_vehicle": "Enter a vehicle to use auto-drive.",
   "voogle_route_bookmarks_title": "BOOKMARKS",
   "voogle_route_bookmarks_search": "Search bookmarks...",
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_drive": "AJA",
+  "voogle_route_bookmarks_walk": "KÄVELE",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
   "voogle_route_bookmarks_last_home": "Last Home",
@@ -50,5 +55,8 @@
   "voogle_route_bookmark_name_placeholder": "Bookmark name",
   "voogle_route_bookmark_add_confirm": "ADD",
   "voogle_route_bookmark_add_cancel": "CANCEL",
-  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
+  "voogle_route_arrived_at_destination": "Olet saapunut määränpäähäsi",
+  "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }

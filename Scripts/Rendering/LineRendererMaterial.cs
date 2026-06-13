@@ -1,5 +1,4 @@
 using UnityEngine;
-using VoogleRoute;
 
 namespace VoogleRoute.Rendering
 {
@@ -12,9 +11,8 @@ namespace VoogleRoute.Rendering
         private static Material _lastMaterial;
         private static Color _lastAppliedColor = new Color(-1f, -1f, -1f, -1f);
 
-        internal static void Apply(LineRenderer line)
+        internal static void Apply(LineRenderer line, Color color)
         {
-            var color = ModConfig.LineColor;
             line.startColor = color;
             line.endColor = color;
 

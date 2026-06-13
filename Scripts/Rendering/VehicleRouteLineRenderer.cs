@@ -53,7 +53,7 @@ namespace VoogleRoute.Rendering
             _line.startWidth = width;
             _line.endWidth = width;
 
-            LineRendererMaterial.Apply(_line);
+            LineRendererMaterial.Apply(_line, ModConfig.VehicleLineColor);
         }
 
         internal static void ShowPath(PathResult path)
@@ -114,7 +114,7 @@ namespace VoogleRoute.Rendering
             {
                 _line.positionCount = displayPoints.Length;
                 _line.SetPositions(displayPoints);
-                LineRendererMaterial.Apply(_line);
+                LineRendererMaterial.Apply(_line, ModConfig.VehicleLineColor);
             }
         }
 

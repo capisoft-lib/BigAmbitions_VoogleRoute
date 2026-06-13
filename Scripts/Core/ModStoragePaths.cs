@@ -17,6 +17,7 @@ namespace VoogleRoute
         internal const string ConfigFileName = "config.json";
         internal const string BookmarksFileName = "bookmarks.json";
         internal const string EnhancedRoutesCsv = "Data/big_ambitions_enhanced_routes.csv";
+        internal const string SubwayStationsCsv = "Data/subway_stations.csv";
 
         private static string _modRoot;
         private static bool _migrationDone;

@@ -82,17 +82,20 @@ namespace VoogleRoute
             }
         }
 
-        internal static void SetRouteLineColor(Color color)
+        internal static void SetFootRouteLineColor(Color color)
         {
-            _data.RouteLineColor = new[]
-            {
-                color.r,
-                color.g,
-                color.b,
-                color.a
-            };
+            _data.FootRouteLineColor = ColorToArray(color);
             Save();
         }
+
+        internal static void SetVehicleRouteLineColor(Color color)
+        {
+            _data.VehicleRouteLineColor = ColorToArray(color);
+            Save();
+        }
+
+        private static float[] ColorToArray(Color color) =>
+            new[] { color.r, color.g, color.b, color.a };
 
         internal static void SetIndoorRouteLineEnabled(bool value)
         {
@@ -127,6 +130,8 @@ namespace VoogleRoute
                 LogLevel = "error",
                 ShowLineDetection = false,
                 RouteLineColor = DefaultRouteLineColor(),
+                FootRouteLineColor = DefaultRouteLineColor(),
+                VehicleRouteLineColor = DefaultRouteLineColor(),
                 IndoorRoute = true,
                 IndoorAutowalk = false,
                 BaseTaxiMultiplier = 2
@@ -143,6 +148,12 @@ namespace VoogleRoute
 
             if (data.RouteLineColor == null || data.RouteLineColor.Length < 4)
                 data.RouteLineColor = DefaultRouteLineColor();
+
+            if (data.FootRouteLineColor == null || data.FootRouteLineColor.Length < 4)
+                data.FootRouteLineColor = (float[])data.RouteLineColor.Clone();
+
+            if (data.VehicleRouteLineColor == null || data.VehicleRouteLineColor.Length < 4)
+                data.VehicleRouteLineColor = (float[])data.RouteLineColor.Clone();
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
@@ -187,6 +198,8 @@ namespace VoogleRoute
                     float.Parse(parts[2], CultureInfo.InvariantCulture),
                     float.Parse(parts[3], CultureInfo.InvariantCulture)
                 };
+                _data.FootRouteLineColor = (float[])_data.RouteLineColor.Clone();
+                _data.VehicleRouteLineColor = (float[])_data.RouteLineColor.Clone();
 
                 TryDeleteLegacyFile(path);
                 return true;
@@ -224,6 +237,12 @@ namespace VoogleRoute
 
         [JsonPropertyName("route_line_color")]
         public float[] RouteLineColor { get; set; }
+
+        [JsonPropertyName("foot_route_line_color")]
+        public float[] FootRouteLineColor { get; set; }
+
+        [JsonPropertyName("vehicle_route_line_color")]
+        public float[] VehicleRouteLineColor { get; set; }
 
         [JsonPropertyName("indoor_route")]
         public bool IndoorRoute { get; set; } = true;

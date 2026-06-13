@@ -59,6 +59,7 @@ namespace VoogleRoute.UI
         private static int _lastBookmarkCount;
         private static string _searchFilter = "";
         private static bool _pickMode;
+        private static MovementMode _lastMapActionMode = MovementMode.Unavailable;
 
         private enum RowKind
         {
@@ -81,6 +82,8 @@ namespace VoogleRoute.UI
             internal TextMeshProUGUI CenterFallbackLabel;
             internal Button SetDestButton;
             internal TextMeshProUGUI SetDestLabel;
+            internal Button DriveButton;
+            internal TextMeshProUGUI DriveLabel;
             internal Button DeleteButton;
             internal RowKind Kind = RowKind.Bookmark;
             internal int BookmarkIndex = -1;
@@ -507,7 +510,8 @@ namespace VoogleRoute.UI
             var centerGo = CreateRect(rowRect, "CenterButton");
             LayoutRowButton(
                 centerGo,
-                RowSetButtonWidth + RowButtonGap + (showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f),
+                RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap +
+                (showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f),
                 RowActionButtonSize,
                 buttonHeight);
             row.CenterButtonImage = GameUiStyle.CreateButtonGraphic(
@@ -557,6 +561,28 @@ namespace VoogleRoute.UI
             row.SetDestLabel.raycastTarget = false;
             GameUiStyle.ApplyButtonFont(row.SetDestLabel);
 
+            var driveGo = CreateRect(rowRect, "DriveButton");
+            LayoutRowButton(
+                driveGo,
+                RowSetButtonWidth + RowButtonGap + (showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f),
+                RowSetButtonWidth,
+                buttonHeight);
+            var driveImg = GameUiStyle.CreateButtonGraphic(driveGo, textScale, GameUiStyle.ApplyButtonGreen, bleedBottom: false);
+            row.DriveButton = driveGo.gameObject.AddComponent<Button>();
+            row.DriveButton.targetGraphic = driveImg;
+            GameUiStyle.BindButtonClick(row.DriveButton, () => OnNavigateClicked(row));
+
+            var driveLabelGo = CreateRect(driveGo, "Label");
+            Stretch(driveLabelGo);
+            row.DriveLabel = driveLabelGo.gameObject.AddComponent<TextMeshProUGUI>();
+            row.DriveLabel.fontSize = 11f * textScale;
+            row.DriveLabel.fontStyle = FontStyles.UpperCase;
+            row.DriveLabel.alignment = TextAlignmentOptions.Center;
+            row.DriveLabel.color = Color.white;
+            row.DriveLabel.raycastTarget = false;
+            GameUiStyle.ApplyButtonFont(row.DriveLabel);
+            row.DriveLabel.text = ResolveMapActionLabel();
+
             if (showDeleteButton)
             {
                 row.DeleteButton = GameUiStyle.CreateRowCloseButton(
@@ -568,7 +594,7 @@ namespace VoogleRoute.UI
         }
 
         private static float ComputeRowActionsWidth(bool showDeleteButton) =>
-            RowSetButtonWidth + RowButtonGap + RowActionButtonSize +
+            RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap + RowActionButtonSize +
             (showDeleteButton ? RowButtonGap + RowActionButtonSize : 0f);
 
         private static float ComputeRowDistanceRightInset(bool showDeleteButton) =>
@@ -676,24 +702,29 @@ namespace VoogleRoute.UI
 
         internal static void Tick()
         {
-            var mapOpen = GameState.IsCityMapOpen();
+            var shouldShow = GameState.ShouldShowCityMapBookmarks();
             if (_root == null)
                 return;
 
-            if (mapOpen != _root.activeSelf)
+            if (shouldShow != _root.activeSelf)
             {
-                _root.SetActive(mapOpen);
-                if (mapOpen)
+                _root.SetActive(shouldShow);
+                if (shouldShow)
+                {
+                    _lastMapActionMode = MovementMode.Unavailable;
                     RefreshList(fullDistanceRefresh: true);
+                }
                 else
                     CancelPickMode();
             }
 
-            if (!mapOpen)
+            if (!shouldShow)
             {
                 BookmarkRouteDistanceService.Cancel();
                 return;
             }
+
+            RefreshMapActionModeIfChanged();
 
             if (!BlocksMapInput)
                 MaintainMapNavigationSelection();
@@ -731,6 +762,7 @@ namespace VoogleRoute.UI
 
                 ui.NameLabel.text = bookmark.DisplayName;
                 ui.SetDestButton.interactable = CanSetDestination(RowKind.Vehicle, bookmark);
+                ApplyNavigateButtonState(ui, RowKind.Vehicle, bookmark);
                 ui.CenterButton.interactable = true;
                 ui.NameLabel.color = GameUiStyle.BodyTextColor;
                 ApplyRowDistanceLabel(ui);
@@ -755,6 +787,7 @@ namespace VoogleRoute.UI
                 ui.Root.SetActive(true);
                 ui.NameLabel.text = bookmark.DisplayName;
                 ui.SetDestButton.interactable = CanSetDestination(RowKind.Bookmark, bookmark);
+                ApplyNavigateButtonState(ui, RowKind.Bookmark, bookmark);
                 ApplyRowDistanceLabel(ui);
                 RefreshRowTypeIcon(ui, bookmark);
             }
@@ -771,6 +804,7 @@ namespace VoogleRoute.UI
                 ui.NameLabel.color = hasData ? GameUiStyle.BodyTextColor : mutedName;
                 ui.CenterButton.interactable = hasData;
                 ui.SetDestButton.interactable = hasData && CanSetDestination(ui.Kind, bookmark);
+                ApplyNavigateButtonState(ui, ui.Kind, hasData ? bookmark : null);
                 ApplyRowDistanceLabel(ui, hasData);
                 RefreshRowTypeIcon(ui, bookmark);
             }
@@ -1053,8 +1087,65 @@ namespace VoogleRoute.UI
             RefreshRowButtonLabels(QuickRows);
             RefreshRowButtonLabels(VehicleRows);
             RefreshRowButtonLabels(Rows);
+            RefreshActionButtonLabels();
 
             RefreshPickHint();
+        }
+
+        private static void RefreshMapActionModeIfChanged()
+        {
+            var mode = BookmarkQuickNavService.IsVehicleMapMode
+                ? MovementMode.Vehicle
+                : MovementMode.OnFoot;
+
+            if (mode == _lastMapActionMode)
+                return;
+
+            _lastMapActionMode = mode;
+            RefreshActionButtonLabels();
+            RefreshNavigateButtonStates();
+        }
+
+        private static string ResolveMapActionLabel() =>
+            BookmarkQuickNavService.IsVehicleMapMode
+                ? ModUiText.BookmarksDrive
+                : ModUiText.BookmarksWalk;
+
+        private static void RefreshActionButtonLabels()
+        {
+            var label = ResolveMapActionLabel();
+            RefreshActionButtonLabels(QuickRows, label);
+            RefreshActionButtonLabels(VehicleRows, label);
+            RefreshActionButtonLabels(Rows, label);
+        }
+
+        private static void RefreshActionButtonLabels(List<RowUi> rows, string label)
+        {
+            for (var i = 0; i < rows.Count; i++)
+            {
+                if (rows[i].DriveLabel != null)
+                    rows[i].DriveLabel.text = label;
+            }
+        }
+
+        private static void RefreshNavigateButtonStates()
+        {
+            for (var i = 0; i < QuickRows.Count; i++)
+            {
+                TryGetRowBookmark(QuickRows[i], out var bookmark);
+                ApplyNavigateButtonState(QuickRows[i], QuickRows[i].Kind, bookmark);
+            }
+
+            for (var i = 0; i < VehicleRows.Count; i++)
+            {
+                PlayerVehicleBookmarkStore.TryGetAt(i, out var bookmark);
+                ApplyNavigateButtonState(VehicleRows[i], RowKind.Vehicle, bookmark);
+            }
+
+            for (var i = 0; i < Rows.Count; i++)
+            {
+                ApplyNavigateButtonState(Rows[i], RowKind.Bookmark, BookmarkStore.GetAt(i));
+            }
         }
 
         private static void RefreshRowButtonLabels(List<RowUi> rows)
@@ -1064,6 +1155,22 @@ namespace VoogleRoute.UI
                 if (rows[i].SetDestLabel != null)
                     rows[i].SetDestLabel.text = ModUiText.BookmarksSetDestination;
             }
+        }
+
+        private static void ApplyNavigateButtonState(RowUi ui, RowKind kind, BookmarkEntry bookmark)
+        {
+            if (ui?.DriveButton == null)
+                return;
+
+            ui.DriveButton.interactable = CanNavigateToRow(kind, bookmark);
+        }
+
+        private static bool CanNavigateToRow(RowKind kind, BookmarkEntry bookmark)
+        {
+            if (BookmarkQuickNavService.IsVehicleMapMode && AutoDriveSkipTravelService.IsInProgress)
+                return false;
+
+            return CanSetDestination(kind, bookmark);
         }
 
         private static void RefreshPickHint()
@@ -1090,7 +1197,19 @@ namespace VoogleRoute.UI
         /// CityMapCam skips pan/zoom while GameManager.HasInputSelected (UI layer selection).
         /// Clear stray button focus so WASD/arrows still move the map.
         /// </summary>
-        private static void MaintainMapNavigationSelection() => ModUiFocus.ReleaseForMovement();
+        private static void MaintainMapNavigationSelection()
+        {
+            if (IsTextInputSelected())
+                return;
+
+            ModUiFocus.ReleaseForMovement();
+        }
+
+        private static bool IsTextInputSelected()
+        {
+            var selected = EventSystem.current?.currentSelectedGameObject;
+            return selected != null && selected.GetComponentInParent<TMP_InputField>() != null;
+        }
 
         internal static void CancelPickMode()
         {
@@ -1159,27 +1278,32 @@ namespace VoogleRoute.UI
 
         private static void OnSetDestinationClicked(RowUi row)
         {
-            if (row?.Kind == RowKind.LastCar)
-            {
-                ParkedVehicleDestinationService.TryNavigateToParkedVehicle();
+            if (!TrySetRowDestination(row))
                 return;
-            }
+
+            ModLog.Info("Bookmark destination set from panel row.");
+        }
+
+        private static void OnNavigateClicked(RowUi row)
+        {
+            if (!TrySetRowDestination(row))
+                return;
+
+            if (BookmarkQuickNavService.IsVehicleMapMode)
+                BookmarkQuickNavService.RequestDriveFromBookmark();
+            else
+                BookmarkQuickNavService.RequestWalkFromBookmark();
+        }
+
+        private static bool TrySetRowDestination(RowUi row)
+        {
+            if (row?.Kind == RowKind.LastCar)
+                return BookmarkDestinationService.TrySetLastCar();
 
             if (!TryGetRowBookmark(row, out var bookmark) || bookmark == null)
-                return;
+                return false;
 
-            if (bookmark.PrefersWorldPosition && bookmark.HasWorldPosition)
-            {
-                WorldDestinationService.TrySetFromBookmark(bookmark);
-                ModLog.Info("Bookmark set as world destination: " + bookmark.DisplayName);
-                return;
-            }
-
-            if (!bookmark.HasAddress)
-                return;
-
-            VanillaDestinationService.SetMapDestination(bookmark.ToAddress());
-            ModLog.Info("Bookmark set as destination: " + bookmark.DisplayName);
+            return BookmarkDestinationService.TrySetFromBookmark(bookmark);
         }
 
         private static bool TryGetRowBookmark(RowUi row, out BookmarkEntry bookmark)

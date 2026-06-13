@@ -26,6 +26,26 @@ namespace VoogleRoute.Navigation
                 MovementModeDetector.CurrentMode != MovementMode.Vehicle)
                 return;
 
+            TryShowConfirmPopup();
+        }
+
+        /// <summary>Auto-drive from bookmarks panel — skips HUD visibility check (city map open).</summary>
+        internal static void RequestFromBookmark()
+        {
+            if (_inProgress)
+                return;
+
+            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+            {
+                Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                return;
+            }
+
+            TryShowConfirmPopup();
+        }
+
+        private static void TryShowConfirmPopup()
+        {
             if (!NavigationTargetTracker.HasMapGpsTarget)
             {
                 Notifications.ShowError("voogle_route_autodrive_no_route");

@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "Marche ON",
   "voogle_route_settings_title": "RÉGLAGES VOOGLE ROUTE",
   "voogle_route_setting_route_color": "Couleur de la ligne",
+  "voogle_route_setting_foot_route_color": "Couleur à pied",
+  "voogle_route_setting_vehicle_route_color": "Couleur en véhicule",
   "voogle_route_setting_choose_color": "CHOISIR COULEUR",
   "voogle_route_setting_close": "FERMER",
   "voogle_route_color_neon_blue": "Bleu néon",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "Aucun itinéraire vers la destination.",
   "voogle_route_autodrive_too_close": "Vous êtes déjà proche de la destination.",
   "voogle_route_autodrive_busy": "Avance rapide du temps déjà en cours.",
+  "voogle_route_autodrive_not_in_vehicle": "Montez dans un véhicule pour utiliser la conduite auto.",
   "voogle_route_bookmarks_title": "FAVORIS",
   "voogle_route_bookmarks_search": "Rechercher...",
   "voogle_route_bookmarks_add": "AJOUTER",
   "voogle_route_bookmarks_clear_all": "TOUT EFFACER",
   "voogle_route_bookmarks_set_dest": "FIXER",
+  "voogle_route_bookmarks_drive": "CONDUIRE",
+  "voogle_route_bookmarks_walk": "MARCHER",
   "voogle_route_bookmarks_center": "CENTRER",
   "voogle_route_bookmarks_last_car": "Dernière voiture",
   "voogle_route_bookmarks_last_home": "Dernier domicile",
@@ -52,5 +57,8 @@
   "voogle_route_bookmark_add_cancel": "ANNULER",
   "voogle_route_bookmark_coords": "Coordonnées : {x}, {z}",
   "voogle_route_visit_history_title": "HISTORIQUE",
-  "voogle_route_visit_history_add": "AJOUTER"
+  "voogle_route_visit_history_add": "AJOUTER",
+  "voogle_route_arrived_at_destination": "Vous êtes arrivé à destination",
+  "voogle_route_subway_board_hint": "Prenez le métro vers {station} (3 $)",
+  "voogle_route_subway_continue": "Trajet en métro terminé — poursuite à pied"
 }

@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "YÜRÜ AÇIK",
   "voogle_route_settings_title": "VOOGLE ROUTE AYARLARI",
   "voogle_route_setting_route_color": "Rota çizgisi rengi",
+  "voogle_route_setting_foot_route_color": "Yaya rotası color",
+  "voogle_route_setting_vehicle_route_color": "Vehicle route color",
   "voogle_route_setting_choose_color": "RENK SEÇ",
   "voogle_route_setting_close": "KAPAT",
   "voogle_route_color_neon_blue": "Neon mavi",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "Hedefe giden rota yok.",
   "voogle_route_autodrive_too_close": "Zaten hedefe yakınsınız.",
   "voogle_route_autodrive_busy": "Zaman atlama zaten devam ediyor.",
+  "voogle_route_autodrive_not_in_vehicle": "Enter a vehicle to use auto-drive.",
   "voogle_route_bookmarks_title": "BOOKMARKS",
   "voogle_route_bookmarks_search": "Search bookmarks...",
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_drive": "SÜR",
+  "voogle_route_bookmarks_walk": "YÜRÜ",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
   "voogle_route_bookmarks_last_home": "Last Home",
@@ -50,5 +55,8 @@
   "voogle_route_bookmark_name_placeholder": "Bookmark name",
   "voogle_route_bookmark_add_confirm": "ADD",
   "voogle_route_bookmark_add_cancel": "CANCEL",
-  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
+  "voogle_route_arrived_at_destination": "Hedefinize vardınız",
+  "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }

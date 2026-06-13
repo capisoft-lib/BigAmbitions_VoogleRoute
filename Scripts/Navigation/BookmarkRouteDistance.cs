@@ -21,6 +21,9 @@ namespace VoogleRoute.Navigation
             if (!TryGetOrigin(out var origin))
                 return false;
 
+            if (MovementModeDetector.CurrentMode == MovementMode.OnFoot)
+                return FootSubwayRoutePlanner.TryEstimateMeters(origin, target, out meters);
+
             if (!RouteGraphStore.TryEnsureLoaded())
                 return false;
 

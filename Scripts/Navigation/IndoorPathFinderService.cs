@@ -54,7 +54,16 @@ namespace VoogleRoute.Navigation
             {
                 Success = true,
                 IsPartial = NavPath.status == NavMeshPathStatus.PathPartial,
-                Points = linePoints
+                Points = linePoints,
+                Segments = new[]
+                {
+                    new RoutePathSegment
+                    {
+                        Kind = RoutePathSegmentKind.Foot,
+                        Points = linePoints
+                    }
+                },
+                Subway = SubwayNavigationHint.None
             });
         }
 

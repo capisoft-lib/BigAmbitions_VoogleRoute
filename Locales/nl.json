@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "LOOP AAN",
   "voogle_route_settings_title": "VOOGLE ROUTE INSTELLINGEN",
   "voogle_route_setting_route_color": "Kleur routelijn",
+  "voogle_route_setting_foot_route_color": "Kleur route te voet",
+  "voogle_route_setting_vehicle_route_color": "Kleur route in voertuig",
   "voogle_route_setting_choose_color": "KIES KLEUR",
   "voogle_route_setting_close": "SLUITEN",
   "voogle_route_color_neon_blue": "Neonblauw",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "Geen route naar de bestemming.",
   "voogle_route_autodrive_too_close": "Je bent al dicht bij de bestemming.",
   "voogle_route_autodrive_busy": "Tijdsversnelling is al bezig.",
+  "voogle_route_autodrive_not_in_vehicle": "Enter a vehicle to use auto-drive.",
   "voogle_route_bookmarks_title": "BOOKMARKS",
   "voogle_route_bookmarks_search": "Search bookmarks...",
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_drive": "RIJDEN",
+  "voogle_route_bookmarks_walk": "LOPEN",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
   "voogle_route_bookmarks_last_home": "Last Home",
@@ -50,5 +55,8 @@
   "voogle_route_bookmark_name_placeholder": "Bookmark name",
   "voogle_route_bookmark_add_confirm": "ADD",
   "voogle_route_bookmark_add_cancel": "CANCEL",
-  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
+  "voogle_route_arrived_at_destination": "U bent op uw bestemming aangekomen",
+  "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }

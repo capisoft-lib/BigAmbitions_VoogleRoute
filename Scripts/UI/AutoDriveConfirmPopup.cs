@@ -137,8 +137,11 @@ namespace VoogleRoute.UI
         {
             var plan = _pendingPlan;
             Close();
-            if (plan.Success)
-                AutoDriveSkipTravelService.StartTravel(plan);
+            if (!plan.Success)
+                return;
+
+            CityMapHelper.CloseIfOpen();
+            AutoDriveSkipTravelService.StartTravel(plan);
         }
 
         private static void CreateFooterButton(

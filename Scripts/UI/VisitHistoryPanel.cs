@@ -470,7 +470,7 @@ namespace VoogleRoute.UI
             if (_root == null)
                 return;
 
-            if (!GameState.IsOverlayBlockingNavigation())
+            if (!GameState.IsBlockingVisitHistory())
             {
                 if (_restoreAfterUnblock)
                 {

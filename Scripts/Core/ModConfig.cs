@@ -43,9 +43,11 @@ namespace VoogleRoute
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
         internal static bool IndoorWantsRouteComputation => IndoorRouteLineEnabled || IndoorAutoWalkEnabled;
 
-        private static Color _lineColor = new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
+        private static Color _footLineColor = new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
+        private static Color _vehicleLineColor = new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
 
-        internal static Color LineColor => _lineColor;
+        internal static Color FootLineColor => _footLineColor;
+        internal static Color VehicleLineColor => _vehicleLineColor;
         internal static bool LoggingEnabled { get; private set; }
         internal static ModLogLevel LogLevel { get; private set; } = ModLogLevel.Error;
         internal static int BaseTaxiMultiplier { get; private set; } = 2;
@@ -160,13 +162,24 @@ namespace VoogleRoute
             ModLog.Info("Base taxi multiplier = " + clamped);
         }
 
-        internal static void SetRouteLineColor(Color color)
+        internal static void SetFootLineColor(Color color)
         {
-            _lineColor = new Color(color.r, color.g, color.b, Mathf.Clamp01(color.a <= 0f ? RouteNeonBlueA : color.a));
-            ModConfigStore.SetRouteLineColor(_lineColor);
+            _footLineColor = NormalizeLineColor(color);
+            ModConfigStore.SetFootRouteLineColor(_footLineColor);
             Rendering.RouteLineRenderer.ApplyStyle();
-            ModLog.Info("Route line color updated.");
+            ModLog.Info("Foot route line color updated.");
         }
+
+        internal static void SetVehicleLineColor(Color color)
+        {
+            _vehicleLineColor = NormalizeLineColor(color);
+            ModConfigStore.SetVehicleRouteLineColor(_vehicleLineColor);
+            Rendering.RouteLineRenderer.ApplyStyle();
+            ModLog.Info("Vehicle route line color updated.");
+        }
+
+        private static Color NormalizeLineColor(Color color) =>
+            new Color(color.r, color.g, color.b, Mathf.Clamp01(color.a <= 0f ? RouteNeonBlueA : color.a));
 
         private static void ApplyFromStore()
         {
@@ -179,7 +192,8 @@ namespace VoogleRoute
                 LoggingEnabled = data.Logging;
                 LogLevel = ModLog.ParseLevel(data.LogLevel);
                 ShowLineDetection = data.ShowLineDetection;
-                _lineColor = ReadLineColor(data.RouteLineColor);
+                _footLineColor = ReadLineColor(data.FootRouteLineColor, data.RouteLineColor);
+                _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor, data.RouteLineColor);
                 IndoorRouteLineEnabled = data.IndoorRoute;
                 IndoorAutoWalkEnabled = data.IndoorAutowalk;
                 BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
@@ -192,6 +206,14 @@ namespace VoogleRoute
             }
 
             ModLog.Configure(LoggingEnabled, LogLevel);
+        }
+
+        private static Color ReadLineColor(float[] components, float[] legacyFallback)
+        {
+            if (components != null && components.Length >= 4)
+                return new Color(components[0], components[1], components[2], components[3]);
+
+            return ReadLineColor(legacyFallback);
         }
 
         private static Color ReadLineColor(float[] components)

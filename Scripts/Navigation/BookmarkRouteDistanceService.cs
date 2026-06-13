@@ -52,6 +52,15 @@ namespace VoogleRoute.Navigation
         private static int _pendingCount;
         private static readonly HashSet<BookmarkDistanceRowKey> _pendingKeys = new HashSet<BookmarkDistanceRowKey>();
         private static readonly List<BookmarkDistanceResult> _completed = new List<BookmarkDistanceResult>();
+        private static readonly List<PendingMainThreadCompute> _mainThreadPending = new List<PendingMainThreadCompute>();
+
+        private struct PendingMainThreadCompute
+        {
+            internal int Generation;
+            internal BookmarkDistanceRowKey Key;
+            internal Vector3 Origin;
+            internal Vector3 Target;
+        }
 
         internal static bool IsRecalcInProgress
         {
@@ -77,6 +86,7 @@ namespace VoogleRoute.Navigation
                 _pendingCount = 0;
                 _completed.Clear();
                 _pendingKeys.Clear();
+                _mainThreadPending.Clear();
             }
 
             QueueComputations(rows, replacePendingCount: true);
@@ -99,11 +109,12 @@ namespace VoogleRoute.Navigation
             if (!TryGetOrigin(out var origin))
                 return;
 
-            if (!RouteGraphStore.TryEnsureLoaded())
+            var useFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
+            if (!useFoot && !RouteGraphStore.TryEnsureLoaded())
                 return;
 
             var hasPose = MovementModeDetector.TryGetVehiclePose(out _, out var forward);
-            var graph = RouteGraphStore.Graph;
+            var graph = useFoot ? null : RouteGraphStore.Graph;
 
             int generation;
             lock (Gate)
@@ -126,7 +137,7 @@ namespace VoogleRoute.Navigation
 
                 queued++;
                 ThreadPool.QueueUserWorkItem(_ =>
-                    ComputeAsync(generation, key, origin, target, forward, hasPose, graph));
+                    ComputeAsync(generation, key, origin, target, forward, hasPose, graph, useFoot));
             }
 
             if (queued == 0)
@@ -143,6 +154,39 @@ namespace VoogleRoute.Navigation
             RouteRecalcBanner.ShowOnCityMap();
         }
 
+        internal static void TickMainThread()
+        {
+            PendingMainThreadCompute[] jobs;
+            lock (Gate)
+            {
+                if (_mainThreadPending.Count == 0)
+                    return;
+
+                jobs = _mainThreadPending.ToArray();
+                _mainThreadPending.Clear();
+            }
+
+            for (var i = 0; i < jobs.Length; i++)
+            {
+                var job = jobs[i];
+                var success = FootSubwayRoutePlanner.TryEstimateMeters(job.Origin, job.Target, out var meters);
+                Complete(job.Generation, job.Key, meters, success);
+            }
+        }
+
+        private static void Complete(int generation, BookmarkDistanceRowKey key, float meters, bool success)
+        {
+            lock (Gate)
+            {
+                if (generation != _generation)
+                    return;
+
+                _pendingKeys.Remove(key);
+                _completed.Add(new BookmarkDistanceResult(key, meters, success));
+                if (_pendingCount > 0)
+                    _pendingCount--;
+            }
+        }
         internal static bool TryDequeueCompleted(out BookmarkDistanceResult result)
         {
             lock (Gate)
@@ -168,6 +212,7 @@ namespace VoogleRoute.Navigation
                 _pendingCount = 0;
                 _completed.Clear();
                 _pendingKeys.Clear();
+                _mainThreadPending.Clear();
             }
 
             RouteRecalcBanner.ForceHide();
@@ -180,8 +225,28 @@ namespace VoogleRoute.Navigation
             Vector3 target,
             Vector3 forward,
             bool hasPose,
-            RouteGraph graph)
+            RouteGraph graph,
+            bool useFoot)
         {
+            if (useFoot)
+            {
+                lock (Gate)
+                {
+                    if (generation != _generation)
+                        return;
+
+                    _mainThreadPending.Add(new PendingMainThreadCompute
+                    {
+                        Generation = generation,
+                        Key = key,
+                        Origin = origin,
+                        Target = target
+                    });
+                }
+
+                return;
+            }
+
             var success = BookmarkRouteDistance.TryComputeRouteMeters(
                 origin,
                 target,
@@ -190,16 +255,7 @@ namespace VoogleRoute.Navigation
                 graph,
                 out var meters);
 
-            lock (Gate)
-            {
-                if (generation != _generation)
-                    return;
-
-                _pendingKeys.Remove(key);
-                _completed.Add(new BookmarkDistanceResult(key, meters, success));
-                if (_pendingCount > 0)
-                    _pendingCount--;
-            }
+            Complete(generation, key, meters, success);
         }
 
         private static bool TryGetOrigin(out Vector3 origin)

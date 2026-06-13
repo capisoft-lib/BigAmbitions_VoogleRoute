@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "歩行 ON",
   "voogle_route_settings_title": "VOOGLE ROUTE 設定",
   "voogle_route_setting_route_color": "ルート線の色",
+  "voogle_route_setting_foot_route_color": "徒歩ルートの色",
+  "voogle_route_setting_vehicle_route_color": "車両ルートの色",
   "voogle_route_setting_choose_color": "色を選択",
   "voogle_route_setting_close": "閉じる",
   "voogle_route_color_neon_blue": "ネオンブルー",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "目的地へのルートがありません。",
   "voogle_route_autodrive_too_close": "すでに目的地の近くにいます。",
   "voogle_route_autodrive_busy": "時間スキップがすでに実行中です。",
+  "voogle_route_autodrive_not_in_vehicle": "Enter a vehicle to use auto-drive.",
   "voogle_route_bookmarks_title": "BOOKMARKS",
   "voogle_route_bookmarks_search": "Search bookmarks...",
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_drive": "運転",
+  "voogle_route_bookmarks_walk": "徒歩",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
   "voogle_route_bookmarks_last_home": "Last Home",
@@ -50,5 +55,8 @@
   "voogle_route_bookmark_name_placeholder": "Bookmark name",
   "voogle_route_bookmark_add_confirm": "ADD",
   "voogle_route_bookmark_add_cancel": "CANCEL",
-  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
+  "voogle_route_arrived_at_destination": "目的地に到着しました",
+  "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }

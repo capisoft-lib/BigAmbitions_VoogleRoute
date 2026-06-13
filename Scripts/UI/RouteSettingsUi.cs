@@ -10,10 +10,10 @@ namespace VoogleRoute.UI
     /// <summary>Fenêtre de réglages vanilla (couleur de ligne + color picker jeu).</summary>
     internal static class RouteSettingsUi
     {
-        private const string RootName = "VoogleRoute_Settings_sdk_v7";
+        private const string RootName = "VoogleRoute_Settings_sdk_v8";
         private const int CanvasSortOrder = 11500;
         private const float PanelScale = 1.5f;
-        private const float PanelHeight = 360f;
+        private const float PanelHeight = 540f;
         private const float FooterBottomPad = 18f;
         private const float RowHeight = 44f;
         private const float RowGap = 8f;
@@ -25,12 +25,22 @@ namespace VoogleRoute.UI
         private static GameObject _root;
         private static Canvas _canvas;
         private static TextMeshProUGUI _titleLabel;
-        private static TextMeshProUGUI _routeColorLabel;
-        private static TextMeshProUGUI _chooseColorLabel;
+        private static TextMeshProUGUI _footColorLabel;
+        private static TextMeshProUGUI _vehicleColorLabel;
+        private static TextMeshProUGUI _footChooseColorLabel;
+        private static TextMeshProUGUI _vehicleChooseColorLabel;
         private static TextMeshProUGUI _closeLabel;
         private static bool _loweredForPicker;
-        private static readonly List<Image> ColorSwatches = new List<Image>();
-        private static readonly List<TextMeshProUGUI> SwatchTipLabels = new List<TextMeshProUGUI>();
+        private static readonly List<Image> FootColorSwatches = new List<Image>();
+        private static readonly List<Image> VehicleColorSwatches = new List<Image>();
+        private static readonly List<TextMeshProUGUI> FootSwatchTipLabels = new List<TextMeshProUGUI>();
+        private static readonly List<TextMeshProUGUI> VehicleSwatchTipLabels = new List<TextMeshProUGUI>();
+
+        private enum ColorTarget
+        {
+            Foot,
+            Vehicle
+        }
 
         private static float PanelWidth => NavPanelLayout.PanelWidth * PanelScale;
 
@@ -49,7 +59,7 @@ namespace VoogleRoute.UI
                          "VoogleRoute_Settings", "VoogleRoute_Settings_sdk",
                          "VoogleRoute_Settings_sdk_v2", "VoogleRoute_Settings_sdk_v3",
                          "VoogleRoute_Settings_sdk_v4", "VoogleRoute_Settings_sdk_v5",
-                         "VoogleRoute_Settings_sdk_v6"
+                         "VoogleRoute_Settings_sdk_v6", "VoogleRoute_Settings_sdk_v7"
                      })
             {
                 var legacy = GameObject.Find(legacyName);
@@ -222,25 +232,40 @@ namespace VoogleRoute.UI
 
             _canvas = null;
             _titleLabel = null;
-            _routeColorLabel = null;
-            _chooseColorLabel = null;
+            _footColorLabel = null;
+            _vehicleColorLabel = null;
+            _footChooseColorLabel = null;
+            _vehicleChooseColorLabel = null;
             _closeLabel = null;
             _loweredForPicker = false;
-            ColorSwatches.Clear();
-            SwatchTipLabels.Clear();
+            FootColorSwatches.Clear();
+            VehicleColorSwatches.Clear();
+            FootSwatchTipLabels.Clear();
+            VehicleSwatchTipLabels.Clear();
         }
 
         internal static void RefreshLocalizedText()
         {
             if (_titleLabel != null)
                 _titleLabel.text = ModUiText.SettingsTitle;
-            if (_routeColorLabel != null)
-                _routeColorLabel.text = ModUiText.SettingRouteLineColor;
-            if (_chooseColorLabel != null)
-                _chooseColorLabel.text = ModUiText.SettingChooseColor;
+            if (_footColorLabel != null)
+                _footColorLabel.text = ModUiText.SettingFootRouteColor;
+            if (_vehicleColorLabel != null)
+                _vehicleColorLabel.text = ModUiText.SettingVehicleRouteColor;
+            if (_footChooseColorLabel != null)
+                _footChooseColorLabel.text = ModUiText.SettingChooseColor;
+            if (_vehicleChooseColorLabel != null)
+                _vehicleChooseColorLabel.text = ModUiText.SettingChooseColor;
             if (_closeLabel != null)
                 _closeLabel.text = ModUiText.SettingClose;
 
+            RefreshSwatchTipLabels(FootSwatchTipLabels);
+            RefreshSwatchTipLabels(VehicleSwatchTipLabels);
+            RefreshAll();
+        }
+
+        private static void RefreshSwatchTipLabels(List<TextMeshProUGUI> labels)
+        {
             var tipKeys = new[]
             {
                 ModUiText.ColorPresetNeonBlue,
@@ -249,53 +274,43 @@ namespace VoogleRoute.UI
                 ModUiText.ColorPresetMagenta,
                 ModUiText.ColorPresetWhite,
             };
-            for (var i = 0; i < SwatchTipLabels.Count && i < tipKeys.Length; i++)
+            for (var i = 0; i < labels.Count && i < tipKeys.Length; i++)
             {
-                if (SwatchTipLabels[i] != null)
-                    SwatchTipLabels[i].text = tipKeys[i];
+                if (labels[i] != null)
+                    labels[i].text = tipKeys[i];
             }
-
-            RefreshAll();
         }
 
         private static void BuildRows(RectTransform content, float scale)
         {
-            AddSectionLabel(content, ModUiText.SettingRouteLineColor);
-            AddColorPresets(content);
-            AddActionButton(content, scale, ModUiText.SettingChooseColor, GameUiStyle.ApplyButtonBlue, OpenNativeColorPicker);
+            AddSectionLabel(content, ModUiText.SettingFootRouteColor, out _footColorLabel);
+            AddColorPresets(content, ColorTarget.Foot);
+            AddActionButton(content, scale, ModUiText.SettingChooseColor, GameUiStyle.ApplyButtonBlue,
+                ModUiFocus.Wrap((UnityAction)(() => OpenNativeColorPicker(ColorTarget.Foot))), out _footChooseColorLabel);
+
+            AddSectionLabel(content, ModUiText.SettingVehicleRouteColor, out _vehicleColorLabel);
+            AddColorPresets(content, ColorTarget.Vehicle);
+            AddActionButton(content, scale, ModUiText.SettingChooseColor, GameUiStyle.ApplyButtonBlue,
+                ModUiFocus.Wrap((UnityAction)(() => OpenNativeColorPicker(ColorTarget.Vehicle))), out _vehicleChooseColorLabel);
         }
 
-        private static void AddSectionLabel(RectTransform parent, string text)
+        private static void AddSectionLabel(RectTransform parent, string text, out TextMeshProUGUI label)
         {
             var row = CreateRow(parent, 26f);
-            var label = CreateLabel(row, "Label", 14f, FontStyles.Bold);
+            label = CreateLabel(row, "Label", 14f, FontStyles.Bold);
             label.color = new Color(0.85f, 0.9f, 1f, 1f);
             label.text = text;
-            _routeColorLabel = label;
         }
 
-        private static void AddColorPresets(RectTransform parent)
+        private static void AddColorPresets(RectTransform parent, ColorTarget target)
         {
             var rowHeight = SwatchSize + 30f;
             var row = CreateRow(parent, rowHeight);
 
-            var presets = new[]
-            {
-                new Color(ModConfig.RouteNeonBlueR, ModConfig.RouteNeonBlueG, ModConfig.RouteNeonBlueB, ModConfig.RouteNeonBlueA),
-                new Color(0.25f, 0.95f, 0.35f, 0.92f),
-                new Color(1f, 0.55f, 0.12f, 0.92f),
-                new Color(0.92f, 0.22f, 0.85f, 0.92f),
-                new Color(1f, 1f, 1f, 0.92f),
-            };
-
-            var names = new[]
-            {
-                ModUiText.ColorPresetNeonBlue,
-                ModUiText.ColorPresetGreen,
-                ModUiText.ColorPresetOrange,
-                ModUiText.ColorPresetMagenta,
-                ModUiText.ColorPresetWhite,
-            };
+            var presets = GetPresetColors();
+            var names = GetPresetNames();
+            var swatches = target == ColorTarget.Foot ? FootColorSwatches : VehicleColorSwatches;
+            var tips = target == ColorTarget.Foot ? FootSwatchTipLabels : VehicleSwatchTipLabels;
 
             var stripWidth = presets.Length * SwatchSize + (presets.Length - 1) * SwatchSpacing;
             var strip = CreateRect(row, "SwatchStrip");
@@ -314,17 +329,38 @@ namespace VoogleRoute.UI
             hLayout.childForceExpandHeight = false;
             hLayout.padding = new RectOffset(0, 0, 0, 0);
 
-            ColorSwatches.Clear();
-            SwatchTipLabels.Clear();
+            swatches.Clear();
+            tips.Clear();
             for (var i = 0; i < presets.Length; i++)
-            {
-                var color = presets[i];
-                var tipText = names[i];
-                AddSwatch(strip, rowHeight, color, tipText);
-            }
+                AddSwatch(strip, rowHeight, presets[i], names[i], target, swatches, tips);
         }
 
-        private static void AddSwatch(RectTransform row, float rowHeight, Color color, string tipText)
+        private static Color[] GetPresetColors() => new[]
+        {
+            new Color(ModConfig.RouteNeonBlueR, ModConfig.RouteNeonBlueG, ModConfig.RouteNeonBlueB, ModConfig.RouteNeonBlueA),
+            new Color(0.25f, 0.95f, 0.35f, 0.92f),
+            new Color(1f, 0.55f, 0.12f, 0.92f),
+            new Color(0.92f, 0.22f, 0.85f, 0.92f),
+            new Color(1f, 1f, 1f, 0.92f),
+        };
+
+        private static string[] GetPresetNames() => new[]
+        {
+            ModUiText.ColorPresetNeonBlue,
+            ModUiText.ColorPresetGreen,
+            ModUiText.ColorPresetOrange,
+            ModUiText.ColorPresetMagenta,
+            ModUiText.ColorPresetWhite,
+        };
+
+        private static void AddSwatch(
+            RectTransform row,
+            float rowHeight,
+            Color color,
+            string tipText,
+            ColorTarget target,
+            List<Image> swatches,
+            List<TextMeshProUGUI> tipLabels)
         {
             var cell = CreateRect(row, "SwatchCell");
             var cellLe = cell.gameObject.AddComponent<LayoutElement>();
@@ -343,7 +379,7 @@ namespace VoogleRoute.UI
 
             var img = swatchRt.gameObject.AddComponent<Image>();
             img.color = color;
-            ColorSwatches.Add(img);
+            swatches.Add(img);
 
             var outline = swatchRt.gameObject.AddComponent<Outline>();
             outline.effectColor = new Color(1f, 1f, 1f, 0.35f);
@@ -354,7 +390,7 @@ namespace VoogleRoute.UI
             var captured = color;
             btn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)(() =>
             {
-                ModConfig.SetRouteLineColor(captured);
+                ApplyColor(target, captured);
                 RefreshColorSelection();
             })));
 
@@ -374,7 +410,15 @@ namespace VoogleRoute.UI
             tip.enableWordWrapping = false;
             tip.overflowMode = TextOverflowModes.Overflow;
             GameUiStyle.ApplyButtonFont(tip);
-            SwatchTipLabels.Add(tip);
+            tipLabels.Add(tip);
+        }
+
+        private static void ApplyColor(ColorTarget target, Color color)
+        {
+            if (target == ColorTarget.Foot)
+                ModConfig.SetFootLineColor(color);
+            else
+                ModConfig.SetVehicleLineColor(color);
         }
 
         private static void AddActionButton(
@@ -382,7 +426,8 @@ namespace VoogleRoute.UI
             float scale,
             string labelText,
             System.Action<Image> style,
-            UnityAction onClick)
+            UnityAction onClick,
+            out TextMeshProUGUI label)
         {
             var row = CreateRow(parent, RowHeight + 4f);
             var img = GameUiStyle.CreateButtonGraphic(row, scale, style);
@@ -390,17 +435,17 @@ namespace VoogleRoute.UI
             btn.targetGraphic = img;
             GameUiStyle.BindButtonClick(btn, onClick);
 
-            var label = CreateLabel(row, "Label", 14f, FontStyles.UpperCase);
+            label = CreateLabel(row, "Label", 14f, FontStyles.UpperCase);
             label.text = labelText;
             label.alignment = TextAlignmentOptions.Center;
-            _chooseColorLabel = label;
         }
 
-        private static void OpenNativeColorPicker()
+        private static void OpenNativeColorPicker(ColorTarget target)
         {
-            if (!VanillaColorPicker.TryOpen(ModConfig.LineColor, color =>
+            var current = target == ColorTarget.Foot ? ModConfig.FootLineColor : ModConfig.VehicleLineColor;
+            if (!VanillaColorPicker.TryOpen(current, color =>
                 {
-                    ModConfig.SetRouteLineColor(color);
+                    ApplyColor(target, color);
                     RefreshColorSelection();
                 }))
                 return;
@@ -431,8 +476,13 @@ namespace VoogleRoute.UI
 
         private static void RefreshColorSelection()
         {
-            var current = ModConfig.LineColor;
-            foreach (var swatch in ColorSwatches)
+            HighlightSwatches(FootColorSwatches, ModConfig.FootLineColor);
+            HighlightSwatches(VehicleColorSwatches, ModConfig.VehicleLineColor);
+        }
+
+        private static void HighlightSwatches(List<Image> swatches, Color current)
+        {
+            foreach (var swatch in swatches)
             {
                 if (swatch == null)
                     continue;

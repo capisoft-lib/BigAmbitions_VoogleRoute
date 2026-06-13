@@ -78,6 +78,8 @@ namespace VoogleRoute
             VisitHistoryStore.Clear();
             ModConfig.Shutdown();
 
+            RouteGraphStore.Invalidate();
+            SubwayStationStore.Invalidate();
             ModLog.Info("Voogle Route city unload complete.");
             _context = null;
             return Task.CompletedTask;

@@ -1,4 +1,5 @@
 using UnityEngine;
+using VoogleRoute;
 using VoogleRoute.Navigation;
 
 namespace VoogleRoute.Rendering
@@ -7,6 +8,7 @@ namespace VoogleRoute.Rendering
     internal static class CityMapRouteLineRenderer
     {
         private const string RootName = "VoogleRoute_RouteCityMap";
+        private const string SubwayRootName = "VoogleRoute_RouteCityMapSubway";
         private const float MapLineClearance = 0.5f;
         private const float LineWidth = 0.9f;
         private const float MinMapLineWidth = 0.7f;
@@ -15,8 +17,16 @@ namespace VoogleRoute.Rendering
 
         private static GameObject _root;
         private static LineRenderer _line;
+        private static GameObject _subwayRoot;
+        private static LineRenderer _subwayLine;
 
         internal static void EnsureCreated()
+        {
+            EnsureMainLine();
+            EnsureSubwayLine();
+        }
+
+        private static void EnsureMainLine()
         {
             if (_line != null && _root != null)
                 return;
@@ -33,6 +43,25 @@ namespace VoogleRoute.Rendering
                 _line = _root.AddComponent<LineRenderer>();
 
             ApplyStyle();
+        }
+
+        private static void EnsureSubwayLine()
+        {
+            if (_subwayLine != null && _subwayRoot != null)
+                return;
+
+            _subwayRoot = GameObject.Find(SubwayRootName);
+            if (_subwayRoot == null)
+            {
+                _subwayRoot = new GameObject(SubwayRootName);
+                Object.DontDestroyOnLoad(_subwayRoot);
+            }
+
+            _subwayLine = _subwayRoot.GetComponent<LineRenderer>();
+            if (_subwayLine == null)
+                _subwayLine = _subwayRoot.AddComponent<LineRenderer>();
+
+            ApplySubwayStyle();
         }
 
         internal static void ApplyStyle()
@@ -53,7 +82,28 @@ namespace VoogleRoute.Rendering
             _line.startWidth = width;
             _line.endWidth = width;
 
-            LineRendererMaterial.Apply(_line);
+            LineRendererMaterial.Apply(_line, ResolveMapLineColor());
+            ApplySubwayStyle();
+        }
+
+        private static void ApplySubwayStyle()
+        {
+            if (_subwayLine == null)
+                return;
+
+            _subwayLine.useWorldSpace = true;
+            _subwayLine.alignment = LineAlignment.View;
+            _subwayLine.textureMode = LineTextureMode.Stretch;
+            _subwayLine.numCapVertices = 4;
+            _subwayLine.numCornerVertices = 4;
+            _subwayLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _subwayLine.receiveShadows = false;
+            _subwayLine.loop = false;
+
+            var width = ResolveLineWidth() * 0.85f;
+            _subwayLine.startWidth = width;
+            _subwayLine.endWidth = width;
+            LineRendererMaterial.Apply(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
         }
 
         internal static void ShowPath(PathResult path)
@@ -65,29 +115,60 @@ namespace VoogleRoute.Rendering
                 return;
             }
 
-            var points = path.Points ?? System.Array.Empty<Vector3>();
-            if (!path.Success || points.Length < 2)
+            Vector3[] footPoints;
+            Vector3[] subwayPoints;
+            if (MovementModeDetector.CurrentMode == MovementMode.OnFoot && path.UsesSubway)
+            {
+                RouteSegmentLineHelper.ExtractSegments(path, out footPoints, out subwayPoints);
+            }
+            else
+            {
+                footPoints = path.Points ?? System.Array.Empty<Vector3>();
+                subwayPoints = System.Array.Empty<Vector3>();
+            }
+
+            if (!path.Success || footPoints.Length < 2)
             {
                 MapOverlayDiagnostics.LogRouteHidden(
-                    !path.Success ? "path_failed" : "path_too_short(points=" + points.Length + ")");
+                    !path.Success ? "path_failed" : "path_too_short(points=" + footPoints.Length + ")");
                 Hide();
                 return;
             }
 
             CityMapLayerHelper.ApplyToMapRoute(_root);
+            if (_subwayRoot != null)
+                CityMapLayerHelper.ApplyToMapRoute(_subwayRoot);
             ApplyStyle();
 
             _root.SetActive(true);
 
-            var elevated = BuildMapElevatedPoints(points);
+            var elevated = BuildMapElevatedPoints(footPoints);
 
-            if (!LineRendererPathCache.IsSame(elevated))
+            _line.positionCount = elevated.Length;
+            _line.SetPositions(elevated);
+            LineRendererMaterial.Apply(_line, ResolveMapLineColor());
+            MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
+
+            ShowSubwayOnMap(subwayPoints);
+        }
+
+        private static void ShowSubwayOnMap(Vector3[] subwayPoints)
+        {
+            if (_subwayRoot == null || _subwayLine == null)
+                return;
+
+            if (subwayPoints == null || subwayPoints.Length < 2)
             {
-                _line.positionCount = elevated.Length;
-                _line.SetPositions(elevated);
-                LineRendererMaterial.Apply(_line);
-                MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
+                CityMapLayerHelper.Restore(_subwayRoot);
+                _subwayRoot.SetActive(false);
+                return;
             }
+
+            _subwayRoot.SetActive(true);
+            var elevated = ApplyMapClearance(subwayPoints);
+            _subwayLine.positionCount = elevated.Length;
+            _subwayLine.SetPositions(elevated);
+            LineRendererMaterial.Apply(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
         }
 
         internal static void Hide()
@@ -97,7 +178,18 @@ namespace VoogleRoute.Rendering
                 CityMapLayerHelper.Restore(_root);
                 _root.SetActive(false);
             }
+
+            if (_subwayRoot != null)
+            {
+                CityMapLayerHelper.Restore(_subwayRoot);
+                _subwayRoot.SetActive(false);
+            }
         }
+
+        private static Color ResolveMapLineColor() =>
+            MovementModeDetector.CurrentMode == MovementMode.Vehicle
+                ? ModConfig.VehicleLineColor
+                : ModConfig.FootLineColor;
 
         private static float ResolveLineWidth()
         {
@@ -156,6 +248,13 @@ namespace VoogleRoute.Rendering
                 Object.Destroy(_root);
                 _root = null;
                 _line = null;
+            }
+
+            if (_subwayRoot != null)
+            {
+                Object.Destroy(_subwayRoot);
+                _subwayRoot = null;
+                _subwayLine = null;
             }
         }
     }

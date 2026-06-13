@@ -8,6 +8,8 @@
   "voogle_route_walk_on": "걷기 ON",
   "voogle_route_settings_title": "VOOGLE ROUTE 설정",
   "voogle_route_setting_route_color": "경로 선 색상",
+  "voogle_route_setting_foot_route_color": "도보 경로 색상",
+  "voogle_route_setting_vehicle_route_color": "차량 경로 색상",
   "voogle_route_setting_choose_color": "색상 선택",
   "voogle_route_setting_close": "닫기",
   "voogle_route_color_neon_blue": "네온 블루",
@@ -36,11 +38,14 @@
   "voogle_route_autodrive_no_route": "목적지로 가는 경로가 없습니다.",
   "voogle_route_autodrive_too_close": "이미 목적지 근처에 있습니다.",
   "voogle_route_autodrive_busy": "시간 건너뛰기가 이미 진행 중입니다.",
+  "voogle_route_autodrive_not_in_vehicle": "Enter a vehicle to use auto-drive.",
   "voogle_route_bookmarks_title": "BOOKMARKS",
   "voogle_route_bookmarks_search": "Search bookmarks...",
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
+  "voogle_route_bookmarks_drive": "운전",
+  "voogle_route_bookmarks_walk": "도보",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
   "voogle_route_bookmarks_last_home": "Last Home",
@@ -50,5 +55,8 @@
   "voogle_route_bookmark_name_placeholder": "Bookmark name",
   "voogle_route_bookmark_add_confirm": "ADD",
   "voogle_route_bookmark_add_cancel": "CANCEL",
-  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}"
+  "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
+  "voogle_route_arrived_at_destination": "목적지에 도착했습니다",
+  "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }
