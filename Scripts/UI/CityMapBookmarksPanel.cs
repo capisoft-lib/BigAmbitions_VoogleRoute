@@ -10,7 +10,7 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v17";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v20";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
         /// <summary>Wider than RouteToggleHud (370) — header/frame via GameStylePanelChrome.Build scale.</summary>
@@ -114,6 +114,9 @@ namespace VoogleRoute.UI
         {
             DestroyLegacyRoot();
 
+            if (_root != null && _root.name != RootName)
+                Destroy();
+
             if (_root != null)
             {
                 GameStylePanelChrome.ApplyUiLayer(_root);
@@ -135,7 +138,8 @@ namespace VoogleRoute.UI
             GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
 
             var panelHeight = ComputePanelHeight();
-            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel");
+            var headerWiden = NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth);
+            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel", headerWiden);
             _textScale = Mathf.Clamp(chrome.Scale, 0.85f, 1.15f);
             _panelRect = chrome.Panel;
             _contentPanel = chrome.Panel;
@@ -145,7 +149,10 @@ namespace VoogleRoute.UI
             var titleGo = CreateRect(header, "Title");
             titleGo.anchorMin = Vector2.zero;
             titleGo.anchorMax = Vector2.one;
-            ApplyHeaderTitleInsets(titleGo, _textScale);
+            NavPanelLayout.ApplyHeaderTitleWithRightReserve(
+                titleGo,
+                _textScale,
+                NavPanelLayout.ComputeHeaderIconsTitleReserve(1, _textScale));
             _titleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
             _titleLabel.fontSize = NavPanelLayout.TitleFontSize * _textScale;
             _titleLabel.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
@@ -412,7 +419,10 @@ namespace VoogleRoute.UI
             SyncVehicleRows();
             SyncBookmarkRows();
             _panelRect.sizeDelta = new Vector2(PanelWidth, ComputePanelHeight());
-            GameStylePanelChrome.RestorePanelChrome(_panelRect, PanelWidth);
+            GameStylePanelChrome.RestorePanelChrome(
+                _panelRect,
+                PanelWidth,
+                NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth));
 
             if (_searchBarRect != null)
                 _searchBarRect.anchoredPosition = new Vector2(0f, -SearchBarTopOffset());
@@ -637,28 +647,17 @@ namespace VoogleRoute.UI
             ApplyPanelLayout();
         }
 
-        private static void ApplyHeaderTitleInsets(RectTransform rect, float scale)
-        {
-            var iconReserve = 32f * scale + 8f * scale;
-            rect.offsetMin = new Vector2(
-                NavPanelLayout.HeaderTextPaddingX * scale,
-                NavPanelLayout.HeaderTextPaddingY * scale);
-            rect.offsetMax = new Vector2(
-                -NavPanelLayout.HeaderTextPaddingX * scale - iconReserve,
-                -NavPanelLayout.HeaderTextPaddingY * scale);
-        }
-
         private static void CreateHeaderHistoryButton(RectTransform header, float scale)
         {
-            var size = 32f * scale;
-            var pad = 8f * scale;
+            var size = NavPanelLayout.HeaderIconButtonSize * scale;
+            var rightInset = NavPanelLayout.ComputeHeaderIconRightInset(0, scale);
 
             var rect = CreateRect(header, "HistoryButton");
             rect.anchorMin = new Vector2(1f, 0.5f);
             rect.anchorMax = new Vector2(1f, 0.5f);
             rect.pivot = new Vector2(1f, 0.5f);
             rect.sizeDelta = new Vector2(size, size);
-            rect.anchoredPosition = new Vector2(-pad, NavPanelLayout.SettingsIconOffsetY * scale);
+            rect.anchoredPosition = new Vector2(-rightInset, NavPanelLayout.SettingsIconOffsetY * scale);
 
             var buttonImage = GameUiStyle.CreateButtonGraphic(
                 rect, scale, GameUiStyle.ApplyButtonGrey, 1f, bleedBottom: false);
@@ -1382,7 +1381,10 @@ namespace VoogleRoute.UI
                          "VoogleRoute_BookmarksPanel_v13",
                          "VoogleRoute_BookmarksPanel_v14",
                          "VoogleRoute_BookmarksPanel_v15",
-                         "VoogleRoute_BookmarksPanel_v16"
+                         "VoogleRoute_BookmarksPanel_v16",
+                         "VoogleRoute_BookmarksPanel_v17",
+                         "VoogleRoute_BookmarksPanel_v18",
+                         "VoogleRoute_BookmarksPanel_v19"
                      })
             {
                 var legacy = GameObject.Find(name);

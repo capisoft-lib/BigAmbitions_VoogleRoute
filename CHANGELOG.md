@@ -15,6 +15,14 @@ All notable changes to **Voogle Route** are documented here.
 ### Changed
 
 - **GPS header** — fourth toolbar icon (history) added alongside bookmark, last-car, and settings buttons
+- **Map panel chrome** — shared header layout helpers (`NavPanelLayout`); 420 px bookmarks/history headers aligned with the body frame
+
+### Fixed
+
+- **Bookmarks on map** — panel stays visible when selecting a building; hides only when opening BizMan or other map overlays (not on building click alone)
+- **Business creation** — company name field keeps focus while typing on the city map
+- **Visit History** — panel opens from the bookmarks header while the city map is open
+- **History header** — close button inset and title alignment match the bookmarks panel
 
 ## [0.11.6] - 2026-06-13
 

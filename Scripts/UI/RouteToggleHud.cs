@@ -66,7 +66,7 @@ namespace VoogleRoute.UI
             titleGo.anchorMax = Vector2.one;
             NavPanelLayout.ApplyHeaderTitleInsets(titleGo, layout);
             var titlePadY = NavPanelLayout.HeaderTextPaddingY * layout.Scale;
-            var titlePadRight = HeaderButtonsReserve(layout.Scale);
+            var titlePadRight = NavPanelLayout.ComputeHeaderIconsTitleReserve(4, layout.Scale);
             titleGo.offsetMax = new Vector2(-titlePadRight, -titlePadY);
             _panelTitleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
             _panelTitleLabel.text = ModUiText.PanelTitle;
@@ -297,14 +297,6 @@ namespace VoogleRoute.UI
             return go.AddComponent<RectTransform>();
         }
 
-        private static float HeaderButtonsReserve(float scale)
-        {
-            var size = 32f * scale;
-            var pad = 8f * scale;
-            var gap = 4f * scale;
-            return pad + (size + gap) * 4 + pad;
-        }
-
         private static void CreateBookmarkPinButton(RectTransform header, NavPanelLayout.Metrics layout)
         {
             CreateHeaderIconButton(
@@ -391,10 +383,8 @@ namespace VoogleRoute.UI
             out Image buttonImage)
         {
             var scale = layout.Scale;
-            var size = 32f * scale;
-            var pad = 8f * scale;
-            var gap = 4f * scale;
-            var rightInset = pad + (int)slot * (size + gap);
+            var size = NavPanelLayout.HeaderIconButtonSize * scale;
+            var rightInset = NavPanelLayout.ComputeHeaderIconRightInset((int)slot, scale);
 
             var rect = CreateRect(header, name);
             rect.anchorMin = new Vector2(1f, 0.5f);

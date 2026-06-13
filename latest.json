@@ -8,5 +8,5 @@
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "0.11.7: Visit History panel — last 50 buildings visited, HUD and bookmarks header shortcuts, ADD row button to save as bookmark, persisted in bookmarks.json. Requires LIB BA Player Location 0.11.1+."
+  "releaseNotes": "0.11.7: Visit History (last 50 buildings), GPS and bookmarks header shortcuts, ADD row to save as bookmark. Fixes: history panel on city map, bookmark visibility during BizMan flows, input focus, map panel header alignment. Requires LIB BA Player Location 0.11.1+."
 }

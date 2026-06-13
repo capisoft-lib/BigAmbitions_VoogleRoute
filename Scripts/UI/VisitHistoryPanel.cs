@@ -11,7 +11,8 @@ namespace VoogleRoute.UI
     /// <summary>Scrollable list of the 50 most recently visited buildings.</summary>
     internal static class VisitHistoryPanel
     {
-        private const string RootName = "VoogleRoute_VisitHistory_v2";
+        private const string RootName = "VoogleRoute_VisitHistory_v6";
+        private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11050;
         private const float PanelWidth = 420f;
         private const float ScreenMarginX = 16f;
@@ -82,6 +83,9 @@ namespace VoogleRoute.UI
         {
             DestroyLegacyRoot();
 
+            if (_root != null && _root.name != RootName)
+                Destroy();
+
             if (_root != null)
             {
                 GameStylePanelChrome.ApplyUiLayer(_root);
@@ -102,7 +106,8 @@ namespace VoogleRoute.UI
             GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
 
             var panelHeight = ComputePanelHeight();
-            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel");
+            var headerWiden = NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth);
+            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel", headerWiden);
             _textScale = Mathf.Clamp(chrome.Scale, 0.85f, 1.15f);
             _panelRect = chrome.Panel;
             ApplyScreenAnchor();
@@ -111,7 +116,10 @@ namespace VoogleRoute.UI
             var titleGo = CreateRect(header, "Title");
             titleGo.anchorMin = Vector2.zero;
             titleGo.anchorMax = Vector2.one;
-            ApplyHeaderTitleInsets(titleGo, _textScale);
+            NavPanelLayout.ApplyHeaderTitleWithRightReserve(
+                titleGo,
+                _textScale,
+                GameUiStyle.ComputeHeaderCloseTitleReserve(_textScale, CloseButtonExtraInset));
             _titleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
             _titleLabel.fontSize = NavPanelLayout.TitleFontSize * _textScale;
             _titleLabel.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
@@ -120,7 +128,7 @@ namespace VoogleRoute.UI
             GameUiStyle.ApplyTitleFont(_titleLabel);
 
             _closeButtonRect = GameUiStyle.CreateHeaderCloseButton(
-                header, _textScale, (UnityAction)Close).GetComponent<RectTransform>();
+                header, _textScale, (UnityAction)Close, CloseButtonExtraInset).GetComponent<RectTransform>();
 
             BuildListScroll(chrome.Panel);
 
@@ -190,7 +198,10 @@ namespace VoogleRoute.UI
 
             SyncRows();
             _panelRect.sizeDelta = new Vector2(PanelWidth, ComputePanelHeight());
-            GameStylePanelChrome.RestorePanelChrome(_panelRect, PanelWidth);
+            GameStylePanelChrome.RestorePanelChrome(
+                _panelRect,
+                PanelWidth,
+                NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth));
             UpdateScreenPosition();
 
             if (_listScrollRect != null)
@@ -395,17 +406,6 @@ namespace VoogleRoute.UI
             rect.pivot = new Vector2(1f, 0.5f);
             rect.anchoredPosition = new Vector2(-rightInset, 0f);
             rect.sizeDelta = new Vector2(width, height);
-        }
-
-        private static void ApplyHeaderTitleInsets(RectTransform rect, float scale)
-        {
-            var closeReserve = GameUiStyle.HeaderCloseButtonSize + 14f * scale;
-            rect.offsetMin = new Vector2(
-                NavPanelLayout.HeaderTextPaddingX * scale,
-                NavPanelLayout.HeaderTextPaddingY * scale);
-            rect.offsetMax = new Vector2(
-                -NavPanelLayout.HeaderTextPaddingX * scale - closeReserve,
-                -NavPanelLayout.HeaderTextPaddingY * scale);
         }
 
         internal static void Open()
@@ -744,7 +744,7 @@ namespace VoogleRoute.UI
 
         private static void DestroyLegacyRoot()
         {
-            foreach (var name in new[] { "VoogleRoute_VisitHistory", "VoogleRoute_VisitHistory_v1" })
+            foreach (var name in new[] { "VoogleRoute_VisitHistory", "VoogleRoute_VisitHistory_v1", "VoogleRoute_VisitHistory_v2", "VoogleRoute_VisitHistory_v3", "VoogleRoute_VisitHistory_v4", "VoogleRoute_VisitHistory_v5" })
             {
                 var legacy = GameObject.Find(name);
                 if (legacy != null)

@@ -46,6 +46,52 @@ namespace VoogleRoute.UI
         /// <summary>Ajustement vertical icône engrenage (px ref panel 370, négatif = vers le bas).</summary>
         public const float SettingsIconOffsetY = 1f;
 
+        public const float HeaderIconButtonSize = 32f;
+        public const float HeaderIconButtonPad = 8f;
+        public const float HeaderIconButtonGap = 4f;
+        /// <summary>Extra header width per side on 420px map panels (screen px).</summary>
+        public const float WideMapPanelHeaderWidenPerSide = 2f;
+
+        /// <summary>Negative extraTrim widens header while keeping hud-trim centering.</summary>
+        public static float ComputeWideMapPanelHeaderWidenTrim(float panelWidth)
+        {
+            if (panelWidth <= PanelWidth)
+                return 0f;
+
+            var scale = panelWidth / PanelWidth;
+            return -(WideMapPanelHeaderWidenPerSide * 2f) / scale;
+        }
+
+        /// <summary>Distance from header right edge to icon pivot (0 = rightmost).</summary>
+        public static float ComputeHeaderIconRightInset(int slotFromRight, float scale)
+        {
+            var size = HeaderIconButtonSize * scale;
+            var pad = HeaderIconButtonPad * scale;
+            var gap = HeaderIconButtonGap * scale;
+            return pad + slotFromRight * (size + gap);
+        }
+
+        /// <summary>Right title inset when icon buttons occupy the header right strip.</summary>
+        public static float ComputeHeaderIconsTitleReserve(int iconCount, float scale)
+        {
+            if (iconCount <= 0)
+                return HeaderTextPaddingX * scale;
+
+            var size = HeaderIconButtonSize * scale;
+            var pad = HeaderIconButtonPad * scale;
+            var gap = HeaderIconButtonGap * scale;
+            return pad + iconCount * (size + gap) + pad;
+        }
+
+        /// <summary>Title insets with asymmetric right reserve (icons or close button).</summary>
+        public static void ApplyHeaderTitleWithRightReserve(RectTransform rect, float scale, float rightReserve)
+        {
+            var padX = HeaderTextPaddingX * scale;
+            var padY = HeaderTextPaddingY * scale;
+            rect.offsetMin = new Vector2(padX, padY);
+            rect.offsetMax = new Vector2(-rightReserve, -padY);
+        }
+
         public const float ScreenMarginX = 16f;
         public const float ScreenMarginMinY = 36f;
 

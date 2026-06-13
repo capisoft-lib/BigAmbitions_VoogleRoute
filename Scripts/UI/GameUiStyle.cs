@@ -223,7 +223,17 @@ namespace VoogleRoute.UI
         internal const float HeaderCloseButtonOffsetX = -5f;
         internal const float HeaderCloseButtonOffsetY = 1f;
 
-        internal static Button CreateHeaderCloseButton(Transform header, float scale, UnityAction onClick)
+        internal static float ComputeHeaderCloseTitleReserve(float scale, float extraOffsetX = 0f)
+        {
+            var inset = -(HeaderCloseButtonOffsetX - extraOffsetX) * scale;
+            return inset + HeaderCloseButtonSize * scale + NavPanelLayout.HeaderIconButtonPad * scale;
+        }
+
+        internal static Button CreateHeaderCloseButton(
+            Transform header,
+            float scale,
+            UnityAction onClick,
+            float extraOffsetX = 0f)
         {
             var go = new GameObject("CloseButton", typeof(RectTransform));
             go.transform.SetParent(header, false);
@@ -231,8 +241,11 @@ namespace VoogleRoute.UI
             rect.anchorMin = new Vector2(1f, 0.5f);
             rect.anchorMax = new Vector2(1f, 0.5f);
             rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(HeaderCloseButtonOffsetX * scale, HeaderCloseButtonOffsetY);
-            rect.sizeDelta = new Vector2(HeaderCloseButtonSize, HeaderCloseButtonSize);
+            var buttonSize = HeaderCloseButtonSize * scale;
+            rect.anchoredPosition = new Vector2(
+                (HeaderCloseButtonOffsetX - extraOffsetX) * scale,
+                HeaderCloseButtonOffsetY * scale);
+            rect.sizeDelta = new Vector2(buttonSize, buttonSize);
 
             var image = CreateButtonGraphic(rect, scale, ApplyButtonRed, bleedBottom: false);
             var button = go.AddComponent<Button>();

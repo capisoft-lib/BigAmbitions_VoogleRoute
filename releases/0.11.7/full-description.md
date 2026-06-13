@@ -16,6 +16,7 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]History shortcuts[/b] — [b]clock[/b] icon on the GPS panel header and on the city-map [b]BOOKMARKS[/b] panel opens History
 [*][b]Same row actions[/b] as bookmarks — building icon, name, route distance, [b]CENTER[/b], [b]ADD[/b] (save as bookmark), [b]SET[/b] destination
 [*][b]Non-blocking panel[/b] — closes with [b]×[/b], [b]ESC[/b], or when vanilla menus open; data saved in [b]bookmarks.json[/b]
+[*][b]Map polish[/b] — bookmarks stay visible when clicking buildings; history opens on the map; headers aligned with the panel frame; BizMan text fields keep focus
 [/list]
 
 
