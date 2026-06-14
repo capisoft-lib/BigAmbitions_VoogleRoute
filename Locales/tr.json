@@ -10,6 +10,7 @@
   "voogle_route_setting_route_color": "Rota çizgisi rengi",
   "voogle_route_setting_foot_route_color": "Yaya rotası color",
   "voogle_route_setting_vehicle_route_color": "Vehicle route color",
+  "voogle_route_setting_indoor_route_color": "Indoor route color",
   "voogle_route_setting_choose_color": "RENK SEÇ",
   "voogle_route_setting_close": "KAPAT",
   "voogle_route_color_neon_blue": "Neon mavi",
@@ -19,10 +20,14 @@
   "voogle_route_color_white": "Beyaz",
   "voogle_route_options_route": "Rota çizgisini göster",
   "voogle_route_options_autowalk": "Hedefe otomatik yürü",
+  "voogle_route_options_use_subway": "Metro kullan",
   "voogle_route_options_indoor_route": "Çıkışa iç mekan rota çizgisi",
   "voogle_route_options_indoor_autowalk": "Çıkışa iç mekan otomatik yürüme",
   "voogle_route_options_base_taxi_multiplier": "Temel taksi çarpanı",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
+  "voogle_route_options_force_correct_side_arrival": "Arrive on correct street side",
+  "voogle_route_options_display_outside": "Display VoogleRoute Outside",
+  "voogle_route_options_display_inside": "Display VoogleRoute Inside",
   "voogle_route_way_out_on": "ÇIKIŞ",
   "voogle_route_way_out_off": "ÇIKIŞ KAPALI",
   "voogle_route_get_out": "ÇIK",
@@ -60,3 +65,4 @@
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
   "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }
+

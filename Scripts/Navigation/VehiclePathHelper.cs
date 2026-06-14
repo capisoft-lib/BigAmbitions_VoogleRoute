@@ -23,9 +23,28 @@ namespace VoogleRoute.Navigation
             return roadTarget.sqrMagnitude > 0.01f;
         }
 
-        /// <summary>Snap arrivée : voie la plus proche du bâtiment (y compris voie opposée).</summary>
+        /// <summary>Snap arrivée : voie côté bâtiment via la navmesh jeu quand possible.</summary>
         internal static bool TryGetArrivalRoadTarget(Vector3 worldTarget, out Vector3 roadTarget)
         {
+            roadTarget = default;
+            try
+            {
+                var vehicle = GameManager.Instance?.selectedVehicle;
+                if (vehicle != null)
+                {
+                    var gameSnap = vehicle.GetClosestNavMeshTargetPosition(worldTarget);
+                    if (gameSnap.sqrMagnitude > 0.01f)
+                    {
+                        roadTarget = gameSnap;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
             roadTarget = SnapToVehicleNavMesh(worldTarget);
             return roadTarget.sqrMagnitude > 0.01f;
         }

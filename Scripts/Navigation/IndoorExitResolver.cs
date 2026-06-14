@@ -8,9 +8,9 @@ namespace VoogleRoute.Navigation
     {
         private static readonly NavMeshPath NavPath = new NavMeshPath();
 
-        internal static bool TryGetNearestExit(Vector3 origin, out Vector3 exitPosition)
+        internal static bool TryGetNearestExit(Vector3 origin, out IndoorExitTarget exit)
         {
-            exitPosition = default;
+            exit = IndoorExitTarget.None;
 
             List<ExitZone> zones;
             try
@@ -30,7 +30,7 @@ namespace VoogleRoute.Navigation
 
             var bestFound = false;
             var bestScore = float.MaxValue;
-            var bestPosition = default(Vector3);
+            var bestExit = IndoorExitTarget.None;
 
             foreach (var zone in zones)
             {
@@ -52,15 +52,28 @@ namespace VoogleRoute.Navigation
                     continue;
 
                 bestScore = score;
-                bestPosition = candidate;
+                bestExit = BuildExitTarget(zone, candidate);
                 bestFound = true;
             }
 
             if (!bestFound)
                 return false;
 
-            exitPosition = bestPosition;
+            exit = bestExit;
             return true;
+        }
+
+        private static IndoorExitTarget BuildExitTarget(ExitZone zone, Vector3 walkPosition)
+        {
+            var despawner = zone.despawner;
+            if (despawner == null)
+                return new IndoorExitTarget(walkPosition, 0, false, false);
+
+            return new IndoorExitTarget(
+                walkPosition,
+                despawner.exitToZoneId,
+                despawner.isCasinoExit,
+                despawner.isParkingExit);
         }
 
         private static Vector3 GetWalkTarget(ExitZone zone)

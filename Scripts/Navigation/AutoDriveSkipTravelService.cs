@@ -17,7 +17,7 @@ namespace VoogleRoute.Navigation
 
         internal static bool IsInProgress => _inProgress;
 
-        internal static void RequestFromHud()
+        internal static void RequestFromActionPanel()
         {
             if (_inProgress)
                 return;
@@ -28,6 +28,9 @@ namespace VoogleRoute.Navigation
 
             TryShowConfirmPopup();
         }
+
+        [Obsolete("Use RequestFromActionPanel.")]
+        internal static void RequestFromHud() => RequestFromActionPanel();
 
         /// <summary>Auto-drive from bookmarks panel — skips HUD visibility check (city map open).</summary>
         internal static void RequestFromBookmark()
@@ -114,7 +117,7 @@ namespace VoogleRoute.Navigation
             yield return UiFader.UnFade();
 
             _inProgress = false;
-            RouteToggleHud.RefreshVisual();
+            RouteActionPanel.RefreshVisual();
         }
 
         private static bool IsTimeMachineRunning()

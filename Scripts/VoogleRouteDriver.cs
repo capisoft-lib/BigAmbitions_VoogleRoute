@@ -14,6 +14,10 @@ namespace VoogleRoute
                 Instance = null;
         }
 
-        private void Update() => VoogleRouteLoop.Tick();
+        private void Update()
+        {
+            VoogleRouteLoop.Tick();
+            VisualTests.VisualTestHarness.TrySchedule(this);
+        }
     }
 }

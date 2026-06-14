@@ -27,7 +27,10 @@ namespace VoogleRoute
     
             if (IsOverlayBlockingNavigation())
                 return false;
-    
+
+            if (!ModConfig.DisplayOutsideEnabled)
+                return false;
+
             return true;
         }
 
@@ -52,9 +55,11 @@ namespace VoogleRoute
             return PlayerLocationSession.Snapshot.MovementKind == MovementKind.Indoor;
         }
 
-        internal static bool ShouldShowIndoorNavigationPanel() => IsIndoorNavigationContext();
-    
-        internal static bool ShouldShowNavigationPanel() => ShouldRunNavigationSystems();
+        internal static bool ShouldShowIndoorNavigationPanel() =>
+            ModConfig.DisplayInsideEnabled && IsIndoorNavigationContext();
+
+        internal static bool ShouldShowNavigationPanel() =>
+            ModConfig.DisplayOutsideEnabled && ShouldRunNavigationSystems();
 
         internal static bool IsCityMapOpen()
         {
@@ -74,16 +79,55 @@ namespace VoogleRoute
             if (!IsCityMapOpen())
                 return false;
 
+            if (!ModConfig.DisplayOutsideEnabled)
+                return false;
+
+            if (IsSubwayNavigationActive())
+                return false;
+
             return !IsCityMapSubOverlayOpen();
         }
 
         /// <summary>Visit history / map bookmarks: allow on city map unless a modal overlay is open.</summary>
         internal static bool IsBlockingVisitHistory()
         {
+            if (IsSubwayNavigationActive())
+                return true;
+
             if (IsCityMapOpen())
                 return IsCityMapSubOverlayOpen();
 
             return IsOverlayBlockingNavigation();
+        }
+
+        internal static bool IsCityMapSubwayMode()
+        {
+            try
+            {
+                if (!CityManager.IsInitialized)
+                    return false;
+
+                return CityManager.Instance?.cityMap?.isSubwayMode == true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal static bool IsSubwayNavigationActive()
+        {
+            if (IsCityMapSubwayMode())
+                return true;
+
+            try
+            {
+                return SubwaySystem.IsRiding;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static bool IsCityMapSubOverlayOpen()
@@ -139,7 +183,16 @@ namespace VoogleRoute
             if (!IsPlayable())
                 return false;
 
-            return IsCityMapOpen();
+            if (!IsCityMapOpen())
+                return false;
+
+            if (!ModConfig.DisplayOutsideEnabled)
+                return false;
+
+            if (IsSubwayNavigationActive())
+                return false;
+
+            return true;
         }
 
         /// <summary>Pathfinding for ground HUD or city-map overlay (map open blocks HUD nav, not map route).</summary>

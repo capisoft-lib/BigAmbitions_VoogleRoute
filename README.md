@@ -23,8 +23,9 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
+- **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)
-- **Auto-walk** — optional automatic walking along the route
+- **Auto-walk** — optional automatic walking along the route (includes automatic subway boarding when the route uses the metro)
 - **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only)
 - **City map bookmarks** — on the city map (**M**): searchable list, **SET** / **CENTER**, route distance per row, **ADD BOOKMARK** by clicking the map
 - **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** (auto-tracked); owned parked vehicles listed automatically

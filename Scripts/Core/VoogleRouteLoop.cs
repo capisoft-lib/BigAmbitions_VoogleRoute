@@ -18,7 +18,6 @@ namespace VoogleRoute
         private static bool _lastNavigationWanted;
         private static bool _forceRouteRecalc;
         private static float _nextHudRefresh;
-        private static bool _legacyTurnHudPurged;
         private static float _lastDestinationChangeTime = -1f;
         private static bool _destinationRecalcPending;
         private static PathResult _activePath;
@@ -102,17 +101,13 @@ namespace VoogleRoute
             RouteRecalcBanner.ForceHide();
             NavigationArrivalService.Reset();
             _wasSubwayRidingForNav = false;
+            CityMapZoomExtension.Reset();
             ModLog.Info("VoogleRoute loop shut down.");
         }
 
         internal static void Tick()
         {
-            if (!_legacyTurnHudPurged)
-            {
-                LegacyTurnHudCleanup.DestroyAll();
-                _legacyTurnHudPurged = true;
-            }
-
+            CityMapZoomExtension.EnsureApplied();
             ModUiText.PollLanguageChange();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
@@ -128,7 +123,7 @@ namespace VoogleRoute
             BookmarkRouteDistanceService.TickMainThread();
 
             if (ShouldRefreshHud())
-                RouteToggleHud.UpdateVisibility();
+                RouteActionPanel.UpdateVisibility();
 
             if (!GameState.IsPlayable())
             {
@@ -143,7 +138,11 @@ namespace VoogleRoute
                 if (_lastNavigationContextActive)
                     OnNavigationContextEnded();
 
-                IndoorNavigationService.Tick();
+                if (ModConfig.DisplayInsideEnabled)
+                    IndoorNavigationService.Tick();
+                else
+                    IndoorNavigationService.Reset();
+
                 return;
             }
 
@@ -227,7 +226,7 @@ namespace VoogleRoute
             TickFootRouteRefresh(canNavigate, navigationWanted);
 
             if (AutoWalkService.Tick(canNavigate, _activePath))
-                RouteToggleHud.RefreshVisual();
+                RouteActionPanel.RefreshVisual();
         }
 
         private static void TickFootRouteRefresh(bool canNavigate, bool navigationWanted)
@@ -416,10 +415,29 @@ namespace VoogleRoute
 
         private static void InvalidateRouteCache(string reason)
         {
-            PathFinderService.InvalidateCache(reason);
+            PathFinderService.InvalidateCacheAndForceRecalc(reason);
             _forceRouteRecalc = true;
             _activePath = PathResult.None;
             RouteLineRenderer.Hide();
+        }
+
+        /// <summary>Called when mod options change routing — invalidates cache and recomputes immediately if possible.</summary>
+        internal static void RequestRouteRecalc(string reason)
+        {
+            InvalidateRouteCache(reason);
+            BookmarkRouteDistanceService.Cancel();
+
+            if (!ModConfig.WantsRouteComputation)
+                return;
+
+            if (PathFinderService.IsAsyncRecalcInProgress)
+                return;
+
+            if (CanNavigate())
+                RefreshRouteIfNavigating(reason);
+
+            if (_wasMapOverlayActive && CanNavigate())
+                RefreshMapRouteIfNavigating(reason + "|map");
         }
 
         private static void CleanupNavigationState()

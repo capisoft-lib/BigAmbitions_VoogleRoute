@@ -1,4 +1,5 @@
-using Localizor;
+using Capisoft.Lib.BaUnifiedUI.Fluent;
+using Capisoft.Lib.BaUnifiedUI.Localization;
 using UnityEngine;
 using VoogleRoute.Navigation;
 
@@ -25,6 +26,8 @@ namespace VoogleRoute.UI
             Loc("voogle_route_setting_foot_route_color", "On-foot route color");
         internal static string SettingVehicleRouteColor =>
             Loc("voogle_route_setting_vehicle_route_color", "Vehicle route color");
+        internal static string SettingIndoorRouteColor =>
+            Loc("voogle_route_setting_indoor_route_color", "Indoor route color");
         internal static string SettingChooseColor => Loc("voogle_route_setting_choose_color", "CHOOSE COLOR");
         internal static string SettingClose => Loc("voogle_route_setting_close", "CLOSE");
         internal static string ColorPresetNeonBlue => Loc("voogle_route_color_neon_blue", "Neon blue");
@@ -154,12 +157,12 @@ namespace VoogleRoute.UI
                 return;
             _nextLocalePoll = now + 0.5f;
 
-            var locale = ResolveLoadedLocale();
+            var locale = BaUiText.ResolveLoadedLocale();
             if (locale == _activeLocale)
                 return;
 
             _activeLocale = locale;
-            RouteToggleHud.RefreshLocalizedText();
+            RouteActionPanel.RefreshLocalizedText();
             RouteSettingsUi.RefreshLocalizedText();
             RouteRecalcBanner.RefreshLocalizedText();
             AutoDriveConfirmPopup.RefreshLocalizedText();
@@ -168,36 +171,6 @@ namespace VoogleRoute.UI
             VisitHistoryPanel.RefreshLocalizedText();
         }
 
-        private static string Loc(string key, string fallback)
-        {
-            try
-            {
-                var text = key.GetLocalization();
-                if (!string.IsNullOrWhiteSpace(text) && text != key)
-                    return text;
-            }
-            catch
-            {
-                // clé mod pas encore enregistrée
-            }
-
-            return fallback;
-        }
-
-        private static string ResolveLoadedLocale()
-        {
-            try
-            {
-                var locale = LocalizorManager.LoadedLocale;
-                if (!string.IsNullOrWhiteSpace(locale))
-                    return locale.Trim().Replace('_', '-');
-            }
-            catch
-            {
-                // Localizor pas encore prêt
-            }
-
-            return "en";
-        }
+        private static string Loc(string key, string fallback) => BaUiText.Loc(key, fallback);
     }
 }

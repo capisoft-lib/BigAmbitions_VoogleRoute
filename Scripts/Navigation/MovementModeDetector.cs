@@ -36,8 +36,11 @@ namespace VoogleRoute.Navigation
 
         internal static bool ModeChangedSinceLastApply => CurrentMode != PreviousMode;
 
-        internal static bool ShouldShowHudButton() =>
+        internal static bool ShouldShowActionPanel() =>
             CurrentMode == MovementMode.OnFoot || CurrentMode == MovementMode.Vehicle;
+
+        [System.Obsolete("Use ShouldShowActionPanel.")]
+        internal static bool ShouldShowHudButton() => ShouldShowActionPanel();
 
         internal static bool TryGetPathOrigin(out Vector3 origin)
         {

@@ -11,6 +11,13 @@ namespace VoogleRoute.Navigation
 
         internal static void Tick()
         {
+            if (!ModConfig.DisplayInsideEnabled)
+            {
+                if (_wasIndoorActive)
+                    Reset();
+                return;
+            }
+
             if (!GameState.IsIndoorNavigationContext())
             {
                 if (_wasIndoorActive)
@@ -47,9 +54,9 @@ namespace VoogleRoute.Navigation
             else
                 RouteLineRenderer.Hide();
 
-            var exitTarget = IndoorPathFinderService.ActiveExitTarget;
+            var exitTarget = IndoorPathFinderService.ActiveExit;
             if (IndoorAutoWalkService.Tick(true, _activePath, exitTarget))
-                RouteToggleHud.RefreshVisual();
+                RouteActionPanel.RefreshVisual();
         }
 
         internal static void Reset()
@@ -60,13 +67,17 @@ namespace VoogleRoute.Navigation
             _wasIndoorActive = false;
             _forceRecalc = false;
             var hadAutoWalk = ModConfig.IndoorAutoWalkEnabled;
+            var hadRouteLine = ModConfig.IndoorRouteLineEnabled;
             CleanupNavigationState();
             IndoorPathFinderService.InvalidateCache();
 
-            if (hadAutoWalk)
+            if (hadAutoWalk || hadRouteLine)
             {
-                ModConfig.SetIndoorAutoWalkEnabled(false);
-                RouteToggleHud.RefreshVisual();
+                if (hadAutoWalk)
+                    ModConfig.SetIndoorAutoWalkEnabled(false);
+                if (hadRouteLine)
+                    ModConfig.SetIndoorRouteLineEnabled(false);
+                RouteActionPanel.RefreshVisual();
             }
         }
 

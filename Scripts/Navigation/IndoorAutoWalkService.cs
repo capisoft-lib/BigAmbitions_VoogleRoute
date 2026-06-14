@@ -13,20 +13,22 @@ namespace VoogleRoute.Navigation
         private const float MinReissueMoveSq = 2f * 2f;
 
         private static int _waypointIndex;
-        private static Vector3 _lastExitTarget;
+        private static IndoorExitTarget _lastExitTarget;
         private static float _lastIssueTime = -999f;
         private static Vector3 _lastIssuedDestination;
         private static Vector3[] _cachedWaypoints = System.Array.Empty<Vector3>();
+        private static float _lastExitAttemptTime = -999f;
 
         internal static void Reset()
         {
             _waypointIndex = 0;
             _cachedWaypoints = System.Array.Empty<Vector3>();
             _lastIssueTime = -999f;
-            _lastExitTarget = default;
+            _lastExitTarget = IndoorExitTarget.None;
+            _lastExitAttemptTime = -999f;
         }
 
-        internal static bool Tick(bool canNavigate, PathResult path, Vector3 exitTarget)
+        internal static bool Tick(bool canNavigate, PathResult path, in IndoorExitTarget exitTarget)
         {
             if (!ModConfig.IndoorAutoWalkEnabled)
             {
@@ -34,7 +36,7 @@ namespace VoogleRoute.Navigation
                 return false;
             }
 
-            if (!canNavigate || !path.Success || exitTarget.sqrMagnitude < 0.01f)
+            if (!canNavigate || !path.Success || !exitTarget.IsValid)
                 return false;
 
             if (ManualMovementInputDetector.HasManualMovementInput())
@@ -43,12 +45,13 @@ namespace VoogleRoute.Navigation
                 return true;
             }
 
-            if ((exitTarget - _lastExitTarget).sqrMagnitude > 0.25f)
+            if (!ExitTargetMatches(exitTarget, _lastExitTarget))
             {
                 _lastExitTarget = exitTarget;
                 _waypointIndex = 0;
                 _cachedWaypoints = System.Array.Empty<Vector3>();
                 _lastIssueTime = -999f;
+                _lastExitAttemptTime = -999f;
             }
 
             if (!MovementModeDetector.TryGetPlayerOrigin(out var playerPos))
@@ -68,13 +71,14 @@ namespace VoogleRoute.Navigation
                 return false;
             }
 
-            var waypoints = BuildWaypoints(path, exitTarget);
+            var waypoints = BuildWaypoints(path, exitTarget.WalkPosition);
             if (waypoints.Length == 0)
                 return false;
 
-            if (HorizontalDistance(playerPos, exitTarget) < ExitYieldRadius)
+            var exitPosition = exitTarget.WalkPosition;
+            if (HorizontalDistance(playerPos, exitPosition) < ExitYieldRadius)
             {
-                YieldForVanillaExit();
+                YieldForVanillaExit(player, exitTarget);
                 return true;
             }
 
@@ -91,9 +95,9 @@ namespace VoogleRoute.Navigation
             }
 
             if (_waypointIndex >= waypoints.Length - 1 &&
-                HorizontalDistance(playerPos, exitTarget) < ReachRadius + 1.5f)
+                HorizontalDistance(playerPos, exitPosition) < ReachRadius + 1.5f)
             {
-                DisableAtExit();
+                YieldForVanillaExit(player, exitTarget);
                 return true;
             }
 
@@ -103,17 +107,7 @@ namespace VoogleRoute.Navigation
             return false;
         }
 
-        private static void DisableAtExit() => YieldForVanillaExit();
-
-        private static void DisableFromUserInput() => DisableAutoWalk();
-
-        private static void YieldForVanillaExit()
-        {
-            PlayerNavigationRelease.Release();
-            DisableAutoWalk();
-        }
-
-        private static void DisableAutoWalk()
+        private static void DisableFromUserInput()
         {
             if (!ModConfig.IndoorAutoWalkEnabled)
                 return;
@@ -122,9 +116,58 @@ namespace VoogleRoute.Navigation
             Reset();
         }
 
-        private static Vector3[] BuildWaypoints(PathResult path, Vector3 exitTarget)
+        private static void YieldForVanillaExit(PlayerController player, in IndoorExitTarget exitTarget)
         {
-            if (_cachedWaypoints.Length > 0 && (exitTarget - _lastExitTarget).sqrMagnitude < 0.25f)
+            PlayerNavigationRelease.Release();
+
+            var now = Time.unscaledTime;
+            if (now - _lastExitAttemptTime < 0.75f)
+                return;
+
+            _lastExitAttemptTime = now;
+
+            if (IndoorVanillaExitService.TryRequestExit(exitTarget))
+            {
+                DisableIndoorNavigation();
+                return;
+            }
+
+            IssueWalkTo(player, exitTarget.WalkPosition);
+        }
+
+        private static void DisableIndoorNavigation()
+        {
+            var changed = false;
+            if (ModConfig.IndoorAutoWalkEnabled)
+            {
+                ModConfig.SetIndoorAutoWalkEnabled(false);
+                changed = true;
+            }
+
+            if (ModConfig.IndoorRouteLineEnabled)
+            {
+                ModConfig.SetIndoorRouteLineEnabled(false);
+                changed = true;
+            }
+
+            if (changed)
+                Reset();
+        }
+
+        private static bool ExitTargetMatches(in IndoorExitTarget a, in IndoorExitTarget b)
+        {
+            if ((a.WalkPosition - b.WalkPosition).sqrMagnitude > 0.25f)
+                return false;
+
+            return a.ExitZoneId == b.ExitZoneId &&
+                   a.IsCasinoExit == b.IsCasinoExit &&
+                   a.IsParkingExit == b.IsParkingExit;
+        }
+
+        private static Vector3[] BuildWaypoints(PathResult path, Vector3 exitPosition)
+        {
+            if (_cachedWaypoints.Length > 0 && _lastExitTarget.IsValid &&
+                HorizontalDistance(_cachedWaypoints[^1], exitPosition) < 0.25f)
                 return _cachedWaypoints;
 
             if (path.Points is not { Length: >= 2 } linePoints)
@@ -134,8 +177,8 @@ namespace VoogleRoute.Navigation
             if (list.Count == 0)
                 return System.Array.Empty<Vector3>();
 
-            if (HorizontalDistance(list[^1], exitTarget) > 3f)
-                list.Add(exitTarget);
+            if (HorizontalDistance(list[^1], exitPosition) > 3f)
+                list.Add(exitPosition);
 
             _cachedWaypoints = list.ToArray();
             return _cachedWaypoints;

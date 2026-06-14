@@ -10,6 +10,7 @@
   "voogle_route_setting_route_color": "Couleur de la ligne",
   "voogle_route_setting_foot_route_color": "Couleur √† pied",
   "voogle_route_setting_vehicle_route_color": "Couleur en v√©hicule",
+  "voogle_route_setting_indoor_route_color": "Couleur intÈrieure",
   "voogle_route_setting_choose_color": "CHOISIR COULEUR",
   "voogle_route_setting_close": "FERMER",
   "voogle_route_color_neon_blue": "Bleu n√©on",
@@ -19,10 +20,15 @@
   "voogle_route_color_white": "Blanc",
   "voogle_route_options_route": "Afficher la ligne au sol",
   "voogle_route_options_autowalk": "Marche auto vers la destination",
+  "voogle_route_options_use_subway": "Utiliser le m√©tro",
   "voogle_route_options_indoor_route": "Ligne int√©rieure vers la sortie",
   "voogle_route_options_indoor_autowalk": "Marche auto int√©rieure vers la sortie",
   "voogle_route_options_base_taxi_multiplier": "Multiplicateur taxi de base",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
+  "voogle_route_options_force_correct_side_arrival": "Arriver du bon cÙtÈ de la rue",
+  "voogle_route_options_allow_uturn_at_start": "Autoriser le demi-tour au dÈpart",
+  "voogle_route_options_display_outside": "Afficher VoogleRoute ‡ l'extÈrieur",
+  "voogle_route_options_display_inside": "Afficher VoogleRoute ‡ l'intÈrieur",
   "voogle_route_way_out_on": "SORTIE",
   "voogle_route_way_out_off": "SORTIE OFF",
   "voogle_route_get_out": "SORTIR",
@@ -62,3 +68,4 @@
   "voogle_route_subway_board_hint": "Prenez le m√©tro vers {station} (3 $)",
   "voogle_route_subway_continue": "Trajet en m√©tro termin√© ‚Äî poursuite √† pied"
 }
+

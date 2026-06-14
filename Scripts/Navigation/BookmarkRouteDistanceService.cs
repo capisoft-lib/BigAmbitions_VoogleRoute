@@ -60,6 +60,7 @@ namespace VoogleRoute.Navigation
             internal BookmarkDistanceRowKey Key;
             internal Vector3 Origin;
             internal Vector3 Target;
+            internal VehicleRoutePathOptions PathOptions;
         }
 
         internal static bool IsRecalcInProgress
@@ -136,8 +137,9 @@ namespace VoogleRoute.Navigation
                 }
 
                 queued++;
+                var pathOptions = VehicleRoutePathOptions.FromMainThread(target);
                 ThreadPool.QueueUserWorkItem(_ =>
-                    ComputeAsync(generation, key, origin, target, forward, hasPose, graph, useFoot));
+                    ComputeAsync(generation, key, origin, target, forward, hasPose, graph, useFoot, pathOptions));
             }
 
             if (queued == 0)
@@ -226,7 +228,8 @@ namespace VoogleRoute.Navigation
             Vector3 forward,
             bool hasPose,
             RouteGraph graph,
-            bool useFoot)
+            bool useFoot,
+            VehicleRoutePathOptions pathOptions)
         {
             if (useFoot)
             {
@@ -240,20 +243,33 @@ namespace VoogleRoute.Navigation
                         Generation = generation,
                         Key = key,
                         Origin = origin,
-                        Target = target
+                        Target = target,
+                        PathOptions = pathOptions
                     });
                 }
 
                 return;
             }
 
-            var success = BookmarkRouteDistance.TryComputeRouteMeters(
-                origin,
-                target,
-                forward,
-                hasPose,
-                graph,
-                out var meters);
+            float meters;
+            bool success;
+            try
+            {
+                success = BookmarkRouteDistance.TryComputeRouteMeters(
+                    origin,
+                    target,
+                    forward,
+                    hasPose,
+                    graph,
+                    pathOptions,
+                    out meters);
+            }
+            catch (System.Exception ex)
+            {
+                ModLog.Error("Bookmark distance async failed | key=" + key.Kind, ex);
+                meters = -1f;
+                success = false;
+            }
 
             Complete(generation, key, meters, success);
         }

@@ -87,6 +87,7 @@ namespace VoogleRoute.Navigation
             }
 
             ModLog.Info("Navigation destination reached.");
+            NavigationDestinationClear.ClearActiveDestination("navigation_arrival");
         }
 
         private static bool TryGetHorizontalPosition(out Vector3 position)

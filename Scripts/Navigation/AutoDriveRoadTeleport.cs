@@ -9,7 +9,6 @@ namespace VoogleRoute.Navigation
     {
         private const float RoadRaycastHeight = 50f;
         private const float RoadRaycastDepth = 120f;
-        private const float MaxGameSnapDriftMeters = 6f;
 
         internal static bool TryResolveRoadPose(
             Vector3 laneAnchor,
@@ -69,36 +68,8 @@ namespace VoogleRoute.Navigation
                 return true;
             }
 
-            try
-            {
-                var vehicle = GameManager.Instance?.selectedVehicle;
-                if (vehicle != null)
-                {
-                    var gameSnap = vehicle.GetClosestNavMeshTargetPosition(flatTarget);
-                    if (gameSnap.sqrMagnitude > 0.01f &&
-                        HorizontalDistance(gameSnap, flatTarget) <= MaxGameSnapDriftMeters)
-                    {
-                        position = new Vector3(gameSnap.x, flatTarget.y, gameSnap.z);
-                        ray = new Ray(position + Vector3.up * RoadRaycastHeight, Vector3.down);
-                        if (Physics.Raycast(ray, out hit, RoadRaycastDepth, roadMask, QueryTriggerInteraction.Ignore))
-                            position = hit.point;
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                // ignore
-            }
-
+            // Do not fall back to pedestrian/sidewalk navmesh — graph anchors are lane-specific.
             return false;
-        }
-
-        private static float HorizontalDistance(Vector3 a, Vector3 b)
-        {
-            a.y = 0f;
-            b.y = 0f;
-            return Vector3.Distance(a, b);
         }
     }
 }

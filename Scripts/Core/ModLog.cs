@@ -9,6 +9,7 @@ namespace VoogleRoute
 {
     internal static class ModLog
     {
+        private static readonly object WriteGate = new object();
         private static ModContext _context;
         private static StreamWriter _fileWriter;
         private static string _logFilePath;
@@ -145,15 +146,18 @@ namespace VoogleRoute
             var line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
                        " [" + level.ToString().ToUpperInvariant() + "] " + message;
 
-            if (_fileLoggingEnabled && _fileWriter != null)
+            lock (WriteGate)
             {
-                try
+                if (_fileLoggingEnabled && _fileWriter != null)
                 {
-                    _fileWriter.WriteLine(line);
-                }
-                catch
-                {
-                    // Ignore disk failures after startup.
+                    try
+                    {
+                        _fileWriter.WriteLine(line);
+                    }
+                    catch
+                    {
+                        // Ignore disk failures after startup.
+                    }
                 }
             }
 

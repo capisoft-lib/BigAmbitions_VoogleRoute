@@ -10,6 +10,7 @@
   "voogle_route_setting_route_color": "경로 선 색상",
   "voogle_route_setting_foot_route_color": "도보 경로 색상",
   "voogle_route_setting_vehicle_route_color": "차량 경로 색상",
+  "voogle_route_setting_indoor_route_color": "?? ?? ??",
   "voogle_route_setting_choose_color": "색상 선택",
   "voogle_route_setting_close": "닫기",
   "voogle_route_color_neon_blue": "네온 블루",
@@ -19,10 +20,14 @@
   "voogle_route_color_white": "흰색",
   "voogle_route_options_route": "경로 선 표시",
   "voogle_route_options_autowalk": "목적지까지 자동 걷기",
+  "voogle_route_options_use_subway": "??? ??",
   "voogle_route_options_indoor_route": "출구까지 실내 경로 선",
   "voogle_route_options_indoor_autowalk": "출구까지 실내 자동 걷기",
   "voogle_route_options_base_taxi_multiplier": "기본 택시 배율",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
+  "voogle_route_options_force_correct_side_arrival": "Arrive on correct street side",
+  "voogle_route_options_display_outside": "Display VoogleRoute Outside",
+  "voogle_route_options_display_inside": "Display VoogleRoute Inside",
   "voogle_route_way_out_on": "출구",
   "voogle_route_way_out_off": "출구 끔",
   "voogle_route_get_out": "나가기",
@@ -60,3 +65,4 @@
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
   "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }
+

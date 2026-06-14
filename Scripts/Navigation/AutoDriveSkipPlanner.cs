@@ -1,10 +1,8 @@
 using UnityEngine;
-using VoogleRoute.Pathfinding.Geometry;
-using VoogleRoute.Pathfinding.Routing;
 
 namespace VoogleRoute.Navigation
 {
-    /// <summary>Estimates auto-drive skip travel using the CSV route graph.</summary>
+    /// <summary>Auto-drive skip travel uses the on-screen route line (no path recompute).</summary>
     internal static class AutoDriveSkipPlanner
     {
         private const float MinTravelMeters = 25f;
@@ -48,34 +46,18 @@ namespace VoogleRoute.Navigation
             if (!NavigationTargetTracker.HasMapGpsTarget)
                 return false;
 
-            if (!MovementModeDetector.TryGetVehiclePose(out var origin, out var forward))
+            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
                 return false;
 
-            var destination = NavigationTargetTracker.ActiveTarget;
-
-            if (!RouteGraphStore.TryEnsureLoaded())
+            if (!MovementModeDetector.TryGetVehiclePose(out _, out _))
                 return false;
 
-            var graph = RouteGraphStore.Graph;
-            var query = new RouteQuery
-            {
-                Origin = ToVec3(origin),
-                Destination = ToVec3(destination),
-                Forward = ToVec3(forward),
-                HasPose = true,
-                ForcedStartWaypoint = -1,
-                ForcedEndWaypoint = -1
-            };
-
-            if (!WaypointPathfinder.TryFindBestRoute(graph, query, out var routeResult))
+            if (!PathFinderService.TryGetCachedRouteForDisplay(out var route) ||
+                route.Points == null ||
+                route.Points.Length < 2)
                 return false;
 
-            if (!RoutePathfinder.TryFindPath(origin, destination, ToVec3(forward), true, out var pathCorners) ||
-                pathCorners.Length < 2)
-                return false;
-
-            var polylineDistance = VehiclePathArrival.PolylineLength(pathCorners);
-            var distance = Mathf.Max(routeResult.TotalCostMeters, polylineDistance);
+            var distance = VehiclePathArrival.PolylineLength(route.Points);
             if (distance < MinTravelMeters)
             {
                 plan = Plan.Failed("voogle_route_autodrive_too_close");
@@ -84,12 +66,7 @@ namespace VoogleRoute.Navigation
 
             var travelMinutes = AutoDriveTravelTimeEstimator.EstimateMinutes(distance);
 
-            if (!TryResolveTeleportPose(
-                    graph,
-                    routeResult,
-                    out var laneHint,
-                    out var position,
-                    out var rotation))
+            if (!TryResolveTeleportPose(route.Points, out var laneHint, out var position, out var rotation))
                 return false;
 
             plan = new Plan(true, distance, travelMinutes, laneHint, position, rotation, null);
@@ -97,8 +74,7 @@ namespace VoogleRoute.Navigation
         }
 
         private static bool TryResolveTeleportPose(
-            VoogleRoute.Pathfinding.Graph.RouteGraph graph,
-            RouteResult routeResult,
+            Vector3[] points,
             out Vector3 laneHint,
             out Vector3 position,
             out Quaternion rotation)
@@ -107,14 +83,18 @@ namespace VoogleRoute.Navigation
             position = default;
             rotation = Quaternion.identity;
 
-            var path = routeResult.Path;
-            if (path == null || path.Count < 1)
+            if (points.Length < 2)
                 return false;
 
-            if (!TryGetArrivalSegment(graph, path, out var laneAnchor, out var laneDirection))
+            var laneAnchor = points[points.Length - 1];
+            if (laneAnchor.sqrMagnitude < 0.01f)
                 return false;
 
             laneHint = laneAnchor;
+
+            var prev = points[points.Length - 2];
+            var laneDirection = laneAnchor - prev;
+            laneDirection.y = 0f;
 
             return AutoDriveRoadTeleport.TryResolveRoadPose(
                 laneAnchor,
@@ -122,53 +102,5 @@ namespace VoogleRoute.Navigation
                 out position,
                 out rotation);
         }
-
-        private static bool TryGetArrivalSegment(
-            VoogleRoute.Pathfinding.Graph.RouteGraph graph,
-            System.Collections.Generic.IReadOnlyList<int> path,
-            out Vector3 laneAnchor,
-            out Vector3 laneDirection)
-        {
-            laneAnchor = default;
-            laneDirection = Vector3.forward;
-
-            if (path.Count < 1)
-                return false;
-
-            var endIdx = path[path.Count - 1];
-            var end = ToVector3(graph.GetPosition(endIdx));
-            if (end.sqrMagnitude < 0.01f)
-                return false;
-
-            laneAnchor = end;
-
-            if (path.Count >= 2)
-            {
-                var prev = ToVector3(graph.GetPosition(path[path.Count - 2]));
-                var seg = end - prev;
-                seg.y = 0f;
-                if (seg.sqrMagnitude >= 0.01f)
-                {
-                    laneDirection = seg;
-                    return true;
-                }
-            }
-
-            var forward = graph.GetForwardNeighbors(endIdx);
-            if (forward.Length > 0)
-            {
-                var next = ToVector3(graph.GetPosition(forward[0]));
-                laneDirection = next - end;
-                laneDirection.y = 0f;
-                if (laneDirection.sqrMagnitude >= 0.01f)
-                    return true;
-            }
-
-            return true;
-        }
-
-        private static Vector3 ToVector3(Vec3 v) => new Vector3(v.X, v.Y, v.Z);
-
-        private static Vec3 ToVec3(Vector3 v) => new Vec3(v.x, v.y, v.z);
     }
 }

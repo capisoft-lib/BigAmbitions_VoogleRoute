@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VoogleRoute;
 
 namespace VoogleRoute.Navigation
 {
@@ -12,6 +13,18 @@ namespace VoogleRoute.Navigation
 
         internal static Vector3[] Apply(Vector3 origin, Vector3 destination, Vector3[] path)
         {
+            return Apply(origin, destination, path, forceCorrectSideArrival: false);
+        }
+
+        internal static Vector3[] Apply(
+            Vector3 origin,
+            Vector3 destination,
+            Vector3[] path,
+            bool forceCorrectSideArrival)
+        {
+            if (!forceCorrectSideArrival && !ModConfig.ForceCorrectSideArrivalEnabled)
+                return path;
+
             if (path.Length < 2)
                 return path;
 
@@ -34,6 +47,9 @@ namespace VoogleRoute.Navigation
 
         internal static Vector3[] ApplyDisplayLine(Vector3 origin, Vector3 destination, Vector3[] line)
         {
+            if (!ModConfig.ForceCorrectSideArrivalEnabled)
+                return line;
+
             if (line.Length < 2)
                 return line;
 

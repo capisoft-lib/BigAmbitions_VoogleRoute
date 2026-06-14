@@ -15,7 +15,7 @@ namespace VoogleRoute.Navigation
 
         internal static void Tick()
         {
-            if (!GameState.IsCityMapOpen())
+            if (!GameState.IsCityMapOpen() || GameState.IsSubwayNavigationActive())
                 return;
 
             if (!CityMapBookmarksPanel.IsPickMode ||

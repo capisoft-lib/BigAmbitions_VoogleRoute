@@ -37,32 +37,35 @@ namespace VoogleRoute.Navigation
             Vector3 forward,
             bool hasPose,
             RouteGraph graph,
+            out float meters) =>
+            TryComputeRouteMeters(
+                origin,
+                target,
+                forward,
+                hasPose,
+                graph,
+                VehicleRoutePathOptions.FromMainThread(target),
+                out meters);
+
+        internal static bool TryComputeRouteMeters(
+            Vector3 origin,
+            Vector3 target,
+            Vector3 forward,
+            bool hasPose,
+            RouteGraph graph,
+            VehicleRoutePathOptions pathOptions,
             out float meters)
         {
             meters = -1f;
             if (graph == null)
                 return false;
 
-            var query = new RouteQuery
-            {
-                Origin = ToVec3(origin),
-                Destination = ToVec3(target),
-                Forward = ToVec3(forward),
-                HasPose = hasPose,
-                ForcedStartWaypoint = -1,
-                ForcedEndWaypoint = -1
-            };
+            var query = pathOptions.ToRouteQuery(ToVec3(origin), ToVec3(target), ToVec3(forward), hasPose);
 
-            if (!WaypointPathfinder.TryFindBestRoute(graph, query, out var routeResult))
+            if (!VehicleRoutePolyline.TryBuild(graph, query, out var built))
                 return false;
 
-            var routeMeters = routeResult.TotalCostMeters;
-            if (RoutePathfinder.TryFindPath(origin, target, ToVec3(forward), hasPose, out var corners) &&
-                corners.Length >= 2)
-                meters = Mathf.Max(routeMeters, VehiclePathArrival.PolylineLength(corners));
-            else
-                meters = routeMeters;
-
+            meters = Mathf.Max(built.GraphCostMeters, built.PolylineLengthMeters);
             return meters > 0f;
         }
 

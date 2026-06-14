@@ -11,7 +11,7 @@ namespace VoogleRoute.Navigation
         private static PathResult _cached;
         private static bool _cacheValid;
 
-        internal static Vector3 ActiveExitTarget { get; private set; }
+        internal static IndoorExitTarget ActiveExit { get; private set; }
 
         internal static PathResult GetRoute(bool forceRecalc = false)
         {
@@ -24,22 +24,22 @@ namespace VoogleRoute.Navigation
             if (!IndoorExitResolver.TryGetNearestExit(origin, out var exit))
                 return ResetAndReturnEmpty();
 
-            ActiveExitTarget = exit;
+            ActiveExit = exit;
 
             var originMoved = (_lastOrigin - origin).sqrMagnitude > 1f;
-            var exitChanged = (_lastExit - exit).sqrMagnitude > 0.25f;
+            var exitChanged = (_lastExit - exit.WalkPosition).sqrMagnitude > 0.25f;
 
             if (!forceRecalc && _cacheValid && !originMoved && !exitChanged)
                 return _cached;
 
             _lastOrigin = origin;
-            _lastExit = exit;
+            _lastExit = exit.WalkPosition;
 
             var sampleOrigin = origin;
             if (MovementModeDetector.TryGetPlayerOrigin(out var feet))
                 sampleOrigin = feet;
 
-            if (!FootRouteCalculator.TryCalculate(origin, exit, sampleOrigin, NavPath, out _))
+            if (!FootRouteCalculator.TryCalculate(origin, exit.WalkPosition, sampleOrigin, NavPath, out _))
                 return Cache(PathResult.None);
 
             var corners = NavPath.corners;
@@ -73,7 +73,7 @@ namespace VoogleRoute.Navigation
             _cached = PathResult.None;
             _lastOrigin = default;
             _lastExit = default;
-            ActiveExitTarget = default;
+            ActiveExit = IndoorExitTarget.None;
         }
 
         private static PathResult ResetAndReturnEmpty()

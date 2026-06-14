@@ -9,10 +9,11 @@ namespace VoogleRoute.Navigation
     internal static class AutoWalkService
     {
         private const float ReachRadius = 4.5f;
-        private const float BoardStationReachRadius = 6f;
+        private const float BoardStationReachRadius = 8f;
         private const float MinWaypointSpacing = 10f;
         private const float ReissueIntervalSeconds = 2.5f;
         private const float MinReissueMoveSq = 2f * 2f;
+        private const float AwaitingRideRetryWalkSeconds = 1.25f;
 
         private enum SubwayWalkPhase
         {
@@ -28,31 +29,41 @@ namespace VoogleRoute.Navigation
         private static float _lastIssueTime = -999f;
         private static Vector3[] _cachedWaypoints = System.Array.Empty<Vector3>();
         private static SubwayWalkPhase _subwayPhase = SubwayWalkPhase.None;
+        private static SubwayWalkPhase _lastSubwayPhase = SubwayWalkPhase.None;
+        private static float _awaitingRideSince = -1f;
     
         internal static void Reset()
         {
             _waypointIndex = 0;
             _cachedWaypoints = System.Array.Empty<Vector3>();
             _lastIssueTime = -999f;
+            SubwayLegTracker.Clear();
             ResetSubwayState();
         }
 
         internal static void ResetSubwayState()
         {
             _subwayPhase = SubwayWalkPhase.None;
+            _lastSubwayPhase = SubwayWalkPhase.None;
+            _awaitingRideSince = -1f;
             SubwayNavigationNotifier.Reset();
+            SubwayAutoRideService.Reset();
         }
 
         internal static void OnSubwayRideCompleted()
         {
-            if (_subwayPhase != SubwayWalkPhase.AwaitingRide)
-                return;
+            SubwayLegTracker.MarkRideCompleted();
 
-            _subwayPhase = SubwayWalkPhase.ToDestination;
-            _waypointIndex = 0;
-            _cachedWaypoints = System.Array.Empty<Vector3>();
-            _lastIssueTime = -999f;
-            SubwayNavigationNotifier.ShowContinueHint();
+            var showHint = _subwayPhase == SubwayWalkPhase.AwaitingRide;
+            if (_subwayPhase != SubwayWalkPhase.ToDestination)
+            {
+                _subwayPhase = SubwayWalkPhase.ToDestination;
+                _lastSubwayPhase = SubwayWalkPhase.ToDestination;
+                InvalidateWaypointCache();
+            }
+
+            if (showHint)
+                SubwayNavigationNotifier.ShowContinueHint();
         }
     
         internal static bool Tick(bool canNavigate, PathResult path)
@@ -81,10 +92,7 @@ namespace VoogleRoute.Navigation
             if (NavigationTargetTracker.LastChangeTime != _lastTargetChangeTime)
             {
                 _lastTargetChangeTime = NavigationTargetTracker.LastChangeTime;
-                _waypointIndex = 0;
-                _cachedWaypoints = System.Array.Empty<Vector3>();
-                _lastIssueTime = -999f;
-                ResetSubwayState();
+                Reset();
             }
 
             SyncSubwayPhase(path);
@@ -107,18 +115,10 @@ namespace VoogleRoute.Navigation
             }
 
             if (_subwayPhase == SubwayWalkPhase.AwaitingRide)
-                return false;
+                return TickAwaitingRide(player, playerPos, path);
 
-            if (_subwayPhase == SubwayWalkPhase.ToBoardStation &&
-                path.Subway.Active &&
-                HorizontalDistance(playerPos, path.Subway.BoardNavPosition) <= BoardStationReachRadius)
-            {
-                _subwayPhase = SubwayWalkPhase.AwaitingRide;
-                SubwayNavigationNotifier.ShowBoardHint(path.Subway.ExitStationName);
-                return false;
-            }
-    
-            var waypoints = BuildWaypoints(path, NavigationTargetTracker.ActiveTarget);
+            var walkFinalTarget = ResolveFinalDestination(path);
+            var waypoints = BuildWaypoints(path, walkFinalTarget);
             if (waypoints.Length == 0)
                 return false;
     
@@ -134,7 +134,7 @@ namespace VoogleRoute.Navigation
                 distToWalkTarget = HorizontalDistance(playerPos, walkTarget);
             }
     
-            var finalDest = ResolveFinalDestination(path);
+            var finalDest = walkFinalTarget;
             if (_subwayPhase != SubwayWalkPhase.ToBoardStation &&
                 _waypointIndex >= waypoints.Length - 1 &&
                 HorizontalDistance(playerPos, finalDest) < ReachRadius + 1.5f)
@@ -145,29 +145,160 @@ namespace VoogleRoute.Navigation
     
             if (ShouldIssueDestination(walkTarget, distToWalkTarget))
                 IssueWalkTo(player, walkTarget);
+
+            if (_subwayPhase == SubwayWalkPhase.ToBoardStation &&
+                SubwayLegTracker.MatchesPlannedPath(path.Subway))
+            {
+                var boardTarget = ResolveBoardApproachPosition(path);
+                var distToBoard = HorizontalDistance(playerPos, boardTarget);
+                if (distToBoard <= BoardStationReachRadius)
+                    return BeginAwaitingRide(player, playerPos, path);
+
+                if (_waypointIndex >= waypoints.Length - 1 &&
+                    distToWalkTarget < ReachRadius + 1f &&
+                    distToBoard > BoardStationReachRadius * 0.75f &&
+                    ShouldIssueDestination(boardTarget, distToBoard))
+                    IssueWalkTo(player, boardTarget);
+            }
     
+            return false;
+        }
+
+        private static bool TickAwaitingRide(PlayerController player, Vector3 playerPos, PathResult path)
+        {
+            if (!SubwayLegTracker.MatchesPlannedPath(path.Subway) || !ModConfig.UseSubwayEnabled)
+            {
+                _subwayPhase = SubwayLegTracker.IsRideCompleted
+                    ? SubwayWalkPhase.ToDestination
+                    : SubwayWalkPhase.None;
+                return false;
+            }
+
+            try
+            {
+                if (SubwaySystem.IsRiding)
+                {
+                    _awaitingRideSince = -1f;
+                    return false;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            if (_awaitingRideSince < 0f)
+                _awaitingRideSince = Time.unscaledTime;
+
+            if (!SubwayAutoRideService.TryBeginRide(path.Subway.BoardStationName, path.Subway.ExitStationName))
+            {
+                if (path.Subway.BoardStationName == path.Subway.ExitStationName)
+                {
+                    ModLog.Info("Subway auto-ride skipped: board and exit station are the same.");
+                    _subwayPhase = SubwayWalkPhase.None;
+                    _lastSubwayPhase = SubwayWalkPhase.None;
+                    _awaitingRideSince = -1f;
+                    return false;
+                }
+
+                var boardTarget = ResolveBoardApproachPosition(path);
+                if (Time.unscaledTime - _awaitingRideSince >= AwaitingRideRetryWalkSeconds &&
+                    HorizontalDistance(playerPos, boardTarget) > 2.5f)
+                {
+                    IssueWalkTo(player, boardTarget);
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        private static bool BeginAwaitingRide(PlayerController player, Vector3 playerPos, PathResult path)
+        {
+            if (!SubwayLegTracker.MatchesPlannedPath(path.Subway))
+                return false;
+
+            _subwayPhase = SubwayWalkPhase.AwaitingRide;
+            _lastSubwayPhase = SubwayWalkPhase.AwaitingRide;
+            _awaitingRideSince = Time.unscaledTime;
+            InvalidateWaypointCache();
+
+            if (!SubwayAutoRideService.TryBeginRide(path.Subway.BoardStationName, path.Subway.ExitStationName))
+            {
+                if (path.Subway.BoardStationName == path.Subway.ExitStationName)
+                {
+                    ModLog.Info("Subway auto-ride skipped: board and exit station are the same.");
+                    _subwayPhase = SubwayWalkPhase.None;
+                    _lastSubwayPhase = SubwayWalkPhase.None;
+                    _awaitingRideSince = -1f;
+                    return false;
+                }
+
+                var boardTarget = ResolveBoardApproachPosition(path);
+                if (HorizontalDistance(playerPos, boardTarget) > 2.5f)
+                    IssueWalkTo(player, boardTarget);
+                else
+                    SubwayNavigationNotifier.ShowBoardHint(path.Subway.ExitStationName);
+            }
+
             return false;
         }
 
         private static void SyncSubwayPhase(PathResult path)
         {
-            if (!path.Subway.Active)
+            if (_subwayPhase == SubwayWalkPhase.ToDestination || SubwayLegTracker.IsRideCompleted)
+                return;
+
+            if (!ModConfig.UseSubwayEnabled || !SubwayLegTracker.MatchesPlannedPath(path.Subway))
             {
                 if (_subwayPhase == SubwayWalkPhase.AwaitingRide)
                     return;
 
-                _subwayPhase = SubwayWalkPhase.None;
+                if (_subwayPhase != SubwayWalkPhase.None)
+                {
+                    _subwayPhase = SubwayWalkPhase.None;
+                    InvalidateWaypointCache();
+                }
+
                 return;
             }
 
             if (_subwayPhase == SubwayWalkPhase.None)
+            {
                 _subwayPhase = SubwayWalkPhase.ToBoardStation;
+                InvalidateWaypointCache();
+            }
+
+            if (_subwayPhase != _lastSubwayPhase)
+            {
+                _lastSubwayPhase = _subwayPhase;
+                InvalidateWaypointCache();
+            }
+        }
+
+        private static void InvalidateWaypointCache()
+        {
+            _waypointIndex = 0;
+            _cachedWaypoints = System.Array.Empty<Vector3>();
+            _lastIssueTime = -999f;
+        }
+
+        private static Vector3 ResolveBoardApproachPosition(PathResult path)
+        {
+            if (path.Subway.BoardWorldPosition.sqrMagnitude > 0.01f)
+                return path.Subway.BoardWorldPosition;
+
+            if (SubwayStationStore.TryFindByName(path.Subway.BoardStationName, out var station))
+                return station.WorldPosition;
+
+            return path.Subway.BoardNavPosition;
         }
 
         private static Vector3 ResolveFinalDestination(PathResult path)
         {
             if (_subwayPhase == SubwayWalkPhase.ToBoardStation && path.Subway.Active)
-                return path.Subway.BoardNavPosition;
+                return ResolveBoardApproachPosition(path);
 
             return NavigationTargetTracker.ActiveTarget;
         }
@@ -239,8 +370,8 @@ namespace VoogleRoute.Navigation
             if (list.Count == 0)
                 return System.Array.Empty<Vector3>();
 
-            if (_subwayPhase != SubwayWalkPhase.ToBoardStation &&
-                HorizontalDistance(list[^1], finalTarget) > 3f)
+            var minGap = _subwayPhase == SubwayWalkPhase.ToBoardStation ? 1.5f : 3f;
+            if (HorizontalDistance(list[^1], finalTarget) > minGap)
                 list.Add(finalTarget);
 
             return list.ToArray();

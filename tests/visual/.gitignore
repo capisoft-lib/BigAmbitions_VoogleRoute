@@ -1,0 +1,4 @@
+actual/
+diff/
+*.png
+!baselines/*.png

@@ -2,6 +2,27 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.8] - 2026-06-13
+
+### Added
+
+- **Subway routing on foot** — when walkable NavMesh cannot reach the destination, plan **walk → subway → walk** via city stations (including Manhattan Bridge crossings)
+- **Auto-walk subway boarding** — at the board station, auto-walk triggers the vanilla ride and selects the planned exit station
+- **Use subway** mod option — **ESC → Options → Mod → Voogle Route** (default **on**); disable for foot-only routing with no subway fallback
+- **Subway route line** — dashed **yellow** segment on the ground and on the city map (**M**); foot legs remain separate (no blue chord across the subway section)
+- **Locales** — `voogle_route_options_use_subway` in all **22** supported languages
+
+### Changed
+
+- **Subway trace elevation** — subway segment projected to the same ground height as the on-foot path on the city map
+
+### Fixed
+
+- **Auto-walk at subway** — no longer stops at the station without boarding when the route uses the metro
+- **Subway map UI** — Voogle Route bookmarks/history/recalc banner hide during subway mode so they do not block station interaction
+- **Subway destination selection** — city-map **BOOKMARKS** panel no longer prevented choosing a subway station (blocked clicks / focus)
+- **Async route display** — cached subway segments preserved while a foot route recalc is in progress
+
 ## [0.11.7] - 2026-06-13
 
 ### Added
@@ -138,6 +159,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.8]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.8
 [0.11.7]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.7
 [0.11.6]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.6
 [0.11.5]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.5

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using VoogleRoute;
 
 namespace VoogleRoute.Navigation
 {
@@ -116,8 +117,11 @@ namespace VoogleRoute.Navigation
             var direct = VehiclePathArrival.FlatDistance(origin, destination);
             if (direct <= 22f)
             {
-                if (VehiclePathHelper.TryGetArrivalRoadTarget(destination, out var snap))
+                if (ModConfig.ForceCorrectSideArrivalEnabled &&
+                    VehiclePathHelper.TryGetArrivalRoadTarget(destination, out var snap))
                     corners = new[] { origin, snap };
+                else if (VehiclePathHelper.TryGetRoadTarget(destination, out var roadTarget))
+                    corners = new[] { origin, roadTarget };
                 else
                     corners = new[] { origin, destination };
                 return true;

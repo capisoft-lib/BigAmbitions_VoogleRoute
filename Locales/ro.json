@@ -10,6 +10,7 @@
   "voogle_route_setting_route_color": "Culoarea liniei de rută",
   "voogle_route_setting_foot_route_color": "Rută pe jos color",
   "voogle_route_setting_vehicle_route_color": "Vehicle route color",
+  "voogle_route_setting_indoor_route_color": "Culoare traseu interior",
   "voogle_route_setting_choose_color": "ALEGE CULOAREA",
   "voogle_route_setting_close": "ÎNCHIDE",
   "voogle_route_color_neon_blue": "Albastru neon",
@@ -19,10 +20,14 @@
   "voogle_route_color_white": "Alb",
   "voogle_route_options_route": "Afișează linia de rută",
   "voogle_route_options_autowalk": "Mers automat spre destinație",
+  "voogle_route_options_use_subway": "Folose?te metroul",
   "voogle_route_options_indoor_route": "Linie de rută interioară spre ieșire",
   "voogle_route_options_indoor_autowalk": "Mers automat spre ieșire",
   "voogle_route_options_base_taxi_multiplier": "Multiplicator taxi de bază",
   "voogle_route_options_base_taxi_multiplier_value": "{value}x",
+  "voogle_route_options_force_correct_side_arrival": "Arrive on correct street side",
+  "voogle_route_options_display_outside": "Display VoogleRoute Outside",
+  "voogle_route_options_display_inside": "Display VoogleRoute Inside",
   "voogle_route_way_out_on": "IEȘIRE",
   "voogle_route_way_out_off": "IEȘIRE OFF",
   "voogle_route_get_out": "IEȘI",
@@ -60,3 +65,4 @@
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
   "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
 }
+

@@ -21,6 +21,8 @@ namespace VoogleRoute.Navigation
         internal string ExitStationName;
         internal Vector3 BoardNavPosition;
         internal Vector3 ExitNavPosition;
+        internal Vector3 BoardWorldPosition;
+        internal Vector3 ExitWorldPosition;
 
         internal static SubwayNavigationHint None => default;
     }

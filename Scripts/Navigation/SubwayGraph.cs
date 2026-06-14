@@ -1,39 +1,41 @@
 using System;
 using UnityEngine;
+using VoogleRoute.Pathfinding.Geometry;
+using VoogleRoute.Pathfinding.Routing.Foot;
+using DllSubwayStation = VoogleRoute.Pathfinding.Routing.Foot.SubwayStation;
 
 namespace VoogleRoute.Navigation
 {
     /// <summary>Subway travel costs and display paths (complete graph + Manhattan bridge rule).</summary>
     internal static class SubwayGraph
     {
-        internal const string IndustryCityNeighborhood = "ba:neighborhood_industriacity";
-
-        private static Vector3[] _bridgeLmToIc = Array.Empty<Vector3>();
-        private static Vector3[] _bridgeIcToLm = Array.Empty<Vector3>();
-        private static bool _bridgeLoaded;
+        internal static SubwayNetwork Network { get; } = new();
 
         internal static void RefreshBridgePaths()
         {
-            _bridgeLoaded = false;
-            _bridgeLmToIc = Array.Empty<Vector3>();
-            _bridgeIcToLm = Array.Empty<Vector3>();
-
             try
             {
                 if (!CityManager.IsInitialized)
+                {
+                    Network.SetBridgePaths(Array.Empty<Vec3>(), Array.Empty<Vec3>());
                     return;
+                }
 
                 var subwaySystem = CityManager.Instance?.subwaySystem;
                 if (subwaySystem == null)
+                {
+                    Network.SetBridgePaths(Array.Empty<Vec3>(), Array.Empty<Vec3>());
                     return;
+                }
 
-                _bridgeLmToIc = CloneOrEmpty(subwaySystem.manhattanBridgeLmToIc);
-                _bridgeIcToLm = CloneOrEmpty(subwaySystem.manhattanBridgeIcToLm);
-                _bridgeLoaded = _bridgeLmToIc.Length > 0 && _bridgeIcToLm.Length > 0;
+                Network.SetBridgePaths(
+                    ToVec3Array(subwaySystem.manhattanBridgeLmToIc),
+                    ToVec3Array(subwaySystem.manhattanBridgeIcToLm));
             }
             catch (Exception ex)
             {
                 ModLog.Error("Failed to read subway bridge paths", ex);
+                Network.SetBridgePaths(Array.Empty<Vec3>(), Array.Empty<Vec3>());
             }
         }
 
@@ -45,91 +47,53 @@ namespace VoogleRoute.Navigation
             if (from.Index == to.Index)
                 return 0f;
 
-            return VehiclePathArrival.PolylineLength(BuildTravelPoints(from, to));
+            return VehiclePathArrival.PolylineLength(
+                ToUnity(Network.BuildTravelPoints(ToDll(from), ToDll(to))));
         }
 
-        internal static Vector3[] BuildTravelPoints(SubwayStationRecord from, SubwayStationRecord to)
-        {
-            if (from == null || to == null)
-                return Array.Empty<Vector3>();
+        internal static Vector3[] BuildTravelPoints(SubwayStationRecord from, SubwayStationRecord to) =>
+            ToUnity(Network.BuildTravelPoints(ToDll(from), ToDll(to)));
 
-            if (from.Index == to.Index)
-                return new[] { from.NavPosition };
+        internal static Vector3[] BuildDisplayPath(SubwayStationRecord from, SubwayStationRecord to) =>
+            ToUnity(Network.BuildDisplayPath(ToDll(from), ToDll(to)));
 
-            EnsureBridgePaths();
-            var destination = to.NavPosition;
+        internal static bool CrossesManhattanBridge(string fromNeighborhood, string toNeighborhood) =>
+            SubwayNetwork.CrossesManhattanBridge(fromNeighborhood, toNeighborhood);
 
-            if (CrossesManhattanBridge(from.Neighborhood, to.Neighborhood))
+        private static DllSubwayStation ToDll(SubwayStationRecord record) =>
+            new()
             {
-                if (from.Neighborhood == IndustryCityNeighborhood && _bridgeIcToLm.Length >= 2)
-                {
-                    return new[]
-                    {
-                        _bridgeIcToLm[0],
-                        _bridgeIcToLm[1],
-                        destination
-                    };
-                }
+                Index = record.Index,
+                StationName = record.StationName,
+                Neighborhood = record.Neighborhood ?? string.Empty,
+                WorldPosition = new Vec3(record.WorldPosition.x, record.WorldPosition.y, record.WorldPosition.z),
+                NavPosition = new Vec3(record.NavPosition.x, record.NavPosition.y, record.NavPosition.z)
+            };
 
-                if (_bridgeLmToIc.Length >= 2)
-                {
-                    return new[]
-                    {
-                        _bridgeLmToIc[0],
-                        _bridgeLmToIc[1],
-                        destination
-                    };
-                }
-            }
-
-            return new[] { destination };
-        }
-
-        internal static Vector3[] BuildDisplayPath(SubwayStationRecord from, SubwayStationRecord to)
-        {
-            if (from == null || to == null)
-                return Array.Empty<Vector3>();
-
-            var travel = BuildTravelPoints(from, to);
-            if (travel.Length == 0)
-                return Array.Empty<Vector3>();
-
-            var points = new Vector3[travel.Length + 1];
-            points[0] = from.NavPosition;
-            for (var i = 0; i < travel.Length; i++)
-                points[i + 1] = travel[i];
-
-            return points;
-        }
-
-        internal static bool CrossesManhattanBridge(string fromNeighborhood, string toNeighborhood)
-        {
-            if (string.IsNullOrEmpty(fromNeighborhood) || string.IsNullOrEmpty(toNeighborhood))
-                return false;
-
-            if (toNeighborhood == IndustryCityNeighborhood && fromNeighborhood != IndustryCityNeighborhood)
-                return true;
-
-            return toNeighborhood != IndustryCityNeighborhood &&
-                   fromNeighborhood == IndustryCityNeighborhood;
-        }
-
-        private static void EnsureBridgePaths()
-        {
-            if (_bridgeLoaded)
-                return;
-
-            RefreshBridgePaths();
-        }
-
-        private static Vector3[] CloneOrEmpty(Vector3[] source)
+        private static Vec3[] ToVec3Array(Vector3[] source)
         {
             if (source == null || source.Length == 0)
+                return Array.Empty<Vec3>();
+
+            var copy = new Vec3[source.Length];
+            for (var i = 0; i < source.Length; i++)
+                copy[i] = new Vec3(source[i].x, source[i].y, source[i].z);
+            return copy;
+        }
+
+        private static Vector3[] ToUnity(System.Collections.Generic.IReadOnlyList<Vec3> points)
+        {
+            if (points.Count == 0)
                 return Array.Empty<Vector3>();
 
-            var copy = new Vector3[source.Length];
-            Array.Copy(source, copy, source.Length);
-            return copy;
+            var array = new Vector3[points.Count];
+            for (var i = 0; i < points.Count; i++)
+            {
+                var p = points[i];
+                array[i] = new Vector3(p.X, p.Y, p.Z);
+            }
+
+            return array;
         }
     }
 }

@@ -45,6 +45,9 @@ namespace VoogleRoute
                     var loaded = JsonSerializer.Deserialize<ModConfigData>(json, JsonOptions);
                     if (loaded != null)
                         _data = loaded;
+
+                    if (!json.Contains("\"use_subway\"", StringComparison.Ordinal))
+                        _data.UseSubway = true;
                 }
 
                 EnsureDefaults(_data);
@@ -94,8 +97,26 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetIndoorRouteLineColor(Color color)
+        {
+            _data.IndoorRouteLineColor = ColorToArray(color);
+            Save();
+        }
+
         private static float[] ColorToArray(Color color) =>
             new[] { color.r, color.g, color.b, color.a };
+
+        internal static void SetDisplayOutsideEnabled(bool value)
+        {
+            _data.DisplayOutside = value;
+            Save();
+        }
+
+        internal static void SetDisplayInsideEnabled(bool value)
+        {
+            _data.DisplayInside = value;
+            Save();
+        }
 
         internal static void SetIndoorRouteLineEnabled(bool value)
         {
@@ -109,9 +130,27 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetUseSubwayEnabled(bool value)
+        {
+            _data.UseSubway = value;
+            Save();
+        }
+
         internal static void SetBaseTaxiMultiplier(int value)
         {
             _data.BaseTaxiMultiplier = Mathf.Clamp(value, 1, 10);
+            Save();
+        }
+
+        internal static void SetForceCorrectSideArrivalEnabled(bool value)
+        {
+            _data.ForceCorrectSideArrival = value;
+            Save();
+        }
+
+        internal static void SetAllowUturnAtStartEnabled(bool value)
+        {
+            _data.AllowUturnAtStart = value;
             Save();
         }
 
@@ -132,8 +171,14 @@ namespace VoogleRoute
                 RouteLineColor = DefaultRouteLineColor(),
                 FootRouteLineColor = DefaultRouteLineColor(),
                 VehicleRouteLineColor = DefaultRouteLineColor(),
+                IndoorRouteLineColor = DefaultRouteLineColor(),
+                DisplayOutside = true,
+                DisplayInside = true,
                 IndoorRoute = true,
                 IndoorAutowalk = false,
+                UseSubway = true,
+                ForceCorrectSideArrival = false,
+                AllowUturnAtStart = false,
                 BaseTaxiMultiplier = 2
             };
         }
@@ -154,6 +199,9 @@ namespace VoogleRoute
 
             if (data.VehicleRouteLineColor == null || data.VehicleRouteLineColor.Length < 4)
                 data.VehicleRouteLineColor = (float[])data.RouteLineColor.Clone();
+
+            if (data.IndoorRouteLineColor == null || data.IndoorRouteLineColor.Length < 4)
+                data.IndoorRouteLineColor = (float[])data.FootRouteLineColor.Clone();
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
@@ -244,14 +292,32 @@ namespace VoogleRoute
         [JsonPropertyName("vehicle_route_line_color")]
         public float[] VehicleRouteLineColor { get; set; }
 
+        [JsonPropertyName("indoor_route_line_color")]
+        public float[] IndoorRouteLineColor { get; set; }
+
+        [JsonPropertyName("display_outside")]
+        public bool DisplayOutside { get; set; } = true;
+
+        [JsonPropertyName("display_inside")]
+        public bool DisplayInside { get; set; } = true;
+
         [JsonPropertyName("indoor_route")]
         public bool IndoorRoute { get; set; } = true;
 
         [JsonPropertyName("indoor_autowalk")]
         public bool IndoorAutowalk { get; set; }
 
+        [JsonPropertyName("use_subway")]
+        public bool UseSubway { get; set; } = true;
+
         [JsonPropertyName("base_taxi_multiplier")]
         public int BaseTaxiMultiplier { get; set; } = 2;
+
+        [JsonPropertyName("force_correct_side_arrival")]
+        public bool ForceCorrectSideArrival { get; set; }
+
+        [JsonPropertyName("allow_uturn_at_start")]
+        public bool AllowUturnAtStart { get; set; }
 
         [JsonPropertyName("bookmarks")]
         public List<BookmarkConfigEntry> Bookmarks { get; set; }

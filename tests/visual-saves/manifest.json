@@ -1,0 +1,60 @@
+{
+  "gameVersion": "0.11.5",
+  "saveGameFolderHint": "EA_0_11_5",
+  "characterId": "_VOOGLE_VIS_",
+  "requiredMods": [
+    "VoogleRoute",
+    "LIB_BaPlayerLocation"
+  ],
+  "recommendedResolution": {
+    "width": 1920,
+    "height": 1080,
+    "fullscreen": false
+  },
+  "captureDefaults": {
+    "delaySeconds": 2.0,
+    "mode": "panel",
+    "marginPixels": 4
+  },
+  "scenarios": [
+    {
+      "id": "route-action-370",
+      "saveName": "visual-ui-route-panel",
+      "description": "Dehors, route GPS active, panneau action 370px visible.",
+      "captureTarget": "routeActionPanel",
+      "postLoad": [
+        "closeAllModals",
+        "refreshActionPanel"
+      ]
+    },
+    {
+      "id": "map-bookmarks-420",
+      "saveName": "visual-ui-map-bookmarks",
+      "description": "Carte ville ouverte, panneau bookmarks 420px seul.",
+      "captureTarget": "mapBookmarksPanel",
+      "postLoad": [
+        "closeAllModals"
+      ]
+    },
+    {
+      "id": "bookmarks-and-history",
+      "saveName": "visual-ui-dual-panels",
+      "description": "Carte ville, bookmarks + historique côte à côte.",
+      "captureTarget": "dualMapPanels",
+      "postLoad": [
+        "closeAllModals",
+        "openVisitHistory"
+      ]
+    },
+    {
+      "id": "settings-modal",
+      "saveName": "visual-ui-settings",
+      "description": "Dehors, modal paramètres couleur ouvert.",
+      "captureTarget": "settingsPanel",
+      "postLoad": [
+        "closeAllModals",
+        "openSettings"
+      ]
+    }
+  ]
+}

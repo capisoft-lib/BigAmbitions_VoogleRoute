@@ -52,6 +52,8 @@ namespace VoogleRoute.Navigation
         private static string _asyncRecalcReason = "unknown";
         private static bool _mapDestinationRecalcPending;
         private static float _lastFootRecalcTime = -999f;
+        private static bool _forceNextRecalc;
+        private static bool _rejectLastGoodFallback;
 
         internal static Vector3[] LastFinalPoints { get; private set; } = System.Array.Empty<Vector3>();
         internal static bool RouteWasRecalculated { get; private set; }
@@ -94,7 +96,9 @@ namespace VoogleRoute.Navigation
                 path = new PathResult
                 {
                     Success = true,
-                    Points = LastFinalPoints
+                    Points = LastFinalPoints,
+                    Segments = _cached.Segments,
+                    Subway = _cached.Subway
                 };
                 return true;
             }
@@ -116,6 +120,12 @@ namespace VoogleRoute.Navigation
         {
             var totalTimer = RouteRecalcDiagnostics.StartTimer();
             RouteWasRecalculated = false;
+
+            if (_forceNextRecalc)
+            {
+                forceRecalc = true;
+                _forceNextRecalc = false;
+            }
 
             if (!GameState.ShouldRunPathfinding())
                 return FinishSilent(totalTimer, requestSource, SilentEmpty());
@@ -256,6 +266,7 @@ namespace VoogleRoute.Navigation
 
             if (!pending.Success &&
                 completedMode == MovementMode.Vehicle &&
+                !_rejectLastGoodFallback &&
                 TryReturnLastGoodVehiclePath(NavigationTargetTracker.ActiveTarget))
             {
                 RouteRecalcDiagnostics.LogRecalc(
@@ -349,10 +360,21 @@ namespace VoogleRoute.Navigation
             RouteRecalcDiagnostics.LogSkip(requestSource, "async_started",
                 RouteRecalcDiagnostics.ElapsedMs(totalTimer));
 
+            var pathOptions = VehicleRoutePathOptions.FromMainThread(target);
             ThreadPool.QueueUserWorkItem(_ =>
             {
+                PathResult pending;
                 var pathfindTimer = RouteRecalcDiagnostics.StartTimer();
-                var pending = ComputeVehicleRouteSnapshot(origin, target, forwardVec, hasPose);
+                try
+                {
+                    pending = ComputeVehicleRouteSnapshot(origin, target, forwardVec, hasPose, pathOptions);
+                }
+                catch (System.Exception ex)
+                {
+                    ModLog.Error("Async vehicle route failed", ex);
+                    pending = Empty();
+                }
+
                 RouteRecalcDiagnostics.RecordPathfind(
                     pending.Success ? RoutePathfindKind.FullAStar : RoutePathfindKind.Failed,
                     RouteRecalcDiagnostics.ElapsedMs(pathfindTimer));
@@ -379,9 +401,10 @@ namespace VoogleRoute.Navigation
             Vector3 origin,
             Vector3 target,
             Vec3 forward,
-            bool hasPose)
+            bool hasPose,
+            VehicleRoutePathOptions pathOptions)
         {
-            if (!RoutePathfinder.TryFindPath(origin, target, forward, hasPose, out var navCorners) ||
+            if (!RoutePathfinder.TryFindPath(origin, target, forward, hasPose, pathOptions, out var navCorners) ||
                 navCorners == null ||
                 navCorners.Length < 2)
                 return Empty();
@@ -593,8 +616,18 @@ namespace VoogleRoute.Navigation
             _lastFinalPointsMode = MovementMode.Unavailable;
             PathGeometry.ResetVehicleLineTrimState();
             VehiclePathPipeline.InvalidateRouteLineCache();
-            AutoWalkService.ResetSubwayState();
+            if (!SubwayLegTracker.IsRideCompleted)
+                AutoWalkService.ResetSubwayState();
             RouteRecalcDiagnostics.LogCacheInvalidated(reason);
+        }
+
+        /// <summary>Invalidate route cache and force the next GetRoute to recompute (e.g. mod option toggled).</summary>
+        internal static void InvalidateCacheAndForceRecalc(string reason = "unspecified")
+        {
+            InvalidateCache(reason);
+            _forceNextRecalc = true;
+            _rejectLastGoodFallback = true;
+            ModLog.Info("Route force-recalc requested | reason=" + reason);
         }
 
         private static void CancelAsyncRecalc()
@@ -652,6 +685,7 @@ namespace VoogleRoute.Navigation
             {
                 LastFinalPoints = result.Points;
                 _lastFinalPointsMode = mode;
+                _rejectLastGoodFallback = false;
             }
 
             return result;

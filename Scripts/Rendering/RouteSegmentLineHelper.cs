@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VoogleRoute;
 using VoogleRoute.Navigation;
 
 namespace VoogleRoute.Rendering
@@ -13,30 +14,74 @@ namespace VoogleRoute.Rendering
             out Vector3[] footPoints,
             out Vector3[] subwayPoints)
         {
-            footPoints = System.Array.Empty<Vector3>();
+            ExtractFootLegs(path, out var legs, out subwayPoints);
+            footPoints = MergeLegs(legs);
+        }
+
+        internal static void ExtractFootLegs(
+            PathResult path,
+            out Vector3[][] footLegs,
+            out Vector3[] subwayPoints)
+        {
+            footLegs = System.Array.Empty<Vector3[]>();
             subwayPoints = System.Array.Empty<Vector3>();
 
             if (path.Segments != null && path.Segments.Length > 0)
             {
-                var foot = new List<Vector3>();
+                var legs = new List<Vector3[]>();
                 var subway = new List<Vector3>();
                 for (var i = 0; i < path.Segments.Length; i++)
                 {
                     var segment = path.Segments[i];
-                    if (segment.Points == null || segment.Points.Length == 0)
+                    if (segment.Points == null || segment.Points.Length < 2)
                         continue;
 
-                    var target = segment.Kind == RoutePathSegmentKind.Subway ? subway : foot;
-                    AppendDistinct(target, segment.Points);
+                    if (segment.Kind == RoutePathSegmentKind.Subway)
+                        AppendDistinct(subway, segment.Points);
+                    else
+                        legs.Add(CopyPoints(segment.Points));
                 }
 
-                footPoints = foot.Count >= 2 ? foot.ToArray() : System.Array.Empty<Vector3>();
-                subwayPoints = subway.Count >= 2 ? subway.ToArray() : System.Array.Empty<Vector3>();
+                footLegs = legs.Count > 0 ? legs.ToArray() : System.Array.Empty<Vector3[]>();
+                subwayPoints = subway.Count >= 2
+                    ? ProjectSubwayDisplayPoints(subway.ToArray())
+                    : System.Array.Empty<Vector3>();
                 return;
             }
 
             if (path.Points != null && path.Points.Length >= 2)
-                footPoints = path.Points;
+                footLegs = new[] { CopyPoints(path.Points) };
+        }
+
+        internal static Vector3[] ProjectSubwayDisplayPoints(Vector3[] points)
+        {
+            if (points == null || points.Length == 0)
+                return System.Array.Empty<Vector3>();
+
+            return GroundProjector.ProjectToGround(points, ModConfig.FootGroundOffset);
+        }
+
+        private static Vector3[] MergeLegs(Vector3[][] legs)
+        {
+            if (legs == null || legs.Length == 0)
+                return System.Array.Empty<Vector3>();
+
+            if (legs.Length == 1)
+                return legs[0];
+
+            var merged = new List<Vector3>();
+            for (var i = 0; i < legs.Length; i++)
+                AppendDistinct(merged, legs[i]);
+
+            return merged.Count >= 2 ? merged.ToArray() : System.Array.Empty<Vector3>();
+        }
+
+        private static Vector3[] CopyPoints(Vector3[] points)
+        {
+            var copy = new Vector3[points.Length];
+            for (var i = 0; i < points.Length; i++)
+                copy[i] = points[i];
+            return copy;
         }
 
         private static void AppendDistinct(List<Vector3> target, Vector3[] points)

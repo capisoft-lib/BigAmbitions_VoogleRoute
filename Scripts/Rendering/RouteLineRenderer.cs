@@ -26,6 +26,15 @@ namespace VoogleRoute.Rendering
         {
             if (GameState.IsCityMapOpen())
             {
+                if (GameState.IsSubwayNavigationActive())
+                {
+                    FootRouteLineRenderer.Hide();
+                    VehicleRouteLineRenderer.Hide();
+                    RouteLineDetectionRenderer.Hide();
+                    CityMapRouteLineRenderer.Hide();
+                    return;
+                }
+
                 FootRouteLineRenderer.Hide();
                 VehicleRouteLineRenderer.Hide();
                 RouteLineDetectionRenderer.Hide();

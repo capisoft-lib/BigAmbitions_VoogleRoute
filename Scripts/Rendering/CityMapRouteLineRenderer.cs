@@ -8,6 +8,7 @@ namespace VoogleRoute.Rendering
     internal static class CityMapRouteLineRenderer
     {
         private const string RootName = "VoogleRoute_RouteCityMap";
+        private const string SecondaryRootName = "VoogleRoute_RouteCityMapSecondary";
         private const string SubwayRootName = "VoogleRoute_RouteCityMapSubway";
         private const float MapLineClearance = 0.5f;
         private const float LineWidth = 0.9f;
@@ -17,12 +18,15 @@ namespace VoogleRoute.Rendering
 
         private static GameObject _root;
         private static LineRenderer _line;
+        private static GameObject _secondaryRoot;
+        private static LineRenderer _secondaryLine;
         private static GameObject _subwayRoot;
         private static LineRenderer _subwayLine;
 
         internal static void EnsureCreated()
         {
             EnsureMainLine();
+            EnsureSecondaryLine();
             EnsureSubwayLine();
         }
 
@@ -43,6 +47,25 @@ namespace VoogleRoute.Rendering
                 _line = _root.AddComponent<LineRenderer>();
 
             ApplyStyle();
+        }
+
+        private static void EnsureSecondaryLine()
+        {
+            if (_secondaryLine != null && _secondaryRoot != null)
+                return;
+
+            _secondaryRoot = GameObject.Find(SecondaryRootName);
+            if (_secondaryRoot == null)
+            {
+                _secondaryRoot = new GameObject(SecondaryRootName);
+                Object.DontDestroyOnLoad(_secondaryRoot);
+            }
+
+            _secondaryLine = _secondaryRoot.GetComponent<LineRenderer>();
+            if (_secondaryLine == null)
+                _secondaryLine = _secondaryRoot.AddComponent<LineRenderer>();
+
+            ApplySecondaryStyle();
         }
 
         private static void EnsureSubwayLine()
@@ -83,7 +106,28 @@ namespace VoogleRoute.Rendering
             _line.endWidth = width;
 
             LineRendererMaterial.Apply(_line, ResolveMapLineColor());
+            ApplySecondaryStyle();
             ApplySubwayStyle();
+        }
+
+        private static void ApplySecondaryStyle()
+        {
+            if (_secondaryLine == null)
+                return;
+
+            _secondaryLine.useWorldSpace = true;
+            _secondaryLine.alignment = LineAlignment.View;
+            _secondaryLine.textureMode = LineTextureMode.Stretch;
+            _secondaryLine.numCapVertices = 4;
+            _secondaryLine.numCornerVertices = 4;
+            _secondaryLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            _secondaryLine.receiveShadows = false;
+            _secondaryLine.loop = false;
+
+            var width = ResolveLineWidth();
+            _secondaryLine.startWidth = width;
+            _secondaryLine.endWidth = width;
+            LineRendererMaterial.Apply(_secondaryLine, ResolveMapLineColor());
         }
 
         private static void ApplySubwayStyle()
@@ -93,7 +137,6 @@ namespace VoogleRoute.Rendering
 
             _subwayLine.useWorldSpace = true;
             _subwayLine.alignment = LineAlignment.View;
-            _subwayLine.textureMode = LineTextureMode.Stretch;
             _subwayLine.numCapVertices = 4;
             _subwayLine.numCornerVertices = 4;
             _subwayLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
@@ -103,7 +146,7 @@ namespace VoogleRoute.Rendering
             var width = ResolveLineWidth() * 0.85f;
             _subwayLine.startWidth = width;
             _subwayLine.endWidth = width;
-            LineRendererMaterial.Apply(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
+            LineRendererMaterial.ApplyDashed(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
         }
 
         internal static void ShowPath(PathResult path)
@@ -115,41 +158,65 @@ namespace VoogleRoute.Rendering
                 return;
             }
 
-            Vector3[] footPoints;
+            Vector3[][] footLegs;
             Vector3[] subwayPoints;
             if (MovementModeDetector.CurrentMode == MovementMode.OnFoot && path.UsesSubway)
             {
-                RouteSegmentLineHelper.ExtractSegments(path, out footPoints, out subwayPoints);
+                RouteSegmentLineHelper.ExtractFootLegs(path, out footLegs, out subwayPoints);
             }
             else
             {
-                footPoints = path.Points ?? System.Array.Empty<Vector3>();
+                footLegs = new[] { path.Points ?? System.Array.Empty<Vector3>() };
                 subwayPoints = System.Array.Empty<Vector3>();
             }
 
-            if (!path.Success || footPoints.Length < 2)
+            var primaryFootPoints = footLegs.Length > 0 ? footLegs[0] : System.Array.Empty<Vector3>();
+            var secondaryFootPoints = footLegs.Length > 1 ? footLegs[1] : System.Array.Empty<Vector3>();
+
+            if (!path.Success || primaryFootPoints.Length < 2)
             {
                 MapOverlayDiagnostics.LogRouteHidden(
-                    !path.Success ? "path_failed" : "path_too_short(points=" + footPoints.Length + ")");
+                    !path.Success ? "path_failed" : "path_too_short(points=" + primaryFootPoints.Length + ")");
                 Hide();
                 return;
             }
 
             CityMapLayerHelper.ApplyToMapRoute(_root);
+            if (_secondaryRoot != null)
+                CityMapLayerHelper.ApplyToMapRoute(_secondaryRoot);
             if (_subwayRoot != null)
                 CityMapLayerHelper.ApplyToMapRoute(_subwayRoot);
             ApplyStyle();
 
             _root.SetActive(true);
 
-            var elevated = BuildMapElevatedPoints(footPoints);
-
+            var elevated = BuildMapElevatedPoints(primaryFootPoints);
             _line.positionCount = elevated.Length;
             _line.SetPositions(elevated);
             LineRendererMaterial.Apply(_line, ResolveMapLineColor());
             MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
 
+            ShowSecondaryFootOnMap(secondaryFootPoints);
             ShowSubwayOnMap(subwayPoints);
+        }
+
+        private static void ShowSecondaryFootOnMap(Vector3[] footPoints)
+        {
+            if (_secondaryRoot == null || _secondaryLine == null)
+                return;
+
+            if (footPoints == null || footPoints.Length < 2)
+            {
+                CityMapLayerHelper.Restore(_secondaryRoot);
+                _secondaryRoot.SetActive(false);
+                return;
+            }
+
+            _secondaryRoot.SetActive(true);
+            var elevated = BuildMapElevatedPoints(footPoints);
+            _secondaryLine.positionCount = elevated.Length;
+            _secondaryLine.SetPositions(elevated);
+            LineRendererMaterial.Apply(_secondaryLine, ResolveMapLineColor());
         }
 
         private static void ShowSubwayOnMap(Vector3[] subwayPoints)
@@ -165,10 +232,10 @@ namespace VoogleRoute.Rendering
             }
 
             _subwayRoot.SetActive(true);
-            var elevated = ApplyMapClearance(subwayPoints);
+            var elevated = BuildMapElevatedPoints(subwayPoints);
             _subwayLine.positionCount = elevated.Length;
             _subwayLine.SetPositions(elevated);
-            LineRendererMaterial.Apply(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
+            LineRendererMaterial.ApplyDashed(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
         }
 
         internal static void Hide()
@@ -177,6 +244,12 @@ namespace VoogleRoute.Rendering
             {
                 CityMapLayerHelper.Restore(_root);
                 _root.SetActive(false);
+            }
+
+            if (_secondaryRoot != null)
+            {
+                CityMapLayerHelper.Restore(_secondaryRoot);
+                _secondaryRoot.SetActive(false);
             }
 
             if (_subwayRoot != null)
@@ -248,6 +321,13 @@ namespace VoogleRoute.Rendering
                 Object.Destroy(_root);
                 _root = null;
                 _line = null;
+            }
+
+            if (_secondaryRoot != null)
+            {
+                Object.Destroy(_secondaryRoot);
+                _secondaryRoot = null;
+                _secondaryLine = null;
             }
 
             if (_subwayRoot != null)
