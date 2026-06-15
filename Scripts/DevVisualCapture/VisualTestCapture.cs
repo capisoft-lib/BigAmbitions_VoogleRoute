@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal static class VisualTestCapture
     {

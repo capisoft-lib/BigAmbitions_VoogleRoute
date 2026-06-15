@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "VoogleRoute",
   "rootNamespace": "",
   "references": [
@@ -11,11 +11,12 @@
   "excludePlatforms": [],
   "allowUnsafeCode": false,
   "overrideReferences": true,
-    "precompiledReferences": [
-        "VoogleRoute.Pathfinding.dll",
-        "LIB_BaUnifiedUI.dll",
-        "System.Text.Json.dll",
-        "BehaviorDesigner.Runtime.dll",
+  "precompiledReferences": [
+    "VoogleRoute.Pathfinding.dll",
+    "LIB_BaPlayerLocation.dll",
+    "LIB_BaUnifiedUI.dll",
+    "System.Text.Json.dll",
+    "BehaviorDesigner.Runtime.dll",
     "BigAmbitions.AI.dll",
     "BigAmbitions.Characters.dll",
     "BigAmbitions.DebugMode.dll",
@@ -55,4 +56,3 @@
   "versionDefines": [],
   "noEngineReferences": false
 }
-

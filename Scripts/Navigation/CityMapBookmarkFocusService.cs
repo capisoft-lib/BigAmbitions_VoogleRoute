@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 
 namespace VoogleRoute.Navigation
@@ -75,14 +76,31 @@ namespace VoogleRoute.Navigation
         private static void FocusCameraOnPosition(CityMap map, Vector3 worldPos)
         {
             map.SetCameraPosition(worldPos);
-            var cityMapCamera = GameManager.Instance?.citymapCamera;
-            if (cityMapCamera != null)
-                cityMapCamera.transform.parent.position = worldPos;
+            TrySyncCityMapCameraParent(worldPos);
 
             if (map.cityMapCam != null)
             {
                 map.cityMapCam.MoveCameraToTarget(worldPos);
                 map.cityMapCam.ForceUpdateCameraPosition();
+            }
+        }
+
+        private static void TrySyncCityMapCameraParent(Vector3 worldPos)
+        {
+            try
+            {
+                var gm = GameManager.Instance;
+                if (gm == null)
+                    return;
+
+                const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public;
+                if (typeof(GameManager).GetField("citymapCamera", flags)?.GetValue(gm) is Component camera &&
+                    camera.transform.parent != null)
+                    camera.transform.parent.position = worldPos;
+            }
+            catch
+            {
+                // Best-effort sync; cityMapCam path above may still succeed.
             }
         }
     }

@@ -12,7 +12,6 @@ namespace VoogleRoute.Navigation
         private const float SuppressSecondsAfterAutoIssue = 0.4f;
 
         private static readonly BindingFlags InstanceFlags = BindingFlags.Public | BindingFlags.Instance;
-        private static readonly BindingFlags StaticFlags = BindingFlags.Public | BindingFlags.Static;
         private static MethodInfo _readVector2Method;
 
         private static float _suppressUntil = -1f;

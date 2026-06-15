@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal static class VisualTestPaths
     {

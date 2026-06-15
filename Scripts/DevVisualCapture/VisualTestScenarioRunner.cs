@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VoogleRoute.UI;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal static class VisualTestScenarioRunner
     {

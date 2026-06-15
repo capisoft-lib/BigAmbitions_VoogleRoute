@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal sealed class VisualTestManifest
     {

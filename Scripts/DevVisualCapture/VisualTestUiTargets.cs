@@ -1,7 +1,7 @@
 using UnityEngine;
 using VoogleRoute.UI;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal readonly struct VisualTestScreenBounds
     {

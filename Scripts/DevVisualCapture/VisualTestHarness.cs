@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using UnityEngine;
 
-namespace VoogleRoute.VisualTests
+namespace VoogleRoute
 {
     internal static class VisualTestHarness
     {
