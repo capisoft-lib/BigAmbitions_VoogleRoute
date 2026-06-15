@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using BAModAPI;
-using Capisoft.Lib.BaUnifiedUI.Fluent;
 using UnityEngine;
 using VoogleRoute.Navigation;
 using VoogleRoute.Rendering;
@@ -26,11 +25,10 @@ namespace VoogleRoute
                 " | required_mod=LIB_BaPlayerLocation");
 
             ModConfig.Initialize(context);
-            VoogleRouteUiDiagnostics.LogSessionStart(ModStoragePaths.ModRootDirectory);
             VoogleRouteLoop.Initialize(context);
 
-            VoogleRoutePanelLifecycle.PurgeLegacyUiOnCityLoad();
-            VoogleRouteUiDiagnostics.LogOrphanRoots("VoogleRoute_ActionPanel");
+            LegacyTurnHudCleanup.DestroyAll();
+            ModLog.Info("Legacy turn HUD cleanup done.");
 
             _driverObject = new GameObject("VoogleRoute_Driver");
             Object.DontDestroyOnLoad(_driverObject);
@@ -38,15 +36,12 @@ namespace VoogleRoute
             ModLog.Info("Update driver attached (VoogleRoute_Driver).");
 
             RouteLineRenderer.EnsureCreated();
-            RouteActionPanel.EnsureCreated();
+            RouteToggleHud.EnsureCreated();
             RouteSettingsUi.EnsureCreated();
             RouteRecalcBanner.EnsureCreated();
             CityMapBookmarksPanel.EnsureCreated();
             CityMapBookmarkAddDialog.EnsureCreated();
             VisitHistoryPanel.EnsureCreated();
-
-            if (BaUi.ShouldRebuildChrome)
-                BaUi.MarkRebuildHandled();
 
             ModLog.Info("Voogle Route city load complete.");
             return Task.CompletedTask;
@@ -56,6 +51,8 @@ namespace VoogleRoute
         {
             ModLog.Info("Voogle Route city unload starting.");
 
+            LegacyTurnHudCleanup.DestroyAll();
+
             if (_driverObject != null)
             {
                 Object.Destroy(_driverObject);
@@ -64,7 +61,7 @@ namespace VoogleRoute
             }
 
             VoogleRouteLoop.Shutdown();
-            RouteActionPanel.Destroy();
+            RouteToggleHud.Destroy();
             AutoDriveConfirmPopup.Destroy();
             RouteSettingsUi.Destroy();
             RouteRecalcBanner.Destroy();

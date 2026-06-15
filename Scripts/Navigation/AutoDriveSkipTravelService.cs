@@ -117,7 +117,7 @@ namespace VoogleRoute.Navigation
             yield return UiFader.UnFade();
 
             _inProgress = false;
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
 
         private static bool IsTimeMachineRunning()

@@ -20,7 +20,7 @@ namespace VoogleRoute.Navigation
                 ModConfig.SetAutoWalkEnabled(true);
 
             CityMapHelper.CloseIfOpen();
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
     }
 }

@@ -121,7 +121,7 @@ namespace VoogleRoute
             BookmarkRouteDistanceService.TickMainThread();
 
             if (ShouldRefreshHud())
-                RouteActionPanel.UpdateVisibility();
+                RouteToggleHud.UpdateVisibility();
 
             if (!GameState.IsPlayable())
             {
@@ -224,7 +224,7 @@ namespace VoogleRoute
             TickFootRouteRefresh(canNavigate, navigationWanted);
 
             if (AutoWalkService.Tick(canNavigate, _activePath))
-                RouteActionPanel.RefreshVisual();
+                RouteToggleHud.RefreshVisual();
         }
 
         private static void TickFootRouteRefresh(bool canNavigate, bool navigationWanted)

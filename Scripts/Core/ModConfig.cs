@@ -145,7 +145,7 @@ namespace VoogleRoute
                 Rendering.RouteLineRenderer.Hide();
             }
 
-            RouteActionPanel.UpdateVisibility();
+            RouteToggleHud.UpdateVisibility();
         }
 
         internal static void SetDisplayInsideEnabled(bool value)
@@ -162,7 +162,7 @@ namespace VoogleRoute
                 Rendering.RouteLineRenderer.Hide();
             }
 
-            RouteActionPanel.UpdateVisibility();
+            RouteToggleHud.UpdateVisibility();
         }
 
         internal static void SetRouteLineEnabled(bool value)
@@ -172,7 +172,7 @@ namespace VoogleRoute
 
             RouteLineEnabled = value;
             ModLog.Info("Route line = " + value);
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
     
         internal static void SetAutoWalkEnabled(bool value)
@@ -182,7 +182,7 @@ namespace VoogleRoute
 
             AutoWalkEnabled = value;
             ModLog.Info("Auto-walk = " + value);
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
 
         internal static void SetIndoorRouteLineEnabled(bool value)
@@ -193,7 +193,7 @@ namespace VoogleRoute
             IndoorRouteLineEnabled = value;
             ModConfigStore.SetIndoorRouteLineEnabled(value);
             ModLog.Info("Indoor route line = " + value);
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
 
         internal static void SetIndoorAutoWalkEnabled(bool value)
@@ -204,7 +204,7 @@ namespace VoogleRoute
             IndoorAutoWalkEnabled = value;
             ModConfigStore.SetIndoorAutoWalkEnabled(value);
             ModLog.Info("Indoor auto-walk = " + value);
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
 
         internal static void SetUseSubwayEnabled(bool value)

@@ -6,14 +6,11 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using VoogleRoute.Navigation;
 
-using Capisoft.Lib.BaUnifiedUI.Core;
-using Capisoft.Lib.BaUnifiedUI.Fluent;
-using Capisoft.Lib.BaUnifiedUI.Controls;
 namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarkAddDialog
     {
-        private const string RootName = "VoogleRoute_BookmarkAddDialog_v2";
+        private const string RootName = "VoogleRoute_BookmarkAddDialog";
         private const int CanvasSortOrder = 12100;
         private const float PanelWidth = 520f;
         private const float PanelHeight = 300f;
@@ -34,46 +31,61 @@ namespace VoogleRoute.UI
 
         internal static void EnsureCreated()
         {
-            VoogleRoutePanelLifecycle.DestroyIfStale(ref _root, RootName, Destroy);
             if (_root != null)
             {
-                BaUi.ApplyLayer(_root);
+                GameStylePanelChrome.ApplyUiLayer(_root);
                 return;
             }
 
-            BaUi.EnsureReady();
+            GameUiStyle.EnsureInitialized();
 
-            var built = BaUi.Modal(RootName, CanvasSortOrder, 0.45f)
-                .OnDismiss(Close)
-                .Panel(BaPanelRecipe.Modal, PanelWidth, height: PanelHeight)
-                .Header(h => h.TitleCenter(ModUiText.BookmarkAddTitle))
-                .SkipBody()
-                .Build();
+            _root = new GameObject(RootName);
+            Object.DontDestroyOnLoad(_root);
+            GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
 
-            _root = built.Root;
-            var scale = built.Scale;
+            var dim = CreateRect(_root.transform, "Dimmer");
+            Stretch(dim);
+            var dimImg = dim.gameObject.AddComponent<Image>();
+            dimImg.color = new Color(0f, 0f, 0f, 0.45f);
+            dimImg.raycastTarget = true;
+            var dimBtn = dim.gameObject.AddComponent<Button>();
+            dimBtn.targetGraphic = dimImg;
+            dimBtn.onClick.AddListener(ModUiFocus.Wrap((UnityAction)Close));
+
+            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, PanelHeight, "Panel");
+            var scale = chrome.Scale;
             var textScale = Mathf.Clamp(scale, 0.85f, 1.15f);
-            _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
 
-            var body = BaUiWidgets.CreateRect(built.Panel, "Body");
+            var header = chrome.Header;
+            GameStylePanelChrome.ApplyModalHeaderFrame(header, scale);
+            var titleGo = CreateRect(header, "Title");
+            titleGo.anchorMin = Vector2.zero;
+            titleGo.anchorMax = Vector2.one;
+            ApplyHeaderTitleInsets(titleGo, textScale);
+            _titleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
+            _titleLabel.fontSize = NavPanelLayout.TitleFontSize * textScale;
+            _titleLabel.fontStyle = FontStyles.Bold;
+            _titleLabel.color = GameUiStyle.TitleColor;
+            _titleLabel.alignment = TextAlignmentOptions.Center;
+            GameUiStyle.ApplyTitleFont(_titleLabel);
+
+            var body = CreateRect(chrome.Panel, "Body");
             body.anchorMin = Vector2.zero;
             body.anchorMax = Vector2.one;
-            body.offsetMin = new Vector2(built.ContentInset, 88f);
-            body.offsetMax = new Vector2(-built.ContentInset, -(BaUi.Layout.HeaderHeight + 12f));
+            body.offsetMin = new Vector2(chrome.ContentInset, 88f);
+            body.offsetMax = new Vector2(-chrome.ContentInset, -(NavPanelLayout.HeaderHeight + 12f));
 
             _infoLabel = CreateBodyLabel(body, "Info", new Vector2(0f, 1f), new Vector2(1f, 1f),
                 new Vector2(0f, -96f), Vector2.zero, textScale);
 
             BuildNameField(body, textScale);
 
-            BaUiWidgets.CreateFooterButton(
-                built.Panel, "CancelButton", new Vector2(-130f, 24f), new Vector2(220f, 44f), textScale,
-                ModUiText.BookmarkAddCancel, BaButtonStyle.Grey, Close);
-            BaUiWidgets.CreateFooterButton(
-                built.Panel, "AddButton", new Vector2(130f, 24f), new Vector2(220f, 44f), textScale,
-                ModUiText.BookmarkAddConfirm, BaButtonStyle.Green, Confirm);
+            CreateFooterButton(chrome.Panel, "CancelButton", new Vector2(-130f, 24f), textScale,
+                ModUiText.BookmarkAddCancel, GameUiStyle.ApplyButtonGrey, Close);
+            CreateFooterButton(chrome.Panel, "AddButton", new Vector2(130f, 24f), textScale,
+                ModUiText.BookmarkAddConfirm, GameUiStyle.ApplyButtonGreen, Confirm);
 
-            BaUi.ApplyLayer(_root);
+            GameStylePanelChrome.ApplyUiLayer(_root);
             _root.SetActive(false);
         }
 
@@ -104,15 +116,15 @@ namespace VoogleRoute.UI
             _namePlaceholder.color = new Color(1f, 1f, 1f, 0.45f);
             _namePlaceholder.fontStyle = FontStyles.Italic;
             _namePlaceholder.alignment = TextAlignmentOptions.MidlineLeft;
-            BaUi.ApplyButtonFont(_namePlaceholder);
+            GameUiStyle.ApplyButtonFont(_namePlaceholder);
 
             var textGo = CreateRect(textAreaGo, "Text");
             Stretch(textGo);
             var textLabel = textGo.gameObject.AddComponent<TextMeshProUGUI>();
             textLabel.fontSize = 18f * scale;
-            textLabel.color = BaUi.Colors.Body;
+            textLabel.color = GameUiStyle.BodyTextColor;
             textLabel.alignment = TextAlignmentOptions.MidlineLeft;
-            BaUi.ApplyButtonFont(textLabel);
+            GameUiStyle.ApplyButtonFont(textLabel);
 
             _nameField = fieldGo.gameObject.AddComponent<TMP_InputField>();
             _nameField.textViewport = textAreaGo;
@@ -121,7 +133,7 @@ namespace VoogleRoute.UI
             _nameField.lineType = TMP_InputField.LineType.SingleLine;
             _nameField.onSelect.AddListener(_ => OnNameFieldSelected());
 
-            var guard = fieldGo.gameObject.AddComponent<BaUiInputGuard>();
+            var guard = fieldGo.gameObject.AddComponent<InputHotkeyGuard>();
             guard.Bind(_nameField);
         }
 
@@ -174,7 +186,7 @@ namespace VoogleRoute.UI
             if (_nameField != null)
                 _nameField.DeactivateInputField();
 
-            BaUiFocus.ReleaseForMovement();
+            ModUiFocus.ReleaseForMovement();
 
             if (_root != null)
                 _root.SetActive(false);
@@ -237,11 +249,54 @@ namespace VoogleRoute.UI
             go.offsetMax = offsetMax;
             var tmp = go.gameObject.AddComponent<TextMeshProUGUI>();
             tmp.fontSize = 18f * scale;
-            tmp.color = BaUi.Colors.Body;
+            tmp.color = GameUiStyle.BodyTextColor;
             tmp.alignment = TextAlignmentOptions.TopLeft;
             tmp.enableWordWrapping = true;
-            BaUi.ApplyButtonFont(tmp);
+            GameUiStyle.ApplyButtonFont(tmp);
             return tmp;
+        }
+
+        private static void CreateFooterButton(
+            RectTransform panel,
+            string name,
+            Vector2 anchoredPos,
+            float scale,
+            string label,
+            System.Action<Image> style,
+            UnityAction onClick)
+        {
+            var rect = CreateRect(panel, name);
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = anchoredPos;
+            rect.sizeDelta = new Vector2(220f, 44f);
+
+            var img = GameUiStyle.CreateButtonGraphic(rect, scale, style);
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = img;
+            GameUiStyle.BindButtonClick(button, onClick);
+
+            var labelGo = CreateRect(rect, "Label");
+            labelGo.anchorMin = Vector2.zero;
+            labelGo.anchorMax = Vector2.one;
+            var tmp = labelGo.gameObject.AddComponent<TextMeshProUGUI>();
+            tmp.text = label;
+            tmp.fontSize = 16f * scale;
+            tmp.fontStyle = FontStyles.UpperCase;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+            tmp.raycastTarget = false;
+            GameUiStyle.ApplyButtonFont(tmp);
+        }
+
+        private static void ApplyHeaderTitleInsets(RectTransform rect, float scale)
+        {
+            rect.offsetMin = new Vector2(
+                NavPanelLayout.HeaderTextPaddingX * scale,
+                NavPanelLayout.HeaderTextPaddingY * scale);
+            rect.offsetMax = new Vector2(
+                -NavPanelLayout.HeaderTextPaddingX * scale,
+                -NavPanelLayout.HeaderTextPaddingY * scale);
         }
 
         private static RectTransform CreateRect(Transform parent, string name)
@@ -273,4 +328,3 @@ namespace VoogleRoute.UI
         }
     }
 }
-
