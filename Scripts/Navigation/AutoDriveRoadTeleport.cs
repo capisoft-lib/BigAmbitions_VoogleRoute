@@ -10,6 +10,11 @@ namespace VoogleRoute.Navigation
         private const float RoadRaycastHeight = 50f;
         private const float RoadRaycastDepth = 120f;
 
+        /// <summary>Route display points include VehicleGroundOffset (~0.4 m).</summary>
+        private const float StreetLevelMaxY = 6f;
+
+        private const float BridgeDeckMinY = 8f;
+
         internal static bool TryResolveRoadPose(
             Vector3 laneAnchor,
             Vector3 laneDirection,
@@ -43,6 +48,10 @@ namespace VoogleRoute.Navigation
             vehicle.SavePosition();
         }
 
+        internal static bool IsElevatedRoadPoint(Vector3 point) => point.y >= BridgeDeckMinY;
+
+        internal static bool IsStreetLevelLane(float y) => y <= StreetLevelMaxY;
+
         private static bool TryFlattenDirection(Vector3 laneDirection, out Vector3 forward)
         {
             forward = laneDirection;
@@ -54,22 +63,57 @@ namespace VoogleRoute.Navigation
             return true;
         }
 
-        private static bool TryResolveDriveSurface(Vector3 flatTarget, out Vector3 position)
+        private static bool TryResolveDriveSurface(Vector3 laneAnchor, out Vector3 position)
         {
-            position = flatTarget;
+            position = laneAnchor;
             var roadMask = 1 << LayerHelper.RoadsLayerIndex;
             var ray = new Ray(
-                new Vector3(flatTarget.x, flatTarget.y + RoadRaycastHeight, flatTarget.z),
+                new Vector3(laneAnchor.x, laneAnchor.y + RoadRaycastHeight, laneAnchor.z),
                 Vector3.down);
 
-            if (Physics.Raycast(ray, out var hit, RoadRaycastDepth, roadMask, QueryTriggerInteraction.Ignore))
+            var hits = Physics.RaycastAll(ray, RoadRaycastDepth, roadMask, QueryTriggerInteraction.Ignore);
+            if (hits == null || hits.Length == 0)
+                return false;
+
+            var candidates = hits;
+            if (IsStreetLevelLane(laneAnchor.y))
             {
-                position = hit.point;
-                return true;
+                var streetCount = 0;
+                for (var i = 0; i < hits.Length; i++)
+                {
+                    if (hits[i].point.y <= StreetLevelMaxY)
+                        streetCount++;
+                }
+
+                if (streetCount > 0)
+                {
+                    var filtered = new RaycastHit[streetCount];
+                    var write = 0;
+                    for (var i = 0; i < hits.Length; i++)
+                    {
+                        if (hits[i].point.y > StreetLevelMaxY)
+                            continue;
+                        filtered[write++] = hits[i];
+                    }
+
+                    candidates = filtered;
+                }
             }
 
-            // Do not fall back to pedestrian/sidewalk navmesh — graph anchors are lane-specific.
-            return false;
+            var best = candidates[0];
+            var bestDy = Mathf.Abs(best.point.y - laneAnchor.y);
+            for (var i = 1; i < candidates.Length; i++)
+            {
+                var dy = Mathf.Abs(candidates[i].point.y - laneAnchor.y);
+                if (dy >= bestDy)
+                    continue;
+
+                bestDy = dy;
+                best = candidates[i];
+            }
+
+            position = best.point;
+            return true;
         }
     }
 }

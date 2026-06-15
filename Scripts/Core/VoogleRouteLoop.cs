@@ -101,13 +101,11 @@ namespace VoogleRoute
             RouteRecalcBanner.ForceHide();
             NavigationArrivalService.Reset();
             _wasSubwayRidingForNav = false;
-            CityMapZoomExtension.Reset();
             ModLog.Info("VoogleRoute loop shut down.");
         }
 
         internal static void Tick()
         {
-            CityMapZoomExtension.EnsureApplied();
             ModUiText.PollLanguageChange();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();

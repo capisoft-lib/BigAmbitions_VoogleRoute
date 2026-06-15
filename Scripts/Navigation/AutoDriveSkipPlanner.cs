@@ -6,6 +6,7 @@ namespace VoogleRoute.Navigation
     internal static class AutoDriveSkipPlanner
     {
         private const float MinTravelMeters = 25f;
+        private const float BuildingTailMaxFlatMeters = 20f;
 
         internal readonly struct Plan
         {
@@ -86,13 +87,16 @@ namespace VoogleRoute.Navigation
             if (points.Length < 2)
                 return false;
 
-            var laneAnchor = points[points.Length - 1];
+            if (!TryResolveLaneAnchor(points, out var anchorIndex, out var laneAnchor))
+                return false;
+
             if (laneAnchor.sqrMagnitude < 0.01f)
                 return false;
 
             laneHint = laneAnchor;
 
-            var prev = points[points.Length - 2];
+            var prevIndex = Mathf.Max(0, anchorIndex - 1);
+            var prev = points[prevIndex];
             var laneDirection = laneAnchor - prev;
             laneDirection.y = 0f;
 
@@ -101,6 +105,60 @@ namespace VoogleRoute.Navigation
                 laneDirection,
                 out position,
                 out rotation);
+        }
+
+        /// <summary>
+        /// Last on-road graph node: skip building GPS chord and stacked bridge deck tails.
+        /// </summary>
+        internal static bool TryResolveLaneAnchor(
+            Vector3[] points,
+            out int anchorIndex,
+            out Vector3 laneAnchor)
+        {
+            anchorIndex = points.Length - 1;
+            laneAnchor = points[anchorIndex];
+
+            if (NavigationTargetTracker.HasMapGpsTarget)
+            {
+                var destination = NavigationTargetTracker.ActiveTarget;
+                while (anchorIndex > 0 &&
+                       IsBuildingTailPoint(points[anchorIndex], points[anchorIndex - 1], destination))
+                    anchorIndex--;
+            }
+
+            laneAnchor = points[anchorIndex];
+
+            if (AutoDriveRoadTeleport.IsElevatedRoadPoint(laneAnchor))
+            {
+                for (var i = anchorIndex - 1; i >= 0; i--)
+                {
+                    if (AutoDriveRoadTeleport.IsElevatedRoadPoint(points[i]))
+                        continue;
+
+                    anchorIndex = i;
+                    break;
+                }
+            }
+
+            laneAnchor = points[anchorIndex];
+            return laneAnchor.sqrMagnitude > 0.01f;
+        }
+
+        private static bool IsBuildingTailPoint(Vector3 point, Vector3 prev, Vector3 destination)
+        {
+            var toDest = point - destination;
+            toDest.y = 0f;
+            if (toDest.sqrMagnitude > BuildingTailMaxFlatMeters * BuildingTailMaxFlatMeters)
+                return false;
+
+            var seg = point - prev;
+            seg.y = 0f;
+            if (seg.sqrMagnitude < 1f)
+                return true;
+
+            var prevToDest = destination - prev;
+            prevToDest.y = 0f;
+            return toDest.sqrMagnitude < prevToDest.sqrMagnitude * 0.25f;
         }
     }
 }
