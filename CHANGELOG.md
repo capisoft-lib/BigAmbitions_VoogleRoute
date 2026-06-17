@@ -2,6 +2,32 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.9] - 2026-06-17
+
+### Added
+
+- **LIB_BaUnifiedUI integration** — GPS panel, settings, bookmarks, history, and popups use the shared vanilla-style UI library (bundled in `Dependencies/LIB_BaUnifiedUI.dll`; no separate Workshop mod required)
+- **City-map DRIVE / WALK shortcuts** — beside the vanilla set-destination button when a building is selected on the map (**M**)
+- **Auto-enter on arrival** — optional mod toggle to enter a vehicle or building once navigation reaches the destination
+- **Delivery job routing** — follows vanilla job guider targets when no map GPS is set
+- **Auto-drive fuel estimate** — confirmation popup shows approximate fuel use for the trip
+- **Display toggles** — **Display VoogleRoute Outside** and **Display VoogleRoute Inside** under **ESC → Options → Mod** (read at city load)
+- **Mod locale lookup** — panel strings load from the mod `Locales/` folder for all **22** languages
+- **Arrival toast** — localized “You have arrived at your destination” message
+- **Subway hints** — localized board-station and ride-complete strings on the GPS panel
+
+### Changed
+
+- **Auto-walk** — refactored movement pipeline; improved subway boarding and foot-leg handoff
+- **Visit history** — richer row metadata and persistence improvements
+- **PathFinding** — elevation-aware vehicle arrival and refined foot subway planning
+
+### Fixed
+
+- **Auto-drive under bridge decks** — teleport placement respects in-game entrance height instead of snapping under elevated road geometry
+- **Stuck screen fade** — recovers from a black overlay when no travel fade or subway ride is in progress
+- **Mod options at city load** — outside/inside display prefs read from PlayerPrefs even before opening **ESC → Options → Mod**
+
 ## [0.11.8] - 2026-06-13
 
 ### Added

@@ -7,7 +7,7 @@
 | **Game** | Big Ambitions EA **0.11 Experimental** |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/2977660/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
-| **Requires** | [`LIB_BaPlayerLocation`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) |
+| **Requires** | [`LIB_BaPlayerLocation`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) ( [`LIB_BaUnifiedUI`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI) is bundled in `Dependencies/` ) |
 | **Vehicle routing** | [`VoogleRoute.Pathfinding`](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding) (git submodule) |
 | **Author** | [capisoft-lib](https://github.com/capisoft-lib) — community mod, not affiliated with Hovgaard Games |
 
@@ -26,12 +26,16 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)
 - **Auto-walk** — optional automatic walking along the route (includes automatic subway boarding when the route uses the metro)
-- **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only)
+- **Auto-enter on arrival** — optional toggle to enter a vehicle or building when navigation completes
+- **Delivery job routing** — follows vanilla job guider targets when no map GPS is set
 - **City map bookmarks** — on the city map (**M**): searchable list, **SET** / **CENTER**, route distance per row, **ADD BOOKMARK** by clicking the map
+- **City-map DRIVE / WALK** — shortcuts beside the vanilla set-destination button when a building is selected
 - **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** (auto-tracked); owned parked vehicles listed automatically
 - **HUD shortcuts** — blue **+** saves a bookmark at your position; green **car** routes to your last parked vehicle
-- **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), and distance for auto-drive; **ESC** closes the dialog
+- **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only); fuel estimate shown in the confirmation popup
+- **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), distance, and fuel for auto-drive; **ESC** closes the dialog
 - **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`
+- **UI** — vanilla-style panels via bundled **LIB_BaUnifiedUI** (no separate Workshop mod)
 - **Indoor navigation** — optional route line and auto-walk to the building exit (**WAY OUT** / **GET OUT**)
 - **City map overlay** — route line on the city map (**M**); click to set a destination
 - **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, bookmark and last-car buttons, custom line color (gear icon)
@@ -88,7 +92,7 @@ cd BigAmbitions_VoogleRoute
    .\tools\build-pathfinding.ps1
    ```
 
-3. **Mod Builder → Build + Install** for `LIB_BaPlayerLocation`, then `VoogleRoute`.
+3. **Mod Builder → Build + Install** for `LIB_BaPlayerLocation`, then `VoogleRoute` (build script bundles `LIB_BaUnifiedUI.dll` into `Dependencies/`).
 
 Output: `%LocalLow%\Hovgaard Games\Big Ambitions\ModsLocal\VoogleRoute\`
 

@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.11.8",
+  "version": "0.11.9",
   "gameVersion": "0.11",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "0.11.8: On-foot subway routing when NavMesh cannot reach the destination; auto-walk boards and rides automatically; dashed yellow subway line on ground and city map; Use subway toggle in ESC > Options > Mod (default on). Fix: bookmarks panel no longer blocks subway station selection on the map. Requires LIB BA Player Location 0.11.1+."
+  "releaseNotes": "0.11.9: Unified vanilla-style UI (LIB_BaUnifiedUI bundled); city-map DRIVE/WALK shortcuts; auto-enter on arrival; delivery-job routing; auto-drive fuel estimate; bridge-deck teleport fix; stuck fade recovery. Requires LIB BA Player Location 0.11.1+."
 }
