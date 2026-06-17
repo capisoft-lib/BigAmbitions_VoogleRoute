@@ -79,6 +79,10 @@ namespace VoogleRoute.Navigation
             vehicle.SavePosition();
         }
 
+        internal static bool IsElevatedRoadPoint(Vector3 point) => point.y >= BridgeDeckMinY;
+
+        internal static bool IsStreetLevelLane(float y) => y <= StreetLevelMaxY;
+
         private static bool TryFlattenDirection(Vector3 laneDirection, out Vector3 forward)
         {
             forward = laneDirection;

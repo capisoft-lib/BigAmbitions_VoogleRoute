@@ -56,7 +56,7 @@ namespace VoogleRoute.Navigation
 
             var exitTarget = IndoorPathFinderService.ActiveExit;
             if (IndoorAutoWalkService.Tick(true, _activePath, exitTarget))
-                RouteActionPanel.RefreshVisual();
+                RouteToggleHud.RefreshVisual();
         }
 
         internal static void Reset()

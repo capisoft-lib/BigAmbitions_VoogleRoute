@@ -6,21 +6,30 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using VoogleRoute.Navigation;
 
-using Capisoft.Lib.BaUnifiedUI.Core;
-using Capisoft.Lib.BaUnifiedUI.Fluent;
-using Capisoft.Lib.BaUnifiedUI.Controls;
-using Capisoft.Lib.BaUnifiedUI.Layout;
 namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v38";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v20";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
-        /// <summary>Wider than the action panel (370) — header/frame via <see cref="BaUi"/> fluent API.</summary>
+        /// <summary>Wider than RouteToggleHud (370) — header/frame via GameStylePanelChrome.Build scale.</summary>
         private const float PanelWidth = 420f;
+        private const float SearchBarHeight = 28f;
+        private const float SearchBarTopMargin = 8f;
+        private const float RowHeight = 34f;
+        private const float RowGap = 4f;
+        private const float RowTypeIconSize = 26f;
+        private const float RowActionButtonSize = 28f;
+        private const float RowSetButtonWidth = 44f;
+        private const float RowButtonGap = 2f;
+        private const float RowButtonPadY = 3f;
+        private const float RowDistanceWidth = 52f;
+        private const float RowDistanceToCenterGap = 6f;
+        private const float RowNameToDistanceGap = 6f;
+        private const float FooterTopMargin = 8f;
         private const float ScreenMarginX = 16f;
-        private const float ScreenBottomMargin = BaUi.Layout.ScreenMarginMinY;
+        private const float ScreenBottomMargin = NavPanelLayout.ScreenMarginMinY;
 
         private static GameObject _root;
         private static RectTransform _panelRect;
@@ -30,9 +39,15 @@ namespace VoogleRoute.UI
         private static TextMeshProUGUI _pickHintLabel;
         private static TextMeshProUGUI _addButtonLabel;
         private static TextMeshProUGUI _clearButtonLabel;
-        private static BaUiScrollList _scrollList;
+        private static RectTransform _contentPanel;
+        private static RectTransform _searchBarRect;
+        private static RectTransform _pickHintRect;
+        private static RectTransform _addFooterRect;
+        private static RectTransform _clearFooterRect;
+        private static RectTransform _listScrollRect;
+        private static RectTransform _listScrollContent;
+        private static ScrollRect _listScroll;
         private static float _textScale = 1f;
-        private static float _panelHeight;
 
         private static readonly List<RowUi> QuickRows = new List<RowUi>();
         private static readonly List<RowUi> VehicleRows = new List<RowUi>();
@@ -44,7 +59,6 @@ namespace VoogleRoute.UI
         private static int _lastBookmarkCount;
         private static string _searchFilter = "";
         private static bool _pickMode;
-        private static bool _loggedBookmarksChrome;
         private static MovementMode _lastMapActionMode = MovementMode.Unavailable;
 
         private enum RowKind
@@ -58,25 +72,22 @@ namespace VoogleRoute.UI
 
         private sealed class RowUi
         {
-            internal readonly BaUiListRow Ui;
-            internal GameObject Root => Ui.Root;
-            internal GameObject TypeIconRoot => Ui.TypeIconRoot;
-            internal Image TypeIcon => Ui.TypeIcon;
-            internal TextMeshProUGUI NameLabel => Ui.NameLabel;
-            internal TextMeshProUGUI DistanceLabel => Ui.DistanceLabel;
-            internal Button CenterButton => Ui.CenterButton;
-            internal Image CenterButtonImage => Ui.CenterButtonImage;
-            internal TextMeshProUGUI CenterFallbackLabel => Ui.CenterFallbackLabel;
-            internal Button SetDestButton => Ui.SetDestButton;
-            internal TextMeshProUGUI SetDestLabel => Ui.SetDestLabel;
-            internal Button DriveButton => Ui.DriveButton;
-            internal TextMeshProUGUI DriveLabel => Ui.DriveLabel;
-            internal Button DeleteButton => Ui.DeleteButton;
+            internal GameObject Root;
+            internal GameObject TypeIconRoot;
+            internal Image TypeIcon;
+            internal TextMeshProUGUI NameLabel;
+            internal TextMeshProUGUI DistanceLabel;
+            internal Button CenterButton;
+            internal Image CenterButtonImage;
+            internal TextMeshProUGUI CenterFallbackLabel;
+            internal Button SetDestButton;
+            internal TextMeshProUGUI SetDestLabel;
+            internal Button DriveButton;
+            internal TextMeshProUGUI DriveLabel;
+            internal Button DeleteButton;
             internal RowKind Kind = RowKind.Bookmark;
             internal int BookmarkIndex = -1;
             internal int VehicleIndex = -1;
-
-            internal RowUi(BaUiListRow ui) => Ui = ui;
         }
 
         internal static bool IsVisible => _root != null && _root.activeSelf;
@@ -85,31 +96,30 @@ namespace VoogleRoute.UI
         internal static bool BlocksMapInput =>
             IsSearchFocused || CityMapBookmarkAddDialog.IsOpen || CityMapBookmarkAddDialog.IsNameFocused;
 
-        private static readonly RowKind[] QuickRowKinds =
-        {
-            RowKind.LastCar,
-            RowKind.LastHome,
-            RowKind.LastShop
-        };
+        private static float BodyContentTop =>
+            NavPanelLayout.HeaderHeight + NavPanelLayout.BodyTopPadding;
 
-        private static float ContentHorizontalInset => BaUi.Layout.ContentInset * 2f;
+        private static float ContentHorizontalInset => NavPanelLayout.ContentInset * 2f;
 
-        private static float FooterButtonWidth =>
-            (PanelWidth - ContentHorizontalInset - BaUi.Layout.ButtonGap) * 0.5f;
+        private static float HalfButtonWidth =>
+            (PanelWidth - ContentHorizontalInset - NavPanelLayout.ButtonGap) * 0.5f;
 
-        private static BaUiListRowTemplate MapActionsOnPanelTemplate =>
-            BaUiListRows.Template(BaUiListRowRecipe.MapActions).OnPanel(ContentHorizontalInset).Build();
+        private static float LeftButtonX =>
+            -(HalfButtonWidth + NavPanelLayout.ButtonGap) * 0.5f;
 
-        private static BaUiListRowTemplate MapBookmarkScrollTemplate => BaUiListRows.MapBookmark();
-
-        private static BaUiListRowTemplate MapActionsScrollTemplate => BaUiListRows.MapActions();
+        private static float RightButtonX =>
+            (HalfButtonWidth + NavPanelLayout.ButtonGap) * 0.5f;
 
         internal static void EnsureCreated()
         {
-            VoogleRoutePanelLifecycle.DestroyIfStale(ref _root, RootName, Destroy);
+            DestroyLegacyRoot();
+
+            if (_root != null && _root.name != RootName)
+                Destroy();
+
             if (_root != null)
             {
-                BaUi.ApplyLayer(_root);
+                GameStylePanelChrome.ApplyUiLayer(_root);
                 if (_panelRect != null)
                 {
                     AnchorBottomLeft(_panelRect);
@@ -119,138 +129,286 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            BaUi.EnsureReady();
+            GameUiStyle.EnsureInitialized();
             BookmarkStore.Changed += OnBookmarksChanged;
             QuickBookmarkStore.Changed += OnQuickBookmarksChanged;
 
-            QuickRows.Clear();
-            BaUiSearchField search = null;
+            _root = new GameObject(RootName);
+            Object.DontDestroyOnLoad(_root);
+            GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
 
-            var built = BaUi.Overlay(RootName, CanvasSortOrder)
-                .Dock(BaDock.BottomLeft, marginX: ScreenMarginX, marginY: ScreenBottomMargin)
-                .Panel(BaPanelRecipe.WideMapPanel, PanelWidth)
-                .Header(h => h
-                    .TitleLeft(ModUiText.BookmarksTitle)
-                    .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1"))
-                .Content(c => c
-                    .QuickRows(QuickBookmarkStore.SlotCount, MapActionsOnPanelTemplate, OnQuickRowCreated, out _)
-                    .Search(ModUiText.BookmarksSearchPlaceholder, OnSearchChanged, out search, OnSearchFieldSelected)
-                    .PickHint(out _pickHintLabel)
-                    .ScrollList(VisibleListRowCount, out _scrollList)
-                    .Footer(BaUi.Layout.ButtonHeight, h => h
-                        .Button(ModUiText.BookmarksAdd, BaButtonStyle.Blue, OnAddBookmarkClicked, FooterButtonWidth, "AddButton")
-                        .Gap(BaUi.Layout.ButtonGap)
-                        .Button(ModUiText.BookmarksClearAll, BaButtonStyle.Red, OnClearAllClicked, FooterButtonWidth, "ClearButton")))
-                .Build();
+            var panelHeight = ComputePanelHeight();
+            var headerWiden = NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth);
+            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel", headerWiden);
+            _textScale = Mathf.Clamp(chrome.Scale, 0.85f, 1.15f);
+            _panelRect = chrome.Panel;
+            _contentPanel = chrome.Panel;
+            AnchorBottomLeft(_panelRect);
 
-            _root = built.Root;
-            _textScale = Mathf.Clamp(built.Scale, 0.85f, 1.15f);
-            _panelRect = built.Panel;
-            _panelHeight = built.PanelHeight;
-            _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
-            _searchField = search?.Field;
-            _searchPlaceholder = search?.Placeholder;
-            _addButtonLabel = built.Panel.Find("AddButton/Label")?.GetComponent<TextMeshProUGUI>();
-            _clearButtonLabel = built.Panel.Find("ClearButton/Label")?.GetComponent<TextMeshProUGUI>();
+            var header = chrome.Header;
+            var titleGo = CreateRect(header, "Title");
+            titleGo.anchorMin = Vector2.zero;
+            titleGo.anchorMax = Vector2.one;
+            NavPanelLayout.ApplyHeaderTitleWithRightReserve(
+                titleGo,
+                _textScale,
+                NavPanelLayout.ComputeHeaderIconsTitleReserve(1, _textScale));
+            _titleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
+            _titleLabel.fontSize = NavPanelLayout.TitleFontSize * _textScale;
+            _titleLabel.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
+            _titleLabel.color = GameUiStyle.TitleColor;
+            _titleLabel.alignment = TextAlignmentOptions.Left;
+            GameUiStyle.ApplyTitleFont(_titleLabel);
 
-            BaUi.ApplyLayer(_root);
+            CreateHeaderHistoryButton(header, _textScale);
+
+            BuildQuickRows(chrome.Panel, _textScale);
+            BuildSearchBar(chrome.Panel, _textScale);
+            BuildPickHint(chrome.Panel, _textScale);
+            BuildListScroll(chrome.Panel);
+            BuildFooter(chrome.Panel, _textScale);
+
+            GameStylePanelChrome.ApplyUiLayer(_root);
             _root.SetActive(false);
             _lastBookmarkCount = BookmarkStore.All.Count;
             RefreshLocalizedText();
             RefreshList();
         }
 
-        private static void OnQuickRowCreated(int index, BaUiListRow ui)
+        private static float QuickRowsBlockHeight =>
+            QuickBookmarkStore.SlotCount * RowHeight + (QuickBookmarkStore.SlotCount - 1) * RowGap;
+
+        private static float ScrollViewportHeight =>
+            VisibleListRowCount * RowHeight + (VisibleListRowCount - 1) * RowGap;
+
+        private static float ComputePanelHeight()
         {
-            var row = new RowUi(ui) { Kind = QuickRowKinds[index] };
-            WireMapActionsRow(row);
-            QuickRows.Add(row);
+            var header = NavPanelLayout.HeaderHeight;
+            var quickRowsBlock = QuickRowsBlockHeight + 6f;
+            var searchBlock = SearchBarTopMargin + SearchBarHeight;
+            var footer = FooterTopMargin + NavPanelLayout.ButtonHeight + NavPanelLayout.BodyBottomPadding;
+            var pickHint = 20f;
+            return header + NavPanelLayout.BodyTopPadding + quickRowsBlock + searchBlock + pickHint +
+                   ScrollViewportHeight + footer;
         }
 
-        private static void WireMapActionsRow(RowUi row)
+        private static float SearchBarTopOffset() =>
+            BodyContentTop + QuickRowsBlockHeight + 6f + SearchBarTopMargin;
+
+        private static float BookmarkListTopOffset() =>
+            SearchBarTopOffset() + SearchBarHeight + 22f;
+
+        private static void AnchorBottomLeft(RectTransform panel)
         {
-            row.Ui.Bind(
-                onCenter: () => OnCenterClicked(row),
-                onSetDestination: () => OnSetDestinationClicked(row),
-                onDrive: () => OnNavigateClicked(row));
-            if (row.DriveLabel != null)
-                row.DriveLabel.text = ResolveMapActionLabel();
+            panel.anchorMin = panel.anchorMax = Vector2.zero;
+            panel.pivot = Vector2.zero;
+            panel.anchoredPosition = new Vector2(ScreenMarginX, ScreenBottomMargin);
         }
 
-        private static void WireMapBookmarkRow(RowUi row)
+        private static void BuildQuickRows(RectTransform panel, float textScale)
         {
-            row.Ui.Bind(
-                onCenter: () => OnCenterClicked(row),
-                onSetDestination: () => OnSetDestinationClicked(row),
-                onDrive: () => OnNavigateClicked(row),
-                onDelete: () => OnDeleteClicked(row));
-            if (row.DriveLabel != null)
-                row.DriveLabel.text = ResolveMapActionLabel();
+            var listTop = -BodyContentTop;
+            var kinds = new[]
+            {
+                RowKind.LastCar,
+                RowKind.LastHome,
+                RowKind.LastShop
+            };
+
+            for (var i = 0; i < kinds.Length; i++)
+            {
+                var rowTop = listTop - i * (RowHeight + RowGap);
+                var row = CreateRowUi(panel, textScale, "QuickRow" + i, rowTop, showDeleteButton: false);
+                row.Kind = kinds[i];
+                QuickRows.Add(row);
+            }
+        }
+
+        private static void BuildSearchBar(RectTransform panel, float textScale)
+        {
+            var searchGo = CreateRect(panel, "SearchBar");
+            _searchBarRect = searchGo;
+            searchGo.anchorMin = new Vector2(0f, 1f);
+            searchGo.anchorMax = new Vector2(1f, 1f);
+            searchGo.pivot = new Vector2(0.5f, 1f);
+            searchGo.sizeDelta = new Vector2(-ContentHorizontalInset, SearchBarHeight);
+
+            var bgGo = CreateRect(searchGo, "Background");
+            Stretch(bgGo);
+            bgGo.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.35f);
+
+            var textAreaGo = CreateRect(searchGo, "TextArea");
+            textAreaGo.anchorMin = Vector2.zero;
+            textAreaGo.anchorMax = Vector2.one;
+            textAreaGo.offsetMin = new Vector2(8f, 4f);
+            textAreaGo.offsetMax = new Vector2(-8f, -4f);
+
+            var placeholderGo = CreateRect(textAreaGo, "Placeholder");
+            Stretch(placeholderGo);
+            _searchPlaceholder = placeholderGo.gameObject.AddComponent<TextMeshProUGUI>();
+            _searchPlaceholder.fontSize = 14f * textScale;
+            _searchPlaceholder.color = new Color(1f, 1f, 1f, 0.45f);
+            _searchPlaceholder.fontStyle = FontStyles.Italic;
+            _searchPlaceholder.alignment = TextAlignmentOptions.MidlineLeft;
+            GameUiStyle.ApplyButtonFont(_searchPlaceholder);
+
+            var textGo = CreateRect(textAreaGo, "Text");
+            Stretch(textGo);
+            var textLabel = textGo.gameObject.AddComponent<TextMeshProUGUI>();
+            textLabel.fontSize = 14f * textScale;
+            textLabel.color = GameUiStyle.BodyTextColor;
+            textLabel.alignment = TextAlignmentOptions.MidlineLeft;
+            GameUiStyle.ApplyButtonFont(textLabel);
+
+            _searchField = searchGo.gameObject.AddComponent<TMP_InputField>();
+            _searchField.textViewport = textAreaGo;
+            _searchField.textComponent = textLabel;
+            _searchField.placeholder = _searchPlaceholder;
+            _searchField.lineType = TMP_InputField.LineType.SingleLine;
+            _searchField.onValueChanged.AddListener(OnSearchChanged);
+            _searchField.onSelect.AddListener(_ => OnSearchFieldSelected());
+
+            var guard = searchGo.gameObject.AddComponent<InputHotkeyGuard>();
+            guard.Bind(_searchField);
+        }
+
+        private static void BuildPickHint(RectTransform panel, float textScale)
+        {
+            var hintGo = CreateRect(panel, "PickHint");
+            _pickHintRect = hintGo;
+            hintGo.anchorMin = new Vector2(0f, 1f);
+            hintGo.anchorMax = new Vector2(1f, 1f);
+            hintGo.pivot = new Vector2(0.5f, 1f);
+            hintGo.sizeDelta = new Vector2(-ContentHorizontalInset, 18f);
+            _pickHintLabel = hintGo.gameObject.AddComponent<TextMeshProUGUI>();
+            _pickHintLabel.fontSize = 13f * textScale;
+            _pickHintLabel.color = new Color(0.9f, 0.75f, 0.35f, 1f);
+            _pickHintLabel.alignment = TextAlignmentOptions.MidlineLeft;
+            _pickHintLabel.fontStyle = FontStyles.Italic;
+            GameUiStyle.ApplyButtonFont(_pickHintLabel);
+            _pickHintLabel.gameObject.SetActive(false);
+        }
+
+        private static void BuildListScroll(RectTransform panel)
+        {
+            var scrollGo = CreateRect(panel, "ListScroll");
+            _listScrollRect = scrollGo;
+            scrollGo.anchorMin = new Vector2(0f, 1f);
+            scrollGo.anchorMax = new Vector2(1f, 1f);
+            scrollGo.pivot = new Vector2(0.5f, 1f);
+
+            _listScroll = scrollGo.gameObject.AddComponent<ScrollRect>();
+            _listScroll.horizontal = false;
+            _listScroll.vertical = true;
+            _listScroll.movementType = ScrollRect.MovementType.Clamped;
+            _listScroll.scrollSensitivity = 24f;
+
+            var viewport = CreateRect(scrollGo, "Viewport");
+            Stretch(viewport);
+            viewport.gameObject.AddComponent<RectMask2D>();
+            _listScroll.viewport = viewport;
+
+            var content = CreateRect(viewport, "Content");
+            _listScrollContent = content;
+            content.anchorMin = new Vector2(0f, 1f);
+            content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.anchoredPosition = Vector2.zero;
+            content.sizeDelta = Vector2.zero;
+            _listScroll.content = content;
         }
 
         private static void SyncBookmarkRows()
         {
-            if (_scrollList?.Content == null)
+            if (_listScrollContent == null)
                 return;
 
-            BaUiListRowPools.SyncHolders(
-                Rows,
-                _scrollList.Content,
-                BookmarkStore.All.Count,
-                _textScale,
-                MapBookmarkScrollTemplate,
-                "Row",
-                (i, ui) =>
-                {
-                    var row = new RowUi(ui) { Kind = RowKind.Bookmark, BookmarkIndex = i };
-                    WireMapBookmarkRow(row);
-                    return row;
-                },
-                r => r.Ui);
+            var needed = BookmarkStore.All.Count;
+            while (Rows.Count < needed)
+            {
+                var row = CreateRowUi(
+                    _listScrollContent,
+                    _textScale,
+                    "Row" + Rows.Count,
+                    0f,
+                    showDeleteButton: true);
+                row.Kind = RowKind.Bookmark;
+                Rows.Add(row);
+            }
+
+            while (Rows.Count > needed)
+            {
+                var last = Rows.Count - 1;
+                if (Rows[last].Root != null)
+                    Object.Destroy(Rows[last].Root);
+                Rows.RemoveAt(last);
+            }
         }
 
         private static void SyncVehicleRows()
         {
-            if (_scrollList?.Content == null)
+            if (_listScrollContent == null)
                 return;
 
             PlayerVehicleBookmarkStore.Refresh();
-            BaUiListRowPools.SyncHolders(
-                VehicleRows,
-                _scrollList.Content,
-                PlayerVehicleBookmarkStore.Count,
-                _textScale,
-                MapActionsScrollTemplate,
-                "VehicleRow",
-                (i, ui) =>
-                {
-                    var row = new RowUi(ui) { Kind = RowKind.Vehicle, VehicleIndex = i };
-                    WireMapActionsRow(row);
-                    return row;
-                },
-                r => r.Ui);
+            var needed = PlayerVehicleBookmarkStore.Count;
+
+            while (VehicleRows.Count < needed)
+            {
+                var index = VehicleRows.Count;
+                var row = CreateRowUi(
+                    _listScrollContent,
+                    _textScale,
+                    "VehicleRow" + index,
+                    0f,
+                    showDeleteButton: false);
+                row.Kind = RowKind.Vehicle;
+                VehicleRows.Add(row);
+            }
+
+            while (VehicleRows.Count > needed)
+            {
+                var last = VehicleRows.Count - 1;
+                if (VehicleRows[last].Root != null)
+                    Object.Destroy(VehicleRows[last].Root);
+                VehicleRows.RemoveAt(last);
+            }
         }
+
+        private static float ContentRowsBlockHeight(int rowCount) =>
+            rowCount <= 0 ? 0f : rowCount * RowHeight + (rowCount - 1) * RowGap;
 
         private static void LayoutListContent()
         {
-            if (_scrollList?.Content == null)
+            if (_listScrollContent == null)
                 return;
 
             var y = 0f;
             var activeCount = 0;
-            activeCount += BaUiListRowPools.LayoutHoldersInScroll(
-                _scrollList,
-                VehicleRows,
-                r => r.Ui,
-                r => r.Root.activeSelf,
-                ref y);
-            activeCount += BaUiListRowPools.LayoutHoldersInScroll(
-                _scrollList,
-                Rows,
-                r => r.Ui,
-                r => r.Root.activeSelf,
-                ref y);
-            _scrollList.LayoutRows(activeCount);
+
+            for (var i = 0; i < VehicleRows.Count; i++)
+            {
+                var row = VehicleRows[i];
+                if (row?.Root == null || !row.Root.activeSelf)
+                    continue;
+
+                RepositionRow(row, -y, insideScroll: true);
+                y += RowHeight + RowGap;
+                activeCount++;
+            }
+
+            for (var i = 0; i < Rows.Count; i++)
+            {
+                var row = Rows[i];
+                if (row?.Root == null || !row.Root.activeSelf)
+                    continue;
+
+                RepositionRow(row, -y, insideScroll: true);
+                y += RowHeight + RowGap;
+                activeCount++;
+            }
+
+            _listScrollContent.sizeDelta = new Vector2(0f, ContentRowsBlockHeight(activeCount));
         }
 
         private static void ApplyPanelLayout()
@@ -260,24 +418,285 @@ namespace VoogleRoute.UI
 
             SyncVehicleRows();
             SyncBookmarkRows();
-            _panelRect.sizeDelta = new Vector2(PanelWidth, _panelHeight);
-            BaUiWidgets.RestoreDockedPanelChrome(_panelRect, PanelWidth, wideMapPanel: true);
-            if (!_loggedBookmarksChrome)
+            _panelRect.sizeDelta = new Vector2(PanelWidth, ComputePanelHeight());
+            GameStylePanelChrome.RestorePanelChrome(
+                _panelRect,
+                PanelWidth,
+                NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth));
+
+            if (_searchBarRect != null)
+                _searchBarRect.anchoredPosition = new Vector2(0f, -SearchBarTopOffset());
+
+            if (_pickHintRect != null)
+                _pickHintRect.anchoredPosition = new Vector2(0f, -(SearchBarTopOffset() + SearchBarHeight + 4f));
+
+            var listTop = BookmarkListTopOffset();
+            if (_listScrollRect != null)
             {
-                _loggedBookmarksChrome = true;
-                VoogleRouteUiDiagnostics.LogPanelChrome(
-                    "bookmarks-layout",
-                    _panelRect,
-                    PanelWidth,
-                    BaUi.Layout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth));
+                _listScrollRect.anchoredPosition = new Vector2(0f, -listTop);
+                _listScrollRect.sizeDelta = new Vector2(-ContentHorizontalInset, ScrollViewportHeight);
+            }
+
+            var footerY = -(listTop + ScrollViewportHeight + FooterTopMargin);
+            if (_addFooterRect != null)
+                _addFooterRect.anchoredPosition = new Vector2(LeftButtonX, footerY);
+            if (_clearFooterRect != null)
+                _clearFooterRect.anchoredPosition = new Vector2(RightButtonX, footerY);
+        }
+
+        private static void RepositionRow(RowUi row, float rowTop, bool insideScroll = false)
+        {
+            if (row?.Root == null)
+                return;
+
+            var rowRect = row.Root.GetComponent<RectTransform>();
+            rowRect.anchoredPosition = new Vector2(0f, rowTop);
+            if (insideScroll)
+                rowRect.sizeDelta = new Vector2(0f, RowHeight);
+        }
+
+        private static RowUi CreateRowUi(
+            RectTransform panel,
+            float textScale,
+            string name,
+            float rowTop,
+            bool showDeleteButton)
+        {
+            var row = new RowUi();
+            row.Root = CreateRect(panel, name).gameObject;
+            var rowRect = row.Root.GetComponent<RectTransform>();
+            rowRect.anchorMin = new Vector2(0f, 1f);
+            rowRect.anchorMax = new Vector2(1f, 1f);
+            rowRect.pivot = new Vector2(0.5f, 1f);
+            rowRect.anchoredPosition = new Vector2(0f, rowTop);
+            rowRect.sizeDelta = new Vector2(-ContentHorizontalInset, RowHeight);
+
+            var buttonHeight = RowHeight - RowButtonPadY * 2f;
+
+            var iconGo = CreateRect(rowRect, "TypeIcon");
+            iconGo.anchorMin = iconGo.anchorMax = new Vector2(0f, 0.5f);
+            iconGo.pivot = new Vector2(0f, 0.5f);
+            iconGo.anchoredPosition = Vector2.zero;
+            iconGo.sizeDelta = new Vector2(RowTypeIconSize, RowTypeIconSize);
+            row.TypeIconRoot = iconGo.gameObject;
+
+            var iconFgGo = CreateRect(iconGo, "Foreground");
+            Stretch(iconFgGo);
+            iconFgGo.offsetMin = new Vector2(2f, 2f);
+            iconFgGo.offsetMax = new Vector2(-2f, -2f);
+            row.TypeIcon = iconFgGo.gameObject.AddComponent<Image>();
+            row.TypeIcon.raycastTarget = false;
+            row.TypeIcon.preserveAspect = true;
+            row.TypeIcon.color = Color.white;
+            row.TypeIconRoot.SetActive(false);
+
+            var nameGo = CreateRect(rowRect, "Name");
+            nameGo.anchorMin = Vector2.zero;
+            nameGo.anchorMax = new Vector2(1f, 1f);
+            var nameRightInset = ComputeRowNameRightInset(showDeleteButton);
+            nameGo.offsetMin = new Vector2(RowTypeIconSize + 4f, 0f);
+            nameGo.offsetMax = new Vector2(-nameRightInset, 0f);
+            row.NameLabel = nameGo.gameObject.AddComponent<TextMeshProUGUI>();
+            row.NameLabel.fontSize = 13f * textScale;
+            row.NameLabel.color = GameUiStyle.BodyTextColor;
+            row.NameLabel.alignment = TextAlignmentOptions.MidlineLeft;
+            row.NameLabel.overflowMode = TextOverflowModes.Ellipsis;
+            row.NameLabel.enableWordWrapping = false;
+            GameUiStyle.ApplyButtonFont(row.NameLabel);
+
+            var distGo = CreateRect(rowRect, "Distance");
+            distGo.anchorMin = new Vector2(1f, 0f);
+            distGo.anchorMax = new Vector2(1f, 1f);
+            distGo.pivot = new Vector2(1f, 0.5f);
+            distGo.anchoredPosition = new Vector2(-ComputeRowDistanceRightInset(showDeleteButton), 0f);
+            distGo.sizeDelta = new Vector2(RowDistanceWidth, 0f);
+            row.DistanceLabel = distGo.gameObject.AddComponent<TextMeshProUGUI>();
+            row.DistanceLabel.fontSize = 12f * textScale;
+            row.DistanceLabel.color = GameUiStyle.MutedBodyTextColor;
+            row.DistanceLabel.alignment = TextAlignmentOptions.MidlineRight;
+            row.DistanceLabel.overflowMode = TextOverflowModes.Overflow;
+            GameUiStyle.ApplyButtonFont(row.DistanceLabel);
+
+            var centerGo = CreateRect(rowRect, "CenterButton");
+            LayoutRowButton(
+                centerGo,
+                RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap +
+                (showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f),
+                RowActionButtonSize,
+                buttonHeight);
+            row.CenterButtonImage = GameUiStyle.CreateButtonGraphic(
+                centerGo, textScale, GameUiStyle.ApplyButtonBlue, 1f, bleedBottom: false);
+            row.CenterButton = centerGo.gameObject.AddComponent<Button>();
+            row.CenterButton.targetGraphic = row.CenterButtonImage;
+            GameUiStyle.BindButtonClick(row.CenterButton, () => OnCenterClicked(row));
+
+            var centerIconGo = CreateRect(centerGo, "Icon");
+            Stretch(centerIconGo);
+            var iconPad = 6f * textScale;
+            centerIconGo.offsetMin = new Vector2(iconPad, iconPad);
+            centerIconGo.offsetMax = new Vector2(-iconPad, -iconPad);
+            var centerIcon = centerIconGo.gameObject.AddComponent<Image>();
+            centerIcon.raycastTarget = false;
+            if (!GameUiStyle.TryApplyOverlayIcon(centerIcon, GameUiStyle.ApplyFocusIcon))
+            {
+                var fallbackGo = CreateRect(centerIconGo, "Fallback");
+                Stretch(fallbackGo);
+                row.CenterFallbackLabel = fallbackGo.gameObject.AddComponent<TextMeshProUGUI>();
+                row.CenterFallbackLabel.text = "\u2295";
+                row.CenterFallbackLabel.fontSize = 14f * textScale;
+                row.CenterFallbackLabel.alignment = TextAlignmentOptions.Center;
+                row.CenterFallbackLabel.color = Color.white;
+                row.CenterFallbackLabel.raycastTarget = false;
+                GameUiStyle.ApplyButtonFont(row.CenterFallbackLabel);
+            }
+
+            var btnGo = CreateRect(rowRect, "SetDestButton");
+            LayoutRowButton(
+                btnGo,
+                showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f,
+                RowSetButtonWidth,
+                buttonHeight);
+            var btnImg = GameUiStyle.CreateButtonGraphic(btnGo, textScale, GameUiStyle.ApplyButtonBlue, bleedBottom: false);
+            row.SetDestButton = btnGo.gameObject.AddComponent<Button>();
+            row.SetDestButton.targetGraphic = btnImg;
+            GameUiStyle.BindButtonClick(row.SetDestButton, () => OnSetDestinationClicked(row));
+
+            var btnLabelGo = CreateRect(btnGo, "Label");
+            Stretch(btnLabelGo);
+            row.SetDestLabel = btnLabelGo.gameObject.AddComponent<TextMeshProUGUI>();
+            row.SetDestLabel.fontSize = 11f * textScale;
+            row.SetDestLabel.fontStyle = FontStyles.UpperCase;
+            row.SetDestLabel.alignment = TextAlignmentOptions.Center;
+            row.SetDestLabel.color = Color.white;
+            row.SetDestLabel.raycastTarget = false;
+            GameUiStyle.ApplyButtonFont(row.SetDestLabel);
+
+            var driveGo = CreateRect(rowRect, "DriveButton");
+            LayoutRowButton(
+                driveGo,
+                RowSetButtonWidth + RowButtonGap + (showDeleteButton ? RowActionButtonSize + RowButtonGap : 0f),
+                RowSetButtonWidth,
+                buttonHeight);
+            var driveImg = GameUiStyle.CreateButtonGraphic(driveGo, textScale, GameUiStyle.ApplyButtonGreen, bleedBottom: false);
+            row.DriveButton = driveGo.gameObject.AddComponent<Button>();
+            row.DriveButton.targetGraphic = driveImg;
+            GameUiStyle.BindButtonClick(row.DriveButton, () => OnNavigateClicked(row));
+
+            var driveLabelGo = CreateRect(driveGo, "Label");
+            Stretch(driveLabelGo);
+            row.DriveLabel = driveLabelGo.gameObject.AddComponent<TextMeshProUGUI>();
+            row.DriveLabel.fontSize = 11f * textScale;
+            row.DriveLabel.fontStyle = FontStyles.UpperCase;
+            row.DriveLabel.alignment = TextAlignmentOptions.Center;
+            row.DriveLabel.color = Color.white;
+            row.DriveLabel.raycastTarget = false;
+            GameUiStyle.ApplyButtonFont(row.DriveLabel);
+            row.DriveLabel.text = ResolveMapActionLabel();
+
+            if (showDeleteButton)
+            {
+                row.DeleteButton = GameUiStyle.CreateRowCloseButton(
+                    rowRect, textScale, () => OnDeleteClicked(row));
+                LayoutRowButton(row.DeleteButton.GetComponent<RectTransform>(), 0f, RowActionButtonSize, buttonHeight);
+            }
+
+            return row;
+        }
+
+        private static float ComputeRowActionsWidth(bool showDeleteButton) =>
+            RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap + RowActionButtonSize +
+            (showDeleteButton ? RowButtonGap + RowActionButtonSize : 0f);
+
+        private static float ComputeRowDistanceRightInset(bool showDeleteButton) =>
+            ComputeRowActionsWidth(showDeleteButton) + RowDistanceToCenterGap;
+
+        private static float ComputeRowNameRightInset(bool showDeleteButton) =>
+            ComputeRowDistanceRightInset(showDeleteButton) + RowDistanceWidth + RowNameToDistanceGap;
+
+        private static void LayoutRowButton(RectTransform rect, float rightInset, float width, float height)
+        {
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.anchoredPosition = new Vector2(-rightInset, 0f);
+            rect.sizeDelta = new Vector2(width, height);
+        }
+
+        private static void BuildFooter(RectTransform panel, float textScale)
+        {
+            var addGo = CreateRect(panel, "AddButton");
+            _addFooterRect = addGo;
+            addGo.anchorMin = addGo.anchorMax = new Vector2(0.5f, 1f);
+            addGo.pivot = new Vector2(0.5f, 1f);
+            addGo.sizeDelta = new Vector2(HalfButtonWidth, NavPanelLayout.ButtonHeight);
+            var addImg = GameUiStyle.CreateButtonGraphic(addGo, textScale, GameUiStyle.ApplyButtonBlue);
+            var addBtn = addGo.gameObject.AddComponent<Button>();
+            addBtn.targetGraphic = addImg;
+            GameUiStyle.BindButtonClick(addBtn, OnAddBookmarkClicked);
+            _addButtonLabel = CreateButtonLabel(addGo, textScale);
+
+            var clearGo = CreateRect(panel, "ClearButton");
+            _clearFooterRect = clearGo;
+            clearGo.anchorMin = clearGo.anchorMax = new Vector2(0.5f, 1f);
+            clearGo.pivot = new Vector2(0.5f, 1f);
+            clearGo.sizeDelta = new Vector2(HalfButtonWidth, NavPanelLayout.ButtonHeight);
+            var clearImg = GameUiStyle.CreateButtonGraphic(clearGo, textScale, GameUiStyle.ApplyButtonRed);
+            var clearBtn = clearGo.gameObject.AddComponent<Button>();
+            clearBtn.targetGraphic = clearImg;
+            GameUiStyle.BindButtonClick(clearBtn, OnClearAllClicked);
+            _clearButtonLabel = CreateButtonLabel(clearGo, textScale);
+            ApplyPanelLayout();
+        }
+
+        private static void CreateHeaderHistoryButton(RectTransform header, float scale)
+        {
+            var size = NavPanelLayout.HeaderIconButtonSize * scale;
+            var rightInset = NavPanelLayout.ComputeHeaderIconRightInset(0, scale);
+
+            var rect = CreateRect(header, "HistoryButton");
+            rect.anchorMin = new Vector2(1f, 0.5f);
+            rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(1f, 0.5f);
+            rect.sizeDelta = new Vector2(size, size);
+            rect.anchoredPosition = new Vector2(-rightInset, NavPanelLayout.SettingsIconOffsetY * scale);
+
+            var buttonImage = GameUiStyle.CreateButtonGraphic(
+                rect, scale, GameUiStyle.ApplyButtonGrey, 1f, bleedBottom: false);
+            var button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = buttonImage;
+            GameUiStyle.BindButtonClick(button, (UnityAction)(() => VisitHistoryPanel.Toggle()));
+
+            var iconGo = CreateRect(rect, "Icon");
+            Stretch(iconGo);
+            iconGo.offsetMin = new Vector2(7f * scale, 7f * scale);
+            iconGo.offsetMax = new Vector2(-7f * scale, -7f * scale);
+            var icon = iconGo.gameObject.AddComponent<Image>();
+            icon.raycastTarget = false;
+            if (!GameUiStyle.TryApplyOverlayIcon(icon, GameUiStyle.ApplyHistoryIcon))
+            {
+                var fallbackGo = CreateRect(iconGo, "Fallback");
+                Stretch(fallbackGo);
+                var fallback = fallbackGo.gameObject.AddComponent<TextMeshProUGUI>();
+                fallback.text = "\u23F1";
+                fallback.fontSize = 18f * scale;
+                fallback.alignment = TextAlignmentOptions.Center;
+                fallback.color = Color.white;
+                fallback.raycastTarget = false;
+                GameUiStyle.ApplyTitleFont(fallback);
             }
         }
 
-        private static void AnchorBottomLeft(RectTransform panel)
+        private static TextMeshProUGUI CreateButtonLabel(RectTransform button, float scale)
         {
-            panel.anchorMin = panel.anchorMax = Vector2.zero;
-            panel.pivot = Vector2.zero;
-            panel.anchoredPosition = new Vector2(ScreenMarginX, ScreenBottomMargin);
+            var labelGo = CreateRect(button, "Label");
+            Stretch(labelGo);
+            var tmp = labelGo.gameObject.AddComponent<TextMeshProUGUI>();
+            tmp.fontSize = 14f * scale;
+            tmp.fontStyle = FontStyles.UpperCase;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+            tmp.raycastTarget = false;
+            GameUiStyle.ApplyButtonFont(tmp);
+            return tmp;
         }
 
         internal static void Tick()
@@ -350,7 +769,7 @@ namespace VoogleRoute.UI
                 ui.SetDestButton.interactable = CanSetDestination(RowKind.Vehicle, bookmark);
                 ApplyNavigateButtonState(ui, RowKind.Vehicle, bookmark);
                 ui.CenterButton.interactable = true;
-                ui.NameLabel.color = BaUi.Colors.Body;
+                ui.NameLabel.color = GameUiStyle.BodyTextColor;
                 ApplyRowDistanceLabel(ui);
                 RefreshRowTypeIcon(ui, bookmark);
             }
@@ -387,7 +806,7 @@ namespace VoogleRoute.UI
                 var ui = QuickRows[i];
                 ui.NameLabel.text = GetQuickRowTitle(ui.Kind);
                 var hasData = TryGetRowBookmark(ui, out var bookmark);
-                ui.NameLabel.color = hasData ? BaUi.Colors.Body : mutedName;
+                ui.NameLabel.color = hasData ? GameUiStyle.BodyTextColor : mutedName;
                 ui.CenterButton.interactable = hasData;
                 ui.SetDestButton.interactable = hasData && CanSetDestination(ui.Kind, bookmark);
                 ApplyNavigateButtonState(ui, ui.Kind, hasData ? bookmark : null);
@@ -772,7 +1191,7 @@ namespace VoogleRoute.UI
                 return;
 
             _pickMode = true;
-            BaUiFocus.ReleaseForMovement();
+            ModUiFocus.ReleaseForMovement();
             RefreshPickHint();
         }
 
@@ -785,7 +1204,7 @@ namespace VoogleRoute.UI
             if (IsTextInputSelected())
                 return;
 
-            BaUiFocus.ReleaseForMovement();
+            ModUiFocus.ReleaseForMovement();
         }
 
         private static bool IsTextInputSelected()
@@ -798,15 +1217,6 @@ namespace VoogleRoute.UI
         {
             _pickMode = false;
             RefreshPickHint();
-        }
-
-        internal static void SuppressForSubwayNavigation()
-        {
-            CancelPickMode();
-            CityMapBookmarkAddDialog.Close();
-            BookmarkRouteDistanceService.Cancel();
-            if (_root != null)
-                _root.SetActive(false);
         }
 
         private static void OnSearchChanged(string value)
@@ -951,6 +1361,61 @@ namespace VoogleRoute.UI
             RefreshList();
         }
 
+        private static RectTransform CreateRect(Transform parent, string name)
+        {
+            var go = new GameObject(name, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            return go.GetComponent<RectTransform>();
+        }
+
+        private static void Stretch(RectTransform rect)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
+        private static void DestroyLegacyRoot()
+        {
+            foreach (var name in new[]
+                     {
+                         "VoogleRoute_BookmarksPanel",
+                         "VoogleRoute_BookmarksPanel_v2",
+                         "VoogleRoute_BookmarksPanel_v3",
+                         "VoogleRoute_BookmarksPanel_v4",
+                         "VoogleRoute_BookmarksPanel_v5",
+                         "VoogleRoute_BookmarksPanel_v6",
+                         "VoogleRoute_BookmarksPanel_v7",
+                         "VoogleRoute_BookmarksPanel_v8",
+                         "VoogleRoute_BookmarksPanel_v9",
+                         "VoogleRoute_BookmarksPanel_v10",
+                         "VoogleRoute_BookmarksPanel_v11",
+                         "VoogleRoute_BookmarksPanel_v12",
+                         "VoogleRoute_BookmarksPanel_v13",
+                         "VoogleRoute_BookmarksPanel_v14",
+                         "VoogleRoute_BookmarksPanel_v15",
+                         "VoogleRoute_BookmarksPanel_v16",
+                         "VoogleRoute_BookmarksPanel_v17",
+                         "VoogleRoute_BookmarksPanel_v18",
+                         "VoogleRoute_BookmarksPanel_v19"
+                     })
+            {
+                var legacy = GameObject.Find(name);
+                if (legacy != null)
+                    Object.Destroy(legacy);
+            }
+        }
+
+        internal static void SuppressForSubwayNavigation()
+        {
+            CancelPickMode();
+            CityMapBookmarkAddDialog.Close();
+            BookmarkRouteDistanceService.Cancel();
+            if (_root != null)
+                _root.SetActive(false);
+        }
+
         internal static RectTransform GetVisualTestPanelRect() =>
             _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
 
@@ -970,8 +1435,14 @@ namespace VoogleRoute.UI
             VehicleRows.Clear();
             Rows.Clear();
             _panelRect = null;
-            _scrollList = null;
-            _panelHeight = 0f;
+            _contentPanel = null;
+            _searchBarRect = null;
+            _pickHintRect = null;
+            _addFooterRect = null;
+            _clearFooterRect = null;
+            _listScrollRect = null;
+            _listScrollContent = null;
+            _listScroll = null;
             _titleLabel = null;
             _searchField = null;
             _searchPlaceholder = null;
@@ -981,4 +1452,3 @@ namespace VoogleRoute.UI
         }
     }
 }
-

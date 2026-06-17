@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
-
-using Capisoft.Lib.BaUnifiedUI.Fluent;
+using UnityEngine.UI;
 
 namespace VoogleRoute.UI
 {
@@ -28,10 +27,41 @@ namespace VoogleRoute.UI
             if (_root != null)
                 return;
 
-            var built = BaUi.Banner(RootName, DefaultCanvasSortOrder, PanelWidth, PanelHeight, CenterYOffset);
-            _root = built.Root;
-            _canvas = built.Canvas;
-            _label = built.Label;
+            GameUiStyle.EnsureInitialized();
+
+            _root = new GameObject(RootName);
+            Object.DontDestroyOnLoad(_root);
+            GameStylePanelChrome.SetupOverlayCanvas(_root, DefaultCanvasSortOrder);
+            _canvas = _root.GetComponent<Canvas>();
+
+            var panel = new GameObject("Panel", typeof(RectTransform));
+            panel.transform.SetParent(_root.transform, false);
+            var rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, CenterYOffset);
+            rect.sizeDelta = new Vector2(PanelWidth, PanelHeight);
+
+            var bg = panel.AddComponent<Image>();
+            bg.raycastTarget = false;
+            GameUiStyle.ApplyPanelBg(bg);
+
+            var labelGo = new GameObject("Label", typeof(RectTransform));
+            labelGo.transform.SetParent(panel.transform, false);
+            var labelRect = labelGo.GetComponent<RectTransform>();
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = new Vector2(18f, 12f);
+            labelRect.offsetMax = new Vector2(-18f, -12f);
+
+            _label = labelGo.AddComponent<TextMeshProUGUI>();
+            _label.fontSize = 18f;
+            _label.fontStyle = FontStyles.Bold;
+            _label.color = GameUiStyle.TitleColor;
+            _label.alignment = TextAlignmentOptions.Center;
+            _label.raycastTarget = false;
+            GameUiStyle.ApplyTitleFont(_label);
+
             _root.SetActive(false);
         }
 
@@ -67,12 +97,6 @@ namespace VoogleRoute.UI
 
         internal static void Tick()
         {
-            if (GameState.IsSubwayNavigationActive())
-            {
-                ForceHide();
-                return;
-            }
-
             if (GameState.IsOverlayBlockingNavigation() && !_allowOnCityMap)
             {
                 ForceHide();

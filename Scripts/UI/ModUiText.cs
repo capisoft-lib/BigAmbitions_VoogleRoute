@@ -1,5 +1,4 @@
-using Capisoft.Lib.BaUnifiedUI.Fluent;
-using Capisoft.Lib.BaUnifiedUI.Localization;
+using Localizor;
 using UnityEngine;
 using VoogleRoute.Navigation;
 
@@ -26,8 +25,6 @@ namespace VoogleRoute.UI
             Loc("voogle_route_setting_foot_route_color", "On-foot route color");
         internal static string SettingVehicleRouteColor =>
             Loc("voogle_route_setting_vehicle_route_color", "Vehicle route color");
-        internal static string SettingIndoorRouteColor =>
-            Loc("voogle_route_setting_indoor_route_color", "Indoor route color");
         internal static string SettingChooseColor => Loc("voogle_route_setting_choose_color", "CHOOSE COLOR");
         internal static string SettingClose => Loc("voogle_route_setting_close", "CLOSE");
         internal static string ColorPresetNeonBlue => Loc("voogle_route_color_neon_blue", "Neon blue");
@@ -175,7 +172,7 @@ namespace VoogleRoute.UI
                 return;
             _nextLocalePoll = now + 0.5f;
 
-            var locale = BaUiText.ResolveLoadedLocale();
+            var locale = ResolveLoadedLocale();
             if (locale == _activeLocale)
                 return;
 

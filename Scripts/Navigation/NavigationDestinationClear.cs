@@ -18,7 +18,7 @@ namespace VoogleRoute.Navigation
 
             RouteLineRenderer.Hide();
             AutoWalkService.Reset();
-            RouteActionPanel.RefreshVisual();
+            RouteToggleHud.RefreshVisual();
         }
 
         private static void ClearVanillaMapDestination()
