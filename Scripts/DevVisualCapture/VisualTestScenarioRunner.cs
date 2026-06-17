@@ -38,8 +38,8 @@ namespace VoogleRoute
                     break;
 
                 case "refreshactionpanel":
-                    RouteToggleHud.UpdateVisibility();
-                    RouteToggleHud.RefreshVisual();
+                    RouteActionPanel.UpdateVisibility();
+                    RouteActionPanel.RefreshVisual();
                     break;
 
                 case "openvisithistory":

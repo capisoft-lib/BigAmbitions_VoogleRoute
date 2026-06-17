@@ -4,6 +4,8 @@ using Streets;
 using UnityEngine;
 using VoogleRoute.Navigation;
 
+using Capisoft.Lib.BaUnifiedUI.Fluent;
+
 namespace VoogleRoute.UI
 {
     internal readonly struct BookmarkRowIcon
@@ -146,11 +148,11 @@ namespace VoogleRoute.UI
         private static bool TryGetCarIcon(out BookmarkRowIcon rowIcon)
         {
             rowIcon = default;
-            GameUiStyle.EnsureInitialized();
-            if (!GameUiStyle.TryGetCarIcon(out var icon))
+            BaUi.EnsureReady();
+            if (!BaUi.TryGetCarIcon(out var icon))
                 return false;
 
-            rowIcon = new BookmarkRowIcon(icon, GameUiStyle.CarPoiBackgroundColor);
+            rowIcon = new BookmarkRowIcon(icon, BaUi.Colors.CarPoiBackground);
             return true;
         }
     }

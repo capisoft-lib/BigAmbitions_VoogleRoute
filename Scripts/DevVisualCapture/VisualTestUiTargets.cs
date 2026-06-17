@@ -34,7 +34,7 @@ namespace VoogleRoute
             switch (captureTarget.Trim().ToLowerInvariant())
             {
                 case "routeactionpanel":
-                    return TryPanelBounds(RouteToggleHud.GetVisualTestPanelRect(), marginPixels, out bounds);
+                    return TryPanelBounds(RouteActionPanel.GetVisualTestPanelRect(), marginPixels, out bounds);
 
                 case "mapbookmarkspanel":
                     return TryPanelBounds(CityMapBookmarksPanel.GetVisualTestPanelRect(), marginPixels, out bounds);

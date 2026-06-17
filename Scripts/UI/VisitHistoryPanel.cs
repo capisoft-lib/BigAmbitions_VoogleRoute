@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using Capisoft.Lib.BaUnifiedUI.Controls;
+using Capisoft.Lib.BaUnifiedUI.Core;
+using Capisoft.Lib.BaUnifiedUI.Fluent;
+using Capisoft.Lib.BaUnifiedUI.Layout;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using VoogleRoute;
 using VoogleRoute.Navigation;
@@ -16,31 +19,19 @@ namespace VoogleRoute.UI
         private const int CanvasSortOrder = 11050;
         private const float PanelWidth = 420f;
         private const float ScreenMarginX = 16f;
-        private const float ScreenBottomMargin = NavPanelLayout.ScreenMarginMinY;
+        private const float ScreenBottomMargin = BaUi.Layout.ScreenMarginMinY;
         private const float PanelGap = 8f;
         private const int VisibleListRowCount = 10;
-        private const float RowHeight = 34f;
-        private const float RowGap = 4f;
-        private const float RowTypeIconSize = 26f;
-        private const float RowActionButtonSize = 28f;
-        private const float RowSetButtonWidth = 44f;
-        private const float RowButtonGap = 2f;
-        private const float RowButtonPadY = 3f;
-        private const float RowDistanceWidth = 52f;
-        private const float RowDistanceToCenterGap = 6f;
-        private const float RowNameToDistanceGap = 6f;
 
         private static GameObject _root;
         private static RectTransform _panelRect;
-        private static RectTransform _closeButtonRect;
         private static TextMeshProUGUI _titleLabel;
-        private static RectTransform _listScrollRect;
-        private static RectTransform _listScrollContent;
-        private static ScrollRect _listScroll;
+        private static BaUiScrollList _scrollList;
         private static float _textScale = 1f;
+        private static float _panelHeight;
         private static bool _restoreAfterUnblock;
 
-        private static readonly List<RowUi> Rows = new List<RowUi>();
+        private static readonly List<HistoryRow> Rows = new List<HistoryRow>();
         private static readonly List<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)> DistanceRequests =
             new List<(BookmarkDistanceRowKey, BookmarkEntry)>();
         private static readonly Dictionary<BookmarkDistanceRowKey, string> DistanceCache =
@@ -50,47 +41,23 @@ namespace VoogleRoute.UI
 
         private sealed class HistoryRow
         {
-            internal GameObject Root;
-            internal GameObject TypeIconRoot;
-            internal Image TypeIcon;
-            internal TextMeshProUGUI NameLabel;
-            internal TextMeshProUGUI DistanceLabel;
-            internal Button CenterButton;
-            internal Image CenterButtonImage;
-            internal TextMeshProUGUI CenterFallbackLabel;
-            internal Button SetDestButton;
-            internal TextMeshProUGUI SetDestLabel;
-            internal Button AddButton;
-            internal TextMeshProUGUI AddLabel;
+            internal BaUiListRow Ui;
             internal int HistoryIndex = -1;
         }
 
         internal static bool IsOpen => _root != null && _root.activeSelf;
 
-        private static float ContentHorizontalInset => NavPanelLayout.ContentInset * 2f;
+        private static float ContentHorizontalInset => BaUi.Layout.ContentInset * 2f;
 
         private static float BodyContentTop =>
-            NavPanelLayout.HeaderHeight + NavPanelLayout.BodyTopPadding;
-
-        private static float ScrollViewportHeight =>
-            VisibleListRowCount * RowHeight + (VisibleListRowCount - 1) * RowGap;
-
-        private static float ComputePanelHeight() =>
-            NavPanelLayout.HeaderHeight +
-            NavPanelLayout.BodyTopPadding +
-            ScrollViewportHeight +
-            NavPanelLayout.BodyBottomPadding;
+            BaUi.Layout.HeaderHeight + BaUi.Layout.BodyTopPadding;
 
         internal static void EnsureCreated()
         {
-            DestroyLegacyRoot();
-
-            if (_root != null && _root.name != RootName)
-                Destroy();
-
+            VoogleRoutePanelLifecycle.DestroyIfStale(ref _root, RootName, Destroy);
             if (_root != null)
             {
-                GameStylePanelChrome.ApplyUiLayer(_root);
+                BaUi.ApplyLayer(_root);
                 if (_panelRect != null)
                 {
                     ApplyScreenAnchor();
@@ -100,75 +67,31 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            GameUiStyle.EnsureInitialized();
+            BaUi.EnsureReady();
             VisitHistoryStore.Changed += OnHistoryChanged;
 
-            _root = new GameObject(RootName);
-            Object.DontDestroyOnLoad(_root);
-            GameStylePanelChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
+            BaUiScrollList scrollList = null;
+            var built = BaUi.Overlay(RootName, CanvasSortOrder)
+                .Panel(BaPanelRecipe.WideMapPanel, PanelWidth)
+                .Header(h => h
+                    .TitleLeft(ModUiText.VisitHistoryTitle)
+                    .CloseButton(Close, CloseButtonExtraInset))
+                .Content(c => scrollList = c.ScrollList(VisibleListRowCount))
+                .Build();
 
-            var panelHeight = ComputePanelHeight();
-            var headerWiden = NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth);
-            var chrome = GameStylePanelChrome.Build(_root.transform, PanelWidth, panelHeight, "Panel", headerWiden);
-            _textScale = Mathf.Clamp(chrome.Scale, 0.85f, 1.15f);
-            _panelRect = chrome.Panel;
+            _root = built.Root;
+            _textScale = Mathf.Clamp(built.Scale, 0.85f, 1.15f);
+            _panelRect = built.Panel;
+            _panelHeight = built.PanelHeight;
+            _scrollList = scrollList;
             ApplyScreenAnchor();
 
-            var header = chrome.Header;
-            var titleGo = CreateRect(header, "Title");
-            titleGo.anchorMin = Vector2.zero;
-            titleGo.anchorMax = Vector2.one;
-            NavPanelLayout.ApplyHeaderTitleWithRightReserve(
-                titleGo,
-                _textScale,
-                GameUiStyle.ComputeHeaderCloseTitleReserve(_textScale, CloseButtonExtraInset));
-            _titleLabel = titleGo.gameObject.AddComponent<TextMeshProUGUI>();
-            _titleLabel.fontSize = NavPanelLayout.TitleFontSize * _textScale;
-            _titleLabel.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
-            _titleLabel.color = GameUiStyle.TitleColor;
-            _titleLabel.alignment = TextAlignmentOptions.Left;
-            GameUiStyle.ApplyTitleFont(_titleLabel);
+            _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
 
-            _closeButtonRect = GameUiStyle.CreateHeaderCloseButton(
-                header, _textScale, (UnityAction)Close, CloseButtonExtraInset).GetComponent<RectTransform>();
-
-            BuildListScroll(chrome.Panel);
-
-            GameStylePanelChrome.ApplyUiLayer(_root);
+            BaUi.ApplyLayer(_root);
             _root.SetActive(false);
             RefreshLocalizedText();
             RefreshList(fullDistanceRefresh: true);
-        }
-
-        private static void BuildListScroll(RectTransform panel)
-        {
-            var scrollGo = CreateRect(panel, "ListScroll");
-            _listScrollRect = scrollGo;
-            scrollGo.anchorMin = new Vector2(0f, 1f);
-            scrollGo.anchorMax = new Vector2(1f, 1f);
-            scrollGo.pivot = new Vector2(0.5f, 1f);
-            scrollGo.anchoredPosition = new Vector2(0f, -BodyContentTop);
-            scrollGo.sizeDelta = new Vector2(-ContentHorizontalInset, ScrollViewportHeight);
-
-            _listScroll = scrollGo.gameObject.AddComponent<ScrollRect>();
-            _listScroll.horizontal = false;
-            _listScroll.vertical = true;
-            _listScroll.movementType = ScrollRect.MovementType.Clamped;
-            _listScroll.scrollSensitivity = 24f;
-
-            var viewport = CreateRect(scrollGo, "Viewport");
-            Stretch(viewport);
-            viewport.gameObject.AddComponent<RectMask2D>();
-            _listScroll.viewport = viewport;
-
-            var content = CreateRect(viewport, "Content");
-            _listScrollContent = content;
-            content.anchorMin = new Vector2(0f, 1f);
-            content.anchorMax = new Vector2(1f, 1f);
-            content.pivot = new Vector2(0.5f, 1f);
-            content.anchoredPosition = Vector2.zero;
-            content.sizeDelta = Vector2.zero;
-            _listScroll.content = content;
         }
 
         private static void ApplyScreenAnchor()
@@ -199,23 +122,20 @@ namespace VoogleRoute.UI
                 return;
 
             SyncRows();
-            _panelRect.sizeDelta = new Vector2(PanelWidth, ComputePanelHeight());
-            GameStylePanelChrome.RestorePanelChrome(
-                _panelRect,
-                PanelWidth,
-                NavPanelLayout.ComputeWideMapPanelHeaderWidenTrim(PanelWidth));
+            _panelRect.sizeDelta = new Vector2(PanelWidth, _panelHeight);
+            BaUiWidgets.RestoreDockedPanelChrome(_panelRect, PanelWidth, wideMapPanel: true);
             UpdateScreenPosition();
 
-            if (_listScrollRect != null)
+            if (_scrollList?.Rect != null)
             {
-                _listScrollRect.anchoredPosition = new Vector2(0f, -BodyContentTop);
-                _listScrollRect.sizeDelta = new Vector2(-ContentHorizontalInset, ScrollViewportHeight);
+                _scrollList.Rect.anchoredPosition = new Vector2(0f, -BodyContentTop);
+                _scrollList.Rect.sizeDelta = new Vector2(-ContentHorizontalInset, BaUiListMetrics.ScrollViewportHeight(VisibleListRowCount));
             }
         }
 
         private static void SyncRows()
         {
-            if (_listScrollContent == null)
+            if (_scrollList?.Content == null)
                 return;
 
             EnsureHistoryRecipe();
@@ -269,178 +189,17 @@ namespace VoogleRoute.UI
 
         private static void LayoutListContent()
         {
-            if (_listScrollContent == null)
+            if (_scrollList?.Content == null)
                 return;
 
             var y = 0f;
-            var activeCount = 0;
-
-            for (var i = 0; i < Rows.Count; i++)
-            {
-                var row = Rows[i];
-                if (row?.Root == null || !row.Root.activeSelf)
-                    continue;
-
-                RepositionRow(row, -y);
-                y += RowHeight + RowGap;
-                activeCount++;
-            }
-
-            _listScrollContent.sizeDelta = new Vector2(
-                0f,
-                activeCount <= 0 ? 0f : activeCount * RowHeight + (activeCount - 1) * RowGap);
-        }
-
-        private static void RepositionRow(RowUi row, float rowTop)
-        {
-            if (row?.Root == null)
-                return;
-
-            var rowRect = row.Root.GetComponent<RectTransform>();
-            rowRect.anchoredPosition = new Vector2(0f, rowTop);
-            rowRect.sizeDelta = new Vector2(0f, RowHeight);
-        }
-
-        private static RowUi CreateRowUi(RectTransform panel, float textScale, string name)
-        {
-            var row = new RowUi();
-            row.Root = CreateRect(panel, name).gameObject;
-            var rowRect = row.Root.GetComponent<RectTransform>();
-            rowRect.anchorMin = new Vector2(0f, 1f);
-            rowRect.anchorMax = new Vector2(1f, 1f);
-            rowRect.pivot = new Vector2(0.5f, 1f);
-            rowRect.sizeDelta = new Vector2(-ContentHorizontalInset, RowHeight);
-
-            var buttonHeight = RowHeight - RowButtonPadY * 2f;
-
-            var iconGo = CreateRect(rowRect, "TypeIcon");
-            iconGo.anchorMin = iconGo.anchorMax = new Vector2(0f, 0.5f);
-            iconGo.pivot = new Vector2(0f, 0.5f);
-            iconGo.anchoredPosition = Vector2.zero;
-            iconGo.sizeDelta = new Vector2(RowTypeIconSize, RowTypeIconSize);
-            row.TypeIconRoot = iconGo.gameObject;
-
-            var iconFgGo = CreateRect(iconGo, "Foreground");
-            Stretch(iconFgGo);
-            iconFgGo.offsetMin = new Vector2(2f, 2f);
-            iconFgGo.offsetMax = new Vector2(-2f, -2f);
-            row.TypeIcon = iconFgGo.gameObject.AddComponent<Image>();
-            row.TypeIcon.raycastTarget = false;
-            row.TypeIcon.preserveAspect = true;
-            row.TypeIcon.color = Color.white;
-            row.TypeIconRoot.SetActive(false);
-
-            var nameRightInset = ComputeRowNameRightInset();
-            var nameGo = CreateRect(rowRect, "Name");
-            nameGo.anchorMin = Vector2.zero;
-            nameGo.anchorMax = new Vector2(1f, 1f);
-            nameGo.offsetMin = new Vector2(RowTypeIconSize + 4f, 0f);
-            nameGo.offsetMax = new Vector2(-nameRightInset, 0f);
-            row.NameLabel = nameGo.gameObject.AddComponent<TextMeshProUGUI>();
-            row.NameLabel.fontSize = 13f * textScale;
-            row.NameLabel.color = GameUiStyle.BodyTextColor;
-            row.NameLabel.alignment = TextAlignmentOptions.MidlineLeft;
-            row.NameLabel.overflowMode = TextOverflowModes.Ellipsis;
-            row.NameLabel.enableWordWrapping = false;
-            GameUiStyle.ApplyButtonFont(row.NameLabel);
-
-            var distGo = CreateRect(rowRect, "Distance");
-            distGo.anchorMin = new Vector2(1f, 0f);
-            distGo.anchorMax = new Vector2(1f, 1f);
-            distGo.pivot = new Vector2(1f, 0.5f);
-            distGo.anchoredPosition = new Vector2(-ComputeRowDistanceRightInset(), 0f);
-            distGo.sizeDelta = new Vector2(RowDistanceWidth, 0f);
-            row.DistanceLabel = distGo.gameObject.AddComponent<TextMeshProUGUI>();
-            row.DistanceLabel.fontSize = 12f * textScale;
-            row.DistanceLabel.color = GameUiStyle.MutedBodyTextColor;
-            row.DistanceLabel.alignment = TextAlignmentOptions.MidlineRight;
-            row.DistanceLabel.overflowMode = TextOverflowModes.Overflow;
-            GameUiStyle.ApplyButtonFont(row.DistanceLabel);
-
-            var centerGo = CreateRect(rowRect, "CenterButton");
-            LayoutRowButton(
-                centerGo,
-                RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap,
-                RowActionButtonSize,
-                buttonHeight);
-            row.CenterButtonImage = GameUiStyle.CreateButtonGraphic(
-                centerGo, textScale, GameUiStyle.ApplyButtonBlue, 1f, bleedBottom: false);
-            row.CenterButton = centerGo.gameObject.AddComponent<Button>();
-            row.CenterButton.targetGraphic = row.CenterButtonImage;
-            GameUiStyle.BindButtonClick(row.CenterButton, () => OnCenterClicked(row));
-
-            var centerIconGo = CreateRect(centerGo, "Icon");
-            Stretch(centerIconGo);
-            var iconPad = 6f * textScale;
-            centerIconGo.offsetMin = new Vector2(iconPad, iconPad);
-            centerIconGo.offsetMax = new Vector2(-iconPad, -iconPad);
-            var centerIcon = centerIconGo.gameObject.AddComponent<Image>();
-            centerIcon.raycastTarget = false;
-            if (!GameUiStyle.TryApplyOverlayIcon(centerIcon, GameUiStyle.ApplyFocusIcon))
-            {
-                var fallbackGo = CreateRect(centerIconGo, "Fallback");
-                Stretch(fallbackGo);
-                row.CenterFallbackLabel = fallbackGo.gameObject.AddComponent<TextMeshProUGUI>();
-                row.CenterFallbackLabel.text = "\u2295";
-                row.CenterFallbackLabel.fontSize = 14f * textScale;
-                row.CenterFallbackLabel.alignment = TextAlignmentOptions.Center;
-                row.CenterFallbackLabel.color = Color.white;
-                row.CenterFallbackLabel.raycastTarget = false;
-                GameUiStyle.ApplyButtonFont(row.CenterFallbackLabel);
-            }
-
-            var addGo = CreateRect(rowRect, "AddButton");
-            LayoutRowButton(addGo, RowSetButtonWidth + RowButtonGap, RowSetButtonWidth, buttonHeight);
-            var addImg = GameUiStyle.CreateButtonGraphic(addGo, textScale, GameUiStyle.ApplyButtonGreen, bleedBottom: false);
-            row.AddButton = addGo.gameObject.AddComponent<Button>();
-            row.AddButton.targetGraphic = addImg;
-            GameUiStyle.BindButtonClick(row.AddButton, () => OnAddBookmarkClicked(row));
-
-            var addLabelGo = CreateRect(addGo, "Label");
-            Stretch(addLabelGo);
-            row.AddLabel = addLabelGo.gameObject.AddComponent<TextMeshProUGUI>();
-            row.AddLabel.fontSize = 11f * textScale;
-            row.AddLabel.fontStyle = FontStyles.UpperCase;
-            row.AddLabel.alignment = TextAlignmentOptions.Center;
-            row.AddLabel.color = Color.white;
-            row.AddLabel.raycastTarget = false;
-            GameUiStyle.ApplyButtonFont(row.AddLabel);
-
-            var btnGo = CreateRect(rowRect, "SetDestButton");
-            LayoutRowButton(btnGo, 0f, RowSetButtonWidth, buttonHeight);
-            var btnImg = GameUiStyle.CreateButtonGraphic(btnGo, textScale, GameUiStyle.ApplyButtonBlue, bleedBottom: false);
-            row.SetDestButton = btnGo.gameObject.AddComponent<Button>();
-            row.SetDestButton.targetGraphic = btnImg;
-            GameUiStyle.BindButtonClick(row.SetDestButton, () => OnSetDestinationClicked(row));
-
-            var btnLabelGo = CreateRect(btnGo, "Label");
-            Stretch(btnLabelGo);
-            row.SetDestLabel = btnLabelGo.gameObject.AddComponent<TextMeshProUGUI>();
-            row.SetDestLabel.fontSize = 11f * textScale;
-            row.SetDestLabel.fontStyle = FontStyles.UpperCase;
-            row.SetDestLabel.alignment = TextAlignmentOptions.Center;
-            row.SetDestLabel.color = Color.white;
-            row.SetDestLabel.raycastTarget = false;
-            GameUiStyle.ApplyButtonFont(row.SetDestLabel);
-
-            return row;
-        }
-
-        private static float ComputeRowActionsWidth() =>
-            RowSetButtonWidth + RowButtonGap + RowSetButtonWidth + RowButtonGap + RowActionButtonSize;
-
-        private static float ComputeRowDistanceRightInset() =>
-            ComputeRowActionsWidth() + RowDistanceToCenterGap;
-
-        private static float ComputeRowNameRightInset() =>
-            ComputeRowDistanceRightInset() + RowDistanceWidth + RowNameToDistanceGap;
-
-        private static void LayoutRowButton(RectTransform rect, float rightInset, float width, float height)
-        {
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
-            rect.pivot = new Vector2(1f, 0.5f);
-            rect.anchoredPosition = new Vector2(-rightInset, 0f);
-            rect.sizeDelta = new Vector2(width, height);
+            var activeCount = BaUiListRowPools.LayoutHoldersInScroll(
+                _scrollList,
+                Rows,
+                r => r.Ui,
+                r => r.Ui.Root.activeSelf,
+                ref y);
+            _scrollList.LayoutRows(activeCount);
         }
 
         internal static void Open()
@@ -457,7 +216,7 @@ namespace VoogleRoute.UI
 
         internal static void Close()
         {
-            ModUiFocus.ReleaseForMovement();
+            BaUiFocus.ReleaseForMovement();
             if (_root != null)
                 _root.SetActive(false);
 
@@ -490,7 +249,7 @@ namespace VoogleRoute.UI
                 UpdateScreenPosition();
 
             if (!CityMapBookmarksPanel.BlocksMapInput)
-                ModUiFocus.ReleaseForMovement();
+                BaUiFocus.ReleaseForMovement();
 
             TickDistanceResults();
         }
@@ -508,6 +267,14 @@ namespace VoogleRoute.UI
         {
             if (_root == null)
                 return;
+
+            if (!ModConfig.DisplayOutsideEnabled)
+            {
+                if (IsOpen)
+                    Close();
+
+                return;
+            }
 
             if (!GameState.IsBlockingVisitHistory())
             {
@@ -540,12 +307,12 @@ namespace VoogleRoute.UI
         {
             for (var i = 0; i < Rows.Count; i++)
             {
-                var ui = Rows[i];
-                ui.HistoryIndex = i;
+                var row = Rows[i];
+                row.HistoryIndex = i;
                 var bookmark = VisitHistoryStore.GetAt(i);
                 if (bookmark == null)
                 {
-                    ui.Root.SetActive(false);
+                    row.Ui.SetActive(false);
                     continue;
                 }
 
@@ -566,8 +333,9 @@ namespace VoogleRoute.UI
             }
         }
 
-        private static void RefreshRowTypeIcon(RowUi ui, BookmarkEntry bookmark)
+        private static void RefreshRowTypeIcon(HistoryRow row, BookmarkEntry bookmark)
         {
+            var ui = row?.Ui;
             if (ui?.TypeIconRoot == null)
                 return;
 
@@ -579,7 +347,7 @@ namespace VoogleRoute.UI
                 ui.TypeIconRoot.SetActive(false);
         }
 
-        private static bool ApplyRowTypeIcon(RowUi ui, BookmarkRowIcon rowIcon)
+        private static bool ApplyRowTypeIcon(BaUiListRow ui, BookmarkRowIcon rowIcon)
         {
             if (!rowIcon.HasIcon)
                 return false;
@@ -602,8 +370,9 @@ namespace VoogleRoute.UI
             RequestDistanceRefresh(BookmarkRouteDistanceService.RequestCompute);
         }
 
-        private static void ApplyRowDistanceLabel(RowUi ui, BookmarkEntry bookmark)
+        private static void ApplyRowDistanceLabel(HistoryRow row, BookmarkEntry bookmark)
         {
+            var ui = row?.Ui;
             if (ui?.DistanceLabel == null)
                 return;
 
@@ -613,7 +382,7 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            var key = ToDistanceRowKey(ui);
+            var key = ToDistanceRowKey(row);
             if (DistanceCache.TryGetValue(key, out var cached))
                 ui.DistanceLabel.text = cached;
             else if (BookmarkRouteDistanceService.IsKeyPending(key))
@@ -629,19 +398,19 @@ namespace VoogleRoute.UI
 
             for (var i = 0; i < Rows.Count; i++)
             {
-                var ui = Rows[i];
-                if (ui?.Root == null || !ui.Root.activeSelf || ui.HistoryIndex < 0)
+                var row = Rows[i];
+                if (row?.Ui?.Root == null || !row.Ui.Root.activeSelf || row.HistoryIndex < 0)
                     continue;
 
-                var bookmark = VisitHistoryStore.GetAt(ui.HistoryIndex);
+                var bookmark = VisitHistoryStore.GetAt(row.HistoryIndex);
                 if (bookmark == null)
                     continue;
 
-                var key = ToDistanceRowKey(ui);
+                var key = ToDistanceRowKey(row);
                 if (DistanceCache.ContainsKey(key) || BookmarkRouteDistanceService.IsKeyPending(key))
                     continue;
 
-                ui.DistanceLabel.text = "…";
+                row.Ui.DistanceLabel.text = "…";
                 DistanceRequests.Add((key, bookmark));
             }
 
@@ -668,13 +437,13 @@ namespace VoogleRoute.UI
                 : "—";
             DistanceCache[result.Key] = text;
 
-            if (!TryFindRow(result.Key, out var ui) || ui?.DistanceLabel == null)
+            if (!TryFindRow(result.Key, out var row) || row?.Ui?.DistanceLabel == null)
                 return;
 
-            ui.DistanceLabel.text = text;
+            row.Ui.DistanceLabel.text = text;
         }
 
-        private static bool TryFindRow(BookmarkDistanceRowKey key, out RowUi row)
+        private static bool TryFindRow(BookmarkDistanceRowKey key, out HistoryRow row)
         {
             row = null;
             if (key.Kind != BookmarkDistanceRowKind.History)
@@ -693,14 +462,14 @@ namespace VoogleRoute.UI
             return false;
         }
 
-        private static BookmarkDistanceRowKey ToDistanceRowKey(RowUi ui) =>
+        private static BookmarkDistanceRowKey ToDistanceRowKey(HistoryRow row) =>
             new BookmarkDistanceRowKey
             {
                 Kind = BookmarkDistanceRowKind.History,
-                BookmarkIndex = ui.HistoryIndex
+                BookmarkIndex = row.HistoryIndex
             };
 
-        private static void OnCenterClicked(RowUi row)
+        private static void OnCenterClicked(HistoryRow row)
         {
             var bookmark = VisitHistoryStore.GetAt(row?.HistoryIndex ?? -1);
             if (bookmark == null)
@@ -709,7 +478,7 @@ namespace VoogleRoute.UI
             CityMapBookmarkFocusService.TryFocusBookmark(bookmark);
         }
 
-        private static void OnSetDestinationClicked(RowUi row)
+        private static void OnSetDestinationClicked(HistoryRow row)
         {
             var bookmark = VisitHistoryStore.GetAt(row?.HistoryIndex ?? -1);
             if (bookmark == null)
@@ -727,7 +496,7 @@ namespace VoogleRoute.UI
             VanillaDestinationService.SetMapDestination(bookmark.ToAddress());
         }
 
-        private static void OnAddBookmarkClicked(RowUi row)
+        private static void OnAddBookmarkClicked(HistoryRow row)
         {
             var bookmark = VisitHistoryStore.GetAt(row?.HistoryIndex ?? -1);
             if (bookmark == null)
@@ -779,38 +548,11 @@ namespace VoogleRoute.UI
 
             Rows.Clear();
             _panelRect = null;
-            _closeButtonRect = null;
             _titleLabel = null;
-            _listScrollRect = null;
-            _listScrollContent = null;
-            _listScroll = null;
+            _scrollList = null;
+            _panelHeight = 0f;
             _restoreAfterUnblock = false;
             _historyMapMode = false;
-        }
-
-        private static RectTransform CreateRect(Transform parent, string name)
-        {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            return go.GetComponent<RectTransform>();
-        }
-
-        private static void Stretch(RectTransform rect)
-        {
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-        }
-
-        private static void DestroyLegacyRoot()
-        {
-            foreach (var name in new[] { "VoogleRoute_VisitHistory", "VoogleRoute_VisitHistory_v1", "VoogleRoute_VisitHistory_v2", "VoogleRoute_VisitHistory_v3", "VoogleRoute_VisitHistory_v4", "VoogleRoute_VisitHistory_v5" })
-            {
-                var legacy = GameObject.Find(name);
-                if (legacy != null)
-                    Object.Destroy(legacy);
-            }
         }
     }
 }
