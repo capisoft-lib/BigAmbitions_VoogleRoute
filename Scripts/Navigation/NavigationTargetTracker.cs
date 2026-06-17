@@ -7,6 +7,7 @@ namespace VoogleRoute.Navigation
     internal static class NavigationTargetTracker
     {
         internal const string MapSource = "map.customDestination";
+        internal const string JobSource = "job.destination";
         internal const string ParkedVehicleSource = "parked.vehicle";
         internal const string WorldPositionSource = "world.position";
     
@@ -21,6 +22,11 @@ namespace VoogleRoute.Navigation
             SetTarget(target, MapSource);
         }
 
+        internal static void SetJobTarget(Vector3 target)
+        {
+            SetTarget(target, JobSource);
+        }
+
         internal static void SetParkedVehicleTarget(Vector3 target)
         {
             SetWorldPositionTarget(target, ParkedVehicleSource);
@@ -33,6 +39,7 @@ namespace VoogleRoute.Navigation
 
         internal static bool IsModNavigationSource =>
             LastSource == MapSource ||
+            LastSource == JobSource ||
             LastSource == ParkedVehicleSource ||
             LastSource == WorldPositionSource;
 
@@ -45,6 +52,7 @@ namespace VoogleRoute.Navigation
             HasTarget = true;
             LastSource = source;
             LastChangeTime = Time.unscaledTime;
+            NavigationAutoEnterService.NotifyTargetChanged();
             ModLog.Info("Navigation target set (" + source + "): " + target);
             PathFinderService.NotifyMapDestinationChanged();
         }

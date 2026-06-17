@@ -82,7 +82,26 @@ namespace VoogleRoute.Navigation
             if (HasWorldPosition && other.HasWorldPosition)
                 return (WorldPosition - other.WorldPosition).sqrMagnitude < 4f;
 
+            if (HasAddress && other.HasWorldPosition &&
+                TryResolveAddressWorld(out var myWorld) &&
+                (myWorld - other.WorldPosition).sqrMagnitude < 4f)
+                return true;
+
+            if (other.HasAddress && HasWorldPosition &&
+                other.TryResolveAddressWorld(out var otherWorld) &&
+                (WorldPosition - otherWorld).sqrMagnitude < 4f)
+                return true;
+
             return false;
+        }
+
+        private bool TryResolveAddressWorld(out Vector3 worldPos)
+        {
+            worldPos = default;
+            if (!HasAddress)
+                return false;
+
+            return DestinationResolver.TryResolveWorldPosition(ToAddress(), out worldPos);
         }
     }
 }

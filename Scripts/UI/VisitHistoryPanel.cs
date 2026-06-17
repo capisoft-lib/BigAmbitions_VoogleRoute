@@ -14,7 +14,7 @@ namespace VoogleRoute.UI
     /// <summary>Scrollable list of the 50 most recently visited buildings.</summary>
     internal static class VisitHistoryPanel
     {
-        private const string RootName = "VoogleRoute_VisitHistory_v19";
+        private const string RootName = "VoogleRoute_VisitHistory_v21";
         private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11050;
         private const float PanelWidth = 420f;
@@ -36,6 +36,8 @@ namespace VoogleRoute.UI
             new List<(BookmarkDistanceRowKey, BookmarkEntry)>();
         private static readonly Dictionary<BookmarkDistanceRowKey, string> DistanceCache =
             new Dictionary<BookmarkDistanceRowKey, string>();
+
+        private static bool _historyMapMode;
 
         private sealed class HistoryRow
         {
@@ -136,13 +138,15 @@ namespace VoogleRoute.UI
             if (_scrollList?.Content == null)
                 return;
 
+            EnsureHistoryRecipe();
+
             var needed = VisitHistoryStore.Count;
             BaUiListRowPools.SyncHolders(
                 Rows,
                 _scrollList.Content,
                 needed,
                 _textScale,
-                BaUiListRows.VisitHistory(),
+                CurrentHistoryTemplate(),
                 "Row",
                 (i, ui) =>
                 {
@@ -150,10 +154,37 @@ namespace VoogleRoute.UI
                     ui.Bind(
                         onCenter: () => OnCenterClicked(row),
                         onSetDestination: () => OnSetDestinationClicked(row),
-                        onAdd: () => OnAddBookmarkClicked(row));
+                        onAdd: () => OnAddBookmarkClicked(row),
+                        onDrive: () => OnNavigateClicked(row));
                     return row;
                 },
                 r => r.Ui);
+        }
+
+        private static BaUiListRowTemplate CurrentHistoryTemplate() =>
+            CityMapBookmarksPanel.IsVisible
+                ? BaUiListRows.VisitHistoryMap()
+                : BaUiListRows.VisitHistoryHud();
+
+        private static void EnsureHistoryRecipe()
+        {
+            var mapMode = CityMapBookmarksPanel.IsVisible;
+            if (mapMode == _historyMapMode && Rows.Count > 0)
+                return;
+
+            _historyMapMode = mapMode;
+            ClearRows();
+        }
+
+        private static void ClearRows()
+        {
+            for (var i = 0; i < Rows.Count; i++)
+            {
+                if (Rows[i]?.Ui?.Root != null)
+                    Object.Destroy(Rows[i].Ui.Root);
+            }
+
+            Rows.Clear();
         }
 
         private static void LayoutListContent()
@@ -210,6 +241,10 @@ namespace VoogleRoute.UI
             if (!IsOpen)
                 return;
 
+            var mapMode = CityMapBookmarksPanel.IsVisible;
+            if (mapMode != _historyMapMode)
+                RefreshList(fullDistanceRefresh: false);
+
             if (CityMapBookmarksPanel.IsVisible)
                 UpdateScreenPosition();
 
@@ -264,6 +299,7 @@ namespace VoogleRoute.UI
             ApplyPanelLayout();
             RefreshRows();
             LayoutListContent();
+            RefreshLocalizedText();
             RefreshDistances(fullDistanceRefresh);
         }
 
@@ -282,9 +318,15 @@ namespace VoogleRoute.UI
 
                 row.Ui.SetActive(true);
                 row.Ui.NameLabel.text = bookmark.DisplayName;
-                row.Ui.SetDestButton.interactable = bookmark.TryGetNavigationTarget(out _);
-                row.Ui.AddButton.interactable = BookmarkStore.CanAdd();
-                row.Ui.CenterButton.interactable = true;
+                var canNavigate = bookmark.TryGetNavigationTarget(out _);
+                if (row.Ui.SetDestButton != null)
+                    row.Ui.SetDestButton.interactable = canNavigate;
+                if (row.Ui.DriveButton != null)
+                    row.Ui.DriveButton.interactable = canNavigate;
+                if (row.Ui.AddButton != null)
+                    row.Ui.AddButton.interactable = BookmarkStore.CanAdd();
+                if (row.Ui.CenterButton != null)
+                    row.Ui.CenterButton.interactable = true;
                 row.Ui.NameLabel.color = BaUi.Colors.Body;
                 ApplyRowDistanceLabel(row, bookmark);
                 RefreshRowTypeIcon(row, bookmark);
@@ -463,6 +505,15 @@ namespace VoogleRoute.UI
             BookmarkPickService.TryOpenDialogFromBookmark(bookmark);
         }
 
+        private static void OnNavigateClicked(HistoryRow row)
+        {
+            var bookmark = VisitHistoryStore.GetAt(row?.HistoryIndex ?? -1);
+            if (bookmark == null)
+                return;
+
+            BookmarkQuickNavService.NavigateFromBookmark(bookmark);
+        }
+
         private static void OnHistoryChanged() => RefreshList();
 
         internal static void RefreshLocalizedText()
@@ -474,6 +525,8 @@ namespace VoogleRoute.UI
             {
                 if (Rows[i].Ui.SetDestLabel != null)
                     Rows[i].Ui.SetDestLabel.text = ModUiText.BookmarksSetDestination;
+                if (Rows[i].Ui.DriveLabel != null)
+                    Rows[i].Ui.DriveLabel.text = ModUiText.BookmarksDrive;
                 if (Rows[i].Ui.AddLabel != null)
                     Rows[i].Ui.AddLabel.text = ModUiText.VisitHistoryAdd;
             }
@@ -499,6 +552,7 @@ namespace VoogleRoute.UI
             _scrollList = null;
             _panelHeight = 0f;
             _restoreAfterUnblock = false;
+            _historyMapMode = false;
         }
     }
 }

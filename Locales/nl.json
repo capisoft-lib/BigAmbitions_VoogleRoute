@@ -38,7 +38,7 @@
   "voogle_route_map_dest_cancel": "ANNULEREN",
   "voogle_route_autodrive_popup_title": "AUTO RIJDEN",
   "voogle_route_autodrive_popup_body": "Geschatte reistijd: ~{minutes}\nGeschatte aankomst: {arrival}\nAfstand: ~{distance} m",
-  "voogle_route_autodrive_popup_confirm": "RIJDEN",
+  "voogle_route_autodrive_popup_confirm": "GO",
   "voogle_route_autodrive_popup_cancel": "ANNULEREN",
   "voogle_route_autodrive_no_route": "Geen route naar de bestemming.",
   "voogle_route_autodrive_too_close": "Je bent al dicht bij de bestemming.",
@@ -49,7 +49,7 @@
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
-  "voogle_route_bookmarks_drive": "RIJDEN",
+  "voogle_route_bookmarks_drive": "GO",
   "voogle_route_bookmarks_walk": "LOPEN",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
@@ -63,6 +63,6 @@
   "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
   "voogle_route_arrived_at_destination": "U bent op uw bestemming aangekomen",
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
-  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot",
+  "voogle_route_options_auto_enter_destination": "Automatisch instappen bij aankomst"
 }
-

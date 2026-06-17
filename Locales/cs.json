@@ -10,7 +10,7 @@
   "voogle_route_setting_route_color": "Barva linie trasy",
   "voogle_route_setting_foot_route_color": "Barva trasy pěšky",
   "voogle_route_setting_vehicle_route_color": "Barva trasy ve vozidle",
-  "voogle_route_setting_indoor_route_color": "Barva vnitrn� trasy",
+  "voogle_route_setting_indoor_route_color": "Barva vnitrn� trasy",
   "voogle_route_setting_choose_color": "VYBRAT BARVU",
   "voogle_route_setting_close": "ZAVŘÍT",
   "voogle_route_color_neon_blue": "Neonově modrá",
@@ -20,7 +20,7 @@
   "voogle_route_color_white": "Bílá",
   "voogle_route_options_route": "Zobrazit linii trasy",
   "voogle_route_options_autowalk": "Automaticky jít do cíle",
-  "voogle_route_options_use_subway": "Pou��vat metro",
+  "voogle_route_options_use_subway": "Pou��vat metro",
   "voogle_route_options_indoor_route": "Vnitřní linie trasy k východu",
   "voogle_route_options_indoor_autowalk": "Automatická chůze k východu",
   "voogle_route_options_base_taxi_multiplier": "Základní násobitel taxi",
@@ -38,7 +38,7 @@
   "voogle_route_map_dest_cancel": "ZRUŠIT",
   "voogle_route_autodrive_popup_title": "AUTO JÍZDA",
   "voogle_route_autodrive_popup_body": "Odhadovaná doba jízdy: ~{minutes}\nOdhadovaný příjezd: {arrival}\nVzdálenost: ~{distance} m",
-  "voogle_route_autodrive_popup_confirm": "JET",
+  "voogle_route_autodrive_popup_confirm": "GO",
   "voogle_route_autodrive_popup_cancel": "ZRUŠIT",
   "voogle_route_autodrive_no_route": "Žádná trasa do cíle.",
   "voogle_route_autodrive_too_close": "Už jste blízko cíle.",
@@ -49,7 +49,7 @@
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
-  "voogle_route_bookmarks_drive": "JEĎ",
+  "voogle_route_bookmarks_drive": "GO",
   "voogle_route_bookmarks_walk": "JDI",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
@@ -63,6 +63,6 @@
   "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
   "voogle_route_arrived_at_destination": "Dorazili jste do cíle",
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
-  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot",
+  "voogle_route_options_auto_enter_destination": "Automaticky vstup po prijezdu"
 }
-

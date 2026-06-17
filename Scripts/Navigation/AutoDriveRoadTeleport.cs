@@ -15,9 +15,23 @@ namespace VoogleRoute.Navigation
 
         private const float BridgeDeckMinY = 8f;
 
+        internal static bool IsElevatedRoadPoint(Vector3 point) => point.y >= BridgeDeckMinY;
+
+        internal static bool IsStreetLevelLane(float y) => y <= StreetLevelMaxY;
+
+        internal static bool IsStreetLevelDestination(float y) => y <= StreetLevelMaxY;
+
         internal static bool TryResolveRoadPose(
             Vector3 laneAnchor,
             Vector3 laneDirection,
+            out Vector3 position,
+            out Quaternion rotation) =>
+            TryResolveRoadPose(laneAnchor, laneDirection, preferStreetLevel: false, out position, out rotation);
+
+        internal static bool TryResolveRoadPose(
+            Vector3 laneAnchor,
+            Vector3 laneDirection,
+            bool preferStreetLevel,
             out Vector3 position,
             out Quaternion rotation)
         {
@@ -29,10 +43,27 @@ namespace VoogleRoute.Navigation
 
             rotation = Quaternion.LookRotation(forward, Vector3.up);
 
+            // Under stacked bridge decks the route polyline is already at street level (A* graph Y
+            // + VehicleGroundOffset). A downward raycast often only hits the bridge deck collider
+            // (~12–16 m) while heading from the polyline stays correct for the lane below.
+            if (preferStreetLevel)
+            {
+                position = laneAnchor;
+                return true;
+            }
+
             // CSV graph nodes are already lane-specific (e.g. Road_5-Lane_1 vs Lane_0 ~4 m apart).
             // A fixed lateral offset lands on the opposite-direction parallel lane.
-            if (!TryResolveDriveSurface(laneAnchor, out position))
+            if (!TryResolveDriveSurface(laneAnchor, preferStreetLevel, out position))
                 position = laneAnchor;
+
+            if (ModConfig.LoggingEnabled)
+            {
+                ModLog.Info(
+                    "Auto-drive teleport: anchorY=" + laneAnchor.y.ToString("F2") +
+                    " finalY=" + position.y.ToString("F2") +
+                    " streetLevel=" + preferStreetLevel);
+            }
 
             return position.sqrMagnitude > 0.01f;
         }
@@ -48,10 +79,6 @@ namespace VoogleRoute.Navigation
             vehicle.SavePosition();
         }
 
-        internal static bool IsElevatedRoadPoint(Vector3 point) => point.y >= BridgeDeckMinY;
-
-        internal static bool IsStreetLevelLane(float y) => y <= StreetLevelMaxY;
-
         private static bool TryFlattenDirection(Vector3 laneDirection, out Vector3 forward)
         {
             forward = laneDirection;
@@ -63,7 +90,7 @@ namespace VoogleRoute.Navigation
             return true;
         }
 
-        private static bool TryResolveDriveSurface(Vector3 laneAnchor, out Vector3 position)
+        private static bool TryResolveDriveSurface(Vector3 laneAnchor, bool preferStreetLevel, out Vector3 position)
         {
             position = laneAnchor;
             var roadMask = 1 << LayerHelper.RoadsLayerIndex;
@@ -75,8 +102,9 @@ namespace VoogleRoute.Navigation
             if (hits == null || hits.Length == 0)
                 return false;
 
+            var useStreetFilter = preferStreetLevel || IsStreetLevelLane(laneAnchor.y);
             var candidates = hits;
-            if (IsStreetLevelLane(laneAnchor.y))
+            if (useStreetFilter)
             {
                 var streetCount = 0;
                 for (var i = 0; i < hits.Length; i++)
@@ -101,15 +129,26 @@ namespace VoogleRoute.Navigation
             }
 
             var best = candidates[0];
-            var bestDy = Mathf.Abs(best.point.y - laneAnchor.y);
-            for (var i = 1; i < candidates.Length; i++)
+            if (preferStreetLevel)
             {
-                var dy = Mathf.Abs(candidates[i].point.y - laneAnchor.y);
-                if (dy >= bestDy)
-                    continue;
+                for (var i = 1; i < candidates.Length; i++)
+                {
+                    if (candidates[i].point.y < best.point.y)
+                        best = candidates[i];
+                }
+            }
+            else
+            {
+                var bestDy = Mathf.Abs(best.point.y - laneAnchor.y);
+                for (var i = 1; i < candidates.Length; i++)
+                {
+                    var dy = Mathf.Abs(candidates[i].point.y - laneAnchor.y);
+                    if (dy >= bestDy)
+                        continue;
 
-                bestDy = dy;
-                best = candidates[i];
+                    bestDy = dy;
+                    best = candidates[i];
+                }
             }
 
             position = best.point;

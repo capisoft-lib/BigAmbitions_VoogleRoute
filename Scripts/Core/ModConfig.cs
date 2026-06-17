@@ -25,6 +25,7 @@ namespace VoogleRoute
         private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
+        private const string AutoEnterDestinationKey = "auto_enter_destination";
     
         private static ModContext _context;
     
@@ -38,6 +39,7 @@ namespace VoogleRoute
         internal static bool UseSubwayEnabled { get; private set; } = true;
         internal static bool ForceCorrectSideArrivalEnabled { get; private set; }
         internal static bool AllowUturnAtStartEnabled { get; private set; }
+        internal static bool AutoEnterDestinationEnabled { get; private set; } = true;
     
         internal static float FootLineWidth { get; private set; } = 0.3f;
         internal static float IndoorFootLineWidth { get; private set; } = 0.12f;
@@ -91,7 +93,8 @@ namespace VoogleRoute
                 " indoor_autowalk=" + IndoorAutoWalkEnabled +
                 " use_subway=" + UseSubwayEnabled +
                 " force_correct_side=" + ForceCorrectSideArrivalEnabled +
-                " allow_uturn_at_start=" + AllowUturnAtStartEnabled);
+                " allow_uturn_at_start=" + AllowUturnAtStartEnabled +
+                " auto_enter_destination=" + AutoEnterDestinationEnabled);
 
             var options = new ModOptions()
                 .AddHeader("voogle_route_panel_title")
@@ -106,6 +109,8 @@ namespace VoogleRoute
                     AllowUturnAtStartEnabled, OnAllowUturnAtStartOptionChanged)
                 .AddToggle(RouteLineKey, "voogle_route_options_route", RouteLineEnabled, OnRouteLineOptionChanged)
                 .AddToggle(AutoWalkKey, "voogle_route_options_autowalk", AutoWalkEnabled, OnAutoWalkOptionChanged)
+                .AddToggle(AutoEnterDestinationKey, "voogle_route_options_auto_enter_destination",
+                    AutoEnterDestinationEnabled, OnAutoEnterDestinationOptionChanged)
                 .AddToggle(UseSubwayKey, "voogle_route_options_use_subway", UseSubwayEnabled, OnUseSubwayOptionChanged)
                 .AddSplitter()
                 .AddToggle(DisplayInsideKey, "voogle_route_options_display_inside", DisplayInsideEnabled,
@@ -185,25 +190,27 @@ namespace VoogleRoute
             RouteActionPanel.RefreshVisual();
         }
 
-        internal static void SetIndoorRouteLineEnabled(bool value)
+        internal static void SetIndoorRouteLineEnabled(bool value, bool persist = true)
         {
             if (IndoorRouteLineEnabled == value)
                 return;
 
             IndoorRouteLineEnabled = value;
-            ModConfigStore.SetIndoorRouteLineEnabled(value);
-            ModLog.Info("Indoor route line = " + value);
+            if (persist)
+                ModConfigStore.SetIndoorRouteLineEnabled(value);
+            ModLog.Info("Indoor route line = " + value + (persist ? "" : " (session)"));
             RouteActionPanel.RefreshVisual();
         }
 
-        internal static void SetIndoorAutoWalkEnabled(bool value)
+        internal static void SetIndoorAutoWalkEnabled(bool value, bool persist = true)
         {
             if (IndoorAutoWalkEnabled == value)
                 return;
 
             IndoorAutoWalkEnabled = value;
-            ModConfigStore.SetIndoorAutoWalkEnabled(value);
-            ModLog.Info("Indoor auto-walk = " + value);
+            if (persist)
+                ModConfigStore.SetIndoorAutoWalkEnabled(value);
+            ModLog.Info("Indoor auto-walk = " + value + (persist ? "" : " (session)"));
             RouteActionPanel.RefreshVisual();
         }
 
@@ -241,6 +248,19 @@ namespace VoogleRoute
 
         private static void OnAllowUturnAtStartOptionChanged(bool value) =>
             SetAllowUturnAtStartEnabled(value);
+
+        private static void OnAutoEnterDestinationOptionChanged(bool value) =>
+            SetAutoEnterDestinationEnabled(value);
+
+        internal static void SetAutoEnterDestinationEnabled(bool value)
+        {
+            if (AutoEnterDestinationEnabled == value)
+                return;
+
+            AutoEnterDestinationEnabled = value;
+            ModConfigStore.SetAutoEnterDestinationEnabled(value);
+            ModLog.Info("Auto-enter at destination = " + value);
+        }
 
         internal static void SetForceCorrectSideArrivalEnabled(bool value)
         {
@@ -343,6 +363,7 @@ namespace VoogleRoute
                 UseSubwayEnabled = data.UseSubway;
                 ForceCorrectSideArrivalEnabled = data.ForceCorrectSideArrival;
                 AllowUturnAtStartEnabled = data.AllowUturnAtStart;
+                AutoEnterDestinationEnabled = data.AutoEnterDestination;
                 BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
             }
             catch (Exception ex)

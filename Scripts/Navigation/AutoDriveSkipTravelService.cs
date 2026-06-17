@@ -91,6 +91,7 @@ namespace VoogleRoute.Navigation
         private static IEnumerator TravelCoroutine(AutoDriveSkipPlanner.Plan plan)
         {
             _inProgress = true;
+            var screenFaded = false;
 
             var vehicle = VehicleHelper.GetCurrentVehicleBase();
             if (vehicle == null)
@@ -101,12 +102,16 @@ namespace VoogleRoute.Navigation
             }
 
             yield return UiFader.Fade();
+            screenFaded = true;
 
             AutoDriveRoadTeleport.Apply(
                 vehicle,
                 plan.RouteLaneHint,
                 plan.TeleportPosition,
                 plan.TeleportRotation);
+
+            if (plan.UsesFuel)
+                AutoDriveVehicleFuel.ApplyConsumption(vehicle, plan.FuelUsedLiters);
 
             yield return null;
 
@@ -115,9 +120,12 @@ namespace VoogleRoute.Navigation
             InstanceBehavior<UIs>.Instance.timeMachine.StartTimeMachine(timestamp, disableCancel: true);
 
             yield return UiFader.UnFade();
-
+            screenFaded = false;
             _inProgress = false;
             RouteActionPanel.RefreshVisual();
+
+            if (screenFaded)
+                yield return UiFader.UnFade();
         }
 
         private static bool IsTimeMachineRunning()

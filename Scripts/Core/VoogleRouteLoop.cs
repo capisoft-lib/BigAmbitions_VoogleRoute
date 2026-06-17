@@ -113,7 +113,9 @@ namespace VoogleRoute
             VisitHistoryPanel.Tick();
             VisitHistoryPanel.TickOverlay();
             CityMapBookmarksPanel.Tick();
+            CityMapBuildingNavBar.Tick();
             CityMapClickService.Tick();
+            NavigationScreenRecovery.Tick();
 
             if (GameState.IsWorldReady() && !SubwayStationStore.TryEnsureLoaded())
                 SubwayStationStore.WarmUp();
@@ -121,7 +123,10 @@ namespace VoogleRoute
             BookmarkRouteDistanceService.TickMainThread();
 
             if (ShouldRefreshHud())
+            {
                 RouteActionPanel.UpdateVisibility();
+                NavigationHudDiagnostics.Tick();
+            }
 
             if (!GameState.IsPlayable())
             {
@@ -210,10 +215,10 @@ namespace VoogleRoute
                 RefreshRouteIfNavigating("navigation_resume");
 
             var canNavigate = CanNavigate();
-            NavigationArrivalService.Tick();
 
             if (!canNavigate || !navigationWanted)
             {
+                NavigationArrivalService.Tick();
                 CleanupNavigationState();
                 return;
             }
@@ -225,6 +230,8 @@ namespace VoogleRoute
 
             if (AutoWalkService.Tick(canNavigate, _activePath))
                 RouteActionPanel.RefreshVisual();
+
+            NavigationArrivalService.Tick();
         }
 
         private static void TickFootRouteRefresh(bool canNavigate, bool navigationWanted)
@@ -238,7 +245,15 @@ namespace VoogleRoute
             if (ModConfig.RouteLineEnabled && _activePath.Success && now >= _nextFootLineRefresh)
             {
                 _nextFootLineRefresh = now + 0.12f;
-                RouteLineRenderer.ShowPath(_activePath);
+                if (NavigationProximityService.IsNearActiveDestination())
+                {
+                    RouteLineRenderer.Hide();
+                    NavigationArrivalService.TryCompleteNearbyDestination();
+                }
+                else
+                {
+                    RouteLineRenderer.ShowPath(_activePath);
+                }
             }
 
             if (now < _nextFootPathRecalc)
@@ -254,8 +269,13 @@ namespace VoogleRoute
             AutoWalkService.Reset();
             if (ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(false);
+
+            if (ModConfig.RouteLineEnabled && !ModConfig.IndoorRouteLineEnabled)
+                ModConfig.SetIndoorRouteLineEnabled(true, persist: false);
+
             RouteSettingsUi.Close();
             VisitHistoryPanel.Close();
+            RouteActionPanel.RefreshVisual();
         }
 
         private static void OnEnterBuildingDelayed(Address address)
@@ -267,8 +287,9 @@ namespace VoogleRoute
         private static void OnExitBuilding(Address address)
         {
             _ = address;
-            IndoorNavigationService.Reset();
+            IndoorNavigationService.OnBuildingExited();
             PlayerNavigationRelease.Release();
+            NavigationArrivalService.TryCompleteNearbyDestination();
             RouteSettingsUi.Close();
         }
 
@@ -304,6 +325,13 @@ namespace VoogleRoute
 
             if (MovementModeDetector.ModeChangedSinceLastApply)
             {
+                if (MovementModeDetector.PreviousMode == MovementMode.Vehicle &&
+                    MovementModeDetector.CurrentMode == MovementMode.OnFoot)
+                {
+                    PlayerNavigationRelease.Release();
+                    ModLog.Info("Released mod navigation after exiting vehicle.");
+                }
+
                 InvalidateRouteCache("movement_mode_changed");
                 if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                     AutoWalkService.Reset();
@@ -359,6 +387,14 @@ namespace VoogleRoute
                 return;
             }
 
+            if (NavigationProximityService.IsNearActiveDestination())
+            {
+                RouteLineRenderer.Hide();
+                _activePath = PathResult.None;
+                NavigationArrivalService.TryCompleteNearbyDestination();
+                return;
+            }
+
             if (PathFinderService.IsAsyncRecalcInProgress)
                 return;
 
@@ -369,7 +405,7 @@ namespace VoogleRoute
             _activePath = PathFinderService.GetRoute(_forceRouteRecalc, requestSource);
             _forceRouteRecalc = false;
 
-            if (showLine)
+            if (showLine && !NavigationProximityService.IsNearActiveDestination())
                 RouteLineRenderer.ShowPath(_activePath);
             else
                 RouteLineRenderer.Hide();
@@ -462,10 +498,14 @@ namespace VoogleRoute
                 ? path
                 : PathResult.None;
 
-            if (showLine)
+            if (showLine && !NavigationProximityService.IsNearActiveDestination())
                 RouteLineRenderer.ShowPath(_activePath);
             else
+            {
                 RouteLineRenderer.Hide();
+                if (NavigationProximityService.IsNearActiveDestination())
+                    NavigationArrivalService.TryCompleteNearbyDestination();
+            }
         }
 
         private static void TickMapRouteOverlay()

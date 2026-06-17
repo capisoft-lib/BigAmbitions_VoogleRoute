@@ -38,7 +38,7 @@
   "voogle_route_map_dest_cancel": "キャンセル",
   "voogle_route_autodrive_popup_title": "自動運転",
   "voogle_route_autodrive_popup_body": "推定移動時間：~{minutes}\n推定到着時刻：{arrival}\n距離：~{distance} m",
-  "voogle_route_autodrive_popup_confirm": "運転",
+  "voogle_route_autodrive_popup_confirm": "GO",
   "voogle_route_autodrive_popup_cancel": "キャンセル",
   "voogle_route_autodrive_no_route": "目的地へのルートがありません。",
   "voogle_route_autodrive_too_close": "すでに目的地の近くにいます。",
@@ -49,7 +49,7 @@
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
-  "voogle_route_bookmarks_drive": "運転",
+  "voogle_route_bookmarks_drive": "GO",
   "voogle_route_bookmarks_walk": "徒歩",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
@@ -63,6 +63,6 @@
   "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
   "voogle_route_arrived_at_destination": "目的地に到着しました",
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
-  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot",
+  "voogle_route_options_auto_enter_destination": "到着時に自動で乗車・入室"
 }
-

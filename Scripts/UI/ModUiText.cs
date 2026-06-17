@@ -43,12 +43,18 @@ namespace VoogleRoute.UI
             Loc("voogle_route_map_dest_confirm", "SET DESTINATION");
         internal static string MapDestCancel =>
             Loc("voogle_route_map_dest_cancel", "CANCEL");
+        internal static string MapDriveThere =>
+            Loc("voogle_route_map_drive_there", "DRIVE THERE");
+        internal static string MapWalkThere =>
+            Loc("voogle_route_map_walk_there", "WALK THERE");
         internal static string AutoDrivePopupTitle =>
             Loc("voogle_route_autodrive_popup_title", "AUTO-DRIVE");
         internal static string AutoDrivePopupBody =>
             Loc("voogle_route_autodrive_popup_body", "Estimated travel time: ~{minutes}\nEstimated arrival: {arrival}\nDistance: ~{distance} m");
+        internal static string AutoDrivePopupFuel =>
+            Loc("voogle_route_autodrive_popup_fuel", "Fuel: ~{fuel} L");
         internal static string AutoDriveConfirm =>
-            Loc("voogle_route_autodrive_popup_confirm", "DRIVE");
+            Loc("voogle_route_autodrive_popup_confirm", "GO");
         internal static string AutoDriveCancel =>
             Loc("voogle_route_autodrive_popup_cancel", "CANCEL");
         internal static string BookmarksTitle =>
@@ -62,7 +68,7 @@ namespace VoogleRoute.UI
         internal static string BookmarksSetDestination =>
             Loc("voogle_route_bookmarks_set_dest", "SET");
         internal static string BookmarksDrive =>
-            Loc("voogle_route_bookmarks_drive", "DRIVE");
+            Loc("voogle_route_bookmarks_drive", "GO");
         internal static string BookmarksWalk =>
             Loc("voogle_route_bookmarks_walk", "WALK");
         internal static string BookmarksCenter =>
@@ -102,15 +108,27 @@ namespace VoogleRoute.UI
                 .Replace("{x}", Mathf.RoundToInt(worldPos.x).ToString())
                 .Replace("{z}", Mathf.RoundToInt(worldPos.z).ToString());
 
-        internal static string FormatAutoDrivePopupBody(float travelMinutes, float distanceMeters)
+        internal static string FormatAutoDrivePopupBody(
+            float travelMinutes,
+            float distanceMeters,
+            bool usesFuel,
+            float fuelUsedLiters)
         {
             var minutesText = FormatTravelMinutes(travelMinutes);
             var arrivalText = FormatArrivalTime(travelMinutes);
             var distanceText = Mathf.Max(0, Mathf.RoundToInt(distanceMeters)).ToString();
-            return AutoDrivePopupBody
+            var body = AutoDrivePopupBody
                 .Replace("{minutes}", minutesText)
                 .Replace("{arrival}", arrivalText)
                 .Replace("{distance}", distanceText);
+
+            if (!usesFuel || fuelUsedLiters <= 0f)
+                return body;
+
+            var fuelText = fuelUsedLiters < 10f
+                ? fuelUsedLiters.ToString("0.#")
+                : Mathf.RoundToInt(fuelUsedLiters).ToString();
+            return body + "\n" + AutoDrivePopupFuel.Replace("{fuel}", fuelText);
         }
 
         private static string FormatTravelMinutes(float travelMinutes)
@@ -162,6 +180,7 @@ namespace VoogleRoute.UI
                 return;
 
             _activeLocale = locale;
+            ModLocaleLookup.Invalidate();
             RouteActionPanel.RefreshLocalizedText();
             RouteSettingsUi.RefreshLocalizedText();
             RouteRecalcBanner.RefreshLocalizedText();
@@ -169,8 +188,14 @@ namespace VoogleRoute.UI
             CityMapBookmarksPanel.RefreshLocalizedText();
             CityMapBookmarkAddDialog.RefreshLocalizedText();
             VisitHistoryPanel.RefreshLocalizedText();
+            CityMapBuildingNavBar.RefreshLocalizedText();
         }
 
-        private static string Loc(string key, string fallback) => BaUiText.Loc(key, fallback);
+        private static string Loc(string key, string fallback)
+        {
+            if (ModLocaleLookup.TryGet(key, out var fromMod))
+                return fromMod;
+            return BaUiText.Loc(key, fallback);
+        }
     }
 }

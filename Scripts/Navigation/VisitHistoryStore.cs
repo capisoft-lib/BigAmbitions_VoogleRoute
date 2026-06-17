@@ -33,6 +33,9 @@ namespace VoogleRoute.Navigation
                 if (BookmarkStore.TryEntryFromConfig(saved[i], out var entry))
                     Entries.Add(entry);
             }
+
+            if (DeduplicateEntries())
+                Persist();
         }
 
         internal static void OnEnterBuildingDelayed(Address address)
@@ -50,26 +53,62 @@ namespace VoogleRoute.Navigation
                 if (!TryCreateFromRegistration(address, registration, out var entry))
                     return;
 
-                for (var i = Entries.Count - 1; i >= 0; i--)
-                {
-                    if (Entries[i].SamePlaceAs(entry))
-                    {
-                        Entries.RemoveAt(i);
-                        break;
-                    }
-                }
-
-                Entries.Insert(0, entry);
-                while (Entries.Count > MaxCount)
-                    Entries.RemoveAt(Entries.Count - 1);
-
-                Persist();
-                Changed?.Invoke();
+                InsertUniqueAtFront(entry);
             }
             catch (Exception ex)
             {
                 ModLog.Error("Visit history enter-building handler failed", ex);
             }
+        }
+
+        private static void InsertUniqueAtFront(BookmarkEntry entry)
+        {
+            for (var i = Entries.Count - 1; i >= 0; i--)
+            {
+                if (Entries[i].SamePlaceAs(entry))
+                {
+                    Entries.RemoveAt(i);
+                    break;
+                }
+            }
+
+            Entries.Insert(0, entry);
+            while (Entries.Count > MaxCount)
+                Entries.RemoveAt(Entries.Count - 1);
+
+            Persist();
+            Changed?.Invoke();
+        }
+
+        /// <summary>Keeps the first (most recent) entry per place; returns true if any duplicate was removed.</summary>
+        private static bool DeduplicateEntries()
+        {
+            if (Entries.Count < 2)
+                return false;
+
+            var removed = false;
+            for (var i = 0; i < Entries.Count; i++)
+            {
+                for (var j = Entries.Count - 1; j > i; j--)
+                {
+                    if (!Entries[i].SamePlaceAs(Entries[j]))
+                        continue;
+
+                    Entries.RemoveAt(j);
+                    removed = true;
+                }
+            }
+
+            while (Entries.Count > MaxCount)
+            {
+                Entries.RemoveAt(Entries.Count - 1);
+                removed = true;
+            }
+
+            if (removed)
+                Changed?.Invoke();
+
+            return removed;
         }
 
         internal static void Clear() => Entries.Clear();

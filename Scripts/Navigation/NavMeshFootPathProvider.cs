@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using VoogleRoute;
@@ -15,23 +14,37 @@ namespace VoogleRoute.Navigation
 
         internal static NavMeshFootPathProvider Instance { get; } = new();
 
-        public bool TryBuildFootLeg(Vec3 origin, Vec3 target, Vec3 sampleOrigin, out FootLegResult leg)
+        public bool TryBuildFootLeg(
+            Vec3 origin,
+            Vec3 target,
+            Vec3 sampleOrigin,
+            FootLegPurpose purpose,
+            out FootLegResult leg)
         {
             leg = new FootLegResult();
             NavMeshPathStatus status;
 
-            if (!FootRouteCalculator.TryCalculate(
-                    ToUnity(origin), ToUnity(target), ToUnity(sampleOrigin), NavPath, out _, out status))
-                return false;
+            var unityOrigin = ToUnity(origin);
+            var unityTarget = ToUnity(target);
+            var unitySample = ToUnity(sampleOrigin);
 
-            if (status == NavMeshPathStatus.PathInvalid)
+            var calculateOk = purpose == FootLegPurpose.DirectToDestination
+                ? VanillaFootRouteCalculator.TryCalculateComplete(
+                    unityOrigin, unityTarget, unitySample, NavPath, out status)
+                : FootRouteCalculator.TryCalculate(
+                    unityOrigin, unityTarget, unitySample, NavPath, out _, out status);
+
+            if (!calculateOk || status == NavMeshPathStatus.PathInvalid)
                 return false;
 
             var corners = NavPath.corners;
             if (corners == null || corners.Length == 0)
                 return false;
 
-            var linePoints = FootPathPipeline.BuildLinePoints(corners, ToUnity(origin));
+            var linePoints = purpose == FootLegPurpose.DirectToDestination
+                ? FootPathPipeline.BuildVanillaLinePoints(corners, ModConfig.FootGroundOffset)
+                : FootPathPipeline.BuildLinePoints(corners, unityOrigin);
+
             if (linePoints.Length < 2)
                 return false;
 

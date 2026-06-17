@@ -10,7 +10,6 @@ namespace VoogleRoute.Navigation
     {
         private const float FootArrivalRadiusMeters = 7f;
         private const float VehicleArrivalRadiusMeters = 25f;
-        private const float MinTravelBeforeAnnounceMeters = 35f;
 
         private static float _trackedTargetChangeTime = -1f;
         private static bool _armed;
@@ -21,6 +20,31 @@ namespace VoogleRoute.Navigation
             _trackedTargetChangeTime = -1f;
             _armed = false;
             _announced = false;
+            NavigationAutoEnterService.Reset();
+        }
+
+        internal static void TryCompleteNearbyDestination()
+        {
+            if (_announced || !NavigationTargetTracker.HasMapGpsTarget)
+                return;
+
+            if (MovementModeDetector.CurrentMode is not (MovementMode.OnFoot or MovementMode.Vehicle))
+                return;
+
+            if (!TryGetHorizontalPosition(out var position))
+                return;
+
+            var destination = NavigationTargetTracker.ActiveTarget;
+            var distance = HorizontalDistance(position, destination);
+            var radius = MovementModeDetector.CurrentMode == MovementMode.Vehicle
+                ? VehicleArrivalRadiusMeters
+                : FootArrivalRadiusMeters;
+
+            if (distance > radius)
+                return;
+
+            AnnounceArrival();
+            _announced = true;
         }
 
         internal static void Tick()
@@ -57,18 +81,26 @@ namespace VoogleRoute.Navigation
                 ? VehicleArrivalRadiusMeters
                 : FootArrivalRadiusMeters;
 
-            if (distance > Mathf.Max(MinTravelBeforeAnnounceMeters, radius * 2f))
+            if (distance > radius)
+            {
                 _armed = true;
+                return;
+            }
 
-            if (!_armed || distance > radius)
+            if (!_armed && Time.unscaledTime - targetChange < 0.75f)
                 return;
 
-            AnnounceArrival();
-            _announced = true;
+            TryCompleteNearbyDestination();
         }
 
         private static void AnnounceArrival()
         {
+            AutoWalkService.PrepareForDestinationArrival();
+
+            var target = NavigationTargetTracker.ActiveTarget;
+            var source = NavigationTargetTracker.LastSource;
+            NavigationAutoEnterService.TryOnArrival(target, source);
+
             try
             {
                 Notifications.Show(

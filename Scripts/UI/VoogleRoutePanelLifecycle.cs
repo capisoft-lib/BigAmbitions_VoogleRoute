@@ -23,6 +23,7 @@ namespace VoogleRoute.UI
             "VoogleRoute_VisitHistory",
             "VoogleRoute_Settings",
             "VoogleRoute_MapDestPopup",
+            "VoogleRoute_MapBuildingNav",
             "VoogleRoute_AutoDrivePopup",
             "VoogleRoute_BookmarkAddDialog",
         };

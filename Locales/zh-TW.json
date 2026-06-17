@@ -38,7 +38,7 @@
   "voogle_route_map_dest_cancel": "取消",
   "voogle_route_autodrive_popup_title": "自動駕駛",
   "voogle_route_autodrive_popup_body": "預計行程時間：~{minutes}\n預計到達時間：{arrival}\n距離：~{distance} m",
-  "voogle_route_autodrive_popup_confirm": "駕駛",
+  "voogle_route_autodrive_popup_confirm": "GO",
   "voogle_route_autodrive_popup_cancel": "取消",
   "voogle_route_autodrive_no_route": "沒有通往目的地的路線。",
   "voogle_route_autodrive_too_close": "您已接近目的地。",
@@ -49,7 +49,7 @@
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
-  "voogle_route_bookmarks_drive": "駕駛",
+  "voogle_route_bookmarks_drive": "GO",
   "voogle_route_bookmarks_walk": "步行",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
@@ -63,6 +63,6 @@
   "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
   "voogle_route_arrived_at_destination": "您已到達目的地",
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
-  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot",
+  "voogle_route_options_auto_enter_destination": "到達時自動進入"
 }
-

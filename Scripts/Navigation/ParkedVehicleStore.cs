@@ -1,5 +1,7 @@
 using BaPlayerLocation.Subscriber;
+using Helpers;
 using UnityEngine;
+using VoogleRoute;
 
 namespace VoogleRoute.Navigation
 {
@@ -22,7 +24,12 @@ namespace VoogleRoute.Navigation
             in PlayerLocationSnapshot snapshot)
         {
             if (snapshot.IsAvailable && snapshot.MovementKind == MovementKind.Car)
-                _lastVehiclePosition = snapshot.Position;
+            {
+                if (TryGetDriverEntranceFromSelectedVehicle(out var driverPos))
+                    _lastVehiclePosition = driverPos;
+                else
+                    _lastVehiclePosition = snapshot.Position;
+            }
 
             if (previous != MovementMode.Vehicle || current != MovementMode.OnFoot)
                 return;
@@ -77,11 +84,8 @@ namespace VoogleRoute.Navigation
             try
             {
                 var vehicle = GameManager.Instance?.selectedVehicle;
-                if (vehicle != null)
-                {
-                    position = vehicle.transform.position;
-                    return position.sqrMagnitude > 0.01f;
-                }
+                if (vehicle != null && VehicleEntranceHelper.TryGetDriverEntrancePosition(vehicle, out position))
+                    return true;
             }
             catch
             {
@@ -90,6 +94,20 @@ namespace VoogleRoute.Navigation
 
             position = default;
             return false;
+        }
+
+        private static bool TryGetDriverEntranceFromSelectedVehicle(out Vector3 position)
+        {
+            position = default;
+            try
+            {
+                var vehicle = GameManager.Instance?.selectedVehicle;
+                return vehicle != null && VehicleEntranceHelper.TryGetDriverEntrancePosition(vehicle, out position);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

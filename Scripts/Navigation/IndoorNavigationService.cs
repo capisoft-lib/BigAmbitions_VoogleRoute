@@ -66,19 +66,21 @@ namespace VoogleRoute.Navigation
 
             _wasIndoorActive = false;
             _forceRecalc = false;
-            var hadAutoWalk = ModConfig.IndoorAutoWalkEnabled;
-            var hadRouteLine = ModConfig.IndoorRouteLineEnabled;
             CleanupNavigationState();
             IndoorPathFinderService.InvalidateCache();
+        }
 
-            if (hadAutoWalk || hadRouteLine)
-            {
-                if (hadAutoWalk)
-                    ModConfig.SetIndoorAutoWalkEnabled(false);
-                if (hadRouteLine)
-                    ModConfig.SetIndoorRouteLineEnabled(false);
-                RouteActionPanel.RefreshVisual();
-            }
+        /// <summary>Clears indoor navigation session state after leaving a building.</summary>
+        internal static void OnBuildingExited()
+        {
+            Reset();
+            IndoorAutoWalkService.Reset();
+            RouteLineRenderer.Hide();
+
+            if (ModConfig.IndoorAutoWalkEnabled)
+                ModConfig.SetIndoorAutoWalkEnabled(false, persist: false);
+
+            RouteActionPanel.RefreshVisual();
         }
 
         private static bool CanNavigate()

@@ -38,7 +38,7 @@
   "voogle_route_map_dest_cancel": "CANCELAR",
   "voogle_route_autodrive_popup_title": "CONDUCCIÓN AUTO",
   "voogle_route_autodrive_popup_body": "Tiempo de viaje estimado: ~{minutes}\nLlegada estimada: {arrival}\nDistancia: ~{distance} m",
-  "voogle_route_autodrive_popup_confirm": "CONDUCIR",
+  "voogle_route_autodrive_popup_confirm": "GO",
   "voogle_route_autodrive_popup_cancel": "CANCELAR",
   "voogle_route_autodrive_no_route": "No hay ruta hacia el destino.",
   "voogle_route_autodrive_too_close": "Ya estás cerca del destino.",
@@ -49,7 +49,7 @@
   "voogle_route_bookmarks_add": "ADD BOOKMARK",
   "voogle_route_bookmarks_clear_all": "CLEAR ALL",
   "voogle_route_bookmarks_set_dest": "SET",
-  "voogle_route_bookmarks_drive": "CONDUCIR",
+  "voogle_route_bookmarks_drive": "GO",
   "voogle_route_bookmarks_walk": "CAMINAR",
   "voogle_route_bookmarks_center": "CENTER",
   "voogle_route_bookmarks_last_car": "Last Car",
@@ -63,6 +63,6 @@
   "voogle_route_bookmark_coords": "Coordinates: {x}, {z}",
   "voogle_route_arrived_at_destination": "Ha llegado a su destino",
   "voogle_route_subway_board_hint": "Take the subway to {station} (\\)",
-  "voogle_route_subway_continue": "Subway ride complete — continuing on foot"
+  "voogle_route_subway_continue": "Subway ride complete — continuing on foot",
+  "voogle_route_options_auto_enter_destination": "Entrada automatica al llegar"
 }
-

@@ -105,6 +105,9 @@ namespace VoogleRoute.Navigation
                 var rideDeadline = Time.unscaledTime + RideStartTimeoutSeconds;
                 while (!SubwaySystem.IsRiding && Time.unscaledTime < rideDeadline)
                     yield return null;
+
+                if (SubwaySystem.IsRiding)
+                    yield return CloseCityMapAfterSubwayBoarding(cityMap);
             }
             finally
             {
@@ -112,9 +115,26 @@ namespace VoogleRoute.Navigation
             }
         }
 
+        private static IEnumerator CloseCityMapAfterSubwayBoarding(CityMap cityMap)
+        {
+            yield return null;
+
+            if (cityMap.isSubwayMode)
+                cityMap.ToggleSubwayMode(false);
+
+            yield return null;
+
+            if (CityMap.IsOpen)
+            {
+                cityMap.Toggle();
+                ModLog.Info("City map closed after subway auto-board.");
+            }
+        }
+
         private static void SuppressVoogleMapUi()
         {
             CityMapBookmarksPanel.SuppressForSubwayNavigation();
+            CityMapBuildingNavBar.Suppress();
             CityMapBookmarkAddDialog.Close();
             RouteRecalcBanner.ForceHide();
             VisitHistoryPanel.Close();

@@ -43,6 +43,9 @@ namespace VoogleRoute
             {
                 if (UndergroundParkingManager.IsInsideParking)
                     return false;
+
+                if (BuildingManager.IsInsideBuilding)
+                    return true;
             }
             catch
             {
@@ -134,6 +137,9 @@ namespace VoogleRoute
         {
             try
             {
+                if (IsBizManBusinessPanelOpen())
+                    return true;
+
                 if (FullMenu.IsOpen)
                     return true;
 
@@ -175,6 +181,26 @@ namespace VoogleRoute
             }
 
             return false;
+        }
+
+        /// <summary>BizMan business view open on the city map (FullMenu may lag behind bizMan.business activation).</summary>
+        private static bool IsBizManBusinessPanelOpen()
+        {
+            try
+            {
+                if (!InstanceBehavior<UIs>.IsInitialized)
+                    return false;
+
+                var business = InstanceBehavior<UIs>.Instance?.fullMenu?.bizMan?.business;
+                if (business == null)
+                    return false;
+
+                return business.gameObject.activeInHierarchy && business.gameObject.activeSelf;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>Route overlay on the 3D city map (M) — independent from ground navigation.</summary>
@@ -287,9 +313,11 @@ namespace VoogleRoute
         {
             if (!IsWorldReady())
                 return false;
-    
+
             return !IsInsideInterior();
         }
+
+        internal static bool IsInsideInteriorForDiagnostics() => IsInsideInterior();
     
         private static bool IsInsideInterior()
         {

@@ -116,7 +116,9 @@ namespace VoogleRoute.UI
             {
                 _bodyLabel.text = ModUiText.FormatAutoDrivePopupBody(
                     _pendingPlan.TravelMinutes,
-                    _pendingPlan.DistanceMeters);
+                    _pendingPlan.DistanceMeters,
+                    _pendingPlan.UsesFuel,
+                    _pendingPlan.FuelUsedLiters);
             }
         }
 

@@ -48,6 +48,9 @@ namespace VoogleRoute
 
                     if (!json.Contains("\"use_subway\"", StringComparison.Ordinal))
                         _data.UseSubway = true;
+
+                    if (!json.Contains("\"auto_enter_destination\"", StringComparison.Ordinal))
+                        _data.AutoEnterDestination = true;
                 }
 
                 EnsureDefaults(_data);
@@ -154,6 +157,12 @@ namespace VoogleRoute
             Save();
         }
 
+        internal static void SetAutoEnterDestinationEnabled(bool value)
+        {
+            _data.AutoEnterDestination = value;
+            Save();
+        }
+
         internal static void StripBookmarkDataAndSave()
         {
             _data.Bookmarks = null;
@@ -179,6 +188,7 @@ namespace VoogleRoute
                 UseSubway = true,
                 ForceCorrectSideArrival = false,
                 AllowUturnAtStart = false,
+                AutoEnterDestination = true,
                 BaseTaxiMultiplier = 2
             };
         }
@@ -318,6 +328,9 @@ namespace VoogleRoute
 
         [JsonPropertyName("allow_uturn_at_start")]
         public bool AllowUturnAtStart { get; set; }
+
+        [JsonPropertyName("auto_enter_destination")]
+        public bool AutoEnterDestination { get; set; } = true;
 
         [JsonPropertyName("bookmarks")]
         public List<BookmarkConfigEntry> Bookmarks { get; set; }

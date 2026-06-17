@@ -13,6 +13,8 @@ namespace VoogleRoute.Navigation
             internal readonly bool Success;
             internal readonly float DistanceMeters;
             internal readonly float TravelMinutes;
+            internal readonly bool UsesFuel;
+            internal readonly float FuelUsedLiters;
             internal readonly Vector3 RouteLaneHint;
             internal readonly Vector3 TeleportPosition;
             internal readonly Quaternion TeleportRotation;
@@ -22,6 +24,8 @@ namespace VoogleRoute.Navigation
                 bool success,
                 float distanceMeters,
                 float travelMinutes,
+                bool usesFuel,
+                float fuelUsedLiters,
                 Vector3 routeLaneHint,
                 Vector3 teleportPosition,
                 Quaternion teleportRotation,
@@ -30,6 +34,8 @@ namespace VoogleRoute.Navigation
                 Success = success;
                 DistanceMeters = Mathf.Max(0f, distanceMeters);
                 TravelMinutes = success ? Mathf.Max(1f, travelMinutes) : 0f;
+                UsesFuel = usesFuel;
+                FuelUsedLiters = Mathf.Max(0f, fuelUsedLiters);
                 RouteLaneHint = routeLaneHint;
                 TeleportPosition = teleportPosition;
                 TeleportRotation = teleportRotation;
@@ -37,7 +43,7 @@ namespace VoogleRoute.Navigation
             }
 
             internal static Plan Failed(string failureKey) =>
-                new Plan(false, 0f, 0f, default, default, Quaternion.identity, failureKey);
+                new Plan(false, 0f, 0f, false, 0f, default, default, Quaternion.identity, failureKey);
         }
 
         internal static bool TryBuildPlan(out Plan plan)
@@ -70,7 +76,30 @@ namespace VoogleRoute.Navigation
             if (!TryResolveTeleportPose(route.Points, out var laneHint, out var position, out var rotation))
                 return false;
 
-            plan = new Plan(true, distance, travelMinutes, laneHint, position, rotation, null);
+            var usesFuel = false;
+            var fuelUsedLiters = 0f;
+            if (AutoDriveVehicleFuel.TryEstimate(distance, out var fuelEstimate))
+            {
+                if (!fuelEstimate.HasEnoughFuel)
+                {
+                    plan = Plan.Failed("voogle_route_autodrive_insufficient_fuel");
+                    return false;
+                }
+
+                usesFuel = fuelEstimate.Applies;
+                fuelUsedLiters = fuelEstimate.FuelUsedLiters;
+            }
+
+            plan = new Plan(
+                true,
+                distance,
+                travelMinutes,
+                usesFuel,
+                fuelUsedLiters,
+                laneHint,
+                position,
+                rotation,
+                null);
             return true;
         }
 
@@ -100,9 +129,13 @@ namespace VoogleRoute.Navigation
             var laneDirection = laneAnchor - prev;
             laneDirection.y = 0f;
 
+            var preferStreetLevel = NavigationTargetTracker.HasMapGpsTarget &&
+                AutoDriveRoadTeleport.IsStreetLevelDestination(NavigationTargetTracker.ActiveTarget.y);
+
             return AutoDriveRoadTeleport.TryResolveRoadPose(
                 laneAnchor,
                 laneDirection,
+                preferStreetLevel,
                 out position,
                 out rotation);
         }
@@ -128,7 +161,14 @@ namespace VoogleRoute.Navigation
 
             laneAnchor = points[anchorIndex];
 
-            if (AutoDriveRoadTeleport.IsElevatedRoadPoint(laneAnchor))
+            if (NavigationTargetTracker.HasMapGpsTarget &&
+                AutoDriveRoadTeleport.IsStreetLevelDestination(NavigationTargetTracker.ActiveTarget.y))
+            {
+                while (anchorIndex > 0 &&
+                       AutoDriveRoadTeleport.IsElevatedRoadPoint(points[anchorIndex]))
+                    anchorIndex--;
+            }
+            else if (AutoDriveRoadTeleport.IsElevatedRoadPoint(laneAnchor))
             {
                 for (var i = anchorIndex - 1; i >= 0; i--)
                 {

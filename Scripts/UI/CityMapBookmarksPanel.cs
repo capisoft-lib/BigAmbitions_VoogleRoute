@@ -692,10 +692,7 @@ namespace VoogleRoute.UI
             RefreshNavigateButtonStates();
         }
 
-        private static string ResolveMapActionLabel() =>
-            BookmarkQuickNavService.IsVehicleMapMode
-                ? ModUiText.BookmarksDrive
-                : ModUiText.BookmarksWalk;
+        private static string ResolveMapActionLabel() => ModUiText.BookmarksDrive;
 
         private static void RefreshActionButtonLabels()
         {
@@ -881,13 +878,24 @@ namespace VoogleRoute.UI
 
         private static void OnNavigateClicked(RowUi row)
         {
-            if (!TrySetRowDestination(row))
+            if (row?.Kind == RowKind.LastCar)
+            {
+                if (!BookmarkDestinationService.TrySetLastCar())
+                    return;
+
+                BookmarkQuickNavService.CloseNavigationPanels();
+
+                if (BookmarkQuickNavService.IsVehicleMapMode)
+                    BookmarkQuickNavService.RequestDriveFromBookmark();
+                else
+                    BookmarkQuickNavService.RequestWalkFromBookmark();
+                return;
+            }
+
+            if (!TryGetRowBookmark(row, out var bookmark) || bookmark == null)
                 return;
 
-            if (BookmarkQuickNavService.IsVehicleMapMode)
-                BookmarkQuickNavService.RequestDriveFromBookmark();
-            else
-                BookmarkQuickNavService.RequestWalkFromBookmark();
+            BookmarkQuickNavService.NavigateFromBookmark(bookmark);
         }
 
         private static bool TrySetRowDestination(RowUi row)

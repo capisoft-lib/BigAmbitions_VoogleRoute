@@ -26,6 +26,7 @@ namespace VoogleRoute
                 " | required_mod=LIB_BaPlayerLocation");
 
             ModConfig.Initialize(context);
+            ModLocaleLookup.EnsureLoaded();
             VoogleRouteUiDiagnostics.LogSessionStart(ModStoragePaths.ModRootDirectory);
             VoogleRouteLoop.Initialize(context);
 

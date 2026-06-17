@@ -114,6 +114,7 @@ namespace VoogleRoute.Navigation
 
             ModConfig.SetIndoorAutoWalkEnabled(false);
             Reset();
+            PlayerNavigationRelease.Release();
         }
 
         private static void YieldForVanillaExit(PlayerController player, in IndoorExitTarget exitTarget)
@@ -140,13 +141,7 @@ namespace VoogleRoute.Navigation
             var changed = false;
             if (ModConfig.IndoorAutoWalkEnabled)
             {
-                ModConfig.SetIndoorAutoWalkEnabled(false);
-                changed = true;
-            }
-
-            if (ModConfig.IndoorRouteLineEnabled)
-            {
-                ModConfig.SetIndoorRouteLineEnabled(false);
+                ModConfig.SetIndoorAutoWalkEnabled(false, persist: false);
                 changed = true;
             }
 

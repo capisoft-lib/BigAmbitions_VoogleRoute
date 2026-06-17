@@ -57,10 +57,7 @@ namespace VoogleRoute.Navigation
                 if (IsInvalidAddress(address))
                 {
                     if (NavigationTargetTracker.HasMapGpsTarget &&
-                        NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
-                        return;
-
-                    if (NavigationTargetTracker.HasMapGpsTarget)
+                        NavigationTargetTracker.LastSource == NavigationTargetTracker.MapSource)
                     {
                         ModLog.Info("Map destination cleared (customDestination empty).");
                         NavigationTargetTracker.ClearMapGpsTarget("map destination cleared");
@@ -68,6 +65,7 @@ namespace VoogleRoute.Navigation
 
                     _hasLastAddress = false;
                     _lastResolvedAddress = null;
+                    JobDestinationSync.Poll();
                     return;
                 }
     
@@ -216,6 +214,18 @@ namespace VoogleRoute.Navigation
             _hasLastAddress = false;
             _lastResolvedAddress = null;
         }
+
+        internal static bool TryGetActiveMapAddress(out Address address)
+        {
+            if (_hasLastAddress && _lastResolvedAddress != null)
+            {
+                address = _lastResolvedAddress;
+                return true;
+            }
+
+            address = null;
+            return false;
+        }
     
         private static bool IsInvalidAddress(Address address)
         {
@@ -224,8 +234,8 @@ namespace VoogleRoute.Navigation
 
             return address.streetNumber <= 0 && string.IsNullOrEmpty(address.streetName);
         }
-    
-        private static bool AddressesEqual(Address a, Address b) =>
+
+        internal static bool AddressesEqual(Address a, Address b) =>
             a != null && b != null && a.streetName == b.streetName && a.streetNumber == b.streetNumber;
     }
 }

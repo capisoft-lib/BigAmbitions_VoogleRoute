@@ -8,6 +8,25 @@ namespace VoogleRoute.Navigation
         internal static bool IsVehicleMapMode =>
             MovementModeDetector.CurrentMode == MovementMode.Vehicle;
 
+        internal static void NavigateFromBookmark(BookmarkEntry bookmark)
+        {
+            if (!BookmarkDestinationService.TrySetFromBookmark(bookmark))
+                return;
+
+            CloseNavigationPanels();
+
+            if (IsVehicleMapMode)
+                RequestDriveFromBookmark();
+            else
+                RequestWalkFromBookmark();
+        }
+
+        internal static void CloseNavigationPanels()
+        {
+            VisitHistoryPanel.Close();
+            CityMapHelper.CloseIfOpen();
+        }
+
         internal static void RequestDriveFromBookmark() =>
             AutoDriveSkipTravelService.RequestFromBookmark();
 
@@ -19,7 +38,6 @@ namespace VoogleRoute.Navigation
             if (!ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(true);
 
-            CityMapHelper.CloseIfOpen();
             RouteActionPanel.RefreshVisual();
         }
     }

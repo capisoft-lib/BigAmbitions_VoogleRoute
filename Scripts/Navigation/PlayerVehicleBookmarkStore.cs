@@ -230,8 +230,8 @@ namespace VoogleRoute.Navigation
                     if (controller?.vehicleInstance?.id != vehicleId)
                         continue;
 
-                    position = controller.transform.position;
-                    return position.sqrMagnitude > 0.01f;
+                    if (VehicleEntranceHelper.TryGetDriverEntrancePosition(controller, out position))
+                        return true;
                 }
             }
             catch
@@ -268,18 +268,7 @@ namespace VoogleRoute.Navigation
             if (string.IsNullOrWhiteSpace(key))
                 return "";
 
-            try
-            {
-                var text = key.GetLocalization();
-                if (!string.IsNullOrWhiteSpace(text) && text != key)
-                    return text;
-            }
-            catch
-            {
-                // ignore
-            }
-
-            return key;
+            return key.GetLocalization();
         }
     }
 }
