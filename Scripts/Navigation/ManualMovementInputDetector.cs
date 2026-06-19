@@ -9,7 +9,7 @@ namespace VoogleRoute.Navigation
     internal static class ManualMovementInputDetector
     {
         private const float MoveCancelThresholdSq = 0.04f;
-        private const float SuppressSecondsAfterAutoIssue = 0.4f;
+        private const float SuppressSecondsAfterAutoIssue = 0.75f;
 
         private static float _suppressUntil = -1f;
 
@@ -29,7 +29,8 @@ namespace VoogleRoute.Navigation
                 if (GameManager.ShouldBlockKeyboardShortcuts())
                     return false;
 
-                if (PlayerAction.Move.Vector().sqrMagnitude >= MoveCancelThresholdSq)
+                if (PlayerAction.Move.Pressing() &&
+                    PlayerAction.Move.Vector().sqrMagnitude >= MoveCancelThresholdSq)
                     return true;
 
                 if (PlayerAction.Click.Pressed() && !IsPointerOverUi())

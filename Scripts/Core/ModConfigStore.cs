@@ -9,6 +9,7 @@ using VoogleRoute.Navigation;
 
 namespace VoogleRoute
 {
+    /// <summary>Dev-only settings in config.json (not per-save, not ESC mod options).</summary>
     internal static class ModConfigStore
     {
         private const string LegacyLineColorFileName = "line_color.txt";
@@ -25,6 +26,7 @@ namespace VoogleRoute
 
         internal static bool ConfigFileFound => _configFileFound;
 
+        /// <summary>Legacy file payload (migration source for per-save mod options and bookmarks).</summary>
         internal static ModConfigData Data => _data;
 
         internal static string ConfigFilePath =>
@@ -54,9 +56,8 @@ namespace VoogleRoute
                 }
 
                 EnsureDefaults(_data);
-
-                if (MigrateLegacyFiles())
-                    Save();
+                MigrateLegacyFiles();
+                SaveDevOnly();
             }
             catch (Exception ex)
             {
@@ -66,19 +67,23 @@ namespace VoogleRoute
             }
         }
 
-        internal static void Save()
+        internal static void SaveDevOnly()
         {
             try
             {
-                EnsureDefaults(_data);
-                _data.Bookmarks = null;
-                _data.QuickBookmarks = null;
+                var devOnly = new ModConfigData
+                {
+                    Logging = _data.Logging,
+                    LogLevel = _data.LogLevel,
+                    ShowLineDetection = _data.ShowLineDetection
+                };
+
                 var path = ConfigFilePath;
                 var directory = Path.GetDirectoryName(path);
                 if (!string.IsNullOrEmpty(directory))
                     Directory.CreateDirectory(directory);
 
-                var json = JsonSerializer.Serialize(_data, JsonOptions);
+                var json = JsonSerializer.Serialize(devOnly, JsonOptions);
                 File.WriteAllText(path, json);
                 _configFileFound = true;
             }
@@ -88,86 +93,11 @@ namespace VoogleRoute
             }
         }
 
-        internal static void SetFootRouteLineColor(Color color)
-        {
-            _data.FootRouteLineColor = ColorToArray(color);
-            Save();
-        }
-
-        internal static void SetVehicleRouteLineColor(Color color)
-        {
-            _data.VehicleRouteLineColor = ColorToArray(color);
-            Save();
-        }
-
-        internal static void SetIndoorRouteLineColor(Color color)
-        {
-            _data.IndoorRouteLineColor = ColorToArray(color);
-            Save();
-        }
-
-        private static float[] ColorToArray(Color color) =>
-            new[] { color.r, color.g, color.b, color.a };
-
-        internal static void SetDisplayOutsideEnabled(bool value)
-        {
-            _data.DisplayOutside = value;
-            Save();
-        }
-
-        internal static void SetDisplayInsideEnabled(bool value)
-        {
-            _data.DisplayInside = value;
-            Save();
-        }
-
-        internal static void SetIndoorRouteLineEnabled(bool value)
-        {
-            _data.IndoorRoute = value;
-            Save();
-        }
-
-        internal static void SetIndoorAutoWalkEnabled(bool value)
-        {
-            _data.IndoorAutowalk = value;
-            Save();
-        }
-
-        internal static void SetUseSubwayEnabled(bool value)
-        {
-            _data.UseSubway = value;
-            Save();
-        }
-
-        internal static void SetBaseTaxiMultiplier(int value)
-        {
-            _data.BaseTaxiMultiplier = Mathf.Clamp(value, 1, 10);
-            Save();
-        }
-
-        internal static void SetForceCorrectSideArrivalEnabled(bool value)
-        {
-            _data.ForceCorrectSideArrival = value;
-            Save();
-        }
-
-        internal static void SetAllowUturnAtStartEnabled(bool value)
-        {
-            _data.AllowUturnAtStart = value;
-            Save();
-        }
-
-        internal static void SetAutoEnterDestinationEnabled(bool value)
-        {
-            _data.AutoEnterDestination = value;
-            Save();
-        }
-
         internal static void StripBookmarkDataAndSave()
         {
             _data.Bookmarks = null;
             _data.QuickBookmarks = null;
-            Save();
+            SaveDevOnly();
         }
 
         private static ModConfigData CreateDefaultData()

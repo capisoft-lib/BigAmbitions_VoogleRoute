@@ -80,6 +80,7 @@ namespace VoogleRoute
             ParkedVehicleStore.Clear();
             QuickBookmarkStore.Clear();
             VisitHistoryStore.Clear();
+            BookmarkDataSaveStore.Shutdown();
             ModConfig.Shutdown();
 
             RouteGraphStore.Invalidate();

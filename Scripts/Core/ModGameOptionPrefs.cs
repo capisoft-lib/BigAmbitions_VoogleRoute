@@ -4,7 +4,7 @@ namespace VoogleRoute
 {
     /// <summary>
     /// Same PlayerPrefs keys as Big Ambitions <c>ModOptionsToggleControl</c> (m:{modId}:{optionId}).
-    /// The game only invokes option callbacks when ESC → Options → Mod is opened; routing must read prefs at init.
+    /// Used to mirror per-save modData into the ESC mod-options UI.
     /// </summary>
     internal static class ModGameOptionPrefs
     {
@@ -17,6 +17,15 @@ namespace VoogleRoute
             return UnityEngine.PlayerPrefs.GetInt(key, defaultValue ? 1 : 0) != 0;
         }
 
+        internal static int LoadInt(string modId, string optionId, int defaultValue)
+        {
+            var key = BuildKey(modId, optionId);
+            if (key == null)
+                return defaultValue;
+
+            return UnityEngine.PlayerPrefs.GetInt(key, defaultValue);
+        }
+
         internal static void SaveToggle(string modId, string optionId, bool value)
         {
             var key = BuildKey(modId, optionId);
@@ -24,6 +33,15 @@ namespace VoogleRoute
                 return;
 
             UnityEngine.PlayerPrefs.SetInt(key, value ? 1 : 0);
+        }
+
+        internal static void SaveInt(string modId, string optionId, int value)
+        {
+            var key = BuildKey(modId, optionId);
+            if (key == null)
+                return;
+
+            UnityEngine.PlayerPrefs.SetInt(key, value);
         }
 
         internal static bool HasKey(string modId, string optionId)

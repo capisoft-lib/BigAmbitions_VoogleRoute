@@ -130,7 +130,7 @@ namespace VoogleRoute.Navigation
             _hasLastShop = false;
         }
 
-        private static void Persist()
+        internal static QuickBookmarksConfig ExportToConfig()
         {
             var saved = new QuickBookmarksConfig();
 
@@ -144,8 +144,10 @@ namespace VoogleRoute.Navigation
             if (_hasLastShop && _lastShop != null)
                 saved.LastShop = BookmarkStore.ToConfigEntry(_lastShop);
 
-            BookmarkFileStore.SetQuickBookmarks(saved);
+            return saved;
         }
+
+        private static void Persist() => BookmarkDataSaveStore.PersistCurrent();
 
         private static bool IsPlayerHome(BuildingRegistration registration)
         {

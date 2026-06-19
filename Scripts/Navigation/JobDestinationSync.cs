@@ -13,6 +13,43 @@ namespace VoogleRoute.Navigation
         private static Address _lastAddress;
         private static bool _hasLastAddress;
 
+        /// <summary>True while the delivery shift timer is still running (stops remaining or not).</summary>
+        internal static bool IsActiveDeliveryMission()
+        {
+            try
+            {
+                return SaveGameManager.Current?.currentPlayerMission is DeliveryDriverMission mission
+                    && mission.IsOngoing();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// True from job accept until <c>currentPlayerMission</c> is cleared (includes return-to-depot
+        /// after <see cref="DeliveryDriverMission.IsOngoing"/> becomes false).
+        /// </summary>
+        internal static bool IsInDeliveryMissionContext()
+        {
+            try
+            {
+                return SaveGameManager.Current?.currentPlayerMission is DeliveryDriverMission;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// During a delivery job the game owns destination updates (stops, return parking, map GPS).
+        /// Skip mod arrival toasts and destination clearing so we do not fight vanilla.
+        /// </summary>
+        internal static bool ShouldDeferDestinationArrivalHandling() =>
+            IsInDeliveryMissionContext();
+
         internal static bool TryGetActiveJobAddress(out Address address)
         {
             if (_hasLastAddress && _lastAddress != null)
@@ -23,6 +60,57 @@ namespace VoogleRoute.Navigation
 
             address = null;
             return false;
+        }
+
+        /// <summary>Best address for the current delivery stop (job sync, map GPS, or mission state).</summary>
+        internal static bool TryGetDeliveryStopAddress(out Address address)
+        {
+            if (TryGetActiveJobAddress(out address))
+                return true;
+
+            if (DestinationResolver.TryGetActiveMapAddress(out address))
+                return true;
+
+            try
+            {
+                var map = SaveGameManager.Current?.customDestination;
+                if (map != null && !map.IsUndefined())
+                {
+                    address = map;
+                    return true;
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
+            try
+            {
+                if (SaveGameManager.Current?.currentPlayerMission is not DeliveryDriverMission mission)
+                    return false;
+
+                address = mission.pinnedAddress;
+                if (address == null && mission.destinations != null)
+                {
+                    for (var i = 0; i < mission.destinations.Count; i++)
+                    {
+                        var stop = mission.destinations[i];
+                        if (stop != null && !stop.IsCompleted())
+                        {
+                            address = stop.address;
+                            break;
+                        }
+                    }
+                }
+
+                return address != null;
+            }
+            catch
+            {
+                address = null;
+                return false;
+            }
         }
 
         internal static void Poll()
@@ -41,6 +129,7 @@ namespace VoogleRoute.Navigation
 
                 _hasLastAddress = false;
                 _lastAddress = null;
+                BuildingDestinationEnterService.ResetDeliveryStopInteract();
                 return;
             }
 
@@ -54,6 +143,7 @@ namespace VoogleRoute.Navigation
             _hasLastAddress = address != null;
 
             ModLog.Info("Job destination synced: " + (address?.ToFormattedString() ?? worldPos.ToString()));
+            BuildingDestinationEnterService.ResetDeliveryStopInteract();
             NavigationTargetTracker.SetJobTarget(worldPos);
         }
 
@@ -79,7 +169,20 @@ namespace VoogleRoute.Navigation
                     return false;
 
                 if (!mission.IsOngoing())
-                    return false;
+                {
+                    if (mission.startAddress == null)
+                        return false;
+
+                    address = mission.startAddress;
+                    var start = DeliveryJobStartController.GetByAddress(address);
+                    if (start != null)
+                    {
+                        worldPos = start.transform.position;
+                        return true;
+                    }
+
+                    return DestinationResolver.TryResolveWorldPosition(address, out worldPos);
+                }
 
                 address = mission.pinnedAddress;
                 if (address == null && mission.destinations != null)

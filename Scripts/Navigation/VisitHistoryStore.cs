@@ -22,20 +22,38 @@ namespace VoogleRoute.Navigation
         internal static BookmarkEntry GetAt(int index) =>
             index >= 0 && index < Entries.Count ? Entries[index] : null;
 
-        internal static void LoadFromConfig(IReadOnlyList<BookmarkConfigEntry> saved)
+        internal static void LoadFromConfig(IReadOnlyList<BookmarkConfigEntry> saved, bool persistChanges = true)
         {
             Entries.Clear();
             if (saved == null)
                 return;
 
+            var labelsChanged = false;
             for (var i = 0; i < saved.Count && Entries.Count < MaxCount; i++)
             {
-                if (BookmarkStore.TryEntryFromConfig(saved[i], out var entry))
-                    Entries.Add(entry);
+                if (!BookmarkStore.TryEntryFromConfig(saved[i], out var entry))
+                    continue;
+
+                if (BookmarkLabelResolver.TryRefreshStoredLabel(entry))
+                    labelsChanged = true;
+
+                Entries.Add(entry);
             }
 
             if (DeduplicateEntries())
+                labelsChanged = true;
+
+            if (persistChanges && labelsChanged)
                 Persist();
+        }
+
+        internal static List<BookmarkConfigEntry> ExportToConfig()
+        {
+            var saved = new List<BookmarkConfigEntry>(Entries.Count);
+            for (var i = 0; i < Entries.Count; i++)
+                saved.Add(BookmarkStore.ToConfigEntry(Entries[i]));
+
+            return saved;
         }
 
         internal static void OnEnterBuildingDelayed(Address address)
@@ -113,14 +131,7 @@ namespace VoogleRoute.Navigation
 
         internal static void Clear() => Entries.Clear();
 
-        private static void Persist()
-        {
-            var saved = new List<BookmarkConfigEntry>(Entries.Count);
-            for (var i = 0; i < Entries.Count; i++)
-                saved.Add(BookmarkStore.ToConfigEntry(Entries[i]));
-
-            BookmarkFileStore.SetVisitHistory(saved);
-        }
+        private static void Persist() => BookmarkDataSaveStore.PersistCurrent();
 
         private static bool TryCreateFromRegistration(
             Address address,

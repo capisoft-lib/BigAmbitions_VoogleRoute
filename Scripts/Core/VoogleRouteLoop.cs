@@ -110,6 +110,7 @@ namespace VoogleRoute
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
             AutoDriveConfirmPopup.TickOverlay();
+            BookmarkDataSaveStore.Tick();
             VisitHistoryPanel.Tick();
             VisitHistoryPanel.TickOverlay();
             CityMapBookmarksPanel.Tick();
@@ -268,7 +269,7 @@ namespace VoogleRoute
             _ = address;
             AutoWalkService.Reset();
             if (ModConfig.AutoWalkEnabled)
-                ModConfig.SetAutoWalkEnabled(false);
+                ModConfig.SetAutoWalkEnabled(false, persist: false);
 
             if (ModConfig.RouteLineEnabled && !ModConfig.IndoorRouteLineEnabled)
                 ModConfig.SetIndoorRouteLineEnabled(true, persist: false);

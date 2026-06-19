@@ -14,7 +14,6 @@
   "precompiledReferences": [
     "VoogleRoute.Pathfinding.dll",
     "LIB_BaPlayerLocation.dll",
-    "LIB_BaUnifiedUI.dll",
     "System.Text.Json.dll",
     "BehaviorDesigner.Runtime.dll",
     "BigAmbitions.AI.dll",

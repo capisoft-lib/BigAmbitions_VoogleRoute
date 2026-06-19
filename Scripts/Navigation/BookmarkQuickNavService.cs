@@ -33,10 +33,10 @@ namespace VoogleRoute.Navigation
         internal static void RequestWalkFromBookmark()
         {
             if (!ModConfig.RouteLineEnabled)
-                ModConfig.SetRouteLineEnabled(true);
+                ModConfig.SetRouteLineEnabled(true, persist: false);
 
             if (!ModConfig.AutoWalkEnabled)
-                ModConfig.SetAutoWalkEnabled(true);
+                ModConfig.SetAutoWalkEnabled(true, persist: false);
 
             RouteActionPanel.RefreshVisual();
         }

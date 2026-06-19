@@ -1,4 +1,5 @@
 using BaPlayerLocation.Subscriber;
+using Helpers;
 using UnityEngine;
 using VoogleRoute.Live;
 
@@ -38,6 +39,31 @@ namespace VoogleRoute.Navigation
 
         internal static bool ShouldShowActionPanel() =>
             CurrentMode == MovementMode.OnFoot || CurrentMode == MovementMode.Vehicle;
+
+        /// <summary>On foot or pushing hand truck / flatbed (spawnInPlayerObject cargo).</summary>
+        internal static bool IsEffectivelyOnFootForNavigation()
+        {
+            if (CurrentMode == MovementMode.OnFoot)
+                return true;
+
+            return IsPushingPlayerCargoVehicle();
+        }
+
+        internal static bool IsPushingPlayerCargoVehicle()
+        {
+            try
+            {
+                var controller = VehicleHelper.GetCurrentVehicleBase();
+                if (controller?.vehicleType != null && controller.vehicleType.spawnInPlayerObject)
+                    return true;
+            }
+            catch
+            {
+                // ignore
+            }
+
+            return false;
+        }
 
         [System.Obsolete("Use ShouldShowActionPanel.")]
         internal static bool ShouldShowHudButton() => ShouldShowActionPanel();

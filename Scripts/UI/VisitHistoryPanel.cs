@@ -317,7 +317,7 @@ namespace VoogleRoute.UI
                 }
 
                 row.Ui.SetActive(true);
-                row.Ui.NameLabel.text = bookmark.DisplayName;
+                row.Ui.NameLabel.text = BookmarkLabelResolver.GetDisplayName(bookmark);
                 var canNavigate = bookmark.TryGetNavigationTarget(out _);
                 if (row.Ui.SetDestButton != null)
                     row.Ui.SetDestButton.interactable = canNavigate;

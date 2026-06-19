@@ -86,13 +86,15 @@ cd BigAmbitions_VoogleRoute
 ```
 
 1. Copy this repo into your SDK at `Assets/Mods/VoogleRoute/` (and install [`LIB_BaPlayerLocation`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation)).
-2. Build PathFinding artifacts:
+2. Build PathFinding artifacts and sync bundled dependencies:
 
    ```powershell
    .\tools\build-pathfinding.ps1
    ```
 
-3. **Mod Builder → Build + Install** for `LIB_BaPlayerLocation`, then `VoogleRoute` (build script bundles `LIB_BaUnifiedUI.dll` into `Dependencies/`).
+   This copies `VoogleRoute.Pathfinding.dll` and `LIB_BaUnifiedUI.dll` into `Dependencies/` so Unity Mod Builder includes them at deploy time. After rebuilding **LIB_BaUnifiedUI** in Mod Builder, run `.\tools\sync-dependencies.ps1` (or use menu **Big Ambitions → Mods → Voogle Route → Sync bundled dependencies**).
+
+3. **Mod Builder → Build + Install** for `LIB_BaPlayerLocation`, then `VoogleRoute`.
 
 Output: `%LocalLow%\Hovgaard Games\Big Ambitions\ModsLocal\VoogleRoute\`
 

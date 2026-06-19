@@ -2,6 +2,24 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.10] - 2026-06-19
+
+### Added
+
+- **Per-save mod options** — route colors and **ESC → Options → Mod** toggles stored in save `modData` (each character/save slot keeps its own settings)
+- **Per-save bookmarks & visit history** — bookmarks, quick shortcuts, and history stored in save `modData`; auto-migration from legacy `bookmarks.json` and older modData keys
+- **Separate route colors** — independent on-foot, vehicle, and indoor line colors (gear icon on the GPS panel)
+
+### Changed
+
+- **config.json dev-only** — mod folder file keeps logging and debug flags; gameplay options no longer shared globally across saves
+- **Mod options scheduler** — defers ESC mod-options refresh so the options UI is not torn down mid-init
+
+### Fixed
+
+- **Route color persistence** — colors save correctly again; replaces `System.Text.Json` with an IL2CPP-safe manual codec (`Utf8JsonWriter` VTable failure in-game)
+- **Mod options write on persist** — no longer reloads stale save data over in-memory changes when binding the active save
+
 ## [0.11.9] - 2026-06-17
 
 ### Added
@@ -185,6 +203,8 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.10]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.10
+[0.11.9]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.9
 [0.11.8]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.8
 [0.11.7]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.7
 [0.11.6]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.6

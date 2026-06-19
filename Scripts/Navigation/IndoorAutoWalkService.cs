@@ -112,7 +112,7 @@ namespace VoogleRoute.Navigation
             if (!ModConfig.IndoorAutoWalkEnabled)
                 return;
 
-            ModConfig.SetIndoorAutoWalkEnabled(false);
+            ModConfig.SetIndoorAutoWalkEnabled(false, persist: false);
             Reset();
             PlayerNavigationRelease.Release();
         }

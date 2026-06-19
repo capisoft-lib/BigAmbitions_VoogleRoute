@@ -25,6 +25,9 @@ namespace VoogleRoute.Navigation
 
         internal static void TryCompleteNearbyDestination()
         {
+            if (JobDestinationSync.ShouldDeferDestinationArrivalHandling())
+                return;
+
             if (_announced || !NavigationTargetTracker.HasMapGpsTarget)
                 return;
 
@@ -50,6 +53,9 @@ namespace VoogleRoute.Navigation
         internal static void Tick()
         {
             if (!GameState.ShouldRunNavigationSystems())
+                return;
+
+            if (JobDestinationSync.IsInDeliveryMissionContext())
                 return;
 
             if (!NavigationTargetTracker.HasMapGpsTarget)

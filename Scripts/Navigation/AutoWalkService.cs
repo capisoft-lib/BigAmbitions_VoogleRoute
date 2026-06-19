@@ -67,8 +67,17 @@ namespace VoogleRoute.Navigation
                 return false;
             }
 
-            if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
+            if (!MovementModeDetector.IsEffectivelyOnFootForNavigation())
                 return false;
+
+            // Near destination the route cache is cleared (path.Success=false) — still disable auto-walk.
+            if (canNavigate &&
+                JobDestinationSync.IsInDeliveryMissionContext() &&
+                NavigationProximityService.IsNearActiveDestination())
+            {
+                CompleteDeliveryJobStop();
+                return true;
+            }
 
             if (!canNavigate || !path.Success)
                 return false;
@@ -134,7 +143,10 @@ namespace VoogleRoute.Navigation
 
             if (distToWalkTarget < ReachRadius + 1.5f)
             {
-                DisableAtDestination();
+                if (JobDestinationSync.ShouldDeferDestinationArrivalHandling())
+                    CompleteDeliveryJobStop();
+                else
+                    DisableAtDestination();
                 return true;
             }
 
@@ -279,6 +291,13 @@ namespace VoogleRoute.Navigation
             return NavigationTargetTracker.ActiveTarget;
         }
 
+        private static void CompleteDeliveryJobStop()
+        {
+            var target = NavigationTargetTracker.ActiveTarget;
+            BuildingDestinationEnterService.TryDeliveryJobStopInteract(target);
+            PrepareForDestinationArrival();
+        }
+
         private static void DisableAtDestination()
         {
             var target = NavigationTargetTracker.ActiveTarget;
@@ -310,7 +329,7 @@ namespace VoogleRoute.Navigation
             if (!ModConfig.AutoWalkEnabled)
                 return false;
 
-            ModConfig.SetAutoWalkEnabled(false);
+            ModConfig.SetAutoWalkEnabled(false, persist: false);
             Reset();
             return true;
         }

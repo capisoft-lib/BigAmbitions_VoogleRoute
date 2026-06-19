@@ -14,17 +14,26 @@ namespace VoogleRoute.Navigation
 
         internal static event Action Changed;
 
-        internal static void LoadFromConfig(IReadOnlyList<BookmarkConfigEntry> saved)
+        internal static void LoadFromConfig(IReadOnlyList<BookmarkConfigEntry> saved, bool persistChanges = true)
         {
             Entries.Clear();
             if (saved == null)
                 return;
 
+            var labelsChanged = false;
             for (var i = 0; i < saved.Count; i++)
             {
-                if (TryEntryFromConfig(saved[i], out var entry))
-                    Entries.Add(entry);
+                if (!BookmarkStore.TryEntryFromConfig(saved[i], out var entry))
+                    continue;
+
+                if (BookmarkLabelResolver.TryRefreshStoredLabel(entry))
+                    labelsChanged = true;
+
+                Entries.Add(entry);
             }
+
+            if (persistChanges && labelsChanged)
+                Persist();
         }
 
         internal static bool TryEntryFromConfig(BookmarkConfigEntry item, out BookmarkEntry entry)
@@ -112,10 +121,7 @@ namespace VoogleRoute.Navigation
         internal static BookmarkEntry GetAt(int index) =>
             index >= 0 && index < Entries.Count ? Entries[index] : null;
 
-        private static void Persist()
-        {
-            BookmarkFileStore.SetBookmarks(ExportToConfig());
-        }
+        private static void Persist() => BookmarkDataSaveStore.PersistCurrent();
     }
 
     internal sealed class BookmarkConfigEntry

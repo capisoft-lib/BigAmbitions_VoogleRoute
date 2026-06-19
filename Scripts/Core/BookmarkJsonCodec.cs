@@ -72,6 +72,22 @@ namespace VoogleRoute
             return data;
         }
 
+        internal static string SerializeVisitHistory(IReadOnlyList<BookmarkConfigEntry> history) =>
+            Serialize(new BookmarkFileData
+            {
+                Bookmarks = new List<BookmarkConfigEntry>(),
+                VisitHistory = history == null
+                    ? new List<BookmarkConfigEntry>()
+                    : new List<BookmarkConfigEntry>(history),
+                QuickBookmarks = new QuickBookmarksConfig()
+            });
+
+        internal static List<BookmarkConfigEntry> DeserializeVisitHistory(string json)
+        {
+            var data = Deserialize(json);
+            return data?.VisitHistory ?? new List<BookmarkConfigEntry>();
+        }
+
         private static List<BookmarkConfigEntry> ParseBookmarkArray(string json, string arrayKey)
         {
             var list = new List<BookmarkConfigEntry>();

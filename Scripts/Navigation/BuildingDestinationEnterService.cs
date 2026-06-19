@@ -12,6 +12,9 @@ namespace VoogleRoute.Navigation
     internal static class BuildingDestinationEnterService
     {
         private const float MaxDoorDistanceMeters = 9f;
+        private const float CargoDeliveryDoorDistanceMeters = 13f;
+
+        private static string _lastDeliveryStopInteractKey = "";
 
         internal static bool IsBuildingNavigationSource(string source) =>
             source == NavigationTargetTracker.MapSource ||
@@ -25,22 +28,67 @@ namespace VoogleRoute.Navigation
             if (!IsBuildingNavigationSource(source))
                 return false;
 
-            if (BuildingManager.IsInsideBuilding || UndergroundParkingManager.IsInsideParking)
-                return false;
+            return TryInteractBuildingForSource(target, source, releaseNavigation: true);
+        }
 
-            if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
+        private static bool TryInteractBuildingForSource(Vector3 target, string source, bool releaseNavigation)
+        {
+            if (!IsBuildingNavigationSource(source))
                 return false;
 
             if (!TryResolveAddress(source, out var address))
                 return false;
 
-            if (!MovementModeDetector.TryGetPlayerOrigin(out var playerPos))
+            return TryInteractBuilding(target, address, releaseNavigation);
+        }
+
+        /// <summary>
+        /// Mimics clicking the retail door during delivery: vanilla Interact delivers from flatbed/handtruck or enters.
+        /// </summary>
+        internal static bool TryDeliveryJobStopInteract(Vector3 target)
+        {
+            if (!JobDestinationSync.IsInDeliveryMissionContext())
+                return false;
+
+            if (!JobDestinationSync.TryGetDeliveryStopAddress(out var address))
+                return false;
+
+            var key = FormatAddressKey(address);
+            if (_lastDeliveryStopInteractKey == key)
+                return false;
+
+            _lastDeliveryStopInteractKey = key;
+            return TryInteractBuilding(target, address, releaseNavigation: true);
+        }
+
+        internal static void ResetDeliveryStopInteract()
+        {
+            _lastDeliveryStopInteractKey = "";
+        }
+
+        private static bool TryInteractBuilding(Vector3 target, Address address, bool releaseNavigation)
+        {
+            if (address == null)
+                return false;
+
+            if (BuildingManager.IsInsideBuilding || UndergroundParkingManager.IsInsideParking)
+                return false;
+
+            if (!MovementModeDetector.IsEffectivelyOnFootForNavigation())
+                return false;
+
+            if (!MovementModeDetector.TryGetPlayerOrigin(out var playerPos) &&
+                !MovementModeDetector.TryGetPathOrigin(out playerPos))
                 return false;
 
             if (!DestinationResolver.TryResolveWorldPosition(address, out var doorPos))
                 doorPos = target;
 
-            if (HorizontalDistance(playerPos, doorPos) > MaxDoorDistanceMeters)
+            var maxDoorDistance = MovementModeDetector.IsPushingPlayerCargoVehicle()
+                ? CargoDeliveryDoorDistanceMeters
+                : MaxDoorDistanceMeters;
+
+            if (HorizontalDistance(playerPos, doorPos) > maxDoorDistance)
                 return false;
 
             try
@@ -52,20 +100,25 @@ namespace VoogleRoute.Navigation
                 if (cbc == null)
                     return false;
 
-                PlayerNavigationRelease.Release();
+                if (releaseNavigation)
+                    PlayerNavigationRelease.Release();
+
                 if (cbc.Interact())
                 {
-                    ModLog.Info("Entering building after navigation: " + address);
+                    ModLog.Info("Building interact after navigation: " + address);
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                ModLog.Error("Failed to enter building after navigation", ex);
+                ModLog.Error("Failed building interact after navigation", ex);
             }
 
             return false;
         }
+
+        private static string FormatAddressKey(Address address) =>
+            address == null ? "" : address.streetName + "|" + address.streetNumber;
 
         private static bool TryResolveAddress(string source, out Address address)
         {

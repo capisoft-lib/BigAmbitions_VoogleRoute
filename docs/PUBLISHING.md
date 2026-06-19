@@ -22,9 +22,10 @@ Steam Workshop: all paths are relative to the subscribed mod folder. The mod cod
 
 ### Voogle Route upload
 
-1. Build both mods locally via the Big Ambitions SDK Mod Builder (`Output/LIB_BaPlayerLocation/`, then `Output/VoogleRoute/`). Confirm `Output/VoogleRoute/Data/` exists before upload.
-2. Upload through the game's Workshop tools / Hovgaard publishing flow.
-3. Copy workshop text from `releases/<version>/`:
+1. Build **LIB_BaUnifiedUI** and **LIB_BaPlayerLocation** in Mod Builder, then run `tools/sync-dependencies.ps1` (or menu **Big Ambitions → Mods → Voogle Route → Sync bundled dependencies**) so `Dependencies/LIB_BaUnifiedUI.dll` is present before building VoogleRoute.
+2. Build **VoogleRoute** via Mod Builder (`Output/VoogleRoute/`). Confirm `Output/VoogleRoute/Dependencies/LIB_BaUnifiedUI.dll` and `Output/VoogleRoute/Data/` exist before upload.
+3. Upload through the game's Workshop tools / Hovgaard publishing flow.
+4. Copy workshop text from `releases/<version>/`:
    - `short-description.txt` — summary field
    - `full-description.md` — BBCode body (use `[b]`, `[list]`, `[url]` only — no `[size=]` tags)
 

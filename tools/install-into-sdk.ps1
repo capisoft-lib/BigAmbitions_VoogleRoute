@@ -32,7 +32,7 @@ From the mod repo root run:
 }
 
 $modItems = @(
-    "Scripts", "Locales", "Data", "Dependencies", "Plugins", "PathFinding", "tools",
+    "Scripts", "Locales", "Data", "Dependencies", "Plugins", "PathFinding", "tools", "Editor",
     "ModManifest.asset", "ModManifest.asset.meta",
     "VoogleRoute.asmdef", "VoogleRoute.asmdef.meta",
     "Thumbnail.png", "Thumbnail.png.meta",
@@ -56,5 +56,5 @@ if (Test-Path $folderMetaSource) {
 
 Write-Host "Installed VoogleRoute -> $dest"
 Write-Host "Also install LIB_BaPlayerLocation and enable both mods in-game."
-Write-Host "Run tools\build-pathfinding.ps1 if Dependencies\VoogleRoute.Pathfinding.dll is missing."
+Write-Host "Run tools\build-pathfinding.ps1 (syncs PathFinding + LIB_BaUnifiedUI into Dependencies)."
 Write-Host "Next: open SDK in Unity 2022.3.62f2, then Mod Builder -> Build & Install."

@@ -25,4 +25,6 @@ Write-Host "Copied -> $dllTarget"
 
 & (Join-Path $pfRoot "tools\sync-route-data.ps1") -ModRoot $modRoot
 
+& (Join-Path $PSScriptRoot "sync-dependencies.ps1") -SdkRoot (Resolve-Path (Join-Path $modRoot "..\..\..")).Path
+
 Write-Host "PathFinding artifacts updated. Rebuild VoogleRoute in Unity Mod Builder."
