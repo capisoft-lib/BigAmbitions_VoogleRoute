@@ -12,11 +12,9 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [b]What's new in 0.11.10[/b]
 
 [list]
-[*][b]Per-save mod options[/b] — route colors and [b]ESC → Options → Mod[/b] toggles are stored in your save file (each character/save slot keeps its own settings)
-[*][b]Per-save bookmarks & history[/b] — bookmarks, quick shortcuts, and visit history travel with the active save; legacy [b]bookmarks.json[/b] data migrates automatically on first load
-[*][b]Route color fix[/b] — foot, vehicle, and indoor line colors persist correctly after save/reload
-[*][b]Separate route colors[/b] — choose a color for on-foot, vehicle, and indoor routes independently (gear icon on the GPS panel)
-[*][b]config.json dev-only[/b] — the mod folder file keeps logging/debug flags only; gameplay options are no longer shared across all saves
+[*][b]Flatbed & hand truck[/b] — while pushing delivery cargo, the GPS panel shows [b]AUTO-WALK[/b] instead of [b]AUTO-DRIVE[/b]
+[*][b]Delivery job routing[/b] — better sync with vanilla delivery missions: stop targets, return-to-depot guidance, and door interact when auto-walk reaches a shop (flatbed/hand truck supported)
+[*][b]Route colors[/b] — foot, vehicle, and indoor line colors persist correctly after save and reload (gear icon on the GPS panel)
 [/list]
 
 
@@ -65,7 +63,7 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*]Use [b]ROUTE ON[/b] / [b]ROUTE OFF[/b], [b]AUTO WALK / WALK ON[/b], or in a vehicle tap [b]AUTO-DRIVE[/b] for skip-travel.
 [*]Long on-foot trips across districts may show a [b]dashed yellow[/b] subway segment — enable [b]Use subway[/b] under [b]ESC → Options → Mod[/b] if you want this fallback.
 [*]Indoors: use [b]WAY OUT[/b] and [b]GET OUT[/b] for exit guidance (enable indoor options under [b]Mods[/b] if needed).
-[*]Tap the [b]gear[/b] on the panel header for route colors (stored per save).
+[*]Tap the [b]gear[/b] on the panel header for route colors (also available under [b]Mods[/b] in the main menu).
 [/list]
 
 
@@ -75,7 +73,7 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*][b]Game:[/b] Big Ambitions EA [b]0.11 Experimental[/b]
 [*][b]Required mod:[/b] [b]LIB BA Player Location[/b] (separate Workshop item — subscribe and enable before Voogle Route)
 [*][b]Setup:[/b] Enable both mods in the [b]Mods[/b] menu
-[*][b]Saves:[/b] Bookmarks, visit history, and mod options are stored in each save's mod data; does not alter progression
+[*][b]Saves:[/b] Reads your map destination only; bookmarks and visit history stored in mod data; does not alter progression
 [/list]
 
 

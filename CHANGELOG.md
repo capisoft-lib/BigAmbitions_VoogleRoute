@@ -4,21 +4,11 @@ All notable changes to **Voogle Route** are documented here.
 
 ## [0.11.10] - 2026-06-19
 
-### Added
-
-- **Per-save mod options** — route colors and **ESC → Options → Mod** toggles stored in save `modData` (each character/save slot keeps its own settings)
-- **Per-save bookmarks & visit history** — bookmarks, quick shortcuts, and history stored in save `modData`; auto-migration from legacy `bookmarks.json` and older modData keys
-- **Separate route colors** — independent on-foot, vehicle, and indoor line colors (gear icon on the GPS panel)
-
-### Changed
-
-- **config.json dev-only** — mod folder file keeps logging and debug flags; gameplay options no longer shared globally across saves
-- **Mod options scheduler** — defers ESC mod-options refresh so the options UI is not torn down mid-init
-
 ### Fixed
 
-- **Route color persistence** — colors save correctly again; replaces `System.Text.Json` with an IL2CPP-safe manual codec (`Utf8JsonWriter` VTable failure in-game)
-- **Mod options write on persist** — no longer reloads stale save data over in-memory changes when binding the active save
+- **Flatbed & hand truck** — pushing delivery cargo (`spawnInPlayerObject` vehicles) is treated as on-foot navigation; GPS panel shows **AUTO-WALK** instead of **AUTO-DRIVE**
+- **Delivery job routing** — improved sync with vanilla delivery missions (stop targets, return-to-depot, deferred arrival handling); auto-walk triggers door interact at delivery stops from a flatbed or hand truck
+- **Route colors** — foot, vehicle, and indoor line colors persist correctly after save/reload (IL2CPP-safe mod-data encoding; `System.Text.Json` write failure in-game)
 
 ## [0.11.9] - 2026-06-17
 
