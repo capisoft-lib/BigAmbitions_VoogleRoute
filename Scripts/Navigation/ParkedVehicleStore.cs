@@ -23,7 +23,9 @@ namespace VoogleRoute.Navigation
             MovementMode current,
             in PlayerLocationSnapshot snapshot)
         {
-            if (snapshot.IsAvailable && snapshot.MovementKind == MovementKind.Car)
+            if (current == MovementMode.Vehicle &&
+                snapshot.IsAvailable &&
+                snapshot.MovementKind == MovementKind.Car)
             {
                 if (TryGetDriverEntranceFromSelectedVehicle(out var driverPos))
                     _lastVehiclePosition = driverPos;

@@ -23,7 +23,7 @@ namespace VoogleRoute.Navigation
                 return;
 
             if (!GameState.ShouldShowNavigationPanel() ||
-                MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+                !MovementModeDetector.CanUseAutoDrive())
                 return;
 
             TryShowConfirmPopup();
@@ -38,7 +38,7 @@ namespace VoogleRoute.Navigation
             if (_inProgress)
                 return;
 
-            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+            if (!MovementModeDetector.CanUseAutoDrive())
             {
                 Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
                 return;
@@ -49,6 +49,12 @@ namespace VoogleRoute.Navigation
 
         private static void TryShowConfirmPopup()
         {
+            if (!MovementModeDetector.CanUseAutoDrive())
+            {
+                Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                return;
+            }
+
             if (!NavigationTargetTracker.HasMapGpsTarget)
             {
                 Notifications.ShowError("voogle_route_autodrive_no_route");
@@ -72,7 +78,7 @@ namespace VoogleRoute.Navigation
 
         internal static void StartTravel(AutoDriveSkipPlanner.Plan plan)
         {
-            if (_inProgress || !plan.Success)
+            if (_inProgress || !plan.Success || !MovementModeDetector.CanUseAutoDrive())
                 return;
 
             if (IsTimeMachineRunning())
@@ -94,7 +100,8 @@ namespace VoogleRoute.Navigation
             var screenFaded = false;
 
             var vehicle = VehicleHelper.GetCurrentVehicleBase();
-            if (vehicle == null)
+            if (vehicle == null ||
+                (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
             {
                 _inProgress = false;
                 Notifications.ShowError("voogle_route_autodrive_no_route");
@@ -103,6 +110,18 @@ namespace VoogleRoute.Navigation
 
             yield return UiFader.Fade();
             screenFaded = true;
+
+            vehicle = VehicleHelper.GetCurrentVehicleBase();
+            if (!MovementModeDetector.CanUseAutoDrive() ||
+                vehicle == null ||
+                (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
+            {
+                yield return UiFader.UnFade();
+                screenFaded = false;
+                _inProgress = false;
+                Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                yield break;
+            }
 
             AutoDriveRoadTeleport.Apply(
                 vehicle,

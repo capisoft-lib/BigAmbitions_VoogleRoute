@@ -150,8 +150,8 @@ namespace VoogleRoute.UI
             if (_driveButton == null || _walkButton == null)
                 return;
 
-            var inVehicle = MovementModeDetector.CurrentMode == MovementMode.Vehicle;
-            var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
+            var inVehicle = MovementModeDetector.CanUseAutoDrive();
+            var onFoot = MovementModeDetector.IsEffectivelyOnFootForNavigation();
             _driveButton.interactable = inVehicle;
             _walkButton.interactable = onFoot;
         }
@@ -209,7 +209,7 @@ namespace VoogleRoute.UI
 
             if (drive)
             {
-                if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+                if (!MovementModeDetector.CanUseAutoDrive())
                     return false;
 
                 AutoDriveSkipTravelService.RequestFromBookmark();

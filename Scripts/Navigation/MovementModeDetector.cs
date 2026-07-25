@@ -28,9 +28,12 @@ namespace VoogleRoute.Navigation
         internal static void Apply(PlayerLocationSnapshot snapshot)
         {
             PreviousMode = CurrentMode;
-            CurrentMode = snapshot.IsAvailable
+            var reportedMode = snapshot.IsAvailable
                 ? PlayerLocationSnapshotMapper.ToMovementMode(snapshot.MovementKind)
                 : MovementMode.Unavailable;
+            CurrentMode = reportedMode == MovementMode.Vehicle && IsPushingPlayerCargoVehicle()
+                ? MovementMode.OnFoot
+                : reportedMode;
 
             ParkedVehicleStore.OnMovementModeApplied(PreviousMode, CurrentMode, in snapshot);
         }
@@ -39,6 +42,9 @@ namespace VoogleRoute.Navigation
 
         internal static bool ShouldShowActionPanel() =>
             CurrentMode == MovementMode.OnFoot || CurrentMode == MovementMode.Vehicle;
+
+        internal static bool CanUseAutoDrive() =>
+            CurrentMode == MovementMode.Vehicle && !IsPushingPlayerCargoVehicle();
 
         /// <summary>On foot or pushing hand truck / flatbed (spawnInPlayerObject cargo).</summary>
         internal static bool IsEffectivelyOnFootForNavigation()
@@ -106,8 +112,21 @@ namespace VoogleRoute.Navigation
             if (!snapshot.IsAvailable)
                 return false;
 
-            if (snapshot.MovementKind is not (MovementKind.Walk or MovementKind.Indoor))
+            var cargoToolReportedAsCar =
+                snapshot.MovementKind == MovementKind.Car && IsPushingPlayerCargoVehicle();
+            if (snapshot.MovementKind is not (MovementKind.Walk or MovementKind.Indoor) &&
+                !cargoToolReportedAsCar)
                 return false;
+
+            if (cargoToolReportedAsCar)
+            {
+                var player = PlayerHelper.PlayerController;
+                if (player != null)
+                {
+                    origin = player.transform.position;
+                    return origin.sqrMagnitude > 0.01f;
+                }
+            }
 
             origin = snapshot.Position;
             return origin.sqrMagnitude > 0.01f;

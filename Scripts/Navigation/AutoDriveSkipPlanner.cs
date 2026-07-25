@@ -53,7 +53,7 @@ namespace VoogleRoute.Navigation
             if (!NavigationTargetTracker.HasMapGpsTarget)
                 return false;
 
-            if (MovementModeDetector.CurrentMode != MovementMode.Vehicle)
+            if (!MovementModeDetector.CanUseAutoDrive())
                 return false;
 
             if (!MovementModeDetector.TryGetVehiclePose(out _, out _))

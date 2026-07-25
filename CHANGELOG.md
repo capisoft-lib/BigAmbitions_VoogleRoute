@@ -2,6 +2,19 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [0.11.11] - 2026-07-25
+
+### Fixed
+
+- **Flatbed & hand truck mode** — pushed delivery equipment is normalized to on-foot navigation even when an older location library reports it as a car
+- **Auto-drive safety** — cargo tools are rejected before route planning, confirmation, and teleport, preventing lost products and randomly moved carts
+- **Walking route origin** — fallback compatibility uses the player position instead of the cargo vehicle position
+- **Last parked vehicle** — flatbeds and hand trucks no longer replace the saved motor-vehicle shortcut
+
+### Changed
+
+- Requires **LIB BA Player Location** `0.11.2+`, which reports `spawnInPlayerObject` cargo tools as walking
+
 ## [0.11.10] - 2026-06-19
 
 ### Fixed
@@ -193,6 +206,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[0.11.11]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.11
 [0.11.10]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.10
 [0.11.9]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.9
 [0.11.8]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.8

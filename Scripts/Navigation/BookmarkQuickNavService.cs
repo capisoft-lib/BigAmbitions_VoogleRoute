@@ -6,7 +6,7 @@ namespace VoogleRoute.Navigation
     internal static class BookmarkQuickNavService
     {
         internal static bool IsVehicleMapMode =>
-            MovementModeDetector.CurrentMode == MovementMode.Vehicle;
+            MovementModeDetector.CanUseAutoDrive();
 
         internal static void NavigateFromBookmark(BookmarkEntry bookmark)
         {

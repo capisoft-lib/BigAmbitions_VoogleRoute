@@ -150,8 +150,8 @@ namespace VoogleRoute.UI
 
             var routeOn = indoor ? ModConfig.IndoorRouteLineEnabled : ModConfig.RouteLineEnabled;
             var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
-            var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            var inVehicle = MovementModeDetector.CurrentMode == MovementMode.Vehicle;
+            var onFoot = MovementModeDetector.IsEffectivelyOnFootForNavigation();
+            var inVehicle = MovementModeDetector.CanUseAutoDrive();
             if (_forceApply || indoor != _lastIndoor || routeOn != _lastRouteOn || walkOn != _lastWalkOn ||
                 onFoot != _lastOnFoot || inVehicle != _lastInVehicle)
             {
@@ -192,8 +192,8 @@ namespace VoogleRoute.UI
             _routeLabel.color = ButtonLabelColor;
 
             var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
-            var onFoot = MovementModeDetector.CurrentMode == MovementMode.OnFoot;
-            var inVehicle = MovementModeDetector.CurrentMode == MovementMode.Vehicle;
+            var onFoot = MovementModeDetector.IsEffectivelyOnFootForNavigation();
+            var inVehicle = MovementModeDetector.CanUseAutoDrive();
             if (inVehicle)
             {
                 BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Grey);
@@ -284,13 +284,13 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            if (MovementModeDetector.CurrentMode == MovementMode.Vehicle)
+            if (MovementModeDetector.CanUseAutoDrive())
             {
                 AutoDriveSkipTravelService.RequestFromActionPanel();
                 return;
             }
 
-            if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
+            if (!MovementModeDetector.IsEffectivelyOnFootForNavigation())
                 return;
 
             ModConfig.SetAutoWalkEnabled(!ModConfig.AutoWalkEnabled);

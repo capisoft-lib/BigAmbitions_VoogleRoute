@@ -1,0 +1,4 @@
+- Flatbed and hand truck navigation is now reliably treated as walking
+- Auto-drive is blocked before planning and teleport for pushed delivery equipment
+- Prevents lost cargo, randomly moved carts, and flatbeds replacing the last-car shortcut
+- Requires LIB BA Player Location 0.11.2 or newer

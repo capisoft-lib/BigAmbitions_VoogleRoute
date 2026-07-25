@@ -2,7 +2,7 @@ LIB_BaPlayerLocation
 
 Workshop publish checklist:
 1. Upload LIB_BaPlayerLocation first (ModId must match exactly).
-2. Upload VoogleRoute and state LIB BA Player Location 0.11.1+ is required in the Workshop description.
+2. Upload VoogleRoute and state LIB BA Player Location 0.11.2+ is required in the Workshop description.
 3. Players subscribe to LIB_BaPlayerLocation + VoogleRoute only.
    LIB_BaUnifiedUI ships bundled in VoogleRoute/Dependencies/ (no separate Workshop item).
 

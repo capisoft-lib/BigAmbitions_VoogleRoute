@@ -15,7 +15,7 @@ MonoBehaviour:
   ModId: VoogleRoute
   DisplayName: Voogle Route
   Author: capisoft-lib
-  Version: 0.11.9
+  Version: 0.11.11
   AssetBundleName: 
   ModAssembly: {fileID: 5897886265953266890, guid: 24a2e151ca0d402282170c55a3ed3c74, type: 3}
   LocalesFolder: {fileID: 102900000, guid: 910b44102caa43d4835149f3e52207a1, type: 3}
