@@ -25,7 +25,7 @@ namespace VoogleRoute.Navigation
 
                 if (TryResolveBuilding(bookmark, worldPos, out var building))
                 {
-                    map.UpdateBuildingToFocus(building);
+                    map.FocusOnBuilding(building);
                     ModLog.Info("Bookmark focused on map (building): " + bookmark.DisplayName);
                     return true;
                 }
@@ -75,7 +75,6 @@ namespace VoogleRoute.Navigation
 
         private static void FocusCameraOnPosition(CityMap map, Vector3 worldPos)
         {
-            map.SetCameraPosition(worldPos);
             TrySyncCityMapCameraParent(worldPos);
 
             if (map.cityMapCam != null)

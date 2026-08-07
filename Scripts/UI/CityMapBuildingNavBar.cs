@@ -242,7 +242,7 @@ namespace VoogleRoute.UI
             try
             {
                 return CityManager.IsInitialized &&
-                       CityManager.Instance?.cityMap?.isTaxiMode == true;
+                       CityManager.Instance?.cityMap?.IsTaxiMode == true;
             }
             catch
             {

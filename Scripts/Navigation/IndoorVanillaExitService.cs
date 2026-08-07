@@ -52,12 +52,6 @@ namespace VoogleRoute.Navigation
                     return false;
                 }
 
-                if (!PlayerHelper.CanLeaveHome())
-                {
-                    LogBlocked("cant_leave_home");
-                    return false;
-                }
-
                 if (exit.IsParkingExit)
                 {
                     UndergroundParkingManager.ExitParking();

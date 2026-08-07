@@ -167,7 +167,7 @@ namespace VoogleRoute
                         if (hud.dialogUI.isPanelOpen || hud.manageCargoUI.isPanelOpen || hud.jobOfferPanel.isPanelOpen)
                             return true;
 
-                        if (hud.purchaseUI.isDoingPurchase)
+                        if (hud.purchaseUI.IsDoingPurchase)
                             return true;
                     }
 
