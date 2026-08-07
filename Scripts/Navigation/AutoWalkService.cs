@@ -291,6 +291,9 @@ namespace VoogleRoute.Navigation
             if (_subwayPhase == SubwayWalkPhase.ToBoardStation && path.Subway.Active)
                 return ResolveBoardApproachPosition(path);
 
+            if (path.IsPartial && path.Points != null && path.Points.Length >= 2)
+                return path.Points[path.Points.Length - 1];
+
             return NavigationTargetTracker.ActiveTarget;
         }
 

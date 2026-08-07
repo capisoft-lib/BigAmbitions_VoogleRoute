@@ -37,7 +37,7 @@ namespace VoogleRoute.Navigation
             if (!TryGetHorizontalPosition(out var position))
                 return;
 
-            var destination = NavigationTargetTracker.ActiveTarget;
+            var destination = ResolveArrivalTarget();
             var distance = HorizontalDistance(position, destination);
             var radius = MovementModeDetector.CurrentMode == MovementMode.Vehicle
                 ? VehicleArrivalRadiusMeters
@@ -81,7 +81,7 @@ namespace VoogleRoute.Navigation
             if (!TryGetHorizontalPosition(out var position))
                 return;
 
-            var destination = NavigationTargetTracker.ActiveTarget;
+            var destination = ResolveArrivalTarget();
             var distance = HorizontalDistance(position, destination);
             var radius = MovementModeDetector.CurrentMode == MovementMode.Vehicle
                 ? VehicleArrivalRadiusMeters
@@ -138,6 +138,13 @@ namespace VoogleRoute.Navigation
 
             position = PlayerLocationSession.Snapshot.Position;
             return position.sqrMagnitude > 0.01f;
+        }
+
+        private static Vector3 ResolveArrivalTarget()
+        {
+            return PathFinderService.TryGetEffectiveFootArrivalTarget(out var routeEnd)
+                ? routeEnd
+                : NavigationTargetTracker.ActiveTarget;
         }
 
         private static float HorizontalDistance(Vector3 a, Vector3 b)

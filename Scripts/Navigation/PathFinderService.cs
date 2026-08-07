@@ -33,6 +33,14 @@ namespace VoogleRoute.Navigation
 
     internal static class PathFinderService
     {
+        // A mansion driveway can end on a tiny NavMesh seam. If Unity's partial
+        // path stops inside the normal on-foot arrival radius, it is still a
+        // usable route: walking to its final corner will complete navigation.
+        private const float NearTargetPartialToleranceMeters = 7f;
+        // Hamptons mansions expose a vehicle driveway target that can sit well
+        // inside private grounds. For map-selected buildings, guide pedestrians
+        // to the closest reachable gate instead of suppressing the whole route.
+        private const float BuildingApproachPartialToleranceMeters = 50f;
         private static readonly NavMeshPath NavPath = new NavMeshPath();
         private static Vector3 _lastTarget;
         private static MovementMode _lastMode = MovementMode.Unavailable;
@@ -105,6 +113,20 @@ namespace VoogleRoute.Navigation
 
             path = Empty();
             return false;
+        }
+
+        internal static bool TryGetEffectiveFootArrivalTarget(out Vector3 target)
+        {
+            target = default;
+            if (MovementModeDetector.CurrentMode != MovementMode.OnFoot ||
+                !TryGetCachedRouteForDisplay(out var path) ||
+                !path.IsPartial ||
+                path.Points == null ||
+                path.Points.Length < 2)
+                return false;
+
+            target = path.Points[path.Points.Length - 1];
+            return true;
         }
 
         internal static void EnsureCacheMatchesMovementMode()
@@ -517,22 +539,6 @@ namespace VoogleRoute.Navigation
                 return Cache(Empty(), mode);
             }
 
-            var isPartial = status == NavMeshPathStatus.PathPartial;
-            if (isPartial && !ModConfig.ShowPartialPaths)
-            {
-                RouteRecalcDiagnostics.LogRecalcFailed(
-                    requestSource,
-                    recalcReason + "|partial_rejected",
-                    mode,
-                    RouteRecalcDiagnostics.ElapsedMs(totalTimer),
-                    pathfindMs,
-                    RouteRecalcDiagnostics.LastPathfindKind,
-                    "partial=true");
-                LastFinalPoints = System.Array.Empty<Vector3>();
-                _lastFinalPointsMode = MovementMode.Unavailable;
-                return Cache(Empty(), mode);
-            }
-
             if (navCorners.Length == 0)
             {
                 RouteRecalcDiagnostics.LogRecalcFailed(
@@ -547,6 +553,41 @@ namespace VoogleRoute.Navigation
                 _lastFinalPointsMode = MovementMode.Unavailable;
                 return Cache(Empty(), mode);
             }
+
+            var isPartial = status == NavMeshPathStatus.PathPartial;
+            var terminalGap = HorizontalDistance(navCorners[navCorners.Length - 1], target);
+            var acceptNearTargetPartial = isPartial &&
+                                          mode == MovementMode.OnFoot &&
+                                          terminalGap <= NearTargetPartialToleranceMeters;
+            var acceptBuildingApproachPartial = isPartial &&
+                                                mode == MovementMode.OnFoot &&
+                                                terminalGap <= BuildingApproachPartialToleranceMeters &&
+                                                NavigationTargetTracker.LastSource == NavigationTargetTracker.MapSource &&
+                                                DestinationResolver.TryGetActiveMapAddress(out _);
+            if (isPartial &&
+                !ModConfig.ShowPartialPaths &&
+                !acceptNearTargetPartial &&
+                !acceptBuildingApproachPartial)
+            {
+                RouteRecalcDiagnostics.LogRecalcFailed(
+                    requestSource,
+                    recalcReason + "|partial_rejected",
+                    mode,
+                    RouteRecalcDiagnostics.ElapsedMs(totalTimer),
+                    pathfindMs,
+                    RouteRecalcDiagnostics.LastPathfindKind,
+                    "partial=true terminal_gap_m=" +
+                    terminalGap.ToString("F2", System.Globalization.CultureInfo.InvariantCulture));
+                LastFinalPoints = System.Array.Empty<Vector3>();
+                _lastFinalPointsMode = MovementMode.Unavailable;
+                return Cache(Empty(), mode);
+            }
+
+            if (acceptNearTargetPartial)
+                recalcReason += "|partial_near_target";
+            else if (acceptBuildingApproachPartial)
+                recalcReason += "|partial_building_approach_" +
+                                terminalGap.ToString("F2", System.Globalization.CultureInfo.InvariantCulture) + "m";
 
             var pipelineTimer = RouteRecalcDiagnostics.StartTimer();
             var linePoints = mode == MovementMode.Vehicle
@@ -588,6 +629,13 @@ namespace VoogleRoute.Navigation
                 success);
 
             return Cache(result, mode);
+        }
+
+        private static float HorizontalDistance(Vector3 a, Vector3 b)
+        {
+            var dx = a.x - b.x;
+            var dz = a.z - b.z;
+            return Mathf.Sqrt(dx * dx + dz * dz);
         }
 
         internal static void NotifyMapDestinationChanged()
