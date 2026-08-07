@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -39,11 +40,7 @@ namespace VoogleRoute.Editor
             var projectRoot = Path.GetDirectoryName(Application.dataPath) ?? string.Empty;
             var candidates = new[]
             {
-                Path.Combine(projectRoot, "Output", "LIB_BaUnifiedUI", "LIB_BaUnifiedUI.dll"),
-                Path.Combine(
-                    System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile),
-                    "AppData", "LocalLow", "Hovgaard Games", "Big Ambitions", "ModsLocal",
-                    "LIB_BaUnifiedUI", "LIB_BaUnifiedUI.dll")
+                Path.Combine(projectRoot, "Output", "LIB_BaUnifiedUI", "LIB_BaUnifiedUI.dll")
             };
 
             string source = null;
@@ -65,13 +62,8 @@ namespace VoogleRoute.Editor
             RemoveLegacyBundledDll(destDir);
 
             var destAbsolute = Path.Combine(destDir, BundledUiDllFileName);
-            if (File.Exists(destAbsolute))
-            {
-                var srcTime = File.GetLastWriteTimeUtc(source);
-                var dstTime = File.GetLastWriteTimeUtc(destAbsolute);
-                if (srcTime <= dstTime)
-                    return true;
-            }
+            if (FilesEqual(source, destAbsolute))
+                return true;
 
             File.Copy(source, destAbsolute, overwrite: true);
             AssetDatabase.ImportAsset(DestAssetPath, ImportAssetOptions.ForceUpdate);
@@ -80,6 +72,17 @@ namespace VoogleRoute.Editor
                 Debug.Log("[VoogleRoute] Synced " + BundledUiDllFileName + " into Dependencies for Mod Builder.");
 
             return true;
+        }
+
+        private static bool FilesEqual(string source, string destination)
+        {
+            if (!File.Exists(destination))
+                return false;
+
+            var sourceInfo = new FileInfo(source);
+            var destinationInfo = new FileInfo(destination);
+            return sourceInfo.Length == destinationInfo.Length
+                   && File.ReadAllBytes(source).SequenceEqual(File.ReadAllBytes(destination));
         }
 
         private static void RemoveLegacyBundledDll(string destDir)

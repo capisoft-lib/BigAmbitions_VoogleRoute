@@ -30,6 +30,9 @@ namespace VoogleRoute.Navigation
 
         internal static bool Tick(bool canNavigate, PathResult path, in IndoorExitTarget exitTarget)
         {
+            if (NavigationSpawnGuard.IsAutoWalkSuppressed)
+                return false;
+
             if (!ModConfig.IndoorAutoWalkEnabled)
             {
                 Reset();

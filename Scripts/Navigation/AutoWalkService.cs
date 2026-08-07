@@ -61,6 +61,9 @@ namespace VoogleRoute.Navigation
 
         internal static bool Tick(bool canNavigate, PathResult path)
         {
+            if (NavigationSpawnGuard.IsAutoWalkSuppressed)
+                return false;
+
             if (!ModConfig.AutoWalkEnabled)
             {
                 Reset();

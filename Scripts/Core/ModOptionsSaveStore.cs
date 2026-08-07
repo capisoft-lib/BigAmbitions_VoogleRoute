@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using BAModAPI;
 using UnityEngine;
+using VoogleRoute.Navigation;
 
 namespace VoogleRoute
 {
@@ -31,6 +32,7 @@ namespace VoogleRoute
 
             _boundSaveId = saveId;
             _migratedGlobalConfig = false;
+            NavigationSpawnGuard.OnSaveRebound();
 
             _loading = true;
             try
@@ -146,6 +148,7 @@ namespace VoogleRoute
             _boundSaveId = null;
             _migratedGlobalConfig = false;
             _loading = false;
+            NavigationSpawnGuard.Reset();
             Current = ModOptionsSaveData.CreateDefault();
         }
 

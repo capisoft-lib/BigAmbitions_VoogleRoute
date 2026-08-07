@@ -87,6 +87,7 @@ namespace VoogleRoute
             }
 
             IndoorNavigationService.Reset();
+            NavigationSpawnGuard.Reset();
             PlayerLocationSession.Changed -= OnPlayerLocationChanged;
             PlayerLocationLogger.Shutdown();
             PlayerLocationSession.Shutdown();
@@ -107,6 +108,7 @@ namespace VoogleRoute
         internal static void Tick()
         {
             ModUiText.PollLanguageChange();
+            NavigationSpawnGuard.Tick();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
             AutoDriveConfirmPopup.TickOverlay();

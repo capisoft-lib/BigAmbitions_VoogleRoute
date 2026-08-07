@@ -122,7 +122,7 @@ namespace VoogleRoute
             RouteLineEnabled = data.RouteLine;
             AutoWalkEnabled = data.AutoWalk;
             IndoorRouteLineEnabled = data.IndoorRoute;
-            IndoorAutoWalkEnabled = data.IndoorAutowalk;
+            IndoorAutoWalkEnabled = false;
             UseSubwayEnabled = data.UseSubway;
             ForceCorrectSideArrivalEnabled = data.ForceCorrectSideArrival;
             AllowUturnAtStartEnabled = data.AllowUturnAtStart;
@@ -142,7 +142,7 @@ namespace VoogleRoute
                 RouteLine = RouteLineEnabled,
                 AutoWalk = AutoWalkEnabled,
                 IndoorRoute = IndoorRouteLineEnabled,
-                IndoorAutowalk = IndoorAutoWalkEnabled,
+                IndoorAutowalk = false,
                 UseSubway = UseSubwayEnabled,
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
