@@ -14,6 +14,7 @@ namespace VoogleRoute.UI
     internal static class RouteSettingsUi
     {
         private const string RootName = "VoogleRoute_Settings_fluent_v18";
+        private const string DragPositionId = "voogleroute:settings";
         private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11500;
         private const int PickerOpenCanvasSortOrder = 8000;
@@ -55,6 +56,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Modal(RootName, CanvasSortOrder, 0.5f)
                 .OnDismiss(Close)
                 .Panel(BaPanelRecipe.Settings, PanelWidth)
+                .Draggable(DragPositionId)
                 .Header(h => h
                     .TitleLeft(ModUiText.SettingsTitle)
                     .CloseButton(Close, CloseButtonExtraInset))

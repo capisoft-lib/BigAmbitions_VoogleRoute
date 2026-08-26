@@ -11,14 +11,14 @@ namespace VoogleRoute.Rendering
         private const float LineMoveResampleSq = 9f;
 
         private static GameObject _root;
-        private static LineRenderer _line;
+        private static HybridRouteStroke _line;
         private static Vector3[] _lastGoodDisplayPoints;
         private static float _lastLineRefreshTime = -999f;
         private static Vector3 _lastLinePose;
 
         internal static void EnsureCreated()
         {
-            if (_line != null && _root != null)
+            if (_line != null && _line.IsReady && _root != null)
                 return;
 
             _root = GameObject.Find(RootName);
@@ -28,9 +28,7 @@ namespace VoogleRoute.Rendering
                 Object.DontDestroyOnLoad(_root);
             }
 
-            _line = _root.GetComponent<LineRenderer>();
-            if (_line == null)
-                _line = _root.AddComponent<LineRenderer>();
+            _line = HybridRouteStroke.Attach(_root);
 
             ApplyStyle();
         }
@@ -40,20 +38,8 @@ namespace VoogleRoute.Rendering
             if (_line == null)
                 return;
 
-            _line.useWorldSpace = true;
-            _line.alignment = LineAlignment.View;
-            _line.textureMode = LineTextureMode.Stretch;
-            _line.numCapVertices = 2;
-            _line.numCornerVertices = 2;
-            _line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _line.receiveShadows = false;
-            _line.loop = false;
-
             var width = Mathf.Max(0.12f, ModConfig.VehicleLineWidth);
-            _line.startWidth = width;
-            _line.endWidth = width;
-
-            LineRendererMaterial.Apply(_line, ModConfig.VehicleLineColor);
+            _line.ApplyStyle(width, 2, 2, ModConfig.VehicleLineColor);
         }
 
         internal static void ShowPath(PathResult path)
@@ -112,9 +98,8 @@ namespace VoogleRoute.Rendering
 
             if (!LineRendererPathCache.IsSame(displayPoints))
             {
-                _line.positionCount = displayPoints.Length;
                 _line.SetPositions(displayPoints);
-                LineRendererMaterial.Apply(_line, ModConfig.VehicleLineColor);
+                _line.SetColor(ModConfig.VehicleLineColor);
             }
         }
 

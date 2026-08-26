@@ -8,7 +8,8 @@ body:
     attributes:
       label: Big Ambitions version
       options:
-        - EA 0.11 Experimental
+        - 1.0 beta
+        - EA 0.11 Experimental (older release)
         - EA 0.10 (MelonLoader legacy — unsupported)
         - Other
     validations:
@@ -18,8 +19,8 @@ body:
     id: mod_version
     attributes:
       label: Voogle Route version
-      description: From the Mods menu or GitHub release tag (e.g. 0.11.0)
-      placeholder: "0.11.0"
+      description: From the Mods menu or GitHub release tag (e.g. 1.0.0)
+      placeholder: "1.0.0"
     validations:
       required: true
 

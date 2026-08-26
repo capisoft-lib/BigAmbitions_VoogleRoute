@@ -1,3 +1,8 @@
+param(
+    [string]$BigAmbitionsManagedPath = $env:BA_GAME_MANAGED_PATH,
+    [switch]$SkipTests
+)
+
 $ErrorActionPreference = "Stop"
 
 $modRoot = Split-Path $PSScriptRoot -Parent
@@ -12,19 +17,21 @@ From the mod repo root run:
 "@
 }
 
-dotnet build $csproj -c Release --nologo -v q
-
-$dll = Join-Path $pfRoot "bin\Release\netstandard2.1\VoogleRoute.Pathfinding.dll"
-if (-not (Test-Path $dll)) {
-    throw "Build succeeded but DLL missing: $dll"
+$buildScript = Join-Path $pfRoot "build-pathfinding.ps1"
+$buildArgs = @{ SkipTests = $SkipTests }
+if (-not [string]::IsNullOrWhiteSpace($BigAmbitionsManagedPath)) {
+    $buildArgs.BigAmbitionsManagedPath = $BigAmbitionsManagedPath
+}
+& $buildScript @buildArgs
+if ($LASTEXITCODE -ne 0) {
+    throw "PathFinding player-runtime build failed."
 }
 
-$dllTarget = Join-Path $modRoot "Dependencies\VoogleRoute.Pathfinding.dll"
-Copy-Item $dll -Destination $dllTarget -Force
-Write-Host "Copied -> $dllTarget"
+$dll = Join-Path $modRoot "Dependencies\VoogleRoute.Pathfinding.dll"
+if (-not (Test-Path $dll)) {
+    throw "Build succeeded but authoritative dependency DLL is missing: $dll"
+}
 
 & (Join-Path $pfRoot "tools\sync-route-data.ps1") -ModRoot $modRoot
-
-& (Join-Path $PSScriptRoot "sync-dependencies.ps1") -SdkRoot (Resolve-Path (Join-Path $modRoot "..\..\..")).Path
 
 Write-Host "PathFinding artifacts updated. Rebuild VoogleRoute in Unity Mod Builder."

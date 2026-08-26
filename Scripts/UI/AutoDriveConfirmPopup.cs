@@ -14,6 +14,7 @@ namespace VoogleRoute.UI
     internal static class AutoDriveConfirmPopup
     {
         private const string RootName = "VoogleRoute_AutoDrivePopup_v2";
+        private const string DragPositionId = "voogleroute:auto-drive-confirm";
         private const int CanvasSortOrder = 12000;
         private const float PanelWidth = 560f;
         private const float PanelHeight = 260f;
@@ -43,6 +44,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Modal(RootName, CanvasSortOrder, 0.45f)
                 .OnDismiss(Close)
                 .Panel(BaPanelRecipe.Modal, PanelWidth, height: PanelHeight)
+                .Draggable(DragPositionId)
                 .Header(h => h.TitleCenter(ModUiText.AutoDrivePopupTitle))
                 .SkipBody()
                 .Build();

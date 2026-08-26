@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using Capisoft.Lib.BaUnifiedUI.Localization;
+using Newtonsoft.Json;
 
 namespace VoogleRoute.UI
 {
@@ -46,7 +46,7 @@ namespace VoogleRoute.UI
 
             try
             {
-                var parsed = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(path));
+                var parsed = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path));
                 if (parsed == null)
                     return;
 

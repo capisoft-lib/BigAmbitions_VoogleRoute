@@ -17,11 +17,11 @@ namespace VoogleRoute.Rendering
         private const float MapLineWidthDistanceScale = 0.006f;
 
         private static GameObject _root;
-        private static LineRenderer _line;
+        private static HybridRouteStroke _line;
         private static GameObject _secondaryRoot;
-        private static LineRenderer _secondaryLine;
+        private static HybridRouteStroke _secondaryLine;
         private static GameObject _subwayRoot;
-        private static LineRenderer _subwayLine;
+        private static HybridRouteStroke _subwayLine;
 
         internal static void EnsureCreated()
         {
@@ -32,7 +32,7 @@ namespace VoogleRoute.Rendering
 
         private static void EnsureMainLine()
         {
-            if (_line != null && _root != null)
+            if (_line != null && _line.IsReady && _root != null)
                 return;
 
             _root = GameObject.Find(RootName);
@@ -42,16 +42,14 @@ namespace VoogleRoute.Rendering
                 Object.DontDestroyOnLoad(_root);
             }
 
-            _line = _root.GetComponent<LineRenderer>();
-            if (_line == null)
-                _line = _root.AddComponent<LineRenderer>();
+            _line = HybridRouteStroke.Attach(_root);
 
             ApplyStyle();
         }
 
         private static void EnsureSecondaryLine()
         {
-            if (_secondaryLine != null && _secondaryRoot != null)
+            if (_secondaryLine != null && _secondaryLine.IsReady && _secondaryRoot != null)
                 return;
 
             _secondaryRoot = GameObject.Find(SecondaryRootName);
@@ -61,16 +59,14 @@ namespace VoogleRoute.Rendering
                 Object.DontDestroyOnLoad(_secondaryRoot);
             }
 
-            _secondaryLine = _secondaryRoot.GetComponent<LineRenderer>();
-            if (_secondaryLine == null)
-                _secondaryLine = _secondaryRoot.AddComponent<LineRenderer>();
+            _secondaryLine = HybridRouteStroke.Attach(_secondaryRoot);
 
             ApplySecondaryStyle();
         }
 
         private static void EnsureSubwayLine()
         {
-            if (_subwayLine != null && _subwayRoot != null)
+            if (_subwayLine != null && _subwayLine.IsReady && _subwayRoot != null)
                 return;
 
             _subwayRoot = GameObject.Find(SubwayRootName);
@@ -80,9 +76,7 @@ namespace VoogleRoute.Rendering
                 Object.DontDestroyOnLoad(_subwayRoot);
             }
 
-            _subwayLine = _subwayRoot.GetComponent<LineRenderer>();
-            if (_subwayLine == null)
-                _subwayLine = _subwayRoot.AddComponent<LineRenderer>();
+            _subwayLine = HybridRouteStroke.Attach(_subwayRoot);
 
             ApplySubwayStyle();
         }
@@ -92,20 +86,8 @@ namespace VoogleRoute.Rendering
             if (_line == null)
                 return;
 
-            _line.useWorldSpace = true;
-            _line.alignment = LineAlignment.View;
-            _line.textureMode = LineTextureMode.Stretch;
-            _line.numCapVertices = 4;
-            _line.numCornerVertices = 4;
-            _line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _line.receiveShadows = false;
-            _line.loop = false;
-
             var width = ResolveLineWidth();
-            _line.startWidth = width;
-            _line.endWidth = width;
-
-            LineRendererMaterial.Apply(_line, ResolveMapLineColor());
+            _line.ApplyStyle(width, 4, 4, ResolveMapLineColor());
             ApplySecondaryStyle();
             ApplySubwayStyle();
         }
@@ -115,19 +97,8 @@ namespace VoogleRoute.Rendering
             if (_secondaryLine == null)
                 return;
 
-            _secondaryLine.useWorldSpace = true;
-            _secondaryLine.alignment = LineAlignment.View;
-            _secondaryLine.textureMode = LineTextureMode.Stretch;
-            _secondaryLine.numCapVertices = 4;
-            _secondaryLine.numCornerVertices = 4;
-            _secondaryLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _secondaryLine.receiveShadows = false;
-            _secondaryLine.loop = false;
-
             var width = ResolveLineWidth();
-            _secondaryLine.startWidth = width;
-            _secondaryLine.endWidth = width;
-            LineRendererMaterial.Apply(_secondaryLine, ResolveMapLineColor());
+            _secondaryLine.ApplyStyle(width, 4, 4, ResolveMapLineColor());
         }
 
         private static void ApplySubwayStyle()
@@ -135,18 +106,8 @@ namespace VoogleRoute.Rendering
             if (_subwayLine == null)
                 return;
 
-            _subwayLine.useWorldSpace = true;
-            _subwayLine.alignment = LineAlignment.View;
-            _subwayLine.numCapVertices = 4;
-            _subwayLine.numCornerVertices = 4;
-            _subwayLine.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-            _subwayLine.receiveShadows = false;
-            _subwayLine.loop = false;
-
             var width = ResolveLineWidth() * 0.85f;
-            _subwayLine.startWidth = width;
-            _subwayLine.endWidth = width;
-            LineRendererMaterial.ApplyDashed(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
+            _subwayLine.ApplyStyle(width, 4, 4, RouteSegmentLineHelper.SubwayLineColor, dashed: true);
         }
 
         internal static void ShowPath(PathResult path)
@@ -191,10 +152,12 @@ namespace VoogleRoute.Rendering
             _root.SetActive(true);
 
             var elevated = BuildMapElevatedPoints(primaryFootPoints);
-            _line.positionCount = elevated.Length;
             _line.SetPositions(elevated);
-            LineRendererMaterial.Apply(_line, ResolveMapLineColor());
-            MapOverlayDiagnostics.LogRouteShown(path, _root.layer, _line.startWidth);
+            _line.SetColor(ResolveMapLineColor());
+            MapOverlayDiagnostics.LogRouteShown(
+                path,
+                _root.layer,
+                _line.Width);
 
             ShowSecondaryFootOnMap(secondaryFootPoints);
             ShowSubwayOnMap(subwayPoints);
@@ -214,9 +177,8 @@ namespace VoogleRoute.Rendering
 
             _secondaryRoot.SetActive(true);
             var elevated = BuildMapElevatedPoints(footPoints);
-            _secondaryLine.positionCount = elevated.Length;
             _secondaryLine.SetPositions(elevated);
-            LineRendererMaterial.Apply(_secondaryLine, ResolveMapLineColor());
+            _secondaryLine.SetColor(ResolveMapLineColor());
         }
 
         private static void ShowSubwayOnMap(Vector3[] subwayPoints)
@@ -233,9 +195,8 @@ namespace VoogleRoute.Rendering
 
             _subwayRoot.SetActive(true);
             var elevated = BuildMapElevatedPoints(subwayPoints);
-            _subwayLine.positionCount = elevated.Length;
             _subwayLine.SetPositions(elevated);
-            LineRendererMaterial.ApplyDashed(_subwayLine, RouteSegmentLineHelper.SubwayLineColor);
+            _subwayLine.SetColor(RouteSegmentLineHelper.SubwayLineColor);
         }
 
         internal static void Hide()

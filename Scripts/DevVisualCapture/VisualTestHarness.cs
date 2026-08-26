@@ -2,17 +2,17 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace VoogleRoute
 {
     internal static class VisualTestHarness
     {
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
+            Formatting = Formatting.Indented,
+            MissingMemberHandling = MissingMemberHandling.Ignore
         };
 
         private static bool _scheduled;
@@ -143,7 +143,7 @@ namespace VoogleRoute
                     return null;
 
                 var json = File.ReadAllText(VisualTestPaths.RequestPath);
-                return JsonSerializer.Deserialize<VisualTestRequest>(json, JsonOptions);
+                return JsonConvert.DeserializeObject<VisualTestRequest>(json, JsonSettings);
             }
             catch (Exception ex)
             {
@@ -163,7 +163,7 @@ namespace VoogleRoute
             try
             {
                 var json = File.ReadAllText(VisualTestPaths.ManifestPath);
-                var manifest = JsonSerializer.Deserialize<VisualTestManifest>(json, JsonOptions);
+                var manifest = JsonConvert.DeserializeObject<VisualTestManifest>(json, JsonSettings);
                 return manifest?.Scenarios?
                     .FirstOrDefault(s => string.Equals(s.Id, request.ScenarioId, StringComparison.OrdinalIgnoreCase));
             }
@@ -197,7 +197,7 @@ namespace VoogleRoute
             try
             {
                 VisualTestPaths.EnsureRoot();
-                var json = JsonSerializer.Serialize(result, JsonOptions);
+                var json = JsonConvert.SerializeObject(result, JsonSettings);
                 File.WriteAllText(VisualTestPaths.ResultPath, json);
             }
             catch (Exception ex)

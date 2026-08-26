@@ -112,7 +112,7 @@ namespace VoogleRoute.Navigation
     
             try
             {
-                var entrance = BuildingHelper.GetAddressEntranceTransform(address);
+                var entrance = BigAmbitionsCompatibility.GetAddressEntranceTransform(address);
                 if (entrance != null)
                 {
                     worldPosition = entrance.position;

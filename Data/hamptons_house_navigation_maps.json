@@ -1,0 +1,8526 @@
+{
+  "schema_version": 1,
+  "source": "Big Ambitions Beta 1.0 installed assets",
+  "scene": "Assets/Scenes/SubScenes/TheHamptons/TheHamptons.unity",
+  "house_count": 16,
+  "houses": [
+    {
+      "id": "T1",
+      "prefab": "BuildingStructureT1",
+      "bundle": "buildingstructuret1.prefab_8dc37665bc97ba19e40c5e2a489b92ad.bundle",
+      "plot_bounds": {
+        "size": [
+          47.970036,
+          7.284472,
+          60.030396
+        ],
+        "pose": {
+          "position": [
+            9.010786,
+            3.403013,
+            0.008583
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.574109,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              36.824116,
+              0.0,
+              4e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_001_Stairs",
+          "path": "BuildingStructureT1/FirstFloor/SM_BH_001_Stairs",
+          "pose": {
+            "position": [
+              14.5,
+              0.0,
+              6.5
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloors",
+          "path": "BuildingStructureT1/FirstFloor/SM_BH_001_Stairs/StairsFloors",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT1/FirstFloor/SM_BH_001_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT1/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT1/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT1/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT1/SecondFloor/Walls/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT1/SecondFloor/Walls/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.5,
+              0.0,
+              0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.5,
+              3.501,
+              0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT1CBC",
+        "pose": {
+          "position": [
+            -2900.0,
+            0.0,
+            -1430.0
+          ],
+          "rotation": [
+            0.0,
+            0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT1CBC",
+        "serialized_position": [
+          -2900.0,
+          0.0,
+          -1430.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          0.7071068,
+          -0.0,
+          0.7071068
+        ],
+        "source_bounds": {
+          "center": [
+            8.199024,
+            2.7505,
+            0.125
+          ],
+          "extents": [
+            34.92495,
+            4.3005,
+            40.674976
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T2",
+      "prefab": "BuildingStructureT2",
+      "bundle": "buildingstructuret2.prefab_6879ad672cbbf89d1b2c0a9069fe43df.bundle",
+      "plot_bounds": {
+        "size": [
+          53.995777,
+          7.284472,
+          59.976097
+        ],
+        "pose": {
+          "position": [
+            11.502081,
+            3.403013,
+            -0.253159
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              -20.5338,
+              -0.05,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              14.153986,
+              0.1,
+              65.42421
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              42.466202,
+              -0.05,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              14.153986,
+              0.1,
+              65.42421
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              11.216194,
+              -0.05,
+              -36.0
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              14.153986,
+              0.1,
+              77.246361
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              11.216203,
+              -0.05,
+              37.25
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              14.153986,
+              0.1,
+              77.246361
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_010_Stairs",
+          "path": "BuildingStructureT2/FirstFloor/SM_BH_010_Stairs",
+          "pose": {
+            "position": [
+              20.499998,
+              0.0,
+              -11.749998
+            ],
+            "rotation": [
+              -0.0,
+              1.0,
+              -0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_Stairs_010",
+          "path": "BuildingStructureT2/FirstFloor/SM_BH_010_Stairs/SM_Stairs_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsHandle_010",
+          "path": "BuildingStructureT2/FirstFloor/SM_BH_010_Stairs/SM_StairsHandle_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsWall_010",
+          "path": "BuildingStructureT2/FirstFloor/SM_BH_010_Stairs/SM_StairsWall_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT2/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT2CBC",
+        "pose": {
+          "position": [
+            -3254.0,
+            0.0,
+            -1240.0
+          ],
+          "rotation": [
+            0.0,
+            -1.0,
+            0.0,
+            -2e-07
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT2CBC",
+        "serialized_position": [
+          -3254.0,
+          0.0,
+          -1240.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -1.0,
+          -0.0,
+          -2e-07
+        ],
+        "source_bounds": {
+          "center": [
+            11.114368,
+            2.7505,
+            0.625053
+          ],
+          "extents": [
+            38.775097,
+            4.3005,
+            43.751999
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T3",
+      "prefab": "BuildingStructureT3",
+      "bundle": "buildingstructuret3.prefab_5fb51eb00012ff6bac02376679895820.bundle",
+      "plot_bounds": {
+        "size": [
+          53.99947,
+          7.284472,
+          60.006081
+        ],
+        "pose": {
+          "position": [
+            11.50134,
+            3.403013,
+            -0.248414
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.574109,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              43.074116,
+              0.0,
+              3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT3/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              16.499994,
+              0.0,
+              0.25
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT3/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT3/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT3/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT3/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT3CBC",
+        "pose": {
+          "position": [
+            -3113.0,
+            0.0,
+            -1333.0
+          ],
+          "rotation": [
+            0.0,
+            -0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT3CBC",
+        "serialized_position": [
+          -813.0,
+          0.0,
+          -34.5
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -0.7071068,
+          -0.0,
+          0.7071068
+        ],
+        "source_bounds": {
+          "center": [
+            11.324114,
+            3.4505,
+            0.124996
+          ],
+          "extents": [
+            38.049961,
+            3.6005,
+            40.674976
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T4",
+      "prefab": "BuildingStructureT4",
+      "bundle": "buildingstructuret4.prefab_7cffa24eb2f77e7ebf3a9b04fc0944f6.bundle",
+      "plot_bounds": {
+        "size": [
+          48.06361,
+          7.284472,
+          51.987633
+        ],
+        "pose": {
+          "position": [
+            8.453337,
+            3.403013,
+            -8.25248
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.574109,
+              0.0,
+              22.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              36.824116,
+              0.0,
+              -5.999996
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              69.001762,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -6.000004
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              69.000313,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_010_Stairs",
+          "path": "BuildingStructureT4/FirstFloor/SM_BH_010_Stairs",
+          "pose": {
+            "position": [
+              6.500001,
+              0.0,
+              -14.249999
+            ],
+            "rotation": [
+              -0.0,
+              0.7071068,
+              -0.0,
+              0.7071067
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_Stairs_010",
+          "path": "BuildingStructureT4/FirstFloor/SM_BH_010_Stairs/SM_Stairs_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsHandle_010",
+          "path": "BuildingStructureT4/FirstFloor/SM_BH_010_Stairs/SM_StairsHandle_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsWall_010",
+          "path": "BuildingStructureT4/FirstFloor/SM_BH_010_Stairs/SM_StairsWall_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT4/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT4CBC",
+        "pose": {
+          "position": [
+            -3242.5,
+            0.0,
+            -1387.0
+          ],
+          "rotation": [
+            0.0,
+            0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT4CBC",
+        "serialized_position": [
+          -954.750244,
+          0.0,
+          -104.250488
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -0.7071072,
+          -0.0,
+          0.7071064
+        ],
+        "source_bounds": {
+          "center": [
+            8.199116,
+            3.4755,
+            -5.999989
+          ],
+          "extents": [
+            34.924957,
+            3.5755,
+            34.550884
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T5",
+      "prefab": "BuildingStructureT5",
+      "bundle": "buildingstructuret5.prefab_2e1bacc26954992a3d3b2b1732aa5631.bundle",
+      "plot_bounds": {
+        "size": [
+          54.00349,
+          7.284472,
+          59.995262
+        ],
+        "pose": {
+          "position": [
+            11.498811,
+            3.403013,
+            -0.252257
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.324108,
+              0.0,
+              33.750004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              70.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              41.824116,
+              0.0,
+              -0.249995
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              80.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -6.000004
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              69.000313,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT5/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              25.5,
+              0.0,
+              -1.75
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT5/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT5/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT5/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT5/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT5CBC",
+        "pose": {
+          "position": [
+            -3181.5,
+            0.0,
+            -1616.0
+          ],
+          "rotation": [
+            0.0,
+            0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT5CBC",
+        "serialized_position": [
+          -881.75,
+          0.0,
+          -316.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          0.7071068,
+          -0.0,
+          0.7071068
+        ],
+        "source_bounds": {
+          "center": [
+            10.699104,
+            3.2505,
+            -0.250149
+          ],
+          "extents": [
+            37.424976,
+            3.8005,
+            40.300053
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T6",
+      "prefab": "BuildingStructureT6",
+      "bundle": "buildingstructuret6.prefab_e80bf44a198e64d3e17ea30ecc0765a2.bundle",
+      "plot_bounds": {
+        "size": [
+          59.951767,
+          7.284472,
+          59.954105
+        ],
+        "pose": {
+          "position": [
+            14.499962,
+            3.403013,
+            -0.252096
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              15.9491,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              70.750397,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              16.824108,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              72.497604,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              48.824116,
+              0.0,
+              3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT6/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              15.500004,
+              0.0,
+              3.25
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT6/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT6/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT6/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT6/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT6CBC",
+        "pose": {
+          "position": [
+            -2999.500061,
+            0.0,
+            -1436.499954
+          ],
+          "rotation": [
+            0.0,
+            1.0,
+            0.0,
+            5e-07
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT6CBC",
+        "serialized_position": [
+          -2999.5,
+          0.0,
+          -1436.5
+        ],
+        "serialized_rotation": [
+          -0.0,
+          1.0,
+          -0.0,
+          5e-07
+        ],
+        "source_bounds": {
+          "center": [
+            14.199324,
+            2.7155,
+            0.124977
+          ],
+          "extents": [
+            40.924953,
+            4.3355,
+            40.674988
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T7",
+      "prefab": "BuildingStructureT7",
+      "bundle": "buildingstructuret7.prefab_28cd1f2de38e5eda12b7940be558f16c.bundle",
+      "plot_bounds": {
+        "size": [
+          53.942825,
+          7.284472,
+          59.949692
+        ],
+        "pose": {
+          "position": [
+            11.497246,
+            3.403013,
+            -0.248596
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.574109,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              43.074116,
+              0.0,
+              3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT7/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              8.499998,
+              0.0,
+              -1.75
+            ],
+            "rotation": [
+              -0.0,
+              -0.7071068,
+              -0.0,
+              0.7071068
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT7/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT7/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT7/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT7/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT7CBC",
+        "pose": {
+          "position": [
+            -2790.5,
+            0.0,
+            -1453.5
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT7CBC",
+        "serialized_position": [
+          -490.5,
+          0.0,
+          -153.5
+        ],
+        "serialized_rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            11.32411,
+            3.2505,
+            0.124973
+          ],
+          "extents": [
+            38.049969,
+            3.8005,
+            40.674976
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T8",
+      "prefab": "BuildingStructureT8",
+      "bundle": "buildingstructuret8.prefab_f9f93e93d768a7699ef7559f5e3f2627.bundle",
+      "plot_bounds": {
+        "size": [
+          53.974052,
+          7.284472,
+          47.946899
+        ],
+        "pose": {
+          "position": [
+            11.513027,
+            3.403013,
+            -6.249058
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              8.574101,
+              0.0,
+              -34.625004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              11.749906
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              8.574109,
+              -0.0,
+              22.000004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.0,
+              0.1,
+              10.999912
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              37.199116,
+              0.0,
+              -6.624996
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              67.748398,
+              0.1,
+              11.749906
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -6.625004
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              67.748398,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT8/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              16.500002,
+              0.0,
+              0.75
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT8/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT8/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT8/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT8/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT8CBC",
+        "pose": {
+          "position": [
+            -2868.5,
+            0.0,
+            -1568.0
+          ],
+          "rotation": [
+            0.0,
+            -6e-07,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT8CBC",
+        "serialized_position": [
+          -568.5,
+          0.0,
+          -268.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -6e-07,
+          -0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            8.199078,
+            3.450499,
+            -6.499996
+          ],
+          "extents": [
+            34.924957,
+            3.600501,
+            34.049961
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T9",
+      "prefab": "BuildingStructureT9",
+      "bundle": "buildingstructuret9.prefab_ff1f32bfa700842274b85b80d9831cee.bundle",
+      "plot_bounds": {
+        "size": [
+          54.004726,
+          7.284472,
+          59.995544
+        ],
+        "pose": {
+          "position": [
+            11.495852,
+            3.403013,
+            -0.253979
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              9.2456,
+              0.0,
+              -35.125004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              57.347218,
+              0.1,
+              10.749914
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              9.0218,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              56.896004,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              43.324116,
+              0.0,
+              3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_006_Stairs",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_006_Stairs",
+          "pose": {
+            "position": [
+              -6.500002,
+              0.0,
+              9.25
+            ],
+            "rotation": [
+              -0.0,
+              -0.7071068,
+              -0.0,
+              0.7071068
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_006_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_006_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_006_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_BH_010_Stairs",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_010_Stairs",
+          "pose": {
+            "position": [
+              6.5,
+              0.0,
+              -18.750002
+            ],
+            "rotation": [
+              -0.0,
+              0.7071068,
+              -0.0,
+              0.7071068
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_Stairs_010",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_010_Stairs/SM_Stairs_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsHandle_010",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_010_Stairs/SM_StairsHandle_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsWall_010",
+          "path": "BuildingStructureT9/FirstFloor/SM_BH_010_Stairs/SM_StairsWall_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT9/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT9CBC",
+        "pose": {
+          "position": [
+            -2685.5,
+            0.0,
+            -1586.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT9CBC",
+        "serialized_position": [
+          -385.5,
+          0.0,
+          -286.0
+        ],
+        "serialized_rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            11.44911,
+            3.3205,
+            0.124973
+          ],
+          "extents": [
+            38.174969,
+            3.7305,
+            40.674976
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T10",
+      "prefab": "BuildingStructureT10",
+      "bundle": "buildingstructuret10.prefab_a2fa2c80980f5ae9f95be845f5172d03.bundle",
+      "plot_bounds": {
+        "size": [
+          59.953125,
+          7.284472,
+          59.949188
+        ],
+        "pose": {
+          "position": [
+            14.494324,
+            3.403013,
+            -0.248932
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 1311744,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              14.324101,
+              0.0,
+              -35.250004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              61.885601,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              14.574109,
+              0.0,
+              34.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              60.608795,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              49.574116,
+              0.0,
+              4e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -20.425892,
+              0.0,
+              -3e-06
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              81.0,
+              0.1,
+              12.4999
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_010_Stairs",
+          "path": "BuildingStructureT10/FirstFloor/SM_BH_010_Stairs",
+          "pose": {
+            "position": [
+              1.500001,
+              0.0,
+              2.250013
+            ],
+            "rotation": [
+              -0.0,
+              -1.0,
+              -0.0,
+              -0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_Stairs_010",
+          "path": "BuildingStructureT10/FirstFloor/SM_BH_010_Stairs/SM_Stairs_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsHandle_010",
+          "path": "BuildingStructureT10/FirstFloor/SM_BH_010_Stairs/SM_StairsHandle_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsWall_010",
+          "path": "BuildingStructureT10/FirstFloor/SM_BH_010_Stairs/SM_StairsWall_010",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT10/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.501,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT10CBC",
+        "pose": {
+          "position": [
+            -2991.999878,
+            0.0,
+            -1610.999969
+          ],
+          "rotation": [
+            0.0,
+            0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT10CBC",
+        "serialized_position": [
+          -678.499878,
+          0.0,
+          -316.499969
+        ],
+        "serialized_rotation": [
+          -0.0,
+          1.0,
+          -0.0,
+          5e-07
+        ],
+        "source_bounds": {
+          "center": [
+            14.574081,
+            1.8875,
+            -0.374985
+          ],
+          "extents": [
+            41.299953,
+            5.163501,
+            41.174965
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T11",
+      "prefab": "BuildingStructureT11",
+      "bundle": "buildingstructuret11.prefab_fb03d67950b2248842a45f1563d66b4f.bundle",
+      "plot_bounds": {
+        "size": [
+          58.008911,
+          7.284472,
+          60.008911
+        ],
+        "pose": {
+          "position": [
+            21.002441,
+            3.403013,
+            0.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              -11.050903,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              15.741895,
+              0.1,
+              73.091919
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              53.699097,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              15.741895,
+              0.1,
+              73.091919
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              21.324097,
+              0.0,
+              33.0
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              15.741895,
+              0.1,
+              79.83831
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              21.324097,
+              0.0,
+              -28.75
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              15.741895,
+              0.1,
+              79.83831
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_011_Stairs",
+          "path": "BuildingStructureT11/FirstFloor/SM_BH_011_Stairs",
+          "pose": {
+            "position": [
+              15.5,
+              0.01,
+              10.500004
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloors",
+          "path": "BuildingStructureT11/FirstFloor/SM_BH_011_Stairs/StairsFloors",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT11/FirstFloor/SM_BH_011_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT11/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT11/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT11/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT11/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT11/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.5,
+              0.0,
+              0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.5,
+              3.5001,
+              0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT11CBC",
+        "pose": {
+          "position": [
+            -3392.0,
+            0.0,
+            -1486.5
+          ],
+          "rotation": [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT11CBC",
+        "serialized_position": [
+          -1092.0,
+          0.0,
+          -186.5
+        ],
+        "serialized_rotation": [
+          0.0,
+          1.0,
+          0.0,
+          0.0
+        ],
+        "source_bounds": {
+          "center": [
+            21.324099,
+            2.50005,
+            2.125004
+          ],
+          "extents": [
+            40.295948,
+            4.55005,
+            38.795956
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T12",
+      "prefab": "BuildingStructureT12",
+      "bundle": "buildingstructuret12.prefab_c9d07897962449ab2987cff65f8b4b09.bundle",
+      "plot_bounds": {
+        "size": [
+          77.754562,
+          7.284472,
+          59.973167
+        ],
+        "pose": {
+          "position": [
+            -27.869986,
+            3.239948,
+            -0.498131
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              16.25,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              18.0,
+              1.0,
+              80.0
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              -73.5,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              18.0,
+              1.0,
+              80.0
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              -28.5,
+              0.0,
+              -37.250008
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              18.0,
+              1.0,
+              108.045799
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -28.49999,
+              0.0,
+              35.999992
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              18.0,
+              1.0,
+              108.045799
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_011_Stairs",
+          "path": "BuildingStructureT12/FirstFloor/SM_BH_011_Stairs",
+          "pose": {
+            "position": [
+              -43.000004,
+              0.0,
+              -5.50024
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT12/FirstFloor/SM_BH_011_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT12/FirstFloor/SM_BH_011_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT12/FirstFloor/SM_BH_011_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT12/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              3.0,
+              3.5,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT12CBC",
+        "pose": {
+          "position": [
+            -3287.0,
+            0.0,
+            -1618.5
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT12CBC",
+        "serialized_position": [
+          -987.0,
+          0.0,
+          -318.5
+        ],
+        "serialized_rotation": [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            -28.5,
+            1.362931,
+            -0.625
+          ],
+          "extents": [
+            54.072903,
+            5.68707,
+            45.675007
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T13",
+      "prefab": "BuildingStructureT13",
+      "bundle": "buildingstructuret13.prefab_5a6ba6501c789a44fcd88bd0834bdc83.bundle",
+      "plot_bounds": {
+        "size": [
+          59.995728,
+          7.284472,
+          59.985958
+        ],
+        "pose": {
+          "position": [
+            2.50222,
+            3.0,
+            -5.000616
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              34.124969,
+              -2e-06,
+              -4.875071
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              11.75,
+              1.0,
+              76.247292
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              -30.125031,
+              -2e-06,
+              -4.875071
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              11.75,
+              1.0,
+              76.247292
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              2.124977,
+              -2e-06,
+              28.624929
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.75,
+              1.0,
+              76.247292
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              2.124969,
+              -2e-06,
+              -38.125069
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.75,
+              1.0,
+              76.247292
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_011_Stairs",
+          "path": "BuildingStructureT13/FirstFloor/SM_BH_011_Stairs",
+          "pose": {
+            "position": [
+              46.000011,
+              0.0,
+              7.499874
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT13/FirstFloor/SM_BH_011_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT13/FirstFloor/SM_BH_011_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT13/FirstFloor/SM_BH_011_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (10)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (11)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT13/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              24.5,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              -0.0,
+              1.0,
+              -0.0,
+              1.5e-06
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              24.5,
+              3.5,
+              -0.5
+            ],
+            "rotation": [
+              -0.0,
+              1.0,
+              -0.0,
+              1.5e-06
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT13CBC",
+        "pose": {
+          "position": [
+            -3368.5,
+            0.0,
+            -1364.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT13CBC",
+        "serialized_position": [
+          -1068.5,
+          0.0,
+          -64.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -0.0,
+          -0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            2.124325,
+            1.485948,
+            -4.750069
+          ],
+          "extents": [
+            38.174324,
+            5.56405,
+            39.300003
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T14",
+      "prefab": "BuildingStructureT14",
+      "bundle": "buildingstructuret14.prefab_6079f1908d958dcc0544ed6cfe68fb77.bundle",
+      "plot_bounds": {
+        "size": [
+          61.998447,
+          7.284472,
+          58.999626
+        ],
+        "pose": {
+          "position": [
+            -36.501183,
+            3.239948,
+            -0.499487
+          ],
+          "rotation": [
+            -0.0,
+            5.4e-06,
+            -0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              -71.964996,
+              -0.213064,
+              -1.459852
+            ],
+            "rotation": [
+              -0.0,
+              5.4e-06,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              11.250225,
+              1.0,
+              76.222427
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              -1.214996,
+              -0.213064,
+              -1.460611
+            ],
+            "rotation": [
+              -0.0,
+              5.4e-06,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              11.250225,
+              1.0,
+              76.222427
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              -36.465004,
+              -0.213064,
+              -33.710609
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.250225,
+              1.0,
+              76.222427
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              -36.464996,
+              -0.213064,
+              30.789391
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.250225,
+              1.0,
+              76.222427
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_014_Stairs",
+          "path": "BuildingStructureT14/FirstFloor/SM_BH_014_Stairs",
+          "pose": {
+            "position": [
+              37.000008,
+              0.0,
+              -1.499994
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_Stairs_014",
+          "path": "BuildingStructureT14/FirstFloor/SM_BH_014_Stairs/SM_Stairs_014",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsHandle_014",
+          "path": "BuildingStructureT14/FirstFloor/SM_BH_014_Stairs/SM_StairsHandle_014",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_StairsWall_014",
+          "path": "BuildingStructureT14/FirstFloor/SM_BH_014_Stairs/SM_StairsWall_014",
+          "pose": {
+            "position": [
+              -0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SM_BH_001_Stairs",
+          "path": "BuildingStructureT14/FirstFloor/SM_BH_001_Stairs",
+          "pose": {
+            "position": [
+              8.000005,
+              0.0,
+              -27.5
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT14/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (3)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              -58.500008,
+              0.0,
+              -1.500008
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              -58.500008,
+              3.5,
+              -1.500008
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT14CBC",
+        "pose": {
+          "position": [
+            -2680.0,
+            0.0,
+            -1754.0
+          ],
+          "rotation": [
+            0.0,
+            0.7071068,
+            0.0,
+            0.7071068
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT14CBC",
+        "serialized_position": [
+          -380.0,
+          0.0,
+          -454.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          0.7071068,
+          -0.0,
+          0.7071068
+        ],
+        "source_bounds": {
+          "center": [
+            -36.58997,
+            1.362931,
+            -1.460217
+          ],
+          "extents": [
+            41.050514,
+            5.68707,
+            38.161652
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T15",
+      "prefab": "BuildingStructureT15",
+      "bundle": "buildingstructuret15.prefab_97e54129b87150f4f689ed169a3b473b.bundle",
+      "plot_bounds": {
+        "size": [
+          63.991375,
+          7.284472,
+          59.002708
+        ],
+        "pose": {
+          "position": [
+            22.505487,
+            0.0,
+            1.996571
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              -14.0,
+              0.0,
+              1.000004
+            ],
+            "rotation": [
+              -0.0,
+              1e-07,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              11.0,
+              1.0,
+              76.539001
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              59.0,
+              0.0,
+              0.999987
+            ],
+            "rotation": [
+              -0.0,
+              1e-07,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              11.0,
+              1.0,
+              76.539001
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              21.749992,
+              0.0,
+              -31.750013
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.0,
+              1.0,
+              76.539001
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              22.3951,
+              0.0,
+              36.249985
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              11.0,
+              1.0,
+              83.959953
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_001_Stairs",
+          "path": "BuildingStructureT15/FirstFloor/SM_BH_001_Stairs",
+          "pose": {
+            "position": [
+              7.49,
+              0.0,
+              -3.51
+            ],
+            "rotation": [
+              -0.0,
+              -0.7071068,
+              -0.0,
+              -0.7071069
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (10)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (11)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (12)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT15/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              3.0,
+              0.0,
+              1.0
+            ],
+            "rotation": [
+              -0.0,
+              1e-07,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              3.0,
+              3.5,
+              1.0
+            ],
+            "rotation": [
+              -0.0,
+              1e-07,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT15CBC",
+        "pose": {
+          "position": [
+            -2676.5,
+            0.0,
+            -1465.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT15CBC",
+        "serialized_position": [
+          -2676.5,
+          0.0,
+          -1465.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -0.0,
+          -0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            22.457523,
+            2.75,
+            2.24025
+          ],
+          "extents": [
+            42.092484,
+            4.3,
+            39.55975
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    },
+    {
+      "id": "T16",
+      "prefab": "BuildingStructureT16",
+      "bundle": "buildingstructuret16.prefab_a4cdebd6c50503ef79018175a3b8f2aa.bundle",
+      "plot_bounds": {
+        "size": [
+          60.003319,
+          8.210817,
+          59.984985
+        ],
+        "pose": {
+          "position": [
+            16.501099,
+            3.924479,
+            0.49762
+          ],
+          "rotation": [
+            -0.0,
+            5.4e-06,
+            -0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "navmesh_surface": {
+        "agent_type_id": 0,
+        "collect_objects": 2,
+        "layer_mask": 68420608,
+        "voxel_size": 0.0313,
+        "min_region_area": 2.0
+      },
+      "boundary_elements": [
+        {
+          "name": "NavMeshElement",
+          "pose": {
+            "position": [
+              -17.0,
+              2e-06,
+              -1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              10.0,
+              1.0,
+              80.0
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (1)",
+          "pose": {
+            "position": [
+              49.5,
+              2e-06,
+              -1.0
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              10.0,
+              1.0,
+              80.0
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (2)",
+          "pose": {
+            "position": [
+              16.292601,
+              2e-06,
+              -34.610401
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              13.11926,
+              1.0,
+              75.934547
+            ]
+          }
+        },
+        {
+          "name": "NavMeshElement (3)",
+          "pose": {
+            "position": [
+              16.292608,
+              2e-06,
+              35.139599
+            ],
+            "rotation": [
+              0.0,
+              0.7071068,
+              0.0,
+              0.7071068
+            ],
+            "scale": [
+              13.11926,
+              1.0,
+              75.934547
+            ]
+          }
+        }
+      ],
+      "stairs": [
+        {
+          "name": "SM_BH_011_Stairs",
+          "path": "BuildingStructureT16/FirstFloor/SM_BH_011_Stairs",
+          "pose": {
+            "position": [
+              33.5,
+              0.015,
+              0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsWalls",
+          "path": "BuildingStructureT16/FirstFloor/SM_BH_011_Stairs/StairsWalls",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsFloor",
+          "path": "BuildingStructureT16/FirstFloor/SM_BH_011_Stairs/StairsFloor",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "StairsHandle",
+          "path": "BuildingStructureT16/FirstFloor/SM_BH_011_Stairs/StairsHandle",
+          "pose": {
+            "position": [
+              -3.996377,
+              0.0,
+              -0.0
+            ],
+            "rotation": [
+              0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "outside_doors": [
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (4)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (8)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (9)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (6)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (10)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (5)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (7)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/FirstFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (11)/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side/OutsideDoor",
+          "pose": {
+            "position": [
+              0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (1)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "OutsideDoor",
+          "path": "BuildingStructureT16/SecondFloor/PerimeterWalls/Outside Door Frame 1x3.5 Double Side (2)/OutsideDoor",
+          "pose": {
+            "position": [
+              -0.45,
+              0.0,
+              -0.5
+            ],
+            "rotation": [
+              0.0,
+              1.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "floors": [
+        {
+          "name": "FirstFloor",
+          "pose": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        },
+        {
+          "name": "SecondFloor",
+          "pose": {
+            "position": [
+              0.0,
+              3.5,
+              0.0
+            ],
+            "rotation": [
+              -0.0,
+              -0.0,
+              -0.0,
+              1.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          }
+        }
+      ],
+      "scene_root": {
+        "name": "BuildingStructureT16CBC",
+        "pose": {
+          "position": [
+            -2885.0,
+            0.0,
+            -1705.0
+          ],
+          "rotation": [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ],
+          "scale": [
+            1.0,
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "scene_navmesh": {
+        "name": "NavMesh-BuildingStructureT16CBC",
+        "serialized_position": [
+          -585.0,
+          0.0,
+          -405.0
+        ],
+        "serialized_rotation": [
+          -0.0,
+          -0.0,
+          -0.0,
+          1.0
+        ],
+        "source_bounds": {
+          "center": [
+            16.25,
+            1.535949,
+            0.264587
+          ],
+          "extents": [
+            38.299999,
+            5.514051,
+            41.484634
+          ]
+        },
+        "agent_type_id": 0,
+        "agent_height": 1.7,
+        "agent_radius": 0.25,
+        "agent_climb": 0.59,
+        "agent_slope": 38.0
+      }
+    }
+  ]
+}

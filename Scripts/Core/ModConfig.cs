@@ -100,6 +100,7 @@ namespace VoogleRoute
 
         internal static void Shutdown()
         {
+            RouteActionShortcuts.Shutdown();
             ModLog.Shutdown();
             if (_context != null)
                 OptionsService.RemoveModOptions(_context.ModId);
@@ -403,6 +404,7 @@ namespace VoogleRoute
                 .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled,
                     OnIndoorAutoWalkOptionChanged);
 
+            options = RouteActionShortcuts.AddOptions(options);
             OptionsService.Register(_context.ModId, options);
         }
 

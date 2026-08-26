@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using UnityEngine;
 using VoogleRoute.Navigation;
 
@@ -14,11 +13,11 @@ namespace VoogleRoute
     {
         private const string LegacyLineColorFileName = "line_color.txt";
 
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore
         };
 
         private static ModConfigData _data = CreateDefaultData();
@@ -44,7 +43,7 @@ namespace VoogleRoute
                 {
                     _configFileFound = true;
                     var json = File.ReadAllText(path);
-                    var loaded = JsonSerializer.Deserialize<ModConfigData>(json, JsonOptions);
+                    var loaded = JsonConvert.DeserializeObject<ModConfigData>(json, JsonSettings);
                     if (loaded != null)
                         _data = loaded;
 
@@ -83,7 +82,7 @@ namespace VoogleRoute
                 if (!string.IsNullOrEmpty(directory))
                     Directory.CreateDirectory(directory);
 
-                var json = JsonSerializer.Serialize(devOnly, JsonOptions);
+                var json = JsonConvert.SerializeObject(devOnly, JsonSettings);
                 File.WriteAllText(path, json);
                 _configFileFound = true;
             }
@@ -214,58 +213,58 @@ namespace VoogleRoute
 
     internal sealed class ModConfigData
     {
-        [JsonPropertyName("logging")]
+        [JsonProperty("logging")]
         public bool Logging { get; set; }
 
-        [JsonPropertyName("log_level")]
+        [JsonProperty("log_level")]
         public string LogLevel { get; set; } = "error";
 
-        [JsonPropertyName("show_line_detection")]
+        [JsonProperty("show_line_detection")]
         public bool ShowLineDetection { get; set; }
 
-        [JsonPropertyName("route_line_color")]
+        [JsonProperty("route_line_color")]
         public float[] RouteLineColor { get; set; }
 
-        [JsonPropertyName("foot_route_line_color")]
+        [JsonProperty("foot_route_line_color")]
         public float[] FootRouteLineColor { get; set; }
 
-        [JsonPropertyName("vehicle_route_line_color")]
+        [JsonProperty("vehicle_route_line_color")]
         public float[] VehicleRouteLineColor { get; set; }
 
-        [JsonPropertyName("indoor_route_line_color")]
+        [JsonProperty("indoor_route_line_color")]
         public float[] IndoorRouteLineColor { get; set; }
 
-        [JsonPropertyName("display_outside")]
+        [JsonProperty("display_outside")]
         public bool DisplayOutside { get; set; } = true;
 
-        [JsonPropertyName("display_inside")]
+        [JsonProperty("display_inside")]
         public bool DisplayInside { get; set; } = true;
 
-        [JsonPropertyName("indoor_route")]
+        [JsonProperty("indoor_route")]
         public bool IndoorRoute { get; set; } = true;
 
-        [JsonPropertyName("indoor_autowalk")]
+        [JsonProperty("indoor_autowalk")]
         public bool IndoorAutowalk { get; set; }
 
-        [JsonPropertyName("use_subway")]
+        [JsonProperty("use_subway")]
         public bool UseSubway { get; set; } = true;
 
-        [JsonPropertyName("base_taxi_multiplier")]
+        [JsonProperty("base_taxi_multiplier")]
         public int BaseTaxiMultiplier { get; set; } = 2;
 
-        [JsonPropertyName("force_correct_side_arrival")]
+        [JsonProperty("force_correct_side_arrival")]
         public bool ForceCorrectSideArrival { get; set; }
 
-        [JsonPropertyName("allow_uturn_at_start")]
+        [JsonProperty("allow_uturn_at_start")]
         public bool AllowUturnAtStart { get; set; }
 
-        [JsonPropertyName("auto_enter_destination")]
+        [JsonProperty("auto_enter_destination")]
         public bool AutoEnterDestination { get; set; } = true;
 
-        [JsonPropertyName("bookmarks")]
+        [JsonProperty("bookmarks")]
         public List<BookmarkConfigEntry> Bookmarks { get; set; }
 
-        [JsonPropertyName("quick_bookmarks")]
+        [JsonProperty("quick_bookmarks")]
         public QuickBookmarksConfig QuickBookmarks { get; set; }
     }
 }

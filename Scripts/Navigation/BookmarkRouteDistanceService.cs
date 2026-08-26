@@ -3,7 +3,6 @@ using System.Threading;
 using BaPlayerLocation.Subscriber;
 using UnityEngine;
 using VoogleRoute.Pathfinding.Graph;
-using VoogleRoute.UI;
 
 namespace VoogleRoute.Navigation
 {
@@ -49,7 +48,6 @@ namespace VoogleRoute.Navigation
     {
         private static readonly object Gate = new object();
         private static int _generation;
-        private static int _pendingCount;
         private static readonly HashSet<BookmarkDistanceRowKey> _pendingKeys = new HashSet<BookmarkDistanceRowKey>();
         private static readonly List<BookmarkDistanceResult> _completed = new List<BookmarkDistanceResult>();
         private static readonly List<PendingMainThreadCompute> _mainThreadPending = new List<PendingMainThreadCompute>();
@@ -61,15 +59,6 @@ namespace VoogleRoute.Navigation
             internal Vector3 Origin;
             internal Vector3 Target;
             internal VehicleRoutePathOptions PathOptions;
-        }
-
-        internal static bool IsRecalcInProgress
-        {
-            get
-            {
-                lock (Gate)
-                    return _pendingCount > 0;
-            }
         }
 
         internal static bool IsKeyPending(BookmarkDistanceRowKey key)
@@ -84,22 +73,20 @@ namespace VoogleRoute.Navigation
             lock (Gate)
             {
                 _generation++;
-                _pendingCount = 0;
                 _completed.Clear();
                 _pendingKeys.Clear();
                 _mainThreadPending.Clear();
             }
 
-            QueueComputations(rows, replacePendingCount: true);
+            QueueComputations(rows);
         }
 
         /// <summary>Queues only the given rows without cancelling other in-flight calculations.</summary>
         internal static void RequestCompute(IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)> rows) =>
-            QueueComputations(rows, replacePendingCount: false);
+            QueueComputations(rows);
 
         private static void QueueComputations(
-            IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)> rows,
-            bool replacePendingCount)
+            IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)> rows)
         {
             if (rows == null || rows.Count == 0)
                 return;
@@ -121,7 +108,6 @@ namespace VoogleRoute.Navigation
             lock (Gate)
                 generation = _generation;
 
-            var queued = 0;
             for (var i = 0; i < rows.Count; i++)
             {
                 var (key, bookmark) = rows[i];
@@ -136,24 +122,10 @@ namespace VoogleRoute.Navigation
                     _pendingKeys.Add(key);
                 }
 
-                queued++;
                 var pathOptions = VehicleRoutePathOptions.FromMainThread(target);
                 ThreadPool.QueueUserWorkItem(_ =>
                     ComputeAsync(generation, key, origin, target, forward, hasPose, graph, useFoot, pathOptions));
             }
-
-            if (queued == 0)
-                return;
-
-            lock (Gate)
-            {
-                if (replacePendingCount)
-                    _pendingCount = queued;
-                else
-                    _pendingCount += queued;
-            }
-
-            RouteRecalcBanner.ShowOnCityMap();
         }
 
         internal static void TickMainThread()
@@ -185,8 +157,6 @@ namespace VoogleRoute.Navigation
 
                 _pendingKeys.Remove(key);
                 _completed.Add(new BookmarkDistanceResult(key, meters, success));
-                if (_pendingCount > 0)
-                    _pendingCount--;
             }
         }
         internal static bool TryDequeueCompleted(out BookmarkDistanceResult result)
@@ -211,13 +181,10 @@ namespace VoogleRoute.Navigation
             lock (Gate)
             {
                 _generation++;
-                _pendingCount = 0;
                 _completed.Clear();
                 _pendingKeys.Clear();
                 _mainThreadPending.Clear();
             }
-
-            RouteRecalcBanner.ForceHide();
         }
 
         private static void ComputeAsync(

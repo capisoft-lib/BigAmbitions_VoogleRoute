@@ -33,3 +33,11 @@ Subscribe to and enable [b]LIB BA Player Location 0.11.2 or newer[/b] before ena
 [*]Update and enable [b]Voogle Route 0.11.11[/b]
 [*]Restart the game after both Workshop items have finished updating
 [/list]
+
+[b]Support the developer ☕[/b]
+
+If Voogle Route has saved you from getting lost—or from remembering where you parked—you can support its development by buying me a coffee:
+
+[url=https://buymeacoffee.com/capitaine]☕ Buy me a coffee[/url]
+
+Coffee keeps the developer awake, so auto-walk can keep doing the walking.

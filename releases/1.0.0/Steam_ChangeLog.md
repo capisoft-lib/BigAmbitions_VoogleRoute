@@ -1,0 +1,8 @@
+- One Voogle Route 1.0.0 package now supports Big Ambitions EA 0.11 and 1.0 experimental
+- Updated road data and routing for Big Ambitions 1.0 experimental
+- Added full bidirectional Hamptons mansion coverage and dedicated WAY OUT / GET OUT handling
+- Restored stable route-line thickness with hybrid rendering
+- Added draggable windows and configurable Ctrl+Shift+Y / Ctrl+Shift+X action shortcuts
+- Fixed History state, Options visibility and recalculation-banner behavior
+- Added a post-taxi arrival guard against unwanted building auto-entry
+- Now requires the separate LIB BA Unified UI 1.0.0+ Workshop item

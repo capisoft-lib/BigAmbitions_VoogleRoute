@@ -116,7 +116,11 @@ namespace VoogleRoute
             if (string.IsNullOrWhiteSpace(json))
                 return false;
 
-            var match = Regex.Match(json, "\"" + Regex.Escape(key) + "\"\\s*:\\s*(true|false)", RegexOptions.IgnoreCase);
+            var match = Regex.Match(
+                json,
+                "\"" + Regex.Escape(key) + "\"\\s*:\\s*(true|false)",
+                RegexOptions.IgnoreCase,
+                TimeSpan.FromMilliseconds(250));
             if (!match.Success)
                 return false;
 
@@ -130,7 +134,11 @@ namespace VoogleRoute
             if (string.IsNullOrWhiteSpace(json))
                 return false;
 
-            var match = Regex.Match(json, "\"" + Regex.Escape(key) + "\"\\s*:\\s*\"([^\"]*)\"", RegexOptions.IgnoreCase);
+            var match = Regex.Match(
+                json,
+                "\"" + Regex.Escape(key) + "\"\\s*:\\s*\"([^\"]*)\"",
+                RegexOptions.IgnoreCase,
+                TimeSpan.FromMilliseconds(250));
             if (!match.Success)
                 return false;
 

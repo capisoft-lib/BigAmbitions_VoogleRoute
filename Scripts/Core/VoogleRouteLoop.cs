@@ -29,6 +29,8 @@ namespace VoogleRoute
         private static Action<Address> _onEnterBuilding;
         private static Action<Address> _onEnterBuildingDelayed;
         private static Action<Address> _onExitBuilding;
+        private static Action _onTimeMachineStarted;
+        private static Action _onTimeMachineEnded;
 
         internal static void Initialize(ModContext context)
         {
@@ -40,7 +42,7 @@ namespace VoogleRoute
             PlayerLocationLogger.Initialize();
             RouteGraphStore.WarmUp();
             SubwayStationStore.WarmUp();
-            _onCityMapToggled = MapOverlayDiagnostics.OnCityMapToggled;
+            _onCityMapToggled = OnCityMapToggled;
             GlobalEvents.onCityMapToggle =
                 (Action<bool>)Delegate.Combine(GlobalEvents.onCityMapToggle, _onCityMapToggled);
             _onEnterBuilding = OnEnterBuilding;
@@ -52,6 +54,12 @@ namespace VoogleRoute
                 (Action<Address>)Delegate.Combine(GlobalEvents.onEnterBuildingDelayed, _onEnterBuildingDelayed);
             GlobalEvents.onExitBuilding =
                 (Action<Address>)Delegate.Combine(GlobalEvents.onExitBuilding, _onExitBuilding);
+            _onTimeMachineStarted = TaxiTravelArrivalGuard.OnTimeMachineStarted;
+            _onTimeMachineEnded = TaxiTravelArrivalGuard.OnTimeMachineEnded;
+            GlobalEvents.onTimeMachineStarted =
+                (Action)Delegate.Combine(GlobalEvents.onTimeMachineStarted, _onTimeMachineStarted);
+            GlobalEvents.onTimeMachineEnded =
+                (Action)Delegate.Combine(GlobalEvents.onTimeMachineEnded, _onTimeMachineEnded);
             ModLog.Info("VoogleRoute loop initialized.");
         }
 
@@ -86,6 +94,20 @@ namespace VoogleRoute
                 _onExitBuilding = null;
             }
 
+            if (_onTimeMachineStarted != null)
+            {
+                GlobalEvents.onTimeMachineStarted =
+                    (Action)Delegate.Remove(GlobalEvents.onTimeMachineStarted, _onTimeMachineStarted);
+                _onTimeMachineStarted = null;
+            }
+
+            if (_onTimeMachineEnded != null)
+            {
+                GlobalEvents.onTimeMachineEnded =
+                    (Action)Delegate.Remove(GlobalEvents.onTimeMachineEnded, _onTimeMachineEnded);
+                _onTimeMachineEnded = null;
+            }
+
             IndoorNavigationService.Reset();
             NavigationSpawnGuard.Reset();
             TrafficWaypointDumpService.Reset();
@@ -102,8 +124,15 @@ namespace VoogleRoute
             _warnedMissingLibrary = false;
             RouteRecalcBanner.ForceHide();
             NavigationArrivalService.Reset();
+            TaxiTravelArrivalGuard.Reset();
             _wasSubwayRidingForNav = false;
             ModLog.Info("VoogleRoute loop shut down.");
+        }
+
+        private static void OnCityMapToggled(bool open)
+        {
+            VisitHistoryPanel.OnCityMapToggled(open);
+            MapOverlayDiagnostics.OnCityMapToggled(open);
         }
 
         internal static void Tick()

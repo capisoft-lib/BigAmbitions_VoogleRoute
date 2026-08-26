@@ -14,6 +14,7 @@ namespace VoogleRoute.UI
     internal static class CityMapBookmarkAddDialog
     {
         private const string RootName = "VoogleRoute_BookmarkAddDialog_v2";
+        private const string DragPositionId = "voogleroute:bookmark-add-dialog";
         private const int CanvasSortOrder = 12100;
         private const float PanelWidth = 520f;
         private const float PanelHeight = 300f;
@@ -46,6 +47,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Modal(RootName, CanvasSortOrder, 0.45f)
                 .OnDismiss(Close)
                 .Panel(BaPanelRecipe.Modal, PanelWidth, height: PanelHeight)
+                .Draggable(DragPositionId)
                 .Header(h => h.TitleCenter(ModUiText.BookmarkAddTitle))
                 .SkipBody()
                 .Build();

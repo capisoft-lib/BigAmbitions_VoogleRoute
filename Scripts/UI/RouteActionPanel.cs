@@ -16,9 +16,11 @@ namespace VoogleRoute.UI
     internal static class RouteActionPanel
     {
         private const string RootName = "VoogleRoute_ActionPanel_v85";
+        private const string DragPositionId = "voogleroute:action-panel";
 
         private static GameObject _root;
         private static RectTransform _panelRect;
+        private static BaUiDragState _dragState;
         private static float _builtPanelWidth;
         private static bool _loggedVisibleChrome;
 
@@ -54,6 +56,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Overlay(RootName, 9000)
                 .Dock(BaDock.BottomLeft, marginY: ModConfig.NavHudOffsetY)
                 .Panel(BaPanelRecipe.ActionPanel, layout.PanelWidth, height: layout.PanelHeight)
+                .Draggable(DragPositionId)
                 .Header(h => h
                     .TitleLeft(ModUiText.PanelTitle)
                     .Icons(i => i
@@ -95,6 +98,7 @@ namespace VoogleRoute.UI
 
             _root = built.Root;
             _panelRect = built.Panel;
+            _dragState = built.Drag;
             _panelTitleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
             _loggedVisibleChrome = false;
 
@@ -119,9 +123,12 @@ namespace VoogleRoute.UI
                 return;
 
             var offsetY = ModConfig.NavHudOffsetY;
-            if (_panelRect != null && (_forceApply || !Mathf.Approximately(offsetY, _lastOffsetY)))
+            var offsetChanged = !Mathf.Approximately(offsetY, _lastOffsetY);
+            _lastOffsetY = offsetY;
+            if (_panelRect != null &&
+                (_dragState == null || (!_dragState.HasSavedPosition && !_dragState.IsDragging)) &&
+                (_forceApply || offsetChanged))
             {
-                _lastOffsetY = offsetY;
                 _panelRect.anchoredPosition = BaUiLayout.GetScreenPosition(offsetY);
             }
 
@@ -186,9 +193,10 @@ namespace VoogleRoute.UI
                 BaUi.StyleButton(_routeButtonImage, BaButtonStyle.Blue);
             else
                 BaUi.StyleButton(_routeButtonImage, BaButtonStyle.Grey);
-            _routeLabel.text = indoor
+            var routeLabel = indoor
                 ? (routeOn ? ModUiText.WayOutOn : ModUiText.WayOutOff)
                 : (routeOn ? ModUiText.RouteOn : ModUiText.RouteOff);
+            _routeLabel.text = RouteActionShortcuts.AddRouteButtonHint(routeLabel);
             _routeLabel.color = ButtonLabelColor;
 
             var walkOn = indoor ? ModConfig.IndoorAutoWalkEnabled : ModConfig.AutoWalkEnabled;
@@ -197,13 +205,13 @@ namespace VoogleRoute.UI
             if (inVehicle)
             {
                 BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Grey);
-                _autoWalkLabel.text = ModUiText.AutoDrive;
+                _autoWalkLabel.text = RouteActionShortcuts.AddAutoMoveButtonHint(ModUiText.AutoDrive);
                 _autoWalkLabel.color = AutoDriveSkipTravelService.IsInProgress ? LabelDisabled : ButtonLabelColor;
             }
             else if (!onFoot && !indoor)
             {
                 BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Grey);
-                _autoWalkLabel.text = ModUiText.AutoWalk;
+                _autoWalkLabel.text = RouteActionShortcuts.AddAutoMoveButtonHint(ModUiText.AutoWalk);
                 _autoWalkLabel.color = LabelDisabled;
             }
             else
@@ -212,15 +220,34 @@ namespace VoogleRoute.UI
                     BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Green);
                 else
                     BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Grey);
-                _autoWalkLabel.text = indoor
+                var autoMoveLabel = indoor
                     ? (walkOn ? ModUiText.GetOutOn : ModUiText.GetOut)
                     : (walkOn ? ModUiText.WalkOn : ModUiText.AutoWalk);
+                _autoWalkLabel.text = RouteActionShortcuts.AddAutoMoveButtonHint(autoMoveLabel);
                 _autoWalkLabel.color = ButtonLabelColor;
             }
         }
 
         internal static RectTransform GetVisualTestPanelRect() =>
             _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
+
+        internal static bool TryInvokeRouteShortcut()
+        {
+            if (!CanInvokeActionShortcut())
+                return false;
+
+            OnRouteClicked();
+            return true;
+        }
+
+        internal static bool TryInvokeAutoMoveShortcut()
+        {
+            if (!CanInvokeActionShortcut())
+                return false;
+
+            OnAutoWalkClicked();
+            return true;
+        }
 
         internal static void Destroy()
         {
@@ -229,6 +256,7 @@ namespace VoogleRoute.UI
                 Object.Destroy(_root);
                 _root = null;
                 _panelRect = null;
+                _dragState = null;
                 _loggedVisibleChrome = false;
                 _forceApply = true;
                 ClearButtonRefs();
@@ -242,6 +270,29 @@ namespace VoogleRoute.UI
             _autoWalkButtonImage = null;
             _autoWalkLabel = null;
             _panelTitleLabel = null;
+        }
+
+        private static bool CanInvokeActionShortcut()
+        {
+            if (_root == null || !_root.activeInHierarchy)
+                return false;
+
+            var indoor = GameState.IsIndoorNavigationContext();
+            if (indoor)
+            {
+                if (!GameState.ShouldShowIndoorNavigationPanel())
+                    return false;
+            }
+            else if (!GameState.ShouldShowNavigationPanel() || !MovementModeDetector.ShouldShowActionPanel())
+            {
+                return false;
+            }
+
+            return !RouteSettingsUi.IsOpen
+                   && !AutoDriveConfirmPopup.IsOpen
+                   && !CityMapBookmarkAddDialog.IsOpen
+                   && !VisitHistoryPanel.IsOpen
+                   && !GameState.IsCityMapOpen();
         }
 
         private static void OnBookmarkPinClicked() => BookmarkPickService.TryOpenDialogAtCurrentPosition();

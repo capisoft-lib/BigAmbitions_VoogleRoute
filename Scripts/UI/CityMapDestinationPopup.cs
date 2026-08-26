@@ -13,6 +13,7 @@ namespace VoogleRoute.UI
     internal static class CityMapDestinationPopup
     {
         private const string RootName = "VoogleRoute_MapDestPopup_v2";
+        private const string DragPositionId = "voogleroute:city-map-destination";
         private const int CanvasSortOrder = 12000;
         private const float PanelWidth = 520f;
         private const float PanelHeight = 220f;
@@ -35,6 +36,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Modal(RootName, CanvasSortOrder, 0.45f)
                 .OnDismiss(Close)
                 .Panel(BaPanelRecipe.Modal, PanelWidth, height: PanelHeight)
+                .Draggable(DragPositionId)
                 .Header(h => h.TitleCenter(ModUiText.MapDestTitle))
                 .SkipBody()
                 .Build();

@@ -13,6 +13,16 @@ namespace VoogleRoute.Navigation
             if (!exit.IsValid)
                 return false;
 
+            // HamptonsHouse.OnExitPlot owns this transition. Calling
+            // ExitFromBuilding before the player crosses the plot boundary
+            // clears the house references and makes the later native callback
+            // fail while restoring floor visuals.
+            if (exit.IsHamptonsPlotExit)
+            {
+                LogBlocked("hamptons_exit_owned_by_plot");
+                return false;
+            }
+
             if (!ModConfig.AutoEnterDestinationEnabled)
                 return false;
 

@@ -35,8 +35,16 @@ namespace VoogleRoute.Navigation
                 return;
             }
 
-            if (BuildingDestinationEnterService.IsBuildingNavigationSource(source))
-                BuildingDestinationEnterService.TryEnterAfterNavigation(target, source);
+            if (!BuildingDestinationEnterService.IsBuildingNavigationSource(source))
+                return;
+
+            if (TaxiTravelArrivalGuard.ShouldSuppressBuildingAutoEnter())
+            {
+                ModLog.Info("Building auto-enter skipped after taxi travel: source=" + source);
+                return;
+            }
+
+            BuildingDestinationEnterService.TryEnterAfterNavigation(target, source);
         }
 
         private static bool IsValidNavigationSource(string source) =>

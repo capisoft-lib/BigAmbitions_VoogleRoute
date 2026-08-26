@@ -2,6 +2,36 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## Unreleased
+
+## [1.0.0] - 2026-08-26
+
+### Added
+
+- **Big Ambitions 1.0 experimental routing data** — refreshed the city road graph from the current game waypoints and added bidirectional regression coverage for all 18 Hamptons mansion addresses
+- **Hamptons WAY OUT / GET OUT routing** — dedicated entrance-first exit resolution for open-world mansion plots, with bounded perimeter fallback and exact terminal-waypoint handoff
+- **Configurable action shortcuts** — route-line toggle and auto-walk/auto-drive can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y** and **Ctrl+Shift+X**
+- **Draggable windows** — the action panel, settings, bookmarks, history and popups use native dragging, screen clamping and saved positions supplied by BA Unified UI
+
+### Changed
+
+- **Single cross-version package** — one Voogle Route 1.0.0 DLL now adapts at runtime to Big Ambitions EA 0.11 and 1.0 experimental; no alternate legacy build is required
+- **Stable location dependency** — now requires **LIB BA Player Location 1.0.0+**, published as the same cross-version library package for EA 0.11 and 1.0 experimental
+- **Standalone UI dependency** — now requires **LIB BA Unified UI 1.0.0+** as a separate enabled Workshop item; Voogle Route no longer bundles a private BAUI DLL
+- **Route rendering on 1.0 experimental** — hybrid LineRenderer/ribbon-mesh strokes preserve a thin, deterministic route width when stripped player APIs are unavailable
+- **Hamptons vehicle approaches** — improved mansion entrances, curb-side lane arrivals and cul-de-sac turns in both directions
+- **History map sessions** — city-map History visibility is isolated from the normal HUD state and restored exactly when the map closes
+- **Options integration** — every BAUI canvas hides and becomes non-interactive while the vanilla Options screen is open, then returns to its prior state
+- **Shortcut safety** — complete key chords are checked against vanilla and participating mod bindings, while menus, text fields and modal windows block route actions
+
+### Fixed
+
+- **EA 0.11 compatibility** — isolated 1.0-only Hamptons types and adapted taxi state, city-map taxi mode, fades, time skips and entrance lookup to both game APIs
+- **Taxi arrival compatibility** — added a post-taxi guard so VoogleRoute does not immediately auto-enter the destination building after a vanilla taxi warp
+- **Route thickness regression** — restored visible foot, vehicle, indoor, subway and city-map route strokes on Big Ambitions 1.0 experimental
+- **History recalculation feedback** — opening History no longer shows or controls the active-route recalculation banner while row distances load in the background
+- **Hamptons exit performance** — entrance candidates are prioritized and perimeter work is bounded to avoid NavMesh retries and frame-rate collapse near mansion gates
+
 ## [0.11.11] - 2026-07-25
 
 ### Fixed
@@ -206,6 +236,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[1.0.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v1.0.0
 [0.11.11]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.11
 [0.11.10]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.10
 [0.11.9]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.9

@@ -15,6 +15,7 @@ namespace VoogleRoute.UI
     internal static class VisitHistoryPanel
     {
         private const string RootName = "VoogleRoute_VisitHistory_v21";
+        private const string DragPositionId = "voogleroute:visit-history";
         private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11050;
         private const float PanelWidth = 420f;
@@ -25,11 +26,15 @@ namespace VoogleRoute.UI
 
         private static GameObject _root;
         private static RectTransform _panelRect;
+        private static BaUiDragState _dragState;
         private static TextMeshProUGUI _titleLabel;
         private static BaUiScrollList _scrollList;
         private static float _textScale = 1f;
         private static float _panelHeight;
         private static bool _restoreAfterUnblock;
+        private static bool _mapVisibilitySnapshotActive;
+        private static bool _normalVisibilityBeforeMap;
+        private static int _ignoreEscapeFrame = -1;
 
         private static readonly List<HistoryRow> Rows = new List<HistoryRow>();
         private static readonly List<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)> DistanceRequests =
@@ -60,7 +65,6 @@ namespace VoogleRoute.UI
                 BaUi.ApplyLayer(_root);
                 if (_panelRect != null)
                 {
-                    ApplyScreenAnchor();
                     ApplyPanelLayout();
                     LayoutListContent();
                 }
@@ -73,6 +77,7 @@ namespace VoogleRoute.UI
             BaUiScrollList scrollList = null;
             var built = BaUi.Overlay(RootName, CanvasSortOrder)
                 .Panel(BaPanelRecipe.WideMapPanel, PanelWidth)
+                .Draggable(DragPositionId)
                 .Header(h => h
                     .TitleLeft(ModUiText.VisitHistoryTitle)
                     .CloseButton(Close, CloseButtonExtraInset))
@@ -82,6 +87,7 @@ namespace VoogleRoute.UI
             _root = built.Root;
             _textScale = Mathf.Clamp(built.Scale, 0.85f, 1.15f);
             _panelRect = built.Panel;
+            _dragState = built.Drag;
             _panelHeight = built.PanelHeight;
             _scrollList = scrollList;
             ApplyScreenAnchor();
@@ -124,7 +130,8 @@ namespace VoogleRoute.UI
             SyncRows();
             _panelRect.sizeDelta = new Vector2(PanelWidth, _panelHeight);
             BaUiWidgets.RestoreDockedPanelChrome(_panelRect, PanelWidth, wideMapPanel: true);
-            UpdateScreenPosition();
+            if (ShouldApplyAutomaticPosition())
+                UpdateScreenPosition();
 
             if (_scrollList?.Rect != null)
             {
@@ -231,6 +238,43 @@ namespace VoogleRoute.UI
                 Open();
         }
 
+        /// <summary>
+        /// The city map borrows the normal-game visibility when it opens, but any
+        /// history toggle performed on the map remains local to that map session.
+        /// </summary>
+        internal static void OnCityMapToggled(bool open)
+        {
+            if (open)
+            {
+                if (_mapVisibilitySnapshotActive)
+                    return;
+
+                EnsureCreated();
+                _normalVisibilityBeforeMap = IsOpen;
+                _mapVisibilitySnapshotActive = true;
+
+                if (_normalVisibilityBeforeMap)
+                    Open();
+                else
+                    Close();
+
+                return;
+            }
+
+            if (!_mapVisibilitySnapshotActive)
+                return;
+
+            var restoreNormalVisibility = _normalVisibilityBeforeMap;
+            _mapVisibilitySnapshotActive = false;
+            _normalVisibilityBeforeMap = false;
+            _ignoreEscapeFrame = Time.frameCount;
+
+            if (restoreNormalVisibility)
+                Open();
+            else
+                Close();
+        }
+
         internal static void Tick()
         {
             if (_root == null)
@@ -245,7 +289,7 @@ namespace VoogleRoute.UI
             if (mapMode != _historyMapMode)
                 RefreshList(fullDistanceRefresh: false);
 
-            if (CityMapBookmarksPanel.IsVisible)
+            if (CityMapBookmarksPanel.IsVisible && ShouldApplyAutomaticPosition())
                 UpdateScreenPosition();
 
             if (!CityMapBookmarksPanel.BlocksMapInput)
@@ -257,6 +301,9 @@ namespace VoogleRoute.UI
         internal static void TickOverlay()
         {
             if (!IsOpen)
+                return;
+
+            if (_mapVisibilitySnapshotActive || Time.frameCount == _ignoreEscapeFrame)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -302,6 +349,9 @@ namespace VoogleRoute.UI
             RefreshLocalizedText();
             RefreshDistances(fullDistanceRefresh);
         }
+
+        private static bool ShouldApplyAutomaticPosition() =>
+            _dragState == null || (!_dragState.HasSavedPosition && !_dragState.IsDragging);
 
         private static void RefreshRows()
         {
@@ -425,9 +475,6 @@ namespace VoogleRoute.UI
         {
             while (BookmarkRouteDistanceService.TryDequeueCompleted(out var result))
                 ApplyDistanceResult(result);
-
-            if (!BookmarkRouteDistanceService.IsRecalcInProgress)
-                RouteRecalcBanner.RequestHide();
         }
 
         private static void ApplyDistanceResult(BookmarkDistanceResult result)
@@ -548,10 +595,14 @@ namespace VoogleRoute.UI
 
             Rows.Clear();
             _panelRect = null;
+            _dragState = null;
             _titleLabel = null;
             _scrollList = null;
             _panelHeight = 0f;
             _restoreAfterUnblock = false;
+            _mapVisibilitySnapshotActive = false;
+            _normalVisibilityBeforeMap = false;
+            _ignoreEscapeFrame = -1;
             _historyMapMode = false;
         }
     }

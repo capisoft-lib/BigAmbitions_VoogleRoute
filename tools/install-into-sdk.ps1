@@ -55,6 +55,6 @@ if (Test-Path $folderMetaSource) {
 }
 
 Write-Host "Installed VoogleRoute -> $dest"
-Write-Host "Also install LIB_BaPlayerLocation and enable both mods in-game."
-Write-Host "Run tools\build-pathfinding.ps1 (syncs PathFinding + LIB_BaUnifiedUI into Dependencies)."
+Write-Host "Also install LIB_BaPlayerLocation 1.0.0+ and LIB_BaUnifiedUI 1.0.0+; enable all three mods in-game."
+Write-Host "Run tools\build-pathfinding.ps1 (syncs only VoogleRoute.Pathfinding into Dependencies)."
 Write-Host "Next: open SDK in Unity 2022.3.62f2, then Mod Builder -> Build & Install."

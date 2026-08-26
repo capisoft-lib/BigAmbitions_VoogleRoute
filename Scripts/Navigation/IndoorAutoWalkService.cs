@@ -8,6 +8,7 @@ namespace VoogleRoute.Navigation
     {
         private const float ReachRadius = 4.5f;
         private const float ExitYieldRadius = 3.5f;
+        private const float HamptonsExitYieldRadius = 0.65f;
         private const float MinWaypointSpacing = 8f;
         private const float ReissueIntervalSeconds = 2.5f;
         private const float MinReissueMoveSq = 2f * 2f;
@@ -74,13 +75,35 @@ namespace VoogleRoute.Navigation
                 return false;
             }
 
-            var waypoints = BuildWaypoints(path, exitTarget.WalkPosition);
+            var waypoints = BuildWaypoints(
+                path,
+                exitTarget.WalkPosition,
+                exitTarget.IsHamptonsPlotExit);
             if (waypoints.Length == 0)
                 return false;
 
             var exitPosition = exitTarget.WalkPosition;
-            if (HorizontalDistance(playerPos, exitPosition) < ExitYieldRadius)
+            var exitYieldRadius = exitTarget.IsHamptonsPlotExit
+                ? HamptonsExitYieldRadius
+                : ExitYieldRadius;
+            if (HorizontalDistance(playerPos, exitPosition) < exitYieldRadius)
             {
+                if (exitTarget.IsHamptonsPlotExit)
+                {
+                    if (HamptonsCompatibility.TryCompleteBoundaryHandoff(exitTarget))
+                    {
+                        DisableIndoorNavigation();
+                        return true;
+                    }
+
+                    // Keep using the game's normal destination call while the
+                    // boundary seam is not ready. Never invoke
+                    // BuildingManager.ExitFromBuilding here; HamptonsHouse
+                    // owns that transition after the player leaves the plot.
+                    IssueWalkTo(player, exitTarget.WalkPosition, exitTarget);
+                    return false;
+                }
+
                 YieldForVanillaExit(player, exitTarget);
                 return true;
             }
@@ -97,7 +120,8 @@ namespace VoogleRoute.Navigation
                 distToWalkTarget = HorizontalDistance(playerPos, walkTarget);
             }
 
-            if (_waypointIndex >= waypoints.Length - 1 &&
+            if (!exitTarget.IsHamptonsPlotExit &&
+                _waypointIndex >= waypoints.Length - 1 &&
                 HorizontalDistance(playerPos, exitPosition) < ReachRadius + 1.5f)
             {
                 YieldForVanillaExit(player, exitTarget);
@@ -105,7 +129,7 @@ namespace VoogleRoute.Navigation
             }
 
             if (ShouldIssueDestination(walkTarget, distToWalkTarget))
-                IssueWalkTo(player, walkTarget);
+                IssueWalkTo(player, walkTarget, exitTarget);
 
             return false;
         }
@@ -136,7 +160,7 @@ namespace VoogleRoute.Navigation
                 return;
             }
 
-            IssueWalkTo(player, exitTarget.WalkPosition);
+            IssueWalkTo(player, exitTarget.WalkPosition, exitTarget);
         }
 
         private static void DisableIndoorNavigation()
@@ -159,10 +183,15 @@ namespace VoogleRoute.Navigation
 
             return a.ExitZoneId == b.ExitZoneId &&
                    a.IsCasinoExit == b.IsCasinoExit &&
-                   a.IsParkingExit == b.IsParkingExit;
+                   a.IsParkingExit == b.IsParkingExit &&
+                   a.IsHamptonsPlotExit == b.IsHamptonsPlotExit &&
+                   (a.HamptonsOutsidePosition - b.HamptonsOutsidePosition).sqrMagnitude <= 0.25f;
         }
 
-        private static Vector3[] BuildWaypoints(PathResult path, Vector3 exitPosition)
+        private static Vector3[] BuildWaypoints(
+            PathResult path,
+            Vector3 exitPosition,
+            bool preserveExactExit)
         {
             if (_cachedWaypoints.Length > 0 && _lastExitTarget.IsValid &&
                 HorizontalDistance(_cachedWaypoints[^1], exitPosition) < 0.25f)
@@ -175,7 +204,8 @@ namespace VoogleRoute.Navigation
             if (list.Count == 0)
                 return System.Array.Empty<Vector3>();
 
-            if (HorizontalDistance(list[^1], exitPosition) > 3f)
+            var appendThreshold = preserveExactExit ? 0.25f : 3f;
+            if (HorizontalDistance(list[^1], exitPosition) > appendThreshold)
                 list.Add(exitPosition);
 
             _cachedWaypoints = list.ToArray();
@@ -228,10 +258,17 @@ namespace VoogleRoute.Navigation
             return _lastIssueTime < 0f;
         }
 
-        private static void IssueWalkTo(PlayerController player, Vector3 worldPosition)
+        private static void IssueWalkTo(
+            PlayerController player,
+            Vector3 worldPosition,
+            in IndoorExitTarget exitTarget)
         {
             try
             {
+                if (exitTarget.IsHamptonsPlotExit &&
+                    !HamptonsCompatibility.TryEnsurePlayerAgentOnRouteOrigin())
+                    return;
+
                 player.SetNewDestination(worldPosition, showParticleEffect: false, removeGoal: true);
                 _lastIssuedDestination = worldPosition;
                 _lastIssueTime = Time.unscaledTime;

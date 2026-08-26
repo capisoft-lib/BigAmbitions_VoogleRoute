@@ -22,61 +22,70 @@ namespace VoogleRoute.Rendering
         internal static void ApplyDashed(LineRenderer line, Color color) =>
             Apply(line, color, dashed: true);
 
+        internal static void ApplyMesh(MeshRenderer renderer, Color color, bool dashed)
+        {
+            if (renderer == null)
+                return;
+
+            ApplyRenderer(renderer, color, dashed, dashed ? 1f / SubwayDashWorldLength : 1f);
+        }
+
         private static void Apply(LineRenderer line, Color color, bool dashed)
         {
             line.startColor = color;
             line.endColor = color;
 
+            LineRendererCompat.SetTextureMode(
+                line,
+                dashed ? LineTextureMode.Tile : LineTextureMode.Stretch);
+            var textureScale = dashed
+                ? Mathf.Max(1f, EstimatePolylineLength(line) / SubwayDashWorldLength)
+                : 1f;
+            ApplyRenderer(line, color, dashed, textureScale);
+        }
+
+        private static void ApplyRenderer(Renderer renderer, Color color, bool dashed, float textureScaleX)
+        {
             var shader = GetShader();
             if (shader == null)
                 return;
 
-            if (line.material == null || line.material.shader != shader)
-                line.material = new Material(shader);
+            if (renderer.material == null || renderer.material.shader != shader)
+                renderer.material = new Material(shader);
 
-            if (ReferenceEquals(line.material, _lastMaterial) &&
+            if (ReferenceEquals(renderer.material, _lastMaterial) &&
                 color == _lastAppliedColor &&
                 dashed == _lastAppliedDashed &&
                 !dashed)
                 return;
 
-            _lastMaterial = line.material;
+            _lastMaterial = renderer.material;
             _lastAppliedColor = color;
             _lastAppliedDashed = dashed;
-            line.material.color = color;
-            if (line.material.HasProperty(_baseColorId))
-                line.material.SetColor(_baseColorId, color);
-            if (line.material.HasProperty(_colorId))
-                line.material.SetColor(_colorId, color);
+            renderer.material.color = color;
+            if (renderer.material.HasProperty(_baseColorId))
+                renderer.material.SetColor(_baseColorId, color);
+            if (renderer.material.HasProperty(_colorId))
+                renderer.material.SetColor(_colorId, color);
 
-            if (!dashed)
-            {
-                line.textureMode = LineTextureMode.Stretch;
-                if (line.material.HasProperty(_mainTexId))
-                    line.material.SetTexture(_mainTexId, null);
-                return;
-            }
-
-            line.textureMode = LineTextureMode.Tile;
-            var dashTexture = GetDashTexture();
-            if (line.material.HasProperty(_mainTexId))
-                line.material.SetTexture(_mainTexId, dashTexture);
-
-            var dashRepeat = Mathf.Max(1f, EstimatePolylineLength(line) / SubwayDashWorldLength);
-            line.material.mainTextureScale = new Vector2(dashRepeat, 1f);
+            if (renderer.material.HasProperty(_mainTexId))
+                renderer.material.SetTexture(_mainTexId, dashed ? GetDashTexture() : null);
+            renderer.material.mainTextureScale = new Vector2(textureScaleX, 1f);
         }
 
         private static float EstimatePolylineLength(LineRenderer line)
         {
-            var count = line.positionCount;
+            var count = LineRendererCompat.GetPositionCount(line);
             if (count < 2)
                 return SubwayDashWorldLength;
 
             var total = 0f;
-            var previous = line.GetPosition(0);
+            if (!LineRendererCompat.TryGetPosition(line, 0, out var previous))
+                return SubwayDashWorldLength;
             for (var i = 1; i < count; i++)
             {
-                var current = line.GetPosition(i);
+                if (!LineRendererCompat.TryGetPosition(line, i, out var current))
+                    return SubwayDashWorldLength;
                 total += Vector3.Distance(previous, current);
                 previous = current;
             }

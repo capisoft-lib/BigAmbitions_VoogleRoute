@@ -1,9 +1,11 @@
-LIB_BaPlayerLocation
+LIB_BaPlayerLocation 1.0.0+
+LIB_BaUnifiedUI 1.0.0+
 
 Workshop publish checklist:
-1. Upload LIB_BaPlayerLocation first (ModId must match exactly).
-2. Upload VoogleRoute and state LIB BA Player Location 0.11.2+ is required in the Workshop description.
-3. Players subscribe to LIB_BaPlayerLocation + VoogleRoute only.
-   LIB_BaUnifiedUI ships bundled in VoogleRoute/Dependencies/ (no separate Workshop item).
+1. Publish LIB_BaPlayerLocation 1.0.0+ and LIB_BaUnifiedUI 1.0.0+ first (ModIds must match exactly).
+2. Add both libraries to Voogle Route's Steam Required Items.
+3. State both requirements in the Workshop description.
+4. Players subscribe to and enable both libraries plus Voogle Route.
+5. Confirm Voogle Route contains no bundled LIB_BaUnifiedUI DLL.
 
 VoogleRoute does not probe player position itself. Navigation is blocked until LIB_BaPlayerLocation is active.

@@ -1,5 +1,6 @@
 using Capisoft.Lib.BaUnifiedUI.Fluent;
 using Capisoft.Lib.BaUnifiedUI.Localization;
+using Capisoft.Lib.BaUnifiedUI.Shortcuts;
 using UnityEngine;
 using VoogleRoute.Navigation;
 
@@ -35,6 +36,11 @@ namespace VoogleRoute.UI
         internal static string ColorPresetOrange => Loc("voogle_route_color_orange", "Orange");
         internal static string ColorPresetMagenta => Loc("voogle_route_color_magenta", "Magenta");
         internal static string ColorPresetWhite => Loc("voogle_route_color_white", "White");
+        internal static BaKeybindUiText CreateShortcutUiText() =>
+            new BaKeybindUiText(
+                Loc("voogle_route_shortcut_unbound", "Unbound"),
+                Loc("voogle_route_shortcut_capture", "Press a key..."),
+                Loc("voogle_route_shortcut_conflict", "Conflict"));
         internal static string RouteRecalculating =>
             Loc("voogle_route_recalculating", "Recalculating route...");
         internal static string MapDestTitle =>

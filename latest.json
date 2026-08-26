@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "0.11.11",
-  "gameVersion": "0.11",
+  "version": "1.0.0",
+  "gameVersion": "EA 0.11 / 1.0 experimental",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "0.11.11: Flatbeds and hand trucks are always treated as on-foot navigation; auto-drive is blocked before planning and teleport. Requires LIB BA Player Location 0.11.2+."
+  "releaseNotes": "1.0.0: one cross-version package for Big Ambitions EA 0.11 and 1.0 experimental, with the 1.0 road refresh, Hamptons routing on 1.0, stable route rendering, draggable UI, configurable shortcuts and a post-taxi arrival guard. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }

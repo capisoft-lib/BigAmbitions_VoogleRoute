@@ -108,7 +108,7 @@ namespace VoogleRoute.Navigation
                 yield break;
             }
 
-            yield return UiFader.Fade();
+            yield return BigAmbitionsCompatibility.Fade();
             screenFaded = true;
 
             vehicle = VehicleHelper.GetCurrentVehicleBase();
@@ -136,7 +136,17 @@ namespace VoogleRoute.Navigation
 
             var timestamp = TimeHelper.Now();
             timestamp.AddMinutes(plan.TravelMinutes);
-            InstanceBehavior<UIs>.Instance.timeMachine.StartTimeMachine(timestamp, disableCancel: true);
+            if (!BigAmbitionsCompatibility.TryStartTimeMachine(
+                    InstanceBehavior<UIs>.Instance.timeMachine,
+                    timestamp,
+                    disableCancel: true))
+            {
+                yield return UiFader.UnFade();
+                screenFaded = false;
+                _inProgress = false;
+                Notifications.ShowError("voogle_route_autodrive_busy");
+                yield break;
+            }
 
             yield return UiFader.UnFade();
             screenFaded = false;

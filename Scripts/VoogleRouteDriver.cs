@@ -17,6 +17,7 @@ namespace VoogleRoute
         private void Update()
         {
             VoogleRouteLoop.Tick();
+            RouteActionShortcuts.Tick();
             VisualTestHarness.TrySchedule(this);
         }
     }

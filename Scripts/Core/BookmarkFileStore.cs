@@ -29,7 +29,7 @@ namespace VoogleRoute
         var path = FilePath;
         if (File.Exists(path))
         {
-          var json = File.ReadAllText(path, Encoding.UTF8);
+          var json = File.ReadAllText(path);
           _data = BookmarkJsonCodec.Deserialize(json);
         }
         else if (TryMigrateFromLegacyConfig(legacyConfig))

@@ -15,6 +15,7 @@ namespace VoogleRoute.UI
     internal static class CityMapBookmarksPanel
     {
         private const string RootName = "VoogleRoute_BookmarksPanel_v38";
+        private const string DragPositionId = "voogleroute:city-map-bookmarks";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
         /// <summary>Wider than the action panel (370) — header/frame via <see cref="BaUi"/> fluent API.</summary>
@@ -24,6 +25,7 @@ namespace VoogleRoute.UI
 
         private static GameObject _root;
         private static RectTransform _panelRect;
+        private static BaUiDragState _dragState;
         private static TextMeshProUGUI _titleLabel;
         private static TMP_InputField _searchField;
         private static TextMeshProUGUI _searchPlaceholder;
@@ -112,7 +114,8 @@ namespace VoogleRoute.UI
                 BaUi.ApplyLayer(_root);
                 if (_panelRect != null)
                 {
-                    AnchorBottomLeft(_panelRect);
+                    if (ShouldApplyAutomaticPosition())
+                        AnchorBottomLeft(_panelRect);
                     ApplyPanelLayout();
                     LayoutListContent();
                 }
@@ -129,6 +132,7 @@ namespace VoogleRoute.UI
             var built = BaUi.Overlay(RootName, CanvasSortOrder)
                 .Dock(BaDock.BottomLeft, marginX: ScreenMarginX, marginY: ScreenBottomMargin)
                 .Panel(BaPanelRecipe.WideMapPanel, PanelWidth)
+                .Draggable(DragPositionId)
                 .Header(h => h
                     .TitleLeft(ModUiText.BookmarksTitle)
                     .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1"))
@@ -146,6 +150,7 @@ namespace VoogleRoute.UI
             _root = built.Root;
             _textScale = Mathf.Clamp(built.Scale, 0.85f, 1.15f);
             _panelRect = built.Panel;
+            _dragState = built.Drag;
             _panelHeight = built.PanelHeight;
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
             _searchField = search?.Field;
@@ -279,6 +284,9 @@ namespace VoogleRoute.UI
             panel.pivot = Vector2.zero;
             panel.anchoredPosition = new Vector2(ScreenMarginX, ScreenBottomMargin);
         }
+
+        private static bool ShouldApplyAutomaticPosition() =>
+            _dragState == null || (!_dragState.HasSavedPosition && !_dragState.IsDragging);
 
         internal static void Tick()
         {
@@ -574,9 +582,6 @@ namespace VoogleRoute.UI
         {
             while (BookmarkRouteDistanceService.TryDequeueCompleted(out var result))
                 ApplyDistanceResult(result);
-
-            if (!BookmarkRouteDistanceService.IsRecalcInProgress)
-                RouteRecalcBanner.RequestHide();
         }
 
         private static void ApplyDistanceResult(BookmarkDistanceResult result)
@@ -970,6 +975,7 @@ namespace VoogleRoute.UI
             VehicleRows.Clear();
             Rows.Clear();
             _panelRect = null;
+            _dragState = null;
             _scrollList = null;
             _panelHeight = 0f;
             _titleLabel = null;

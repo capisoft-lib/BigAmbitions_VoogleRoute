@@ -71,5 +71,11 @@
   "voogle_route_visit_history_add": "AJOUTER",
   "voogle_route_arrived_at_destination": "Vous êtes arrivé à destination",
   "voogle_route_subway_board_hint": "Prenez le métro vers {station} (3 $)",
-  "voogle_route_subway_continue": "Trajet en métro terminé — poursuite à pied"
+  "voogle_route_subway_continue": "Trajet en métro terminé — poursuite à pied",
+  "voogle_route_options_shortcuts_header": "Raccourcis",
+  "voogle_route_options_route_shortcut": "Raccourci ligne d'itinéraire",
+  "voogle_route_options_auto_move_shortcut": "Raccourci marche / conduite auto",
+  "voogle_route_shortcut_unbound": "Non assigné",
+  "voogle_route_shortcut_capture": "Appuyez sur une touche...",
+  "voogle_route_shortcut_conflict": "Conflit"
 }
