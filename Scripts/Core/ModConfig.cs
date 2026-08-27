@@ -1,6 +1,7 @@
 using System;
 using BAModAPI;
 using BigAmbitions.Mods;
+using Capisoft.Lib.BaUnifiedUI.Options;
 using UnityEngine;
 using VoogleRoute.Navigation;
 using VoogleRoute.UI;
@@ -25,6 +26,9 @@ namespace VoogleRoute
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
+        private const string FootRouteColorKey = "foot_route_color";
+        private const string IndoorRouteColorKey = "indoor_route_color";
+        private const string VehicleRouteColorKey = "vehicle_route_color";
 
         private static ModContext _context;
 
@@ -62,6 +66,8 @@ namespace VoogleRoute
         internal static Color FootLineColor => _footLineColor;
         internal static Color VehicleLineColor => _vehicleLineColor;
         internal static Color IndoorFootLineColor => _indoorFootLineColor;
+        internal static Color DefaultLineColor =>
+            new Color(RouteNeonBlueR, RouteNeonBlueG, RouteNeonBlueB, RouteNeonBlueA);
         internal static bool LoggingEnabled { get; private set; }
         internal static ModLogLevel LogLevel { get; private set; } = ModLogLevel.Error;
         internal static int BaseTaxiMultiplier { get; private set; } = 2;
@@ -171,6 +177,9 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, AllowUturnAtStartKey, AllowUturnAtStartEnabled);
             ModGameOptionPrefs.SaveToggle(modId, AutoEnterDestinationKey, AutoEnterDestinationEnabled);
             ModGameOptionPrefs.SaveInt(modId, BaseTaxiMultiplierKey, BaseTaxiMultiplier);
+            ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
+            ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
+            ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
         }
 
         internal static void SetDisplayOutsideEnabled(bool value, bool persist = true)
@@ -324,6 +333,7 @@ namespace VoogleRoute
         internal static void SetFootLineColor(Color color, bool persist = true)
         {
             _footLineColor = NormalizeLineColor(color);
+            SyncColorPlayerPref(FootRouteColorKey, _footLineColor);
             if (persist)
                 ModOptionsSaveStore.PersistFromModConfig();
             Rendering.RouteLineRenderer.ApplyStyle();
@@ -333,6 +343,7 @@ namespace VoogleRoute
         internal static void SetVehicleLineColor(Color color, bool persist = true)
         {
             _vehicleLineColor = NormalizeLineColor(color);
+            SyncColorPlayerPref(VehicleRouteColorKey, _vehicleLineColor);
             if (persist)
                 ModOptionsSaveStore.PersistFromModConfig();
             Rendering.RouteLineRenderer.ApplyStyle();
@@ -342,6 +353,7 @@ namespace VoogleRoute
         internal static void SetIndoorFootLineColor(Color color, bool persist = true)
         {
             _indoorFootLineColor = NormalizeLineColor(color);
+            SyncColorPlayerPref(IndoorRouteColorKey, _indoorFootLineColor);
             if (persist)
                 ModOptionsSaveStore.PersistFromModConfig();
             Rendering.RouteLineRenderer.ApplyStyle();
@@ -373,6 +385,12 @@ namespace VoogleRoute
         private static void OnAutoEnterDestinationOptionChanged(bool value) =>
             SetAutoEnterDestinationEnabled(value);
 
+        private static void OnFootRouteColorChanged(Color color) => SetFootLineColor(color);
+
+        private static void OnIndoorRouteColorChanged(Color color) => SetIndoorFootLineColor(color);
+
+        private static void OnVehicleRouteColorChanged(Color color) => SetVehicleLineColor(color);
+
         private static void EnsureOptionsRegistered()
         {
             if (_context == null)
@@ -402,7 +420,23 @@ namespace VoogleRoute
                 .AddToggle(IndoorRouteLineKey, "voogle_route_options_indoor_route", IndoorRouteLineEnabled,
                     OnIndoorRouteLineOptionChanged)
                 .AddToggle(IndoorAutoWalkKey, "voogle_route_options_indoor_autowalk", IndoorAutoWalkEnabled,
-                    OnIndoorAutoWalkOptionChanged);
+                    OnIndoorAutoWalkOptionChanged)
+                .AddSplitter()
+                .AddColorPicker(
+                    FootRouteColorKey,
+                    "voogle_route_setting_foot_route_color",
+                    DefaultLineColor,
+                    OnFootRouteColorChanged)
+                .AddColorPicker(
+                    IndoorRouteColorKey,
+                    "voogle_route_setting_indoor_route_color",
+                    DefaultLineColor,
+                    OnIndoorRouteColorChanged)
+                .AddColorPicker(
+                    VehicleRouteColorKey,
+                    "voogle_route_setting_vehicle_route_color",
+                    DefaultLineColor,
+                    OnVehicleRouteColorChanged);
 
             options = RouteActionShortcuts.AddOptions(options);
             OptionsService.Register(_context.ModId, options);
@@ -432,6 +466,12 @@ namespace VoogleRoute
 
         private static Color NormalizeLineColor(Color color) =>
             new Color(color.r, color.g, color.b, Mathf.Clamp01(color.a <= 0f ? RouteNeonBlueA : color.a));
+
+        private static void SyncColorPlayerPref(string optionId, Color color)
+        {
+            if (_context != null)
+                ModGameOptionPrefs.SaveColor(_context.ModId, optionId, color);
+        }
 
         private static Color ReadLineColor(float[] components)
         {

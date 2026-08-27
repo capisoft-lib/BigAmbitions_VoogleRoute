@@ -4,6 +4,8 @@ Voogle Route extends Voogle Maps with a clear on-ground route line, walking navi
 
 The 1.0 road graph is included for both versions. On EA 0.11, Voogle Route uses it for the original city while 1.0-only Hamptons features remain disabled automatically.
 
+This update adds three route-color controls under Options > Mods, visible scrollbars for Bookmarks and History, correctly separated user bookmarks, movement-aware live distances, indoor distance calculation from the current building entrance, draggable windows, configurable shortcuts, Hamptons routing improvements and safer taxi arrivals.
+
 [b]Required Workshop items[/b]
 
 [list]
@@ -16,6 +18,12 @@ Subscribe to and enable both libraries before enabling Voogle Route. Voogle Rout
 [b]What's new in 1.0.0[/b]
 
 [list]
+[*][b]Three route color pickers[/b] — change on-foot, indoor and vehicle colors under Options → Mods; active routes update immediately and persist per save
+[*][b]Scrollable lists[/b] — Bookmarks and History show a visible draggable scrollbar when their rows overflow
+[*][b]Correct bookmark ownership[/b] — History visits no longer appear as bookmarks; existing user bookmarks, quick rows and cars are preserved
+[*][b]Live list distances[/b] — visible values refresh after useful outdoor movement, use the building entrance indoors without needless recalculation, and report zero correctly at the destination
+[*][b]Route restored after the city map[/b] — closing M brings the active foot or vehicle ground line back immediately
+[*][b]Cleaner route panel[/b] — the redundant settings icon was removed after the color controls moved into Options → Mods
 [*][b]One package for EA 0.11 and 1.0 experimental[/b] — runtime adapters select the correct game APIs automatically; there is no separate legacy Voogle Route build
 [*][b]Big Ambitions 1.0 experimental roads[/b] — refreshed road data and bidirectional route coverage for every Hamptons mansion address
 [*][b]Hamptons navigation[/b] — dedicated mansion approaches plus entrance-first WAY OUT / GET OUT routing at property gates

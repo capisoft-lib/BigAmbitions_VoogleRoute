@@ -1,0 +1,128 @@
+using System;
+using System.Collections;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using BAModAPI;
+using UnityEngine;
+
+[assembly: RegisterModClass(typeof(VoogleRouteSubwayExporter.SubwayStationExporterMod))]
+
+namespace VoogleRouteSubwayExporter
+{
+    [ModEntryOnCityLoad]
+    public sealed class SubwayStationExporterMod : IModBigAmbitions
+    {
+        private const int CurrentMinimumStationCount = 20;
+        private static bool _exported;
+        private GameObject _driverObject;
+
+        public string[] RelativeAssetBundlePaths => Array.Empty<string>();
+
+        public Task OnLoadAsync(ModContext context)
+        {
+            if (_exported)
+                return Task.CompletedTask;
+
+            _driverObject = new GameObject("VoogleRouteSubwayExporter_Driver");
+            UnityEngine.Object.DontDestroyOnLoad(_driverObject);
+            _driverObject.AddComponent<SubwayStationExporterDriver>();
+
+            return Task.CompletedTask;
+        }
+
+        public Task OnUnloadAsync()
+        {
+            if (_driverObject != null)
+            {
+                UnityEngine.Object.Destroy(_driverObject);
+                _driverObject = null;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        internal static bool TryExport()
+        {
+            if (_exported || !CityManager.IsInitialized)
+                return _exported;
+
+            var stations = CityManager.Instance?.subwayStations;
+            // City load briefly exposes an empty or partially populated list. Wait for
+            // the complete known 1.0 set; the external validator reviews any future additions.
+            if (stations == null || stations.Count < CurrentMinimumStationCount)
+                return false;
+
+            var outputDirectory = Path.Combine(Application.persistentDataPath, "VoogleRouteDevExports");
+            Directory.CreateDirectory(outputDirectory);
+            var outputPath = Path.Combine(outputDirectory, "subway_stations.csv");
+
+            var csv = new StringBuilder();
+            csv.AppendLine("station_name,neighborhood,x,y,z,nav_x,nav_y,nav_z");
+            for (var i = 0; i < stations.Count; i++)
+            {
+                var station = stations[i];
+                if (station == null)
+                    continue;
+
+                var world = station.transform.position;
+                Vector3 nav;
+                try
+                {
+                    nav = station.GetNavMeshTargetPosition();
+                }
+                catch
+                {
+                    nav = world;
+                }
+
+                csv.Append(station.stationName.ToStringFast()).Append(',')
+                    .Append(station.neighbourhood ?? string.Empty).Append(',')
+                    .Append(Format(world.x)).Append(',')
+                    .Append(Format(world.y)).Append(',')
+                    .Append(Format(world.z)).Append(',')
+                    .Append(Format(nav.x)).Append(',')
+                    .Append(Format(nav.y)).Append(',')
+                    .Append(Format(nav.z)).AppendLine();
+            }
+
+            File.WriteAllText(outputPath, csv.ToString(), new UTF8Encoding(false));
+            _exported = true;
+            Debug.Log("[VoogleRouteSubwayExporter] Exported " + stations.Count + " subway stations to " + outputPath);
+            return true;
+        }
+
+        private static string Format(float value) => value.ToString("R", CultureInfo.InvariantCulture);
+    }
+
+    internal sealed class SubwayStationExporterDriver : MonoBehaviour
+    {
+        private IEnumerator Start()
+        {
+            var deadline = Time.realtimeSinceStartup + 60f;
+            while (Time.realtimeSinceStartup < deadline)
+            {
+                try
+                {
+                    if (SubwayStationExporterMod.TryExport())
+                    {
+                        Destroy(gameObject);
+                        yield break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("[VoogleRouteSubwayExporter] Export failed: " + ex);
+                    Destroy(gameObject);
+                    yield break;
+                }
+
+                yield return new WaitForSecondsRealtime(0.25f);
+            }
+
+            Debug.LogError("[VoogleRouteSubwayExporter] Timed out waiting for runtime subway stations.");
+            Destroy(gameObject);
+        }
+    }
+}

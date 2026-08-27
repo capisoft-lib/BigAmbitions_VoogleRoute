@@ -11,50 +11,26 @@
     "height": 1080,
     "fullscreen": false
   },
-  "captureDefaults": {
-    "delaySeconds": 2.0,
-    "mode": "panel",
-    "marginPixels": 4
-  },
   "scenarios": [
     {
       "id": "route-action-370",
       "saveName": "visual-ui-route-panel",
-      "description": "Dehors, route GPS active, panneau action 370px visible.",
-      "captureTarget": "routeActionPanel",
-      "postLoad": [
-        "closeAllModals",
-        "refreshActionPanel"
-      ]
+      "description": "Dehors, route GPS active, panneau action 370px visible. Fermer les modales avant la capture."
     },
     {
       "id": "map-bookmarks-420",
       "saveName": "visual-ui-map-bookmarks",
-      "description": "Carte ville ouverte, panneau bookmarks 420px seul.",
-      "captureTarget": "mapBookmarksPanel",
-      "postLoad": [
-        "closeAllModals"
-      ]
+      "description": "Carte ville ouverte, panneau bookmarks 420px seul. Fermer les autres modales avant la capture."
     },
     {
       "id": "bookmarks-and-history",
       "saveName": "visual-ui-dual-panels",
-      "description": "Carte ville, bookmarks + historique côte à côte.",
-      "captureTarget": "dualMapPanels",
-      "postLoad": [
-        "closeAllModals",
-        "openVisitHistory"
-      ]
+      "description": "Carte ville, ouvrir manuellement bookmarks et historique côte à côte."
     },
     {
       "id": "settings-modal",
       "saveName": "visual-ui-settings",
-      "description": "Dehors, modal paramètres couleur ouvert.",
-      "captureTarget": "settingsPanel",
-      "postLoad": [
-        "closeAllModals",
-        "openSettings"
-      ]
+      "description": "Dehors, ouvrir manuellement la modale des paramètres couleur."
     }
   ]
 }

@@ -2,11 +2,12 @@
 
 All notable changes to **Voogle Route** are documented here.
 
-## Unreleased
-
 ## [1.0.0] - 2026-08-26
 
 ### Added
+
+- **Three route color options** — on-foot, indoor and vehicle route colors can now be changed with native color pickers under **Options → Mods**
+- **Visible list scrolling** — Bookmarks and History now show a draggable vertical scrollbar whenever their rows overflow
 
 - **Big Ambitions 1.0 experimental routing data** — refreshed the city road graph from the current game waypoints and added bidirectional regression coverage for all 18 Hamptons mansion addresses
 - **Hamptons WAY OUT / GET OUT routing** — dedicated entrance-first exit resolution for open-world mansion plots, with bounded perimeter fallback and exact terminal-waypoint handoff
@@ -15,6 +16,9 @@ All notable changes to **Voogle Route** are documented here.
 
 ### Changed
 
+- **Simplified route panel** — removed the redundant settings icon now that all three route colors are available under **Options → Mods**
+- **Live color updates** — the new Options rows update the active renderers immediately and persist their values per save
+- **UI dependency** — requires **LIB BA Unified UI 1.0.0+**, whose current Workshop build supplies the reusable color-picker option
 - **Single cross-version package** — one Voogle Route 1.0.0 DLL now adapts at runtime to Big Ambitions EA 0.11 and 1.0 experimental; no alternate legacy build is required
 - **Stable location dependency** — now requires **LIB BA Player Location 1.0.0+**, published as the same cross-version library package for EA 0.11 and 1.0 experimental
 - **Standalone UI dependency** — now requires **LIB BA Unified UI 1.0.0+** as a separate enabled Workshop item; Voogle Route no longer bundles a private BAUI DLL
@@ -26,6 +30,12 @@ All notable changes to **Voogle Route** are documented here.
 
 ### Fixed
 
+- **History leaking into Bookmarks** — JSON arrays are parsed within their exact boundaries, explicit bookmarks carry ownership metadata, and legacy saves remove the anonymous History rows previously injected on reload
+- **Live list distances** — visible History and Bookmark distances refresh after useful outdoor movement, use the current building entrance indoors without steady recalculation, and avoid the near-target NavMesh loop
+- **Ground route after city map** — closing the city map restores the active foot or vehicle line from cache instead of leaving the GPS path hidden
+- **Runtime export cleanup** — removed leftover development waypoint and subway CSV writes from normal city loads
+- **Runtime visual harness** — removed the obsolete per-frame request-file poller and capture-only code from public builds; offline manual screenshot comparison remains available
+- **City-load performance** — parallel-lane discovery now indexes waypoints by road before applying the unchanged direction and 28 m proximity rules
 - **EA 0.11 compatibility** — isolated 1.0-only Hamptons types and adapted taxi state, city-map taxi mode, fades, time skips and entrance lookup to both game APIs
 - **Taxi arrival compatibility** — added a post-taxi guard so VoogleRoute does not immediately auto-enter the destination building after a vanilla taxi warp
 - **Route thickness regression** — restored visible foot, vehicle, indoor, subway and city-map route strokes on Big Ambitions 1.0 experimental

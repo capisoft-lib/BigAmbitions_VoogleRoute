@@ -2,17 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using UnityEngine;
 
 namespace VoogleRoute.Navigation
 {
-    /// <summary>Subway stations from live city data, with CSV fallback and optional runtime dump.</summary>
+    /// <summary>Subway stations from live city data, with a packaged CSV fallback.</summary>
     internal static class SubwayStationStore
     {
         private static readonly List<SubwayStationRecord> Stations = new List<SubwayStationRecord>();
         private static bool _loaded;
-        private static bool _dumpAttempted;
 
         internal static IReadOnlyList<SubwayStationRecord> All => Stations;
 
@@ -24,7 +22,6 @@ namespace VoogleRoute.Navigation
         {
             Stations.Clear();
             _loaded = false;
-            _dumpAttempted = false;
         }
 
         internal static bool TryEnsureLoaded()
@@ -35,7 +32,6 @@ namespace VoogleRoute.Navigation
             if (TryLoadFromRuntime())
             {
                 _loaded = true;
-                TryPersistRuntimeDump();
                 return true;
             }
 
@@ -182,45 +178,6 @@ namespace VoogleRoute.Navigation
             var y = float.Parse(parts[start + 1], CultureInfo.InvariantCulture);
             var z = float.Parse(parts[start + 2], CultureInfo.InvariantCulture);
             return new Vector3(x, y, z);
-        }
-
-        private static void TryPersistRuntimeDump()
-        {
-            if (_dumpAttempted || Stations.Count == 0)
-                return;
-
-            _dumpAttempted = true;
-
-            try
-            {
-                var path = ModStoragePaths.PathInModRoot(ModStoragePaths.SubwayStationsCsv);
-                var dir = Path.GetDirectoryName(path);
-                if (!string.IsNullOrEmpty(dir))
-                    Directory.CreateDirectory(dir);
-
-                var sb = new StringBuilder();
-                sb.AppendLine("station_name,neighborhood,x,y,z,nav_x,nav_y,nav_z");
-                for (var i = 0; i < Stations.Count; i++)
-                {
-                    var s = Stations[i];
-                    sb.Append(s.StationName).Append(',')
-                        .Append(s.Neighborhood).Append(',')
-                        .Append(s.WorldPosition.x.ToString(CultureInfo.InvariantCulture)).Append(',')
-                        .Append(s.WorldPosition.y.ToString(CultureInfo.InvariantCulture)).Append(',')
-                        .Append(s.WorldPosition.z.ToString(CultureInfo.InvariantCulture)).Append(',')
-                        .Append(s.NavPosition.x.ToString(CultureInfo.InvariantCulture)).Append(',')
-                        .Append(s.NavPosition.y.ToString(CultureInfo.InvariantCulture)).Append(',')
-                        .Append(s.NavPosition.z.ToString(CultureInfo.InvariantCulture))
-                        .AppendLine();
-                }
-
-                File.WriteAllText(path, sb.ToString());
-                ModLog.Info("Subway station dump written to " + path);
-            }
-            catch (Exception ex)
-            {
-                ModLog.Error("Failed to write subway station dump", ex);
-            }
         }
     }
 }

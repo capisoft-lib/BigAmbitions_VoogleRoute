@@ -200,11 +200,11 @@ namespace VoogleRoute
 
         private static object GetDefaultValue(ParameterInfo parameter)
         {
-            if (parameter.HasDefaultValue &&
-                parameter.DefaultValue != null &&
-                parameter.DefaultValue != DBNull.Value &&
-                parameter.DefaultValue != Type.Missing)
-                return parameter.DefaultValue;
+            var declaredDefault = parameter.DefaultValue;
+            if (declaredDefault != null &&
+                declaredDefault != DBNull.Value &&
+                declaredDefault != Type.Missing)
+                return declaredDefault;
 
             return parameter.ParameterType.IsValueType
                 ? Activator.CreateInstance(parameter.ParameterType)

@@ -13,6 +13,7 @@ namespace VoogleRoute.Navigation
         internal float WorldZ;
         internal string LocationLabel = "";
         internal bool WorldOnly;
+        internal bool UserCreated;
 
         internal bool HasWorldPosition => WorldPosition.sqrMagnitude > 0.01f;
 

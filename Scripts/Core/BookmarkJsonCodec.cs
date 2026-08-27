@@ -13,6 +13,7 @@ namespace VoogleRoute
             var inv = CultureInfo.InvariantCulture;
             var sb = new StringBuilder();
             sb.Append("{\n");
+            sb.Append("  \"schema_version\": ").Append(BookmarkFileData.CurrentSchemaVersion).Append(",\n");
             sb.Append("  \"bookmarks\": [\n");
 
             var bookmarks = data?.Bookmarks;
@@ -59,6 +60,7 @@ namespace VoogleRoute
         {
             var data = new BookmarkFileData
             {
+                SchemaVersion = ReadInt(json, "schema_version"),
                 Bookmarks = ParseBookmarkArray(json, "bookmarks"),
                 VisitHistory = ParseBookmarkArray(json, "visit_history"),
                 QuickBookmarks = new QuickBookmarksConfig
@@ -95,15 +97,19 @@ namespace VoogleRoute
             if (arrayStart < 0)
                 return list;
 
-            var idx = arrayStart;
-            while (true)
+            var arrayEnd = json.IndexOf(']', arrayStart);
+            if (arrayEnd < 0)
+                return list;
+
+            var idx = arrayStart + 1;
+            while (idx < arrayEnd)
             {
                 var objectStart = json.IndexOf('{', idx);
-                if (objectStart < 0)
+                if (objectStart < 0 || objectStart >= arrayEnd)
                     break;
 
                 var objectEnd = FindMatchingBrace(json, objectStart);
-                if (objectEnd < 0)
+                if (objectEnd < 0 || objectEnd > arrayEnd)
                     break;
 
                 var slice = json.Substring(objectStart, objectEnd - objectStart + 1);
@@ -111,9 +117,6 @@ namespace VoogleRoute
                     list.Add(entry);
 
                 idx = objectEnd + 1;
-                var arrayEnd = json.IndexOf(']', arrayStart);
-                if (arrayEnd >= 0 && idx > arrayEnd)
-                    break;
             }
 
             return list;
@@ -162,7 +165,8 @@ namespace VoogleRoute
                 WorldY = ReadFloat(json, "world_y"),
                 WorldZ = ReadFloat(json, "world_z"),
                 LocationLabel = ReadString(json, "location_label"),
-                WorldOnly = ReadBool(json, "world_only")
+                WorldOnly = ReadBool(json, "world_only"),
+                UserCreated = ReadBool(json, "user_created")
             };
 
             var hasAddress = !string.IsNullOrWhiteSpace(entry.StreetName) || entry.StreetNumber > 0;
@@ -198,7 +202,8 @@ namespace VoogleRoute
             sb.Append(indent).Append("  \"world_y\": ").Append((entry?.WorldY ?? 0f).ToString(inv)).Append(",\n");
             sb.Append(indent).Append("  \"world_z\": ").Append((entry?.WorldZ ?? 0f).ToString(inv)).Append(",\n");
             sb.Append(indent).Append("  \"location_label\": \"").Append(Escape(entry?.LocationLabel)).Append("\",\n");
-            sb.Append(indent).Append("  \"world_only\": ").Append(entry != null && entry.WorldOnly ? "true" : "false").Append('\n');
+            sb.Append(indent).Append("  \"world_only\": ").Append(entry != null && entry.WorldOnly ? "true" : "false").Append(",\n");
+            sb.Append(indent).Append("  \"user_created\": ").Append(entry != null && entry.UserCreated ? "true" : "false").Append('\n');
             sb.Append(indent).Append('}');
         }
 

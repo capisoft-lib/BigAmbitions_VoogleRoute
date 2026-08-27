@@ -23,6 +23,8 @@ namespace VoogleRoute
         private static PathResult _activePath;
         private static bool _warnedMissingLibrary;
         private static bool _wasMapOverlayActive;
+        private static bool _restoreGroundRoutePending;
+        private static string _lastGroundRouteRestoreWaitReason;
         private static float _nextFootLineRefresh;
         private static float _nextFootPathRecalc;
         private static Action<bool> _onCityMapToggled;
@@ -35,6 +37,8 @@ namespace VoogleRoute
         internal static void Initialize(ModContext context)
         {
             _ = context;
+            _restoreGroundRoutePending = false;
+            _lastGroundRouteRestoreWaitReason = null;
 
             ModLog.Info("VoogleRoute loop initializing (requires LIB_BaPlayerLocation).");
             PlayerLocationSession.Initialize();
@@ -110,7 +114,6 @@ namespace VoogleRoute
 
             IndoorNavigationService.Reset();
             NavigationSpawnGuard.Reset();
-            TrafficWaypointDumpService.Reset();
             PlayerLocationSession.Changed -= OnPlayerLocationChanged;
             PlayerLocationLogger.Shutdown();
             PlayerLocationSession.Shutdown();
@@ -122,6 +125,8 @@ namespace VoogleRoute
             _lastDestinationChangeTime = -1f;
             _destinationRecalcPending = false;
             _warnedMissingLibrary = false;
+            _restoreGroundRoutePending = false;
+            _lastGroundRouteRestoreWaitReason = null;
             RouteRecalcBanner.ForceHide();
             NavigationArrivalService.Reset();
             TaxiTravelArrivalGuard.Reset();
@@ -131,6 +136,10 @@ namespace VoogleRoute
 
         private static void OnCityMapToggled(bool open)
         {
+            _restoreGroundRoutePending = !open;
+            _lastGroundRouteRestoreWaitReason = null;
+            if (!open)
+                ModLog.Info("Ground route restore requested after city map close.");
             VisitHistoryPanel.OnCityMapToggled(open);
             MapOverlayDiagnostics.OnCityMapToggled(open);
         }
@@ -139,7 +148,6 @@ namespace VoogleRoute
         {
             ModUiText.PollLanguageChange();
             NavigationSpawnGuard.Tick();
-            TrafficWaypointDumpService.Tick();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();
             AutoDriveConfirmPopup.TickOverlay();
@@ -206,11 +214,16 @@ namespace VoogleRoute
                 _wasMapOverlayActive = false;
                 MapOverlayDiagnostics.LogRouteHidden("overlay_ended");
                 CityMapRouteLineRenderer.Hide();
+
+                if (!GameState.IsCityMapOpen())
+                    _restoreGroundRoutePending = true;
             }
+
+            RestoreGroundRouteAfterMapClose();
 
             if (!GameState.ShouldRunNavigationSystems())
             {
-                if (!mapOverlayActive)
+                if (!mapOverlayActive && !_restoreGroundRoutePending)
                     OnNavigationContextEnded();
                 return;
             }
@@ -299,7 +312,6 @@ namespace VoogleRoute
 
         private static void OnEnterBuilding(Address address)
         {
-            _ = address;
             AutoWalkService.Reset();
             if (ModConfig.AutoWalkEnabled)
                 ModConfig.SetAutoWalkEnabled(false, persist: false);
@@ -310,17 +322,44 @@ namespace VoogleRoute
             RouteSettingsUi.Close();
             VisitHistoryPanel.Close();
             RouteActionPanel.RefreshVisual();
+
+            // Big Ambitions' Hamptons path invokes onEnterBuilding but omits
+            // onEnterBuildingDelayed, so capture the visit on the immediate event.
+            if (HamptonsCompatibility.TryGetCurrentHouseId(out _))
+                RecordBuildingVisit(address);
         }
 
         private static void OnEnterBuildingDelayed(Address address)
         {
-            QuickBookmarkStore.OnEnterBuildingDelayed(address);
-            VisitHistoryStore.OnEnterBuildingDelayed(address);
+            // Guard against a future game version adding the delayed Hamptons
+            // callback after the immediate event above.
+            if (HamptonsCompatibility.TryGetCurrentHouseId(out _))
+                return;
+
+            RecordBuildingVisit(address);
+        }
+
+        private static void RecordBuildingVisit(
+            Address address,
+            BuildingRegistration registration = null)
+        {
+            var manager = registration == null ? BuildingManager.Instance : null;
+            registration ??= manager?.buildingRegistration;
+            if (address == null || registration == null)
+                return;
+
+            QuickBookmarkStore.OnVisitedBuilding(address, registration, manager);
+            VisitHistoryStore.OnVisitedBuilding(address, registration);
         }
 
         private static void OnExitBuilding(Address address)
         {
-            _ = address;
+            // A save loaded inside a Hamptons house does not emit an enter event.
+            // The exit event is emitted only after the game clears its active
+            // building references, so resolve the registration from its address.
+            if (HamptonsCompatibility.TryGetHouseRegistration(address, out var registration))
+                RecordBuildingVisit(address, registration);
+
             IndoorNavigationService.OnBuildingExited();
             PlayerNavigationRelease.Release();
             NavigationArrivalService.TryCompleteNearbyDestination();
@@ -540,6 +579,116 @@ namespace VoogleRoute
                 if (NavigationProximityService.IsNearActiveDestination())
                     NavigationArrivalService.TryCompleteNearbyDestination();
             }
+        }
+
+        private static void RestoreGroundRouteAfterMapClose()
+        {
+            if (!_restoreGroundRoutePending)
+                return;
+
+            if (GameState.IsCityMapOpen())
+            {
+                LogGroundRouteRestoreWait("city_map_still_open");
+                return;
+            }
+
+            if (!ModConfig.WantsRouteComputation ||
+                !ModConfig.RouteLineEnabled ||
+                !ModConfig.DisplayOutsideEnabled ||
+                !NavigationTargetTracker.HasMapGpsTarget ||
+                !NavigationTargetTracker.IsModNavigationSource)
+            {
+                _restoreGroundRoutePending = false;
+                _lastGroundRouteRestoreWaitReason = null;
+                RouteLineRenderer.Hide();
+                ModLog.Info(
+                    "Ground route restore cancelled because navigation is no longer active" +
+                    " | wants_route=" + ModConfig.WantsRouteComputation +
+                    " | route_line=" + ModConfig.RouteLineEnabled +
+                    " | display_outside=" + ModConfig.DisplayOutsideEnabled +
+                    " | has_target=" + NavigationTargetTracker.HasMapGpsTarget +
+                    " | mod_source=" + NavigationTargetTracker.IsModNavigationSource);
+                return;
+            }
+
+            // The close event can arrive before the overlay and movement mode have returned to gameplay.
+            if (!GameState.ShouldRunNavigationSystems())
+            {
+                LogGroundRouteRestoreWait("navigation_systems_blocked");
+                return;
+            }
+
+            if (!PlayerLocationSession.IsLibraryActive)
+            {
+                LogGroundRouteRestoreWait("player_location_library_inactive");
+                return;
+            }
+
+            if (MovementModeDetector.CurrentMode == MovementMode.Unavailable)
+            {
+                LogGroundRouteRestoreWait("movement_unavailable");
+                return;
+            }
+
+            if (MovementModeDetector.CurrentMode == MovementMode.Subway)
+            {
+                _restoreGroundRoutePending = false;
+                _lastGroundRouteRestoreWaitReason = null;
+                RouteLineRenderer.Hide();
+                return;
+            }
+
+            if (!CanNavigate())
+            {
+                LogGroundRouteRestoreWait("can_navigate_false");
+                return;
+            }
+
+            if (NavigationProximityService.IsNearActiveDestination())
+            {
+                _restoreGroundRoutePending = false;
+                _lastGroundRouteRestoreWaitReason = null;
+                RouteLineRenderer.Hide();
+                NavigationArrivalService.TryCompleteNearbyDestination();
+                return;
+            }
+
+            if (PathFinderService.TryGetCachedRouteForDisplay(out var path))
+            {
+                _restoreGroundRoutePending = false;
+                _lastGroundRouteRestoreWaitReason = null;
+                _activePath = path;
+                RouteLineRenderer.ShowPath(path);
+                ModLog.Info(
+                    "Ground route restored from cache after city map close" +
+                    " | movement=" + MovementModeDetector.CurrentMode +
+                    " | points=" + (path.Points?.Length ?? 0));
+                return;
+            }
+
+            // The regular navigation loop will rebuild the route once if the map cache was lost.
+            _restoreGroundRoutePending = false;
+            _lastGroundRouteRestoreWaitReason = null;
+            _forceRouteRecalc = true;
+            ModLog.Info("Ground route cache unavailable after city map close; recalculation requested.");
+        }
+
+        private static void LogGroundRouteRestoreWait(string reason)
+        {
+            if (string.Equals(_lastGroundRouteRestoreWaitReason, reason, StringComparison.Ordinal))
+                return;
+
+            _lastGroundRouteRestoreWaitReason = reason;
+            ModLog.Info(
+                "Ground route restore waiting" +
+                " | reason=" + reason +
+                " | map_open=" + GameState.IsCityMapOpen() +
+                " | navigation_systems=" + GameState.ShouldRunNavigationSystems() +
+                " | lib_active=" + PlayerLocationSession.IsLibraryActive +
+                " | snapshot_available=" + PlayerLocationSession.IsAvailable +
+                " | movement=" + MovementModeDetector.CurrentMode +
+                " | has_target=" + NavigationTargetTracker.HasMapGpsTarget +
+                " | mod_source=" + NavigationTargetTracker.IsModNavigationSource);
         }
 
         private static void TickMapRouteOverlay()

@@ -42,10 +42,11 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 - **UI** — vanilla-style panels supplied by the separate **LIB BA Unified UI** Workshop dependency
 - **Draggable UI** — all seven interactive Voogle Route windows remember their positions
 - **Configurable shortcuts** — route line and auto-move actions can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y** and **Ctrl+Shift+X**
+- **Configurable route colors** — on-foot, indoor and vehicle lines each have a native color picker under **Options → Mods**
 - **Indoor navigation** — optional route line and auto-walk to the building exit (**WAY OUT** / **GET OUT**)
 - **Hamptons exits** — dedicated entrance-first routing for open-world mansion plots and their property gates
 - **City map overlay** — route line on the city map (**M**); click to set a destination
-- **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, bookmark and last-car buttons, custom line color (gear icon)
+- **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, bookmark, History and last-car buttons
 - Hidden in the **subway** and when navigation is unavailable
 
 ### Auto-drive fast travel (vehicle)
@@ -125,13 +126,13 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0 experimental** : un seul paquet Voogle Route 1.0.0 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et une couleur personnalisable pour les destinations **Voogle Maps**.
+Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0 experimental** : un seul paquet Voogle Route 1.0.0 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 
-En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi dans **Mods** ou `base_taxi_multiplier` dans `config.json`. Favoris dans `bookmarks.json`. Les fenêtres sont déplaçables et les actions principales utilisent par défaut **Ctrl+Maj+Y** et **Ctrl+Maj+X**, configurables dans les options du mod.
+En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi, raccourcis et couleurs des trois types de trajet dans **Options → Mods**. Favoris dans `bookmarks.json`. Les fenêtres sont déplaçables et les actions principales utilisent par défaut **Ctrl+Maj+Y** et **Ctrl+Maj+X**, configurables dans les options du mod.
 
 **Routage véhicule :** voir [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding).
 

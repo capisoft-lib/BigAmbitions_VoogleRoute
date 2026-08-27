@@ -44,6 +44,9 @@ namespace VoogleRoute
                 if (UndergroundParkingManager.IsInsideParking)
                     return false;
 
+                if (MovementModeDetector.IsHamptonsVehicleNavigationContext())
+                    return false;
+
                 if (BuildingManager.IsInsideBuilding)
                     return true;
             }
@@ -323,6 +326,9 @@ namespace VoogleRoute
         {
             try
             {
+                if (MovementModeDetector.IsHamptonsVehicleNavigationContext())
+                    return false;
+
                 if (BuildingManager.IsInsideBuilding)
                     return true;
             }

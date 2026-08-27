@@ -60,7 +60,6 @@ namespace VoogleRoute.UI
                 .Header(h => h
                     .TitleLeft(ModUiText.PanelTitle)
                     .Icons(i => i
-                        .Icon(BaIcons.Settings, () => RouteSettingsUi.Toggle(), "\u2699")
                         .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1")
                         .Icon(BaIcons.Car, OnLastVehicleClicked, "\u2295", BaButtonStyle.Green)
                         .Icon(BaIcons.Add, OnBookmarkPinClicked, "+", BaButtonStyle.Blue)))
@@ -227,9 +226,6 @@ namespace VoogleRoute.UI
                 _autoWalkLabel.color = ButtonLabelColor;
             }
         }
-
-        internal static RectTransform GetVisualTestPanelRect() =>
-            _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
 
         internal static bool TryInvokeRouteShortcut()
         {

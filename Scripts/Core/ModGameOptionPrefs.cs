@@ -44,6 +44,24 @@ namespace VoogleRoute
             UnityEngine.PlayerPrefs.SetInt(key, value);
         }
 
+        internal static void SaveColor(string modId, string optionId, Color color)
+        {
+            var key = BuildKey(modId, optionId);
+            if (key == null)
+                return;
+
+            var bytes = (Color32)color;
+            UnityEngine.PlayerPrefs.SetString(
+                key,
+                string.Format(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    "#{0:X2}{1:X2}{2:X2}{3:X2}",
+                    bytes.r,
+                    bytes.g,
+                    bytes.b,
+                    bytes.a));
+        }
+
         internal static bool HasKey(string modId, string optionId)
         {
             var key = BuildKey(modId, optionId);

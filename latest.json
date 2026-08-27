@@ -8,5 +8,5 @@
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "1.0.0: one cross-version package for Big Ambitions EA 0.11 and 1.0 experimental, with the 1.0 road refresh, Hamptons routing on 1.0, stable route rendering, draggable UI, configurable shortcuts and a post-taxi arrival guard. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
+  "releaseNotes": "1.0.0: adds native Options > Mods route-color pickers, visible Bookmarks and History scrollbars, corrected bookmark ownership, and live non-blocking distance refresh. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }

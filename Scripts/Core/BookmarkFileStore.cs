@@ -20,6 +20,8 @@ namespace VoogleRoute
 
     internal static QuickBookmarksConfig QuickBookmarks => _data.QuickBookmarks;
 
+    internal static int SchemaVersion => _data.SchemaVersion;
+
     internal static void Load(ModConfigData legacyConfig = null)
     {
       _data = CreateDefaultData();
@@ -69,6 +71,7 @@ namespace VoogleRoute
     private static BookmarkFileData CreateDefaultData() =>
       new BookmarkFileData
       {
+        SchemaVersion = BookmarkFileData.CurrentSchemaVersion,
         Bookmarks = new List<BookmarkConfigEntry>(),
         VisitHistory = new List<BookmarkConfigEntry>(),
         QuickBookmarks = new QuickBookmarksConfig()
@@ -100,7 +103,15 @@ namespace VoogleRoute
         return false;
 
       if (hasBookmarks)
+      {
+        for (var i = 0; i < legacyConfig.Bookmarks.Count; i++)
+        {
+          if (legacyConfig.Bookmarks[i] != null)
+            legacyConfig.Bookmarks[i].UserCreated = true;
+        }
+
         _data.Bookmarks = new List<BookmarkConfigEntry>(legacyConfig.Bookmarks);
+      }
 
       if (hasQuick)
         _data.QuickBookmarks = legacyConfig.QuickBookmarks;
@@ -134,6 +145,10 @@ namespace VoogleRoute
 
   internal sealed class BookmarkFileData
   {
+    internal const int CurrentSchemaVersion = 2;
+
+    public int SchemaVersion { get; set; }
+
     public List<BookmarkConfigEntry> Bookmarks { get; set; }
 
     public List<BookmarkConfigEntry> VisitHistory { get; set; }

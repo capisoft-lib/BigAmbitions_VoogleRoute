@@ -14,7 +14,7 @@ namespace VoogleRoute.UI
     /// <summary>Scrollable list of the 50 most recently visited buildings.</summary>
     internal static class VisitHistoryPanel
     {
-        private const string RootName = "VoogleRoute_VisitHistory_v21";
+        private const string RootName = "VoogleRoute_VisitHistory_v22";
         private const string DragPositionId = "voogleroute:visit-history";
         private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11050;
@@ -41,6 +41,8 @@ namespace VoogleRoute.UI
             new List<(BookmarkDistanceRowKey, BookmarkEntry)>();
         private static readonly Dictionary<BookmarkDistanceRowKey, string> DistanceCache =
             new Dictionary<BookmarkDistanceRowKey, string>();
+        private static readonly BookmarkDistanceRefreshTracker DistanceRefreshTracker =
+            new BookmarkDistanceRefreshTracker(BookmarkDistanceConsumer.History);
 
         private static bool _historyMapMode;
 
@@ -227,7 +229,8 @@ namespace VoogleRoute.UI
             if (_root != null)
                 _root.SetActive(false);
 
-            BookmarkRouteDistanceService.Cancel();
+            BookmarkRouteDistanceService.Cancel(BookmarkDistanceConsumer.History);
+            DistanceRefreshTracker.Reset();
         }
 
         internal static void Toggle()
@@ -296,6 +299,7 @@ namespace VoogleRoute.UI
                 BaUiFocus.ReleaseForMovement();
 
             TickDistanceResults();
+            TickLiveDistanceRefresh();
         }
 
         internal static void TickOverlay()
@@ -413,11 +417,16 @@ namespace VoogleRoute.UI
             if (fullDistanceRefresh)
             {
                 DistanceCache.Clear();
-                RequestDistanceRefresh(BookmarkRouteDistanceService.RequestRefresh);
+                RequestDistanceRefresh(rows => BookmarkRouteDistanceService.RequestRefresh(
+                    BookmarkDistanceConsumer.History,
+                    rows));
+                DistanceRefreshTracker.RememberCurrentOrigin();
                 return;
             }
 
-            RequestDistanceRefresh(BookmarkRouteDistanceService.RequestCompute);
+            RequestDistanceRefresh(rows => BookmarkRouteDistanceService.RequestCompute(
+                BookmarkDistanceConsumer.History,
+                rows));
         }
 
         private static void ApplyRowDistanceLabel(HistoryRow row, BookmarkEntry bookmark)
@@ -435,14 +444,16 @@ namespace VoogleRoute.UI
             var key = ToDistanceRowKey(row);
             if (DistanceCache.TryGetValue(key, out var cached))
                 ui.DistanceLabel.text = cached;
-            else if (BookmarkRouteDistanceService.IsKeyPending(key))
+            else if (BookmarkRouteDistanceService.IsKeyPending(BookmarkDistanceConsumer.History, key))
                 ui.DistanceLabel.text = "…";
             else
                 ui.DistanceLabel.text = "…";
         }
 
         private static void RequestDistanceRefresh(
-            System.Action<IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)>> dispatch)
+            System.Action<IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)>> dispatch,
+            bool includeCached = false,
+            bool visibleRowsOnly = false)
         {
             DistanceRequests.Clear();
 
@@ -451,16 +462,20 @@ namespace VoogleRoute.UI
                 var row = Rows[i];
                 if (row?.Ui?.Root == null || !row.Ui.Root.activeSelf || row.HistoryIndex < 0)
                     continue;
+                if (visibleRowsOnly && !IsVisibleInScroll(row.Ui))
+                    continue;
 
                 var bookmark = VisitHistoryStore.GetAt(row.HistoryIndex);
                 if (bookmark == null)
                     continue;
 
                 var key = ToDistanceRowKey(row);
-                if (DistanceCache.ContainsKey(key) || BookmarkRouteDistanceService.IsKeyPending(key))
+                if (BookmarkRouteDistanceService.IsKeyPending(BookmarkDistanceConsumer.History, key) ||
+                    (!includeCached && DistanceCache.ContainsKey(key)))
                     continue;
 
-                row.Ui.DistanceLabel.text = "…";
+                if (!includeCached)
+                    row.Ui.DistanceLabel.text = "…";
                 DistanceRequests.Add((key, bookmark));
             }
 
@@ -471,9 +486,42 @@ namespace VoogleRoute.UI
             DistanceRequests.Clear();
         }
 
+        private static void TickLiveDistanceRefresh()
+        {
+            if (!DistanceRefreshTracker.ShouldRefresh())
+                return;
+
+            RequestDistanceRefresh(
+                rows => BookmarkRouteDistanceService.RequestRefresh(
+                    BookmarkDistanceConsumer.History,
+                    rows),
+                includeCached: true,
+                visibleRowsOnly: true);
+        }
+
+        private static bool IsVisibleInScroll(BaUiListRow ui)
+        {
+            try
+            {
+                var viewport = _scrollList?.Scroll?.viewport;
+                if (viewport == null || ui?.Rect == null)
+                    return true;
+
+                var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, ui.Rect);
+                var viewportRect = viewport.rect;
+                return bounds.max.y >= viewportRect.yMin && bounds.min.y <= viewportRect.yMax;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private static void TickDistanceResults()
         {
-            while (BookmarkRouteDistanceService.TryDequeueCompleted(out var result))
+            while (BookmarkRouteDistanceService.TryDequeueCompleted(
+                       BookmarkDistanceConsumer.History,
+                       out var result))
                 ApplyDistanceResult(result);
         }
 
@@ -579,9 +627,6 @@ namespace VoogleRoute.UI
             }
         }
 
-        internal static RectTransform GetVisualTestPanelRect() =>
-            _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
-
         internal static void Destroy()
         {
             VisitHistoryStore.Changed -= OnHistoryChanged;
@@ -604,6 +649,7 @@ namespace VoogleRoute.UI
             _normalVisibilityBeforeMap = false;
             _ignoreEscapeFrame = -1;
             _historyMapMode = false;
+            DistanceRefreshTracker.Reset();
         }
     }
 }

@@ -23,6 +23,9 @@ namespace VoogleRoute.Navigation
             var labelsChanged = false;
             for (var i = 0; i < saved.Count; i++)
             {
+                if (saved[i] == null || !saved[i].UserCreated)
+                    continue;
+
                 if (!BookmarkStore.TryEntryFromConfig(saved[i], out var entry))
                     continue;
 
@@ -51,7 +54,8 @@ namespace VoogleRoute.Navigation
                 WorldY = item.WorldY,
                 WorldZ = item.WorldZ,
                 LocationLabel = item.LocationLabel ?? "",
-                WorldOnly = item.WorldOnly
+                WorldOnly = item.WorldOnly,
+                UserCreated = item.UserCreated
             };
 
             return entry.HasAddress || entry.HasWorldPosition;
@@ -71,7 +75,8 @@ namespace VoogleRoute.Navigation
                 WorldY = entry.WorldY,
                 WorldZ = entry.WorldZ,
                 LocationLabel = entry.LocationLabel,
-                WorldOnly = entry.WorldOnly
+                WorldOnly = entry.WorldOnly,
+                UserCreated = entry.UserCreated
             };
         }
 
@@ -91,6 +96,7 @@ namespace VoogleRoute.Navigation
             if (entry == null)
                 return false;
 
+            entry.UserCreated = true;
             Entries.Add(entry);
             Persist();
             Changed?.Invoke();
@@ -141,6 +147,8 @@ namespace VoogleRoute.Navigation
         public string LocationLabel { get; set; }
 
         public bool WorldOnly { get; set; }
+
+        public bool UserCreated { get; set; }
     }
 
     internal sealed class QuickBookmarksConfig

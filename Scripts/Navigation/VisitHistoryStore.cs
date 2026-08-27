@@ -56,18 +56,15 @@ namespace VoogleRoute.Navigation
             return saved;
         }
 
-        internal static void OnEnterBuildingDelayed(Address address)
+        internal static void OnVisitedBuilding(
+            Address address,
+            BuildingRegistration registration)
         {
-            if (address == null || !BuildingManager.IsInsideBuilding)
+            if (address == null || registration == null)
                 return;
 
             try
             {
-                var manager = BuildingManager.Instance;
-                var registration = manager?.buildingRegistration;
-                if (registration == null)
-                    return;
-
                 if (!TryCreateFromRegistration(address, registration, out var entry))
                     return;
 
@@ -75,7 +72,7 @@ namespace VoogleRoute.Navigation
             }
             catch (Exception ex)
             {
-                ModLog.Error("Visit history enter-building handler failed", ex);
+                ModLog.Error("Visit history building-visit handler failed", ex);
             }
         }
 

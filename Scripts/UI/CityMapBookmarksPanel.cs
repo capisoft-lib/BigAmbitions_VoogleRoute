@@ -14,7 +14,7 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v38";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v39";
         private const string DragPositionId = "voogleroute:city-map-bookmarks";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
@@ -43,6 +43,8 @@ namespace VoogleRoute.UI
             new List<(BookmarkDistanceRowKey, BookmarkEntry)>();
         private static readonly Dictionary<BookmarkDistanceRowKey, string> DistanceCache =
             new Dictionary<BookmarkDistanceRowKey, string>();
+        private static readonly BookmarkDistanceRefreshTracker DistanceRefreshTracker =
+            new BookmarkDistanceRefreshTracker(BookmarkDistanceConsumer.Bookmarks);
         private static int _lastBookmarkCount;
         private static string _searchFilter = "";
         private static bool _pickMode;
@@ -309,14 +311,15 @@ namespace VoogleRoute.UI
                     RefreshList(fullDistanceRefresh: true);
                 }
                 else
+                {
                     CancelPickMode();
+                    BookmarkRouteDistanceService.Cancel(BookmarkDistanceConsumer.Bookmarks);
+                    DistanceRefreshTracker.Reset();
+                }
             }
 
             if (!shouldShow)
-            {
-                BookmarkRouteDistanceService.Cancel();
                 return;
-            }
 
             RefreshMapActionModeIfChanged();
 
@@ -324,6 +327,7 @@ namespace VoogleRoute.UI
                 MaintainMapNavigationSelection();
 
             TickDistanceResults();
+            TickLiveDistanceRefresh();
         }
 
         internal static void RefreshList(bool fullDistanceRefresh = false, int addedBookmarkIndex = -1)
@@ -453,7 +457,10 @@ namespace VoogleRoute.UI
             if (fullDistanceRefresh)
             {
                 DistanceCache.Clear();
-                RequestDistanceRefresh(BookmarkRouteDistanceService.RequestRefresh);
+                RequestDistanceRefresh(rows => BookmarkRouteDistanceService.RequestRefresh(
+                    BookmarkDistanceConsumer.Bookmarks,
+                    rows));
+                DistanceRefreshTracker.RememberCurrentOrigin();
                 return;
             }
 
@@ -463,7 +470,9 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            RequestDistanceRefresh(BookmarkRouteDistanceService.RequestCompute);
+            RequestDistanceRefresh(rows => BookmarkRouteDistanceService.RequestCompute(
+                BookmarkDistanceConsumer.Bookmarks,
+                rows));
         }
 
         private static void ApplyRowDistanceLabel(RowUi ui, bool hasData = true)
@@ -480,7 +489,7 @@ namespace VoogleRoute.UI
             var key = ToDistanceRowKey(ui);
             if (DistanceCache.TryGetValue(key, out var cached))
                 ui.DistanceLabel.text = cached;
-            else if (BookmarkRouteDistanceService.IsKeyPending(key))
+            else if (BookmarkRouteDistanceService.IsKeyPending(BookmarkDistanceConsumer.Bookmarks, key))
                 ui.DistanceLabel.text = "…";
             else if (TryGetRowBookmark(ui, out var bookmark) && bookmark != null)
                 ui.DistanceLabel.text = "…";
@@ -500,7 +509,8 @@ namespace VoogleRoute.UI
                 BookmarkIndex = bookmarkIndex
             };
 
-            if (DistanceCache.ContainsKey(key) || BookmarkRouteDistanceService.IsKeyPending(key))
+            if (DistanceCache.ContainsKey(key) ||
+                BookmarkRouteDistanceService.IsKeyPending(BookmarkDistanceConsumer.Bookmarks, key))
                 return;
 
             if (TryFindRow(key, out var ui))
@@ -508,7 +518,9 @@ namespace VoogleRoute.UI
 
             DistanceRequests.Clear();
             DistanceRequests.Add((key, bookmark));
-            BookmarkRouteDistanceService.RequestCompute(DistanceRequests);
+            BookmarkRouteDistanceService.RequestCompute(
+                BookmarkDistanceConsumer.Bookmarks,
+                DistanceRequests);
         }
 
         private static void InvalidateBookmarkDistanceCache()
@@ -545,32 +557,42 @@ namespace VoogleRoute.UI
             (ui.Kind == RowKind.Bookmark && ui.BookmarkIndex < 0) ||
             (ui.Kind == RowKind.Vehicle && ui.VehicleIndex < 0);
 
-        private static void QueueDistanceRefresh(List<RowUi> rows)
+        private static void QueueDistanceRefresh(
+            List<RowUi> rows,
+            bool includeCached = false,
+            bool visibleRowsOnly = false)
         {
             for (var i = 0; i < rows.Count; i++)
             {
                 var ui = rows[i];
                 if (IsInactiveListRow(ui))
                     continue;
+                if (visibleRowsOnly && !IsVisibleInScroll(ui.Ui))
+                    continue;
 
                 if (!TryGetRowBookmark(ui, out var bookmark) || bookmark == null)
                     continue;
 
                 var key = ToDistanceRowKey(ui);
-                if (DistanceCache.ContainsKey(key) || BookmarkRouteDistanceService.IsKeyPending(key))
+                if (BookmarkRouteDistanceService.IsKeyPending(BookmarkDistanceConsumer.Bookmarks, key) ||
+                    (!includeCached && DistanceCache.ContainsKey(key)))
                     continue;
 
-                ui.DistanceLabel.text = "…";
+                if (!includeCached)
+                    ui.DistanceLabel.text = "…";
                 DistanceRequests.Add((key, bookmark));
             }
         }
 
-        private static void RequestDistanceRefresh(System.Action<IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)>> dispatch)
+        private static void RequestDistanceRefresh(
+            System.Action<IReadOnlyList<(BookmarkDistanceRowKey Key, BookmarkEntry Bookmark)>> dispatch,
+            bool includeCached = false,
+            bool visibleRowsOnly = false)
         {
             DistanceRequests.Clear();
-            QueueDistanceRefresh(QuickRows);
-            QueueDistanceRefresh(VehicleRows);
-            QueueDistanceRefresh(Rows);
+            QueueDistanceRefresh(QuickRows, includeCached, visibleRowsOnly);
+            QueueDistanceRefresh(VehicleRows, includeCached, visibleRowsOnly);
+            QueueDistanceRefresh(Rows, includeCached, visibleRowsOnly);
             if (DistanceRequests.Count == 0)
                 return;
 
@@ -578,9 +600,42 @@ namespace VoogleRoute.UI
             DistanceRequests.Clear();
         }
 
+        private static void TickLiveDistanceRefresh()
+        {
+            if (!DistanceRefreshTracker.ShouldRefresh())
+                return;
+
+            RequestDistanceRefresh(
+                rows => BookmarkRouteDistanceService.RequestRefresh(
+                    BookmarkDistanceConsumer.Bookmarks,
+                    rows),
+                includeCached: true,
+                visibleRowsOnly: true);
+        }
+
+        private static bool IsVisibleInScroll(BaUiListRow ui)
+        {
+            try
+            {
+                var viewport = _scrollList?.Scroll?.viewport;
+                if (viewport == null || ui?.Rect == null)
+                    return true;
+
+                var bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(viewport, ui.Rect);
+                var viewportRect = viewport.rect;
+                return bounds.max.y >= viewportRect.yMin && bounds.min.y <= viewportRect.yMax;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
         private static void TickDistanceResults()
         {
-            while (BookmarkRouteDistanceService.TryDequeueCompleted(out var result))
+            while (BookmarkRouteDistanceService.TryDequeueCompleted(
+                       BookmarkDistanceConsumer.Bookmarks,
+                       out var result))
                 ApplyDistanceResult(result);
         }
 
@@ -809,7 +864,8 @@ namespace VoogleRoute.UI
         {
             CancelPickMode();
             CityMapBookmarkAddDialog.Close();
-            BookmarkRouteDistanceService.Cancel();
+            BookmarkRouteDistanceService.Cancel(BookmarkDistanceConsumer.Bookmarks);
+            DistanceRefreshTracker.Reset();
             if (_root != null)
                 _root.SetActive(false);
         }
@@ -956,9 +1012,6 @@ namespace VoogleRoute.UI
             RefreshList();
         }
 
-        internal static RectTransform GetVisualTestPanelRect() =>
-            _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
-
         internal static void Destroy()
         {
             BookmarkStore.Changed -= OnBookmarksChanged;
@@ -984,6 +1037,7 @@ namespace VoogleRoute.UI
             _pickHintLabel = null;
             _addButtonLabel = null;
             _clearButtonLabel = null;
+            DistanceRefreshTracker.Reset();
         }
     }
 }

@@ -162,9 +162,6 @@ namespace VoogleRoute.UI
                 Open();
         }
 
-        internal static RectTransform GetVisualTestPanelRect() =>
-            _panelRect != null && _root != null && _root.activeInHierarchy ? _panelRect : null;
-
         internal static void Destroy()
         {
             if (_root != null)

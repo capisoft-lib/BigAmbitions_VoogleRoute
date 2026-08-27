@@ -1,5 +1,8 @@
 using System;
 using System.Reflection;
+using Buildings;
+using Helpers;
+using Streets;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -49,6 +52,31 @@ namespace VoogleRoute.Navigation
             catch
             {
                 houseId = 0;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The game clears BuildingManager's active registration before invoking
+        /// onExitBuilding for a Hamptons house. Resolve it again from the address
+        /// without introducing a direct reference to the 1.0-only house type.
+        /// </summary>
+        internal static bool TryGetHouseRegistration(
+            Address address,
+            out BuildingRegistration registration)
+        {
+            registration = null;
+            if (!GameSupportsHamptons || address == null)
+                return false;
+
+            try
+            {
+                registration = BuildingHelper.GetBuildingRegistration(address);
+                return registration?.BuildingCached?.BuildingSize == "ba:buildingsize_t";
+            }
+            catch
+            {
+                registration = null;
                 return false;
             }
         }

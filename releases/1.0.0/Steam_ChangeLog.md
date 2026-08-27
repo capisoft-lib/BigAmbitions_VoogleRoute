@@ -1,4 +1,12 @@
 - One Voogle Route 1.0.0 package now supports Big Ambitions EA 0.11 and 1.0 experimental
+- Added three native route-color pickers under Options > Mods and removed the redundant panel settings icon
+- Added visible draggable scrollbars to Bookmarks and History
+- Fixed History rows leaking into Bookmarks while preserving user bookmarks, quick rows and cars
+- Added movement-aware live list distances, indoor entrance origins and a zero-distance NavMesh-loop guard
+- Restored the active foot or vehicle ground route after closing the city map
+- Removed leftover development waypoint and subway CSV exports from normal city loads
+- Removed the obsolete visual-test filesystem poller from the public runtime
+- Reduced route-graph city-load work by grouping parallel-lane candidates by road
 - Updated road data and routing for Big Ambitions 1.0 experimental
 - Added full bidirectional Hamptons mansion coverage and dedicated WAY OUT / GET OUT handling
 - Restored stable route-line thickness with hybrid rendering

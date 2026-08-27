@@ -16,24 +16,32 @@ namespace VoogleRoute.Navigation
     /// <summary>Movement mode and path origin derived from <see cref="PlayerLocationSession"/> only.</summary>
     internal static class MovementModeDetector
     {
-        internal static MovementMode CurrentMode { get; private set; } = MovementMode.Unavailable;
+        private static MovementMode _reportedMode = MovementMode.Unavailable;
+        private static int _hamptonsVehicleCacheFrame = -1;
+        private static bool _hamptonsVehicleCacheValue;
+
+        internal static MovementMode CurrentMode =>
+            IsHamptonsVehicleNavigationContext() ? MovementMode.Vehicle : _reportedMode;
         internal static MovementMode PreviousMode { get; private set; } = MovementMode.Unavailable;
 
         internal static void Reset()
         {
-            CurrentMode = MovementMode.Unavailable;
+            _reportedMode = MovementMode.Unavailable;
             PreviousMode = MovementMode.Unavailable;
+            InvalidateHamptonsVehicleCache();
         }
 
         internal static void Apply(PlayerLocationSnapshot snapshot)
         {
-            PreviousMode = CurrentMode;
+            var previousMode = CurrentMode;
             var reportedMode = snapshot.IsAvailable
                 ? PlayerLocationSnapshotMapper.ToMovementMode(snapshot.MovementKind)
                 : MovementMode.Unavailable;
-            CurrentMode = reportedMode == MovementMode.Vehicle && IsPushingPlayerCargoVehicle()
+            _reportedMode = reportedMode == MovementMode.Vehicle && IsPushingPlayerCargoVehicle()
                 ? MovementMode.OnFoot
                 : reportedMode;
+            InvalidateHamptonsVehicleCache();
+            PreviousMode = previousMode;
 
             ParkedVehicleStore.OnMovementModeApplied(PreviousMode, CurrentMode, in snapshot);
         }
@@ -71,6 +79,37 @@ namespace VoogleRoute.Navigation
             return false;
         }
 
+        /// <summary>
+        /// Hamptons plots are represented by the game as an indoor building even
+        /// while the player is driving through the open-world parcel. Keep this
+        /// override local to real motor vehicles in those plots.
+        /// </summary>
+        internal static bool IsHamptonsVehicleNavigationContext()
+        {
+            var frame = Time.frameCount;
+            if (_hamptonsVehicleCacheFrame == frame)
+                return _hamptonsVehicleCacheValue;
+
+            _hamptonsVehicleCacheFrame = frame;
+            _hamptonsVehicleCacheValue = false;
+
+            try
+            {
+                if (!HamptonsCompatibility.TryGetCurrentHouseId(out _))
+                    return false;
+
+                var controller = VehicleHelper.GetCurrentVehicleBase();
+                _hamptonsVehicleCacheValue =
+                    controller?.vehicleType != null && !controller.vehicleType.spawnInPlayerObject;
+            }
+            catch
+            {
+                _hamptonsVehicleCacheValue = false;
+            }
+
+            return _hamptonsVehicleCacheValue;
+        }
+
         [System.Obsolete("Use ShouldShowActionPanel.")]
         internal static bool ShouldShowHudButton() => ShouldShowActionPanel();
 
@@ -94,8 +133,11 @@ namespace VoogleRoute.Navigation
             forward = Vector3.forward;
 
             var snapshot = PlayerLocationSession.Snapshot;
-            if (!snapshot.IsAvailable || snapshot.MovementKind != MovementKind.Car)
+            if (!snapshot.IsAvailable)
                 return false;
+
+            if (snapshot.MovementKind != MovementKind.Car)
+                return TryGetHamptonsVehiclePose(out position, out forward);
 
             position = snapshot.Position;
             return PlayerLocationSnapshotMapper.TryGetForward(
@@ -130,6 +172,43 @@ namespace VoogleRoute.Navigation
 
             origin = snapshot.Position;
             return origin.sqrMagnitude > 0.01f;
+        }
+
+        private static bool TryGetHamptonsVehiclePose(out Vector3 position, out Vector3 forward)
+        {
+            position = default;
+            forward = Vector3.forward;
+            if (!IsHamptonsVehicleNavigationContext())
+                return false;
+
+            try
+            {
+                var controller = VehicleHelper.GetCurrentVehicleBase();
+                if (controller == null)
+                    return false;
+
+                position = controller.FrontPoint;
+                forward = controller.transform.forward;
+                forward.y = 0f;
+                if (forward.sqrMagnitude > 0.01f)
+                    forward.Normalize();
+                else
+                    forward = Vector3.forward;
+
+                return position.sqrMagnitude > 0.01f;
+            }
+            catch
+            {
+                position = default;
+                forward = Vector3.forward;
+                return false;
+            }
+        }
+
+        private static void InvalidateHamptonsVehicleCache()
+        {
+            _hamptonsVehicleCacheFrame = -1;
+            _hamptonsVehicleCacheValue = false;
         }
     }
 }

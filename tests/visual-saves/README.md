@@ -19,17 +19,17 @@ Saves are **not** in the repo until you create and export them (binary `.hsg` fi
 
 ## One-time save creation (in game)
 
-1. Install **VoogleRoute** + **LIB_BaPlayerLocation** and deploy the mod build with the visual-test harness.
+1. Install **VoogleRoute** and its required libraries.
 2. Set the game to **1920×1080 windowed** (recommended in `manifest.json`).
 3. Start a **new character** named `_VOOGLE_VIS_` (folder id must match `manifest.json`).
 4. For each scenario in `manifest.json`, reach the described state, then **Save** with the exact `saveName` (without extension).
 
-| Scenario id | Save name | Prepare in game |
+| Scenario id | Save name | Prepare and capture in game |
 |-------------|-----------|-----------------|
 | `route-action-370` | `visual-ui-route-panel` | Outside, foot or vehicle, set a map GPS destination, route line on, action panel visible. Close settings/history/modals. |
 | `map-bookmarks-420` | `visual-ui-map-bookmarks` | Open city map, bookmarks panel visible, a few fixed bookmarks in the list. History closed. |
-| `bookmarks-and-history` | `visual-ui-dual-panels` | City map open, bookmarks visible; history will be opened by the harness `postLoad`. |
-| `settings-modal` | `visual-ui-settings` | Outside; harness opens settings. Save can be plain outdoor state. |
+| `bookmarks-and-history` | `visual-ui-dual-panels` | Open the city map, Bookmarks and History manually before capturing. |
+| `settings-modal` | `visual-ui-settings` | Outside, open the route settings manually before capturing. |
 
 5. **Never overwrite** these saves during a test session — reload from the main menu instead of saving.
 6. Copy the whole `_VOOGLE_VIS_` folder from the game into `tests/visual-saves/<version>/`.
@@ -52,16 +52,11 @@ From the mod repo root:
 
 ```powershell
 .\tools\install-visual-saves.ps1
-.\tools\install-visual-test-assets.ps1
 ```
 
 ## Run one scenario
 
-```powershell
-.\tools\prepare-visual-request.ps1 -ScenarioId route-action-370
-```
-
-Then: main menu → Load → `visual-ui-route-panel` → wait for capture → check `ModsLocal\VoogleRoute\visual-test\last-result.json`.
+From the main menu, load `visual-ui-route-panel`, prepare its UI state, and take the screenshot manually.
 
 Between scenarios: return to main menu and load the next save (do not save in-game).
 
@@ -71,4 +66,4 @@ Between scenarios: return to main menu and load the next save (do not save in-ga
 .\tools\compare-visual.ps1 -ScenarioId route-action-370
 ```
 
-Baselines live in `tests/visual/baselines/`. Actual captures default to `tests/visual/actual/`.
+Baselines live in `tests/visual/baselines/`. Save manual captures under `tests/visual/actual/`.

@@ -80,18 +80,16 @@ namespace VoogleRoute.Navigation
             }
         }
 
-        internal static void OnEnterBuildingDelayed(Address address)
+        internal static void OnVisitedBuilding(
+            Address address,
+            BuildingRegistration registration,
+            BuildingManager manager = null)
         {
-            if (address == null || !BuildingManager.IsInsideBuilding)
+            if (address == null || registration == null)
                 return;
 
             try
             {
-                var manager = BuildingManager.Instance;
-                var registration = manager?.buildingRegistration;
-                if (registration == null)
-                    return;
-
                 var updated = false;
 
                 if (IsPlayerHome(registration) &&
@@ -118,7 +116,7 @@ namespace VoogleRoute.Navigation
             }
             catch (Exception ex)
             {
-                ModLog.Error("Quick bookmark enter-building handler failed", ex);
+                ModLog.Error("Quick bookmark building-visit handler failed", ex);
             }
         }
 

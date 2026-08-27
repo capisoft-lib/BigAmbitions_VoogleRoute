@@ -1,1 +1,1 @@
-Ground navigation for Big Ambitions EA 0.11 and 1.0 experimental: walking, driving, subway, auto-move, bookmarks and History. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+.
+Ground navigation for EA 0.11 and 1.0 experimental, with route colors, live distances, bookmarks, History, scrollbars and configurable shortcuts.

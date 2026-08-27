@@ -61,10 +61,14 @@ namespace VoogleRoute
         private static BookmarkFileData LoadForCurrentSave()
         {
             if (TryLoadFromModData(out var data))
+            {
+                UpgradeLegacyDataIfNeeded(data);
                 return data;
+            }
 
             if (TryMigrateFromBookmarkFile(out data))
             {
+                UpgradeLegacyDataIfNeeded(data);
                 WriteToModData(data);
                 StripPerSaveDataFromBookmarkFile();
                 return data;
@@ -76,6 +80,7 @@ namespace VoogleRoute
         private static BookmarkFileData CaptureCurrentData() =>
             new BookmarkFileData
             {
+                SchemaVersion = BookmarkFileData.CurrentSchemaVersion,
                 Bookmarks = BookmarkStore.ExportToConfig(),
                 VisitHistory = VisitHistoryStore.ExportToConfig(),
                 QuickBookmarks = QuickBookmarkStore.ExportToConfig()
@@ -158,6 +163,7 @@ namespace VoogleRoute
             {
                 data = new BookmarkFileData
                 {
+                    SchemaVersion = BookmarkFileStore.SchemaVersion,
                     Bookmarks = CopyEntries(BookmarkFileStore.Bookmarks),
                     VisitHistory = CopyEntries(BookmarkFileStore.VisitHistory),
                     QuickBookmarks = CopyQuickBookmarks(BookmarkFileStore.QuickBookmarks)
@@ -214,6 +220,7 @@ namespace VoogleRoute
         private static BookmarkFileData CreateEmptyData() =>
             new BookmarkFileData
             {
+                SchemaVersion = BookmarkFileData.CurrentSchemaVersion,
                 Bookmarks = new List<BookmarkConfigEntry>(),
                 VisitHistory = new List<BookmarkConfigEntry>(),
                 QuickBookmarks = new QuickBookmarksConfig()
@@ -232,6 +239,18 @@ namespace VoogleRoute
 
             if (data.QuickBookmarks == null)
                 data.QuickBookmarks = new QuickBookmarksConfig();
+        }
+
+        private static void UpgradeLegacyDataIfNeeded(BookmarkFileData data)
+        {
+            if (!BookmarkDataMigration.TryUpgrade(data, out var removedBookmarks, out var removedHistory))
+                return;
+
+            WriteToModData(data);
+            ModLog.Info(
+                "Upgraded bookmark data schema: removed " + removedBookmarks +
+                " History row(s) leaked into Bookmarks and " + removedHistory +
+                " invalid quick row(s) leaked into History.");
         }
 
         private static bool HasAnyData(BookmarkFileData data)
@@ -306,6 +325,112 @@ namespace VoogleRoute
             foreach (var c in Path.GetInvalidFileNameChars())
                 value = value.Replace(c, '_');
             return value.Trim();
+        }
+    }
+
+    internal static class BookmarkDataMigration
+    {
+        internal static bool TryUpgrade(
+            BookmarkFileData data,
+            out int removedBookmarks,
+            out int removedHistory)
+        {
+            removedBookmarks = 0;
+            removedHistory = 0;
+            if (data == null || data.SchemaVersion >= BookmarkFileData.CurrentSchemaVersion)
+                return false;
+
+            data.Bookmarks ??= new List<BookmarkConfigEntry>();
+            data.VisitHistory ??= new List<BookmarkConfigEntry>();
+            data.QuickBookmarks ??= new QuickBookmarksConfig();
+
+            for (var i = data.Bookmarks.Count - 1; i >= 0; i--)
+            {
+                var bookmark = data.Bookmarks[i];
+                if (bookmark == null)
+                {
+                    data.Bookmarks.RemoveAt(i);
+                    removedBookmarks++;
+                    continue;
+                }
+
+                var isKnownParserLeak =
+                    !bookmark.UserCreated &&
+                    string.IsNullOrWhiteSpace(bookmark.Name) &&
+                    MatchesAny(bookmark, data.VisitHistory);
+                if (isKnownParserLeak)
+                {
+                    data.Bookmarks.RemoveAt(i);
+                    removedBookmarks++;
+                    continue;
+                }
+
+                // Before schema v2 the add dialog was the only legitimate writer.
+                // Anything that does not match the known parser leak is preserved.
+                bookmark.UserCreated = true;
+            }
+
+            for (var i = data.VisitHistory.Count - 1; i >= 0; i--)
+            {
+                var entry = data.VisitHistory[i];
+                if (entry == null || entry.WorldOnly)
+                {
+                    data.VisitHistory.RemoveAt(i);
+                    removedHistory++;
+                    continue;
+                }
+
+                entry.UserCreated = false;
+            }
+
+            SetSystemOwned(data.QuickBookmarks.LastCar);
+            SetSystemOwned(data.QuickBookmarks.LastHome);
+            SetSystemOwned(data.QuickBookmarks.LastShop);
+            data.SchemaVersion = BookmarkFileData.CurrentSchemaVersion;
+            return true;
+        }
+
+        private static bool MatchesAny(
+            BookmarkConfigEntry bookmark,
+            IReadOnlyList<BookmarkConfigEntry> history)
+        {
+            if (bookmark == null || history == null)
+                return false;
+
+            for (var i = 0; i < history.Count; i++)
+            {
+                if (SamePlace(bookmark, history[i]))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool SamePlace(BookmarkConfigEntry left, BookmarkConfigEntry right)
+        {
+            if (left == null || right == null)
+                return false;
+
+            var leftHasAddress = !string.IsNullOrWhiteSpace(left.StreetName) || left.StreetNumber > 0;
+            var rightHasAddress = !string.IsNullOrWhiteSpace(right.StreetName) || right.StreetNumber > 0;
+            if (leftHasAddress && rightHasAddress)
+            {
+                return left.StreetNumber == right.StreetNumber &&
+                       string.Equals(left.StreetName, right.StreetName, StringComparison.OrdinalIgnoreCase);
+            }
+
+            var dx = left.WorldX - right.WorldX;
+            var dy = left.WorldY - right.WorldY;
+            var dz = left.WorldZ - right.WorldZ;
+            var leftHasWorld = left.WorldX * left.WorldX + left.WorldY * left.WorldY + left.WorldZ * left.WorldZ > 0.01f;
+            var rightHasWorld = right.WorldX * right.WorldX + right.WorldY * right.WorldY + right.WorldZ * right.WorldZ > 0.01f;
+            return leftHasWorld && rightHasWorld && dx * dx + dy * dy + dz * dz < 4f;
+        }
+
+        private static void SetSystemOwned(BookmarkConfigEntry entry)
+        {
+            if (entry != null)
+                entry.UserCreated = false;
         }
     }
 }
