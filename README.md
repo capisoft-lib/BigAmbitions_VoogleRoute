@@ -20,6 +20,10 @@
 3. Launch Big Ambitions → **Mods** menu → enable **Voogle Route**, **LIB BA Player Location**, and **LIB BA Unified UI**.
 4. Set a destination on **Voogle Maps** (or click the city map **M**) → use the **VOOGLE ROUTE** panel (bottom-left).
 
+If Voogle Route disappeared after an update, its panel does not open, or the
+game reports mods missing from a save, follow the bilingual
+[LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
+
 Workshop description copy per release: [`releases/<version>/`](releases/).
 
 ## Features
