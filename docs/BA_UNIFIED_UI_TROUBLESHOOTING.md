@@ -12,6 +12,12 @@ Subscribe to all three items:
 2. [LIB BA Unified UI](https://steamcommunity.com/workshop/filedetails/?id=3790426259)
 3. [LIB BA Player Location](https://steamcommunity.com/workshop/filedetails/?id=3741773276)
 
+![All three required mods set to MOD ACTIVE in the Big Ambitions Mods menu](voogle-route-required-mods-active.png)
+
+**Important:** subscribing on Steam is not enough. Open the in-game **Mods**
+menu and confirm that **Voogle Route**, **LIB BA Player Location**, and
+**LIB BA Unified UI** all display **MOD ACTIVE**, as shown above.
+
 `LIB BA Unified UI` does not add gameplay by itself. It supplies Voogle Route's
 panels, buttons, lists and mod options. `LIB BA Player Location` supplies the
 player position and movement state. Voogle Route needs both libraries to load.
@@ -82,6 +88,13 @@ Abonnez-vous aux trois éléments :
 1. [Voogle Route](https://steamcommunity.com/sharedfiles/filedetails/?id=3740623471)
 2. [LIB BA Unified UI](https://steamcommunity.com/workshop/filedetails/?id=3790426259)
 3. [LIB BA Player Location](https://steamcommunity.com/workshop/filedetails/?id=3741773276)
+
+![Les trois mods requis affichés sur MOD ACTIVE dans le menu Mods de Big Ambitions](voogle-route-required-mods-active.png)
+
+**Important :** l'abonnement sur Steam ne suffit pas. Ouvrez le menu **Mods**
+dans le jeu et vérifiez que **Voogle Route**, **LIB BA Player Location** et
+**LIB BA Unified UI** affichent tous **MOD ACTIVE**, comme sur la capture
+ci-dessus.
 
 `LIB BA Unified UI` n'ajoute aucun gameplay à elle seule : elle fournit les
 panneaux, boutons, listes et options de Voogle Route. `LIB BA Player Location`
