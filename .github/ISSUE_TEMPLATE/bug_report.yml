@@ -8,7 +8,7 @@ body:
     attributes:
       label: Big Ambitions version
       options:
-        - 1.0 beta
+        - 1.0 (official release)
         - EA 0.11 Experimental (older release)
         - EA 0.10 (MelonLoader legacy — unsupported)
         - Other
