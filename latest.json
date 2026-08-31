@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "1.0.0",
-  "gameVersion": "EA 0.11 / 1.0 experimental",
+  "version": "1.0.1",
+  "gameVersion": "EA 0.11 / 1.0",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "1.0.0: adds native Options > Mods route-color pickers, visible Bookmarks and History scrollbars, corrected bookmark ownership, and live non-blocking distance refresh. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
+  "releaseNotes": "1.0.1: hides the Voogle Route panel and History while using the in-game computer to play games, including the launcher, pause and game-over screens. Restores their previous visibility on exit and blocks route shortcuts during the session. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }

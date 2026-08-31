@@ -140,6 +140,9 @@ namespace VoogleRoute
         {
             try
             {
+                if (BigAmbitionsCompatibility.IsAnyVideoGamePlaying())
+                    return true;
+
                 if (IsBizManBusinessPanelOpen())
                     return true;
 
@@ -234,6 +237,10 @@ namespace VoogleRoute
         {
             try
             {
+                // Computer games use ActivityWithoutUI, so IsPanelOpen stays false.
+                if (BigAmbitionsCompatibility.IsAnyVideoGamePlaying())
+                    return true;
+
                 if (CityMap.IsOpen)
                     return true;
     

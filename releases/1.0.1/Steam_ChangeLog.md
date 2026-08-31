@@ -1,0 +1,4 @@
+- Fixed the Voogle Route panel and open History remaining visible while using the in-game computer to play games.
+- Covers the game launcher, gameplay, pause menus and game-over screens.
+- Restores the previous panel and History visibility when leaving the computer, without changing saved display preferences.
+- Blocks route and auto-move shortcuts during the computer-game session.

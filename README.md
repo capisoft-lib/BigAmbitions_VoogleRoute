@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Game** | Big Ambitions **EA 0.11** and **1.0 experimental** — the same `VoogleRoute 1.0.0` package supports both |
+| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.1` package supports both |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/1331550/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
 | **Requires** | [`LIB_BaPlayerLocation 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) and [`LIB_BaUnifiedUI 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI), both installed and enabled separately |
@@ -24,12 +24,12 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Workshop description copy per release: [`releases/<version>/`](releases/).
+Current Workshop description copy: [`releases/1.0.1/`](releases/1.0.1/), in English and French. Earlier release texts remain in [`releases/`](releases/).
 
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
-- **One cross-version package** — the same Voogle Route 1.0.0 DLL adapts at runtime to EA 0.11 and 1.0 experimental; 1.0-only Hamptons code stays disabled on 0.11
+- **One cross-version package** — the same Voogle Route 1.0.1 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
@@ -51,6 +51,7 @@ Workshop description copy per release: [`releases/<version>/`](releases/).
 - **Hamptons exits** — dedicated entrance-first routing for open-world mansion plots and their property gates
 - **City map overlay** — route line on the city map (**M**); click to set a destination
 - **VOOGLE ROUTE panel** — route toggle, auto-walk / auto-drive, bookmark, History and last-car buttons
+- **Hidden while using the computer** — the panel and open History hide throughout computer-game sessions, including the launcher, pause and game-over screens; route shortcuts are blocked, and the previous visibility returns when you leave
 - Hidden in the **subway** and when navigation is unavailable
 
 ### Auto-drive fast travel (vehicle)
@@ -130,9 +131,11 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0 experimental** : un seul paquet Voogle Route 1.0.0 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
+Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.1 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
+
+**Nouveauté 1.0.1 :** le panneau Voogle Route et l’Historique ouvert se masquent pendant l’utilisation de l’ordinateur pour jouer, y compris dans le sélecteur de jeux, en pause et sur l’écran de fin de partie. Les raccourcis d’itinéraire sont bloqués pendant la session. En quittant l’ordinateur, l’affichage précédent est rétabli sans modifier vos préférences.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 

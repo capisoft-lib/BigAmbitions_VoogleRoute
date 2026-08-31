@@ -21,6 +21,7 @@ namespace VoogleRoute
         private const BindingFlags AllFlags = BindingFlags.Public | BindingFlags.NonPublic |
                                               BindingFlags.Instance | BindingFlags.Static;
 
+        private static readonly Func<bool> VideoGamePlayingQuery = FindVideoGamePlayingQuery();
         private static readonly PropertyInfo CityMapTaxiModeProperty =
             typeof(CityMap).GetProperty("IsTaxiMode", AllFlags);
         private static readonly FieldInfo CityMapTaxiModeField =
@@ -41,6 +42,8 @@ namespace VoogleRoute
         private static readonly MethodInfo LegacyEntranceMethod = FindStaticAddressMethod(
             typeof(DeliveryJobHelper),
             "GetAddressEntranceTransform");
+
+        internal static bool IsAnyVideoGamePlaying() => VideoGamePlayingQuery?.Invoke() == true;
 
         internal static bool IsTaxiMapMode(CityMap cityMap)
         {
@@ -144,6 +147,17 @@ namespace VoogleRoute
             {
                 return null;
             }
+        }
+
+        private static Func<bool> FindVideoGamePlayingQuery()
+        {
+            // Keep the native computer-game API optional on older game versions.
+            var method = typeof(GameManager).Assembly.GetType("Controllers.VideoGameSetup")?.GetMethod(
+                "IsAnyVideoGamePlaying", BindingFlags.Public | BindingFlags.Static,
+                null, Type.EmptyTypes, null);
+            return method != null && method.ReturnType == typeof(bool)
+                ? (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), method)
+                : null;
         }
 
         private static MethodInfo FindStartTimeMachineMethod()

@@ -1,0 +1,1 @@
+Navigation, favoris et historique pour Big Ambitions EA 0.11 et 1.0. Voogle Route se masque désormais pendant les jeux sur ordinateur, puis réapparaît à la sortie.

@@ -2,6 +2,15 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.1] - 2026-08-31
+
+### Fixed
+
+- **Computer visibility** — Voogle Route's action panel and open History now hide while using the in-game computer to play games, including the game launcher, gameplay, pause and game-over screens
+- **Visibility restoration** — leaving the computer restores the previous panel and History visibility without changing saved display preferences
+- **Shortcut safety** — route and auto-move shortcuts are blocked throughout the computer-game session
+- **Older game compatibility** — the native computer-game state is queried through an optional cached adapter, without adding a hard dependency on that API
+
 ## [1.0.0] - 2026-08-26
 
 ### Added
@@ -246,6 +255,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[1.0.1]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/compare/v1.0.0...main
 [1.0.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v1.0.0
 [0.11.11]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.11
 [0.11.10]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.10

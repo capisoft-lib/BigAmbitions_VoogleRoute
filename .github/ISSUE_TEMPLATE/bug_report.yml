@@ -19,8 +19,8 @@ body:
     id: mod_version
     attributes:
       label: Voogle Route version
-      description: From the Mods menu or GitHub release tag (e.g. 1.0.0)
-      placeholder: "1.0.0"
+      description: From the Mods menu or GitHub release tag (e.g. 1.0.1)
+      placeholder: "1.0.1"
     validations:
       required: true
 

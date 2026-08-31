@@ -1,12 +1,14 @@
 # Publishing Voogle Route
 
-## Steam Workshop (primary — Big Ambitions EA 0.11 and 1.0 experimental)
+## Steam Workshop (primary — Big Ambitions EA 0.11 and 1.0)
 
 ### Dependencies: LIB_BaPlayerLocation and LIB_BaUnifiedUI
 
 Voogle Route **requires** **LIB BA Player Location 1.0.0+** and **LIB BA Unified UI 1.0.0+** at runtime. They are separate Workshop items and must both be enabled.
 
-Publish one Voogle Route 1.0.0 Workshop item and one package only. Its DLL selects the compatible game APIs at runtime; do not create a separate EA 0.11 build. The packaged route graph is the 1.0 graph, with 1.0-only Hamptons behavior disabled automatically on EA 0.11.
+Publish one Voogle Route 1.0.1 package to the existing Workshop item. Its DLL selects the compatible game APIs at runtime; do not create a separate EA 0.11 build. The packaged route graph is the 1.0 graph, with 1.0-only Hamptons behavior disabled automatically on EA 0.11.
+
+Version 1.0.1 hides the action panel and History during computer-game sessions, blocks route shortcuts, and restores the previous visibility when leaving the computer. Before publication, check the game launcher, gameplay, pause, game over and return to normal navigation.
 
 1. Publish **LIB_BaPlayerLocation 1.0.0+** and **LIB_BaUnifiedUI 1.0.0+** first (`bigambitions` → Mod Builder → Build & Install → Mod Creator upload).
 2. Publish **VoogleRoute** and state both dependencies in the Workshop description (`releases/<version>/full-description.md`).
@@ -62,16 +64,18 @@ and is never compiled into or copied with VoogleRoute.
 
 ## GitHub releases
 
-1. Bump `VERSION`, `latest.json`, `ModManifest.asset`, and `CHANGELOG.md`.
+1. Bump `VERSION`, `latest.json`, `ModManifest.asset`, `Scripts/AssemblyInfo.cs`, and `CHANGELOG.md` together.
 2. Update `releases/<version>/` workshop copy if needed.
-3. Commit on `main`, then update the existing `v1.0.0` release from the validated 1.0.0 sources; do not create a new patch tag while Big Ambitions 1.0 remains experimental.
-4. CI attaches `latest.json` and release copy files. Built DLL is **not** produced in CI (requires Unity + game assemblies).
+3. Commit and push the validated sources on `main`. Create a matching `v1.0.1` tag and GitHub release only when release publication is requested; a source push does not publish to Steam.
+4. Attach `latest.json` and the release copy files when publishing a GitHub release. The DLL requires a local build with Unity's compiler and the game assemblies.
 
 ## Version checklist
 
 | File | Field |
 |------|--------|
-| `VERSION` | `1.0.0` |
+| `VERSION` | `1.0.1` |
 | `latest.json` | `version`, `gameVersion` |
 | `ModManifest.asset` | `Version:` |
-| `CHANGELOG.md` | `## [1.0.0]` section |
+| `Scripts/AssemblyInfo.cs` | assembly/file `1.0.1.0`, informational `1.0.1` |
+| `CHANGELOG.md` | `## [1.0.1]` section |
+| `releases/1.0.1/` | English/French descriptions and change notes |

@@ -1,0 +1,4 @@
+- Corrige le panneau Voogle Route et l’Historique ouvert qui restaient affichés pendant les jeux sur l’ordinateur.
+- Couvre le sélecteur de jeux, la partie, les menus de pause et les écrans de fin de partie.
+- Rétablit l’affichage précédent du panneau et de l’Historique à la sortie de l’ordinateur, sans modifier les préférences enregistrées.
+- Bloque les raccourcis d’itinéraire et de déplacement automatique pendant la session de jeu sur ordinateur.
