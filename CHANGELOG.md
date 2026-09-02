@@ -2,6 +2,20 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.2] - 2026-09-02
+
+### Changed
+
+- **Bounded vehicle-route search** — route candidates are evaluated in one cancelable multi-start/multi-target search backed by reusable arrays and a binary heap instead of many allocation-heavy A* runs
+- **Buffered diagnostics** — file logs are buffered, expensive messages are built only when enabled, and repeated route failures or skipped refreshes are throttled
+- **Movement-aware walking refresh** — foot routes refresh on a slower cadence and only after useful movement; inactive or detached NavMesh agents are rejected before path calculation
+
+### Fixed
+
+- **Failed-route retry loop** — identical failures are cached and retried with backoff, then stop after three attempts until the destination, mode, or player position changes materially
+- **Stale route publication** — canceled or superseded vehicle searches can no longer overwrite the active request
+- **Indoor retry storm** — unreachable indoor exits are negatively cached until the origin or exit changes
+
 ## [1.0.1] - 2026-08-31
 
 ### Fixed
@@ -255,6 +269,7 @@ All notable changes to **Voogle Route** are documented here.
 - On-ground route line, turn HUD, intersection arrows, auto-walk, 22-language UI
 - `latest.json` manifest for MelonLoader auto-update
 
+[1.0.2]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/compare/v1.0.1...main
 [1.0.1]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/compare/v1.0.0...main
 [1.0.0]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v1.0.0
 [0.11.11]: https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/releases/tag/v0.11.11

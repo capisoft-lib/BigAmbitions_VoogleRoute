@@ -49,7 +49,7 @@ namespace VoogleRoute
         internal static float FootGroundOffset { get; private set; } = 0.40f;
         internal static float VehicleLineWidth { get; private set; } = 0.22f;
         internal static float VehicleGroundOffset { get; private set; } = 0.40f;
-        internal static float RecalcIntervalSeconds { get; private set; } = 0.4f;
+        internal static float RecalcIntervalSeconds { get; private set; } = 1.5f;
         internal static float VehicleRecalcIntervalSeconds { get; private set; } = 10f;
         internal static bool ShowPartialPaths { get; private set; }
         internal static bool ShowLineDetection { get; private set; }

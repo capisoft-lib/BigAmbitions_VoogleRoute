@@ -12,6 +12,9 @@ namespace VoogleRoute
 
         internal static void OnCityMapToggled(bool open)
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Info))
+                return;
+
             ModLog.Info(
                 "City map " + (open ? "opened" : "closed") +
                 " | overlay_should_run=" + GameState.ShouldRunMapRouteOverlay() +
@@ -23,6 +26,9 @@ namespace VoogleRoute
 
         internal static void LogNavigateState(string context)
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Info))
+                return;
+
             var destination = DescribeDestination();
             ModLog.Info(
                 "Map overlay state | context=" + context +
@@ -37,6 +43,9 @@ namespace VoogleRoute
 
         internal static void LogOverlayBlocked(string reason)
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Info))
+                return;
+
             if (_lastBlockReason == reason && Time.unscaledTime - _nextPeriodicLog < 2f)
                 return;
 
@@ -52,6 +61,9 @@ namespace VoogleRoute
 
         internal static void LogRouteShown(PathResult path, int layer, float lineWidth)
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Info))
+                return;
+
             var points = path.Points ?? System.Array.Empty<Vector3>();
             var first = points.Length > 0 ? points[0].ToString() : "none";
             var last = points.Length > 1 ? points[points.Length - 1].ToString() : first;
@@ -68,12 +80,14 @@ namespace VoogleRoute
 
         internal static void LogRouteHidden(string reason)
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Debug))
+                return;
             ModLog.Debug("Map route hidden | reason=" + reason);
         }
 
         internal static void MaybeLogPeriodicStatus(bool overlayActive, bool canNavigate)
         {
-            if (!overlayActive)
+            if (!overlayActive || !ModLog.IsEnabled(ModLogLevel.Debug))
                 return;
 
             var now = Time.unscaledTime;

@@ -72,7 +72,8 @@ namespace VoogleRoute.Navigation
             try
             {
                 var agent = PlayerHelper.PlayerController?.Character?.navmeshAgent;
-                if (agent != null && agent.CalculatePath(navTarget, navPath) &&
+                if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh &&
+                    agent.CalculatePath(navTarget, navPath) &&
                     navPath.status != NavMeshPathStatus.PathInvalid)
                 {
                     status = navPath.status;

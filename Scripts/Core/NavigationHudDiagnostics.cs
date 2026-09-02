@@ -11,6 +11,9 @@ namespace VoogleRoute
 
         internal static void Tick()
         {
+            if (!ModLog.IsEnabled(ModLogLevel.Info))
+                return;
+
             var now = UnityEngine.Time.unscaledTime;
             if (now < _nextCheck)
                 return;

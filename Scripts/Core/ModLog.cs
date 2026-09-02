@@ -15,6 +15,10 @@ namespace VoogleRoute
         private static string _logFilePath;
         private static bool _fileLoggingEnabled;
         private static ModLogLevel _minLevel = ModLogLevel.Error;
+        private static int _pendingFileLines;
+        private static DateTime _lastFileFlushUtc;
+        private const int BufferedLinesBeforeFlush = 32;
+        private static readonly TimeSpan BufferedFlushInterval = TimeSpan.FromSeconds(2);
 
         internal static string LogFilePath => _logFilePath;
 
@@ -46,10 +50,13 @@ namespace VoogleRoute
                 var fileName = "voogle-route_" +
                     DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture) + ".log";
                 _logFilePath = Path.Combine(logsDir, fileName);
-                _fileWriter = new StreamWriter(_logFilePath, append: false) { AutoFlush = true };
+                _fileWriter = new StreamWriter(_logFilePath, append: false) { AutoFlush = false };
                 _fileWriter.WriteLine(
                     DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
                     " [INFO] Voogle Route session started.");
+                _fileWriter.Flush();
+                _pendingFileLines = 0;
+                _lastFileFlushUtc = DateTime.UtcNow;
                 Info("ModLog initialized | file=" + _logFilePath);
             }
             catch (Exception ex)
@@ -62,21 +69,27 @@ namespace VoogleRoute
 
         internal static void Shutdown()
         {
-            if (_fileWriter != null)
+            lock (WriteGate)
             {
-                try
+                if (_fileWriter != null)
                 {
-                    _fileWriter.WriteLine(
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
-                        " [INFO] Voogle Route session ended.");
-                    _fileWriter.Dispose();
-                }
-                catch
-                {
-                    // Non-fatal on unload.
+                    try
+                    {
+                        _fileWriter.WriteLine(
+                            DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
+                            " [INFO] Voogle Route session ended.");
+                        _fileWriter.Flush();
+                        _fileWriter.Dispose();
+                    }
+                    catch
+                    {
+                        // Non-fatal on unload.
+                    }
+
+                    _fileWriter = null;
                 }
 
-                _fileWriter = null;
+                _pendingFileLines = 0;
             }
 
             _logFilePath = null;
@@ -85,12 +98,18 @@ namespace VoogleRoute
 
         internal static void Debug(string message) => Write(ModLogLevel.Debug, message);
 
+        internal static void Debug(Func<string> messageFactory) => Write(ModLogLevel.Debug, messageFactory);
+
         internal static void Info(string message) => Write(ModLogLevel.Info, message);
+
+        internal static void Info(Func<string> messageFactory) => Write(ModLogLevel.Info, messageFactory);
 
         internal static void Error(string message) => Write(ModLogLevel.Error, message);
 
         internal static void Error(string message, Exception exception) =>
             Write(ModLogLevel.Error, message + ": " + exception.Message + Environment.NewLine + exception.StackTrace);
+
+        internal static bool IsEnabled(ModLogLevel level) => level >= _minLevel;
 
         internal static ModLogLevel ParseLevel(string value)
         {
@@ -148,11 +167,8 @@ namespace VoogleRoute
 
         private static void Write(ModLogLevel level, string message)
         {
-            if (level < _minLevel)
+            if (!IsEnabled(level))
                 return;
-
-            var line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
-                       " [" + level.ToString().ToUpperInvariant() + "] " + message;
 
             lock (WriteGate)
             {
@@ -160,7 +176,19 @@ namespace VoogleRoute
                 {
                     try
                     {
+                        var line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) +
+                                   " [" + level.ToString().ToUpperInvariant() + "] " + message;
                         _fileWriter.WriteLine(line);
+                        _pendingFileLines++;
+                        var nowUtc = DateTime.UtcNow;
+                        if (level == ModLogLevel.Error ||
+                            _pendingFileLines >= BufferedLinesBeforeFlush ||
+                            nowUtc - _lastFileFlushUtc >= BufferedFlushInterval)
+                        {
+                            _fileWriter.Flush();
+                            _pendingFileLines = 0;
+                            _lastFileFlushUtc = nowUtc;
+                        }
                     }
                     catch
                     {
@@ -179,6 +207,13 @@ namespace VoogleRoute
                     : message;
 
             _context.Logger.Info(gameMessage);
+        }
+
+        private static void Write(ModLogLevel level, Func<string> messageFactory)
+        {
+            if (!IsEnabled(level) || messageFactory == null)
+                return;
+            Write(level, messageFactory());
         }
     }
 }

@@ -10,6 +10,7 @@ namespace VoogleRoute.UI
     {
         private const string RootName = "VoogleRoute_RecalcBanner";
         private const float MinDisplaySeconds = 0.8f;
+        private const float UnavailableDisplaySeconds = 3f;
         private const float PanelWidth = 500f;
         private const float PanelHeight = 64f;
         private const float CenterYOffset = -78f;
@@ -19,6 +20,8 @@ namespace VoogleRoute.UI
         private static TextMeshProUGUI _label;
         private static float _shownAtUnscaled = -1f;
         private static bool _hideRequested;
+        private static bool _showingUnavailable;
+        private static float _autoHideAtUnscaled = -1f;
 
         internal static void EnsureCreated()
         {
@@ -36,6 +39,19 @@ namespace VoogleRoute.UI
             EnsureCreated();
             _shownAtUnscaled = Time.unscaledTime;
             _hideRequested = false;
+            _showingUnavailable = false;
+            _autoHideAtUnscaled = -1f;
+            RefreshLocalizedText();
+            _root.SetActive(true);
+        }
+
+        internal static void ShowUnavailable()
+        {
+            EnsureCreated();
+            _shownAtUnscaled = Time.unscaledTime;
+            _hideRequested = false;
+            _showingUnavailable = true;
+            _autoHideAtUnscaled = _shownAtUnscaled + UnavailableDisplaySeconds;
             RefreshLocalizedText();
             _root.SetActive(true);
         }
@@ -46,6 +62,8 @@ namespace VoogleRoute.UI
         {
             _hideRequested = false;
             _shownAtUnscaled = -1f;
+            _showingUnavailable = false;
+            _autoHideAtUnscaled = -1f;
             if (_root != null)
                 _root.SetActive(false);
         }
@@ -64,7 +82,16 @@ namespace VoogleRoute.UI
                 return;
             }
 
-            if (_root == null || !_root.activeSelf || !_hideRequested || _shownAtUnscaled < 0f)
+            if (_root == null || !_root.activeSelf)
+                return;
+
+            if (_autoHideAtUnscaled >= 0f && Time.unscaledTime >= _autoHideAtUnscaled)
+            {
+                ForceHide();
+                return;
+            }
+
+            if (!_hideRequested || _shownAtUnscaled < 0f)
                 return;
 
             if (Time.unscaledTime - _shownAtUnscaled < MinDisplaySeconds)
@@ -78,7 +105,9 @@ namespace VoogleRoute.UI
             if (_label == null)
                 return;
 
-            _label.text = ModUiText.RouteRecalculating;
+            _label.text = _showingUnavailable
+                ? ModUiText.RouteUnavailable
+                : ModUiText.RouteRecalculating;
         }
 
         internal static void Destroy()

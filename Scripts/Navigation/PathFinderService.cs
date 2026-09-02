@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
@@ -41,6 +40,11 @@ namespace VoogleRoute.Navigation
         // inside private grounds. For map-selected buildings, guide pedestrians
         // to the closest reachable gate instead of suppressing the whole route.
         private const float BuildingApproachPartialToleranceMeters = 50f;
+        private const float FailedRouteRetryDelaySeconds = 5f;
+        private const int MaxConsecutiveRouteFailures = 3;
+        private const float FailedRouteResetMovementMeters = 25f;
+        private const float FailedRouteTargetToleranceMeters = 2f;
+        private const float FootRecalcMinMovementMeters = 2f;
         private static readonly NavMeshPath NavPath = new NavMeshPath();
         private static Vector3 _lastTarget;
         private static MovementMode _lastMode = MovementMode.Unavailable;
@@ -58,10 +62,23 @@ namespace VoogleRoute.Navigation
         private static bool _asyncRefreshPending;
         private static string _asyncRequestSource = "unknown";
         private static string _asyncRecalcReason = "unknown";
+        private static CancellationTokenSource _asyncCancellation;
+        private static MovementMode _asyncMode = MovementMode.Unavailable;
         private static bool _mapDestinationRecalcPending;
         private static float _lastFootRecalcTime = -999f;
+        private static Vector3 _lastFootRecalcOrigin;
+        private static bool _hasLastFootRecalcOrigin;
         private static bool _forceNextRecalc;
         private static bool _rejectLastGoodFallback;
+        private static int _consecutiveRouteFailures;
+        private static float _nextFailedRouteRetryTime;
+        private static Vector3 _failedRouteOrigin;
+        private static Vector3 _failedRouteTarget;
+        private static MovementMode _failedRouteMode = MovementMode.Unavailable;
+        private static bool _failedRouteLocked;
+        private static bool _failedRouteNotificationShown;
+        private static Vector3 _lastAttemptOrigin;
+        private static Vector3 _lastAttemptTarget;
 
         internal static Vector3[] LastFinalPoints { get; private set; } = System.Array.Empty<Vector3>();
         internal static bool RouteWasRecalculated { get; private set; }
@@ -169,6 +186,16 @@ namespace VoogleRoute.Navigation
             var modeChanged = mode != _lastMode;
             _lastMode = mode;
 
+            if (TryUseFailedRouteCache(
+                    origin,
+                    target,
+                    mode,
+                    forceRecalc,
+                    requestSource,
+                    totalTimer,
+                    out var failedRouteDisplay))
+                return failedRouteDisplay;
+
             var cacheMiss = !_cacheValid || !_cached.Success;
             var corridorMargin = RouteLineDetection.GetCrossTrackMeters(mode == MovementMode.Vehicle);
             var withinCorridor = !cacheMiss &&
@@ -176,7 +203,11 @@ namespace VoogleRoute.Navigation
             var targetChanged = _mapDestinationRecalcPending ||
                 Time.unscaledTime - NavigationTargetTracker.LastChangeTime < 0.05f;
             var targetMoved = (target - _lastTarget).sqrMagnitude > 1f;
+            var footMovedEnough = !_hasLastFootRecalcOrigin ||
+                HorizontalDistanceSquared(origin, _lastFootRecalcOrigin) >=
+                FootRecalcMinMovementMeters * FootRecalcMinMovementMeters;
             var footIntervalDue = mode == MovementMode.OnFoot &&
+                footMovedEnough &&
                 Time.unscaledTime - _lastFootRecalcTime >= ModConfig.RecalcIntervalSeconds;
 
             if (!forceRecalc &&
@@ -204,6 +235,9 @@ namespace VoogleRoute.Navigation
                 leftCorridor,
                 cacheMiss);
 
+            _lastAttemptOrigin = origin;
+            _lastAttemptTarget = target;
+
             if (TryQueueAsyncRecalc(
                     cacheMiss,
                     leftCorridor,
@@ -229,7 +263,11 @@ namespace VoogleRoute.Navigation
             _lastTarget = target;
             RouteWasRecalculated = true;
             if (mode == MovementMode.OnFoot)
+            {
                 _lastFootRecalcTime = Time.unscaledTime;
+                _lastFootRecalcOrigin = origin;
+                _hasLastFootRecalcOrigin = true;
+            }
 
             var sampleOrigin = origin;
             if (MovementModeDetector.TryGetPlayerOrigin(out var feet))
@@ -278,7 +316,7 @@ namespace VoogleRoute.Navigation
                 return false;
 
             RouteWasRecalculated = true;
-            var completedMode = MovementModeDetector.CurrentMode;
+            var completedMode = _asyncMode;
             LastFinalPoints = pending.Points ?? System.Array.Empty<Vector3>();
             _lastFinalPointsMode = completedMode;
             if (completedMode == MovementMode.OnFoot)
@@ -291,6 +329,7 @@ namespace VoogleRoute.Navigation
                 !_rejectLastGoodFallback &&
                 TryReturnLastGoodVehiclePath(NavigationTargetTracker.ActiveTarget))
             {
+                RecordRouteFailure(completedMode, _lastAttemptOrigin, _lastAttemptTarget);
                 RouteRecalcDiagnostics.LogRecalc(
                     requestSource,
                     recalcReason + "|async|kept_last_good",
@@ -341,7 +380,7 @@ namespace VoogleRoute.Navigation
             Vector3 target,
             string requestSource,
             string recalcReason,
-            Stopwatch totalTimer)
+            long totalTimer)
         {
             var preferAsync = mode == MovementMode.Vehicle &&
                 (cacheMiss || leftCorridor || targetChanged || targetMoved || forceRecalc);
@@ -365,6 +404,7 @@ namespace VoogleRoute.Navigation
                 ? new Vec3(forward.x, forward.y, forward.z)
                 : default;
             var generation = _cacheGeneration;
+            var cancellation = new CancellationTokenSource();
 
             lock (AsyncGate)
             {
@@ -373,6 +413,8 @@ namespace VoogleRoute.Navigation
                 _asyncGeneration = generation;
                 _asyncRequestSource = requestSource;
                 _asyncRecalcReason = recalcReason;
+                _asyncCancellation = cancellation;
+                _asyncMode = mode;
             }
 
             _lastTarget = target;
@@ -389,31 +431,41 @@ namespace VoogleRoute.Navigation
                 var pathfindTimer = RouteRecalcDiagnostics.StartTimer();
                 try
                 {
-                    pending = ComputeVehicleRouteSnapshot(origin, target, forwardVec, hasPose, pathOptions);
+                    pending = ComputeVehicleRouteSnapshot(
+                        origin,
+                        target,
+                        forwardVec,
+                        hasPose,
+                        pathOptions,
+                        cancellation.Token);
                 }
                 catch (System.Exception ex)
                 {
-                    ModLog.Error("Async vehicle route failed", ex);
+                    if (!cancellation.IsCancellationRequested)
+                        ModLog.Error("Async vehicle route failed", ex);
                     pending = Empty();
                 }
 
-                RouteRecalcDiagnostics.RecordPathfind(
-                    pending.Success ? RoutePathfindKind.FullAStar : RoutePathfindKind.Failed,
-                    RouteRecalcDiagnostics.ElapsedMs(pathfindTimer));
+                if (!cancellation.IsCancellationRequested)
+                {
+                    RouteRecalcDiagnostics.RecordPathfind(
+                        pending.Success ? RoutePathfindKind.FullAStar : RoutePathfindKind.Failed,
+                        RouteRecalcDiagnostics.ElapsedMs(pathfindTimer));
+                }
 
                 lock (AsyncGate)
                 {
-                    if (_asyncGeneration != generation)
+                    if (!cancellation.IsCancellationRequested &&
+                        _asyncGeneration == generation &&
+                        ReferenceEquals(_asyncCancellation, cancellation))
                     {
-                        _asyncInProgress = false;
-                        _asyncPendingResult = Empty();
+                        _asyncPendingResult = pending;
                         _asyncComplete = true;
-                        return;
+                        _asyncCancellation = null;
                     }
-
-                    _asyncPendingResult = pending;
-                    _asyncComplete = true;
                 }
+
+                cancellation.Dispose();
             });
 
             return true;
@@ -424,9 +476,17 @@ namespace VoogleRoute.Navigation
             Vector3 target,
             Vec3 forward,
             bool hasPose,
-            VehicleRoutePathOptions pathOptions)
+            VehicleRoutePathOptions pathOptions,
+            CancellationToken cancellationToken)
         {
-            if (!RoutePathfinder.TryFindPath(origin, target, forward, hasPose, pathOptions, out var navCorners) ||
+            if (!RoutePathfinder.TryFindPath(
+                    origin,
+                    target,
+                    forward,
+                    hasPose,
+                    pathOptions,
+                    cancellationToken,
+                    out var navCorners) ||
                 navCorners == null ||
                 navCorners.Length < 2)
                 return Empty();
@@ -458,7 +518,7 @@ namespace VoogleRoute.Navigation
             Vector3 sampleOrigin,
             string requestSource,
             string recalcReason,
-            Stopwatch totalTimer)
+            long totalTimer)
         {
             var pathfindTimer = RouteRecalcDiagnostics.StartTimer();
             NavMeshQueryFilter pathFilterUsed;
@@ -514,6 +574,7 @@ namespace VoogleRoute.Navigation
             {
                 if (mode == MovementMode.Vehicle && TryReturnLastGoodVehiclePath(target))
                 {
+                    RecordRouteFailure(mode, _lastAttemptOrigin, _lastAttemptTarget);
                     RouteRecalcDiagnostics.LogRecalcFailed(
                         requestSource,
                         recalcReason + "|fallback_last_good",
@@ -647,6 +708,7 @@ namespace VoogleRoute.Navigation
             LastFinalPoints = System.Array.Empty<Vector3>();
             _lastFinalPointsMode = MovementMode.Unavailable;
             _mapDestinationRecalcPending = true;
+            ResetRouteFailureState();
             RouteRecalcDiagnostics.LogCacheInvalidated("map_destination_changed");
         }
 
@@ -658,6 +720,8 @@ namespace VoogleRoute.Navigation
             _cacheValid = false;
             _lastMode = MovementMode.Unavailable;
             _lastFootRecalcTime = -999f;
+            _lastFootRecalcOrigin = default;
+            _hasLastFootRecalcOrigin = false;
             _lastGoodVehiclePath = PathResult.None;
             LastFinalPoints = System.Array.Empty<Vector3>();
             _cachedMode = MovementMode.Unavailable;
@@ -666,6 +730,7 @@ namespace VoogleRoute.Navigation
             VehiclePathPipeline.InvalidateRouteLineCache();
             if (!SubwayLegTracker.IsRideCompleted)
                 AutoWalkService.ResetSubwayState();
+            ResetRouteFailureState();
             RouteRecalcDiagnostics.LogCacheInvalidated(reason);
         }
 
@@ -680,11 +745,24 @@ namespace VoogleRoute.Navigation
 
         private static void CancelAsyncRecalc()
         {
+            CancellationTokenSource cancellation;
             lock (AsyncGate)
             {
+                cancellation = _asyncCancellation;
+                _asyncCancellation = null;
                 _asyncInProgress = false;
                 _asyncComplete = false;
                 _asyncPendingResult = PathResult.None;
+                _asyncMode = MovementMode.Unavailable;
+            }
+
+            try
+            {
+                cancellation?.Cancel();
+            }
+            catch (System.ObjectDisposedException)
+            {
+                // Worker completed between the state snapshot and cancellation.
             }
 
             RouteRecalcBanner.ForceHide();
@@ -717,7 +795,83 @@ namespace VoogleRoute.Navigation
             return Empty();
         }
 
-        private static PathResult FinishSilent(Stopwatch timer, string requestSource, PathResult result)
+        private static bool TryUseFailedRouteCache(
+            Vector3 origin,
+            Vector3 target,
+            MovementMode mode,
+            bool forceRecalc,
+            string requestSource,
+            long totalTimer,
+            out PathResult display)
+        {
+            display = Empty();
+            if (_consecutiveRouteFailures <= 0)
+                return false;
+
+            var targetChanged = HorizontalDistanceSquared(target, _failedRouteTarget) >
+                                FailedRouteTargetToleranceMeters * FailedRouteTargetToleranceMeters;
+            var movedEnough = HorizontalDistanceSquared(origin, _failedRouteOrigin) >=
+                              FailedRouteResetMovementMeters * FailedRouteResetMovementMeters;
+            if (forceRecalc || mode != _failedRouteMode || targetChanged || movedEnough)
+            {
+                ResetRouteFailureState();
+                return false;
+            }
+
+            if (!_failedRouteLocked && Time.unscaledTime >= _nextFailedRouteRetryTime)
+                return false;
+
+            RouteRecalcDiagnostics.LogSkip(
+                requestSource,
+                _failedRouteLocked ? "failed_route_locked" : "failed_route_backoff",
+                RouteRecalcDiagnostics.ElapsedMs(totalTimer));
+            display = ResolveDisplayCacheDuringRecalc(mode, target);
+            return true;
+        }
+
+        private static void RecordRouteFailure(MovementMode mode, Vector3 origin, Vector3 target)
+        {
+            var sameRequest = _consecutiveRouteFailures > 0 &&
+                              mode == _failedRouteMode &&
+                              HorizontalDistanceSquared(target, _failedRouteTarget) <=
+                              FailedRouteTargetToleranceMeters * FailedRouteTargetToleranceMeters;
+            if (!sameRequest)
+            {
+                _consecutiveRouteFailures = 0;
+                _failedRouteOrigin = origin;
+                _failedRouteTarget = target;
+                _failedRouteMode = mode;
+                _failedRouteNotificationShown = false;
+            }
+
+            _consecutiveRouteFailures++;
+            _nextFailedRouteRetryTime = Time.unscaledTime +
+                                        FailedRouteRetryDelaySeconds *
+                                        Mathf.Min(_consecutiveRouteFailures, 2);
+            _failedRouteLocked = _consecutiveRouteFailures >= MaxConsecutiveRouteFailures;
+
+            if (!_failedRouteLocked || _failedRouteNotificationShown)
+                return;
+
+            _failedRouteNotificationShown = true;
+            RouteRecalcBanner.ShowUnavailable();
+            ModLog.Info(() =>
+                "Route retries stopped after " + _consecutiveRouteFailures +
+                " failures; waiting for destination, mode, or significant position change.");
+        }
+
+        private static void ResetRouteFailureState()
+        {
+            _consecutiveRouteFailures = 0;
+            _nextFailedRouteRetryTime = 0f;
+            _failedRouteOrigin = default;
+            _failedRouteTarget = default;
+            _failedRouteMode = MovementMode.Unavailable;
+            _failedRouteLocked = false;
+            _failedRouteNotificationShown = false;
+        }
+
+        private static PathResult FinishSilent(long timer, string requestSource, PathResult result)
         {
             _ = timer;
             _ = requestSource;
@@ -734,9 +888,19 @@ namespace VoogleRoute.Navigation
                 LastFinalPoints = result.Points;
                 _lastFinalPointsMode = mode;
                 _rejectLastGoodFallback = false;
+                ResetRouteFailureState();
             }
+            else
+                RecordRouteFailure(mode, _lastAttemptOrigin, _lastAttemptTarget);
 
             return result;
+        }
+
+        private static float HorizontalDistanceSquared(Vector3 a, Vector3 b)
+        {
+            var dx = a.x - b.x;
+            var dz = a.z - b.z;
+            return dx * dx + dz * dz;
         }
 
         private static PathResult Empty()

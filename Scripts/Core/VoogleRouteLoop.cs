@@ -396,7 +396,8 @@ namespace VoogleRoute
                 return;
             }
 
-            if (MovementModeDetector.ModeChangedSinceLastApply)
+            var modeChanged = MovementModeDetector.ModeChangedSinceLastApply;
+            if (modeChanged)
             {
                 if (MovementModeDetector.PreviousMode == MovementMode.Vehicle &&
                     MovementModeDetector.CurrentMode == MovementMode.OnFoot)
@@ -420,7 +421,10 @@ namespace VoogleRoute
                 _forceRouteRecalc = true;
             }
 
-            RefreshRouteIfNavigating("player_location");
+            // Vehicle requests remain event-driven. Walking routes are refreshed by the
+            // movement-gated cadence in TickFootRouteRefresh instead of every GPS event.
+            if (modeChanged || MovementModeDetector.CurrentMode == MovementMode.Vehicle)
+                RefreshRouteIfNavigating("player_location");
         }
 
         private static void SyncMapDestination()

@@ -26,7 +26,7 @@ namespace VoogleRoute.Navigation
                 return GetHamptonsRoute(hamptonsHouseId, origin, forceRecalc);
 
             if (!IndoorExitResolver.TryGetNearestExit(origin, out var exit))
-                return ResetAndReturnEmpty();
+                return CacheMissingExit(origin, forceRecalc);
 
             ActiveExit = exit;
 
@@ -135,10 +135,26 @@ namespace VoogleRoute.Navigation
             return PathResult.None;
         }
 
+        private static PathResult CacheMissingExit(Vector3 origin, bool forceRecalc)
+        {
+            var originMoved = (_lastOrigin - origin).sqrMagnitude > 4f;
+            if (!forceRecalc && _cacheValid && !_cached.Success &&
+                _lastHamptonsHouseId == 0 && !originMoved)
+                return _cached;
+
+            _lastOrigin = origin;
+            _lastExit = default;
+            _lastHamptonsHouseId = 0;
+            ActiveExit = IndoorExitTarget.None;
+            return Cache(PathResult.None);
+        }
+
         private static PathResult Cache(PathResult result)
         {
             _cached = result;
-            _cacheValid = result.Success;
+            // A failed NavMesh calculation is still a valid negative result until the
+            // origin/exit changes. This prevents an invalid agent from being queried every frame.
+            _cacheValid = true;
             return result;
         }
     }

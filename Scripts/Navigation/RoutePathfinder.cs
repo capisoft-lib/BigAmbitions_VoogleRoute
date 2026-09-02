@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 
 using UnityEngine;
 
@@ -104,6 +105,37 @@ namespace VoogleRoute.Navigation
 
         {
 
+            return TryFindPath(
+                origin,
+                destination,
+                forward,
+                hasPose,
+                options,
+                CancellationToken.None,
+                out corners);
+
+        }
+
+
+
+        internal static bool TryFindPath(
+
+            Vector3 origin,
+
+            Vector3 destination,
+
+            Vec3 forward,
+
+            bool hasPose,
+
+            VehicleRoutePathOptions options,
+
+            CancellationToken cancellationToken,
+
+            out Vector3[] corners)
+
+        {
+
             corners = System.Array.Empty<Vector3>();
 
             var timer = RouteRecalcDiagnostics.StartTimer();
@@ -124,7 +156,12 @@ namespace VoogleRoute.Navigation
 
             var graph = RouteGraphStore.Graph;
 
-            var query = options.ToRouteQuery(ToVec3(origin), ToVec3(destination), forward, hasPose);
+            var query = options.ToRouteQuery(
+                ToVec3(origin),
+                ToVec3(destination),
+                forward,
+                hasPose,
+                cancellationToken);
 
 
 
@@ -134,7 +171,8 @@ namespace VoogleRoute.Navigation
 
                 RouteRecalcDiagnostics.RecordPathfind(RoutePathfindKind.Failed, RouteRecalcDiagnostics.ElapsedMs(timer));
 
-                ModLog.Debug(
+                if (ModLog.IsEnabled(ModLogLevel.Debug))
+                    ModLog.Debug(
 
                     "Vehicle route build failed | preferSide=" + options.PreferBuildingSideArrival +
 
@@ -166,7 +204,8 @@ namespace VoogleRoute.Navigation
 
             var last = corners[corners.Length - 1];
 
-            ModLog.Debug(
+            if (ModLog.IsEnabled(ModLogLevel.Debug))
+                ModLog.Debug(
 
                 "Vehicle route built | preferSide=" + options.PreferBuildingSideArrival +
 

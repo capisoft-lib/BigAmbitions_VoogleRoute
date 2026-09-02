@@ -43,6 +43,8 @@ namespace VoogleRoute.UI
                 Loc("voogle_route_shortcut_conflict", "Conflict"));
         internal static string RouteRecalculating =>
             Loc("voogle_route_recalculating", "Recalculating route...");
+        internal static string RouteUnavailable =>
+            Loc("voogle_route_autodrive_no_route", "No route to the destination.");
         internal static string MapDestTitle =>
             Loc("voogle_route_map_dest_title", "Set destination");
         internal static string MapDestConfirm =>

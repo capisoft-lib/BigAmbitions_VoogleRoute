@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Threading;
 using VoogleRoute;
 using VoogleRoute.Pathfinding.Geometry;
 using VoogleRoute.Pathfinding.Routing;
@@ -40,7 +41,12 @@ namespace VoogleRoute.Navigation
                 hasHint ? new Vec3(snap.x, snap.y, snap.z) : default);
         }
 
-        internal RouteQuery ToRouteQuery(Vec3 origin, Vec3 destination, Vec3 forward, bool hasPose) =>
+        internal RouteQuery ToRouteQuery(
+            Vec3 origin,
+            Vec3 destination,
+            Vec3 forward,
+            bool hasPose,
+            CancellationToken cancellationToken = default) =>
             new RouteQuery
             {
                 Origin = origin,
@@ -52,7 +58,8 @@ namespace VoogleRoute.Navigation
                 AllowUturnAtStart = AllowUturnAtStart,
                 PreferBuildingSideArrival = PreferBuildingSideArrival,
                 HasArrivalRoadHint = HasArrivalRoadHint,
-                ArrivalRoadHint = ArrivalRoadHint
+                ArrivalRoadHint = ArrivalRoadHint,
+                CancellationToken = cancellationToken
             };
     }
 }
