@@ -7,12 +7,14 @@ All notable changes to **Voogle Route** are documented here.
 ### Changed
 
 - **Bounded vehicle-route search** — route candidates are evaluated in one cancelable multi-start/multi-target search backed by reusable arrays and a binary heap instead of many allocation-heavy A* runs
+- **Reachable arrival fallback** — when the six closest destination lanes are a directed pocket, routing considers a bounded, direction-diverse set of street-level arrivals instead of failing outright
 - **Buffered diagnostics** — file logs are buffered, expensive messages are built only when enabled, and repeated route failures or skipped refreshes are throttled
 - **Movement-aware walking refresh** — foot routes refresh on a slower cadence and only after useful movement; inactive or detached NavMesh agents are rejected before path calculation
 
 ### Fixed
 
 - **Failed-route retry loop** — identical failures are cached and retried with backoff, then stop after three attempts until the destination, mode, or player position changes materially
+- **Industry terminal access** — restores the audited Road 213 terminal U-turn and prevents dense one-way Road 236 waypoints from hiding nearby reachable arrival roads
 - **Stale route publication** — canceled or superseded vehicle searches can no longer overwrite the active request
 - **Indoor retry storm** — unreachable indoor exits are negatively cached until the origin or exit changes
 

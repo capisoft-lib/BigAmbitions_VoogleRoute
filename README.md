@@ -31,7 +31,7 @@ Current Workshop description copy: [`releases/1.0.1/`](releases/1.0.1/), in Engl
 - **Route line on the ground** — neon path to your map destination
 - **One cross-version package** — the same Voogle Route 1.0.2 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
-- **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding)
+- **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding), with bounded reachable-arrival fallback when the nearest one-way lanes cannot be entered
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
 - **Auto-walk** — optional automatic walking along the route (includes automatic subway boarding when the route uses the metro)
 - **Auto-enter on arrival** — optional toggle to enter a vehicle or building when navigation completes
@@ -135,7 +135,7 @@ Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paque
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
-**Nouveauté 1.0.2 :** les itinéraires véhicule impossibles ne sont plus recalculés en boucle. La recherche routière réutilise sa mémoire, les diagnostics sont tamponnés et limités, et les trajets à pied ne sollicitent plus inutilement le NavMesh sans déplacement utile.
+**Nouveauté 1.0.2 :** les itinéraires véhicule impossibles ne sont plus recalculés en boucle. La recherche routière réutilise sa mémoire, choisit une arrivée atteignable quand les voies les plus proches sont à sens unique et corrige le terminal Industry de la Road 213. Les diagnostics sont tamponnés et limités, et les trajets à pied ne sollicitent plus inutilement le NavMesh sans déplacement utile.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 
