@@ -1,0 +1,7 @@
+- Remplace les nombreux A* fortement allocateurs par une recherche véhicule unique, bornée, annulable et réutilisable.
+- Les mêmes échecs de trajet véhicule ou intérieur sont désormais retentés avec temporisation, puis bloqués après trois tentatives jusqu’à un changement réel de la demande.
+- Ajoute un repli d’arrivée atteignable et diversifié par direction pour les poches de destination à sens unique inaccessibles.
+- Restaure le demi-tour terminal audité de la Road 213 dans Industry et corrige la sélection d’arrivée sur la Road 236.
+- Empêche une recherche annulée ou remplacée de publier un itinéraire obsolète.
+- Tamponne et limite les diagnostics ; les messages paresseux sont ignorés lorsque la journalisation est désactivée.
+- Réduit la fréquence des recalculs à pied et rejette les agents NavMesh inactifs ou détachés avant le calcul.

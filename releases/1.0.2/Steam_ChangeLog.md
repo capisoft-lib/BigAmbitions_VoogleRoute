@@ -1,0 +1,7 @@
+- Replaced repeated allocation-heavy A* runs with one bounded, cancelable and reusable vehicle-route search.
+- Failed identical vehicle and indoor routes now retry with backoff, then stop after three attempts until the request changes materially.
+- Added a direction-diverse reachable-arrival fallback for inaccessible one-way destination pockets.
+- Restored the audited Road 213 Industry terminal U-turn and fixed Road 236 arrival selection.
+- Prevented canceled or superseded searches from publishing stale routes.
+- Buffered and throttled diagnostics, with lazy messages skipped when logging is disabled.
+- Reduced foot-route refresh frequency and rejected inactive or detached NavMesh agents before path calculation.

@@ -6,9 +6,9 @@
 
 Voogle Route **requires** **LIB BA Player Location 1.0.0+** and **LIB BA Unified UI 1.0.0+** at runtime. They are separate Workshop items and must both be enabled.
 
-Publish one Voogle Route 1.0.1 package to the existing Workshop item. Its DLL selects the compatible game APIs at runtime; do not create a separate EA 0.11 build. The packaged route graph is the 1.0 graph, with 1.0-only Hamptons behavior disabled automatically on EA 0.11.
+Publish one Voogle Route 1.0.2 package to the existing Workshop item. Its DLL selects the compatible game APIs at runtime; do not create a separate EA 0.11 build. The packaged route graph is the 1.0 graph, with 1.0-only Hamptons behavior disabled automatically on EA 0.11.
 
-Version 1.0.1 hides the action panel and History during computer-game sessions, blocks route shortcuts, and restores the previous visibility when leaving the computer. Before publication, check the game launcher, gameplay, pause, game over and return to normal navigation.
+Version 1.0.2 prevents repeated failed-route recalculation, uses a bounded reusable vehicle search, restores reachable Industry arrivals, buffers diagnostics and limits foot/NavMesh refreshes to useful movement. Before publication, validate both successful and unreachable Industry routes, route cancellation, movement cadence and log volume.
 
 1. Publish **LIB_BaPlayerLocation 1.0.0+** and **LIB_BaUnifiedUI 1.0.0+** first (`bigambitions` → Mod Builder → Build & Install → Mod Creator upload).
 2. Publish **VoogleRoute** and state both dependencies in the Workshop description (`releases/<version>/full-description.md`).
@@ -66,16 +66,16 @@ and is never compiled into or copied with VoogleRoute.
 
 1. Bump `VERSION`, `latest.json`, `ModManifest.asset`, `Scripts/AssemblyInfo.cs`, and `CHANGELOG.md` together.
 2. Update `releases/<version>/` workshop copy if needed.
-3. Commit and push the validated sources on `main`. Create a matching `v1.0.1` tag and GitHub release only when release publication is requested; a source push does not publish to Steam.
+3. Commit and push the validated sources on `main`. Create a matching `v1.0.2` tag and GitHub release only when release publication is requested; a source push does not publish to Steam.
 4. Attach `latest.json` and the release copy files when publishing a GitHub release. The DLL requires a local build with Unity's compiler and the game assemblies.
 
 ## Version checklist
 
 | File | Field |
 |------|--------|
-| `VERSION` | `1.0.1` |
+| `VERSION` | `1.0.2` |
 | `latest.json` | `version`, `gameVersion` |
 | `ModManifest.asset` | `Version:` |
-| `Scripts/AssemblyInfo.cs` | assembly/file `1.0.1.0`, informational `1.0.1` |
-| `CHANGELOG.md` | `## [1.0.1]` section |
-| `releases/1.0.1/` | English/French descriptions and change notes |
+| `Scripts/AssemblyInfo.cs` | assembly/file `1.0.2.0`, informational `1.0.2` |
+| `CHANGELOG.md` | `## [1.0.2]` section |
+| `releases/1.0.2/` | English/French descriptions and change notes |

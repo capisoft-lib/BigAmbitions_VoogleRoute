@@ -24,7 +24,18 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Current Workshop description copy: [`releases/1.0.1/`](releases/1.0.1/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+Current Workshop description copy: [`releases/1.0.2/`](releases/1.0.2/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+
+## What's new in 1.0.2
+
+- **No more failed-route loops** — identical vehicle or indoor failures retry with backoff and stop after three attempts until the destination, movement mode, or player position changes materially.
+- **Faster, bounded vehicle routing** — one cancelable multi-start/multi-target search reuses its arrays and binary heap instead of launching many allocation-heavy A* searches.
+- **Reachable one-way arrivals** — a bounded direction-diverse fallback finds a nearby reachable road when the six closest destination lanes form an inaccessible directed pocket.
+- **Industry City fixes** — the audited Road 213 terminal U-turn is restored, and dense Road 236 lanes can no longer hide a nearby reachable arrival road.
+- **Safer asynchronous results** — canceled or superseded searches cannot replace the route for the current request.
+- **Quieter hot paths** — diagnostics are buffered and throttled, lazy messages are skipped when disabled, and foot routes refresh only after useful movement with a valid active NavMesh agent.
+
+The 1.0.2 routing core passes 203 automated tests and a 60,000-call stability soak covering successful Industry routes and expected unreachable-route rejection.
 
 ## Features
 
@@ -135,7 +146,16 @@ Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paque
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
-**Nouveauté 1.0.2 :** les itinéraires véhicule impossibles ne sont plus recalculés en boucle. La recherche routière réutilise sa mémoire, choisit une arrivée atteignable quand les voies les plus proches sont à sens unique et corrige le terminal Industry de la Road 213. Les diagnostics sont tamponnés et limités, et les trajets à pied ne sollicitent plus inutilement le NavMesh sans déplacement utile.
+## Nouveautés de la version 1.0.2
+
+- **Fin des boucles d’échec** — un même trajet véhicule ou intérieur est retenté avec temporisation, puis bloqué après trois échecs jusqu’à un changement réel de destination, de mode ou de position.
+- **Routage véhicule plus rapide et borné** — une recherche multi-départs/multi-arrivées annulable réutilise ses tableaux et son tas binaire au lieu de lancer de nombreux A* fortement allocateurs.
+- **Arrivées à sens unique atteignables** — un repli borné et diversifié par direction choisit une route proche réellement accessible lorsque les six voies les plus proches forment une poche orientée fermée.
+- **Correctifs Industry City** — le demi-tour terminal audité de la Road 213 est restauré et les voies denses de la Road 236 ne masquent plus une arrivée atteignable voisine.
+- **Résultats asynchrones sûrs** — une recherche annulée ou remplacée ne peut plus écraser l’itinéraire de la demande courante.
+- **Chemins critiques allégés** — diagnostics tamponnés et limités, messages paresseux ignorés lorsqu’ils sont désactivés, et recalcul à pied seulement après un déplacement utile avec un agent NavMesh actif.
+
+Le cœur de routage 1.0.2 passe 203 tests automatisés et un test d’endurance de 60 000 calculs couvrant les trajets réussis vers Industry ainsi que le rejet attendu des trajets inaccessibles.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 

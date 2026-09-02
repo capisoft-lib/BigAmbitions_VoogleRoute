@@ -77,6 +77,33 @@ function Get-ManifestFingerprint {
     }
 }
 
+function Remove-EmbeddedLocalPdbPath {
+    param([Parameter(Mandatory = $true)][string] $DllPath)
+
+    $bytes = [System.IO.File]::ReadAllBytes($DllPath)
+    $ascii = [System.Text.Encoding]::ASCII.GetString($bytes)
+    $matches = @([regex]::Matches(
+        $ascii,
+        'C:\\Users\\[^\x00\r\n]{1,512}?\.pdb(?=\x00)',
+        [System.Text.RegularExpressions.RegexOptions]::IgnoreCase))
+
+    foreach ($match in $matches) {
+        [System.Array]::Clear($bytes, $match.Index, $match.Length)
+    }
+    if ($matches.Count -gt 0) {
+        [System.IO.File]::WriteAllBytes($DllPath, $bytes)
+    }
+
+    $sanitizedBytes = [System.IO.File]::ReadAllBytes($DllPath)
+    $sanitizedAscii = [System.Text.Encoding]::ASCII.GetString($sanitizedBytes)
+    $sanitizedUnicode = [System.Text.Encoding]::Unicode.GetString($sanitizedBytes)
+    if ($sanitizedAscii.Contains('C:\Users\') -or $sanitizedUnicode.Contains('C:\Users\')) {
+        throw "Prepared release DLL still contains a local Windows user path."
+    }
+
+    return $matches.Count
+}
+
 Assert-ChildPath -Path $sourceFull -Parent $outputRootFull -Label "Workshop source"
 Assert-ChildPath -Path $targetFull -Parent $modsLocalRootFull -Label "Workshop target"
 if ((Split-Path -Leaf $targetFull) -ne $modId) {
@@ -167,11 +194,24 @@ try {
 
     Copy-Item -LiteralPath $sourceFull -Destination $targetFull -Recurse
 
+    $preparedDllPath = Join-Path $targetFull "VoogleRoute.dll"
+    $sanitizedPdbPathCount = Remove-EmbeddedLocalPdbPath -DllPath $preparedDllPath
+    if ($sanitizedPdbPathCount -gt 0) {
+        Write-Host "[sanitize] Removed $sanitizedPdbPathCount local CodeView PDB path(s) from the prepared DLL."
+    }
+
     $targetManifest = Get-PackageManifest -Root $targetFull
-    $sourceJson = $sourceManifest | ConvertTo-Json -Depth 4 -Compress
-    $targetJson = $targetManifest | ConvertTo-Json -Depth 4 -Compress
+    $sourceJson = @($sourceManifest | Where-Object RelativePath -ne "VoogleRoute.dll") |
+        ConvertTo-Json -Depth 4 -Compress
+    $targetJson = @($targetManifest | Where-Object RelativePath -ne "VoogleRoute.dll") |
+        ConvertTo-Json -Depth 4 -Compress
     if ($sourceJson -ne $targetJson) {
-        throw "Prepared Workshop folder differs from official output."
+        throw "Prepared Workshop folder differs from official output outside the sanitized release DLL."
+    }
+    $sourceDll = @($sourceManifest | Where-Object RelativePath -eq "VoogleRoute.dll")
+    $targetDll = @($targetManifest | Where-Object RelativePath -eq "VoogleRoute.dll")
+    if ($sourceDll.Count -ne 1 -or $targetDll.Count -ne 1 -or $sourceDll[0].Length -ne $targetDll[0].Length) {
+        throw "Prepared release DLL inventory or length differs from official output."
     }
 }
 catch {
@@ -184,8 +224,8 @@ catch {
     throw
 }
 
-$contentBytes = [long](($sourceManifest | Measure-Object Length -Sum).Sum)
-$previewBytes = [long](($sourceManifest | Where-Object RelativePath -eq "Thumbnail.png" | Measure-Object Length -Sum).Sum)
+$contentBytes = [long](($targetManifest | Measure-Object Length -Sum).Sum)
+$previewBytes = [long](($targetManifest | Where-Object RelativePath -eq "Thumbnail.png" | Measure-Object Length -Sum).Sum)
 $dllPath = Join-Path $targetFull "VoogleRoute.dll"
 $result = [pscustomobject]@{
     ModId = $modId
@@ -196,9 +236,10 @@ $result = [pscustomobject]@{
     PackageBytes = $contentBytes
     SteamContentBytesWithoutPreview = $contentBytes - $previewBytes
     DllSha256 = (Get-FileHash -LiteralPath $dllPath -Algorithm SHA256).Hash
+    SanitizedPdbPathCount = $sanitizedPdbPathCount
     SubwayCsvSha256 = $subwayValidation.Sha256
     SubwayStationCount = $subwayValidation.StationCount
-    PackageFingerprint = Get-ManifestFingerprint -Manifest $sourceManifest
+    PackageFingerprint = Get-ManifestFingerprint -Manifest $targetManifest
     ReadyForWorkshop = $true
 }
 
