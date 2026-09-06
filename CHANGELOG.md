@@ -4,6 +4,10 @@ All notable changes to **Voogle Route** are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- **Terminal return routes** — sync six audited U-turns on Roads 210, 222, 230, 233, 237 and 246. The route turns before the old terminal rather than snapping to the remaining inbound dead-end tail. See the [23-point before/after audit](PathFinding/docs/navigation-deadends/README.md); the exact reported bridge wall still needs in-game confirmation.
+
 ### Added
 
 - **Hide/Show UI shortcut** — configurable under **Options → Mods**; default **Ctrl+Shift+C**. Toggles all Voogle Route windows on every screen (HUD, indoor panel, city-map bookmarks and History). Route lines stay visible. The binding is session-only and does not change Display Outside / Display Inside.
