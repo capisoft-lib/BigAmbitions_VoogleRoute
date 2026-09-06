@@ -150,7 +150,7 @@ namespace VoogleRoute.UI
             if (_root == null)
                 return;
 
-            if (GameState.IsOverlayBlockingNavigation() && IsOpen)
+            if ((GameState.IsModUiHidden || GameState.IsOverlayBlockingNavigation()) && IsOpen)
                 Close();
         }
 

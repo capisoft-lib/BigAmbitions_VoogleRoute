@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Atajos",
   "voogle_route_options_route_shortcut": "Atajo de línea de ruta",
   "voogle_route_options_auto_move_shortcut": "Atajo de marcha / conducción automática",
+  "voogle_route_options_hide_ui_shortcut": "Mostrar/ocultar la interfaz",
   "voogle_route_shortcut_unbound": "Sin asignar",
   "voogle_route_shortcut_capture": "Pulsa una tecla...",
   "voogle_route_shortcut_conflict": "Conflicto"

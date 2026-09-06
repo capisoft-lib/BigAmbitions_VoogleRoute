@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Klávesové zkratky",
   "voogle_route_options_route_shortcut": "Zkratka linie trasy",
   "voogle_route_options_auto_move_shortcut": "Zkratka automatické chůze / jízdy",
+  "voogle_route_options_hide_ui_shortcut": "Skrýt/zobrazit UI",
   "voogle_route_shortcut_unbound": "Nepřiřazeno",
   "voogle_route_shortcut_capture": "Stiskněte klávesu...",
   "voogle_route_shortcut_conflict": "Konflikt"

@@ -32,6 +32,7 @@ namespace VoogleRoute.UI
         private static float _textScale = 1f;
         private static float _panelHeight;
         private static bool _restoreAfterUnblock;
+        private static bool _restoreAfterUiHide;
         private static bool _mapVisibilitySnapshotActive;
         private static bool _normalVisibilityBeforeMap;
         private static int _ignoreEscapeFrame = -1;
@@ -218,6 +219,7 @@ namespace VoogleRoute.UI
                 return;
 
             _restoreAfterUnblock = false;
+            _restoreAfterUiHide = false;
             RefreshLocalizedText();
             RefreshList(fullDistanceRefresh: true);
             _root.SetActive(true);
@@ -272,6 +274,14 @@ namespace VoogleRoute.UI
             _normalVisibilityBeforeMap = false;
             _ignoreEscapeFrame = Time.frameCount;
 
+            if (GameState.IsModUiHidden)
+            {
+                _restoreAfterUiHide = restoreNormalVisibility;
+                Close();
+                return;
+            }
+
+            _restoreAfterUiHide = false;
             if (restoreNormalVisibility)
                 Open();
             else
@@ -319,19 +329,32 @@ namespace VoogleRoute.UI
             if (_root == null)
                 return;
 
+            if (GameState.IsModUiHidden)
+            {
+                if (IsOpen)
+                {
+                    _restoreAfterUiHide = true;
+                    Close();
+                }
+
+                return;
+            }
+
             if (!ModConfig.DisplayOutsideEnabled)
             {
                 if (IsOpen)
                     Close();
 
+                _restoreAfterUiHide = false;
                 return;
             }
 
             if (!GameState.IsBlockingVisitHistory())
             {
-                if (_restoreAfterUnblock)
+                if (_restoreAfterUnblock || _restoreAfterUiHide)
                 {
                     _restoreAfterUnblock = false;
+                    _restoreAfterUiHide = false;
                     Open();
                 }
 
@@ -645,6 +668,7 @@ namespace VoogleRoute.UI
             _scrollList = null;
             _panelHeight = 0f;
             _restoreAfterUnblock = false;
+            _restoreAfterUiHide = false;
             _mapVisibilitySnapshotActive = false;
             _normalVisibilityBeforeMap = false;
             _ignoreEscapeFrame = -1;

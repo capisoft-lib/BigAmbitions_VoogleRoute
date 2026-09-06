@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Pikanäppäimet",
   "voogle_route_options_route_shortcut": "Reittiviivan pikanäppäin",
   "voogle_route_options_auto_move_shortcut": "Automaattisen kävelyn / ajon pikanäppäin",
+  "voogle_route_options_hide_ui_shortcut": "Piilota/näytä käyttöliittymä",
   "voogle_route_shortcut_unbound": "Ei määritetty",
   "voogle_route_shortcut_capture": "Paina näppäintä...",
   "voogle_route_shortcut_conflict": "Ristiriita"

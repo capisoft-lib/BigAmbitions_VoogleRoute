@@ -14,6 +14,11 @@ namespace VoogleRoute.Navigation
     internal static class AutoDriveSkipTravelService
     {
         private static bool _inProgress;
+        private static bool _waitingForSelectedRoute;
+
+        private const float SelectedRouteTimeoutSeconds = 10f;
+        private const float SelectedRouteRetryDelaySeconds = 0.75f;
+        private const int SelectedRouteMaxAttempts = 3;
 
         internal static bool IsInProgress => _inProgress;
 
@@ -45,6 +50,96 @@ namespace VoogleRoute.Navigation
             }
 
             TryShowConfirmPopup();
+        }
+
+        /// <summary>
+        /// A newly selected map destination invalidates the vehicle-route cache. Wait
+        /// for that route to be rebuilt before opening the auto-drive confirmation.
+        /// </summary>
+        internal static void RequestFromMapSelection()
+        {
+            if (_inProgress || _waitingForSelectedRoute)
+                return;
+
+            if (!MovementModeDetector.CanUseAutoDrive())
+            {
+                Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                return;
+            }
+
+            if (!NavigationTargetTracker.HasMapGpsTarget)
+            {
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+                return;
+            }
+
+            var host = VoogleRouteDriver.Instance;
+            if (host == null)
+            {
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+                return;
+            }
+
+            host.StartCoroutine(WaitForSelectedRouteCoroutine());
+        }
+
+        private static IEnumerator WaitForSelectedRouteCoroutine()
+        {
+            _waitingForSelectedRoute = true;
+            try
+            {
+                // Let the map close and the regular navigation loop observe the new
+                // vanilla destination before requesting an explicit rebuild.
+                yield return null;
+
+                var deadline = Time.unscaledTime + SelectedRouteTimeoutSeconds;
+                var nextAttemptTime = 0f;
+                var attempts = 0;
+
+                while (Time.unscaledTime < deadline)
+                {
+                    if (!MovementModeDetector.CanUseAutoDrive())
+                    {
+                        Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                        yield break;
+                    }
+
+                    if (!NavigationTargetTracker.HasMapGpsTarget)
+                    {
+                        Notifications.ShowError("voogle_route_autodrive_no_route");
+                        yield break;
+                    }
+
+                    if (PathFinderService.TryGetCachedRouteForDisplay(out _))
+                    {
+                        TryShowConfirmPopup();
+                        yield break;
+                    }
+
+                    if (!PathFinderService.IsAsyncRecalcInProgress &&
+                        attempts < SelectedRouteMaxAttempts &&
+                        Time.unscaledTime >= nextAttemptTime)
+                    {
+                        attempts++;
+                        nextAttemptTime = Time.unscaledTime + SelectedRouteRetryDelaySeconds;
+                        PathFinderService.GetRoute(
+                            forceRecalc: true,
+                            requestSource: "map_building_auto_drive");
+                    }
+
+                    if (attempts >= SelectedRouteMaxAttempts &&
+                        !PathFinderService.IsAsyncRecalcInProgress)
+                        break;
+
+                    yield return null;
+                }
+
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+            }
+            finally
+            {
+                _waitingForSelectedRoute = false;
+            }
         }
 
         private static void TryShowConfirmPopup()
