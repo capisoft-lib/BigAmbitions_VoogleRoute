@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "gameVersion": "EA 0.11 / 1.0",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "1.0.2: prevents failed vehicle routes from recalculating indefinitely, replaces repeated allocation-heavy A* searches with a bounded reusable search, restores the audited Road 213 Industry terminal, adds a reachable-arrival fallback for dense one-way pockets such as Road 236, buffers diagnostics, and avoids unnecessary foot/NavMesh refreshes. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
+  "releaseNotes": "1.0.3: configurable Hide/Show UI shortcut, contextual AUTO-WALK/AUTO-DRIVE on the city map, route readiness before Auto Drive confirmation, and automatic building-panel sizing. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }

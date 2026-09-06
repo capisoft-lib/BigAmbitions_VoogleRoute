@@ -1,0 +1,1 @@
+Version 1.0.3 adds quick map navigation and a configurable shortcut to hide the interface. The building panel now grows to fit its navigation button.

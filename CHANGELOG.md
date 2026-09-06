@@ -2,11 +2,17 @@
 
 All notable changes to **Voogle Route** are documented here.
 
-## [Unreleased]
+## [1.0.3] - 2026-09-06
 
 ### Added
 
-- **Hide/Show UI shortcut** — configurable under **Options → Mods**; default **Ctrl+Shift+C**. Toggles all Voogle Route windows on every screen (HUD, indoor panel, city-map bookmarks and History). Route lines stay visible. The binding is session-only and does not change Display Outside / Display Inside.
+- Configurable Hide/Show UI shortcut (Ctrl+Shift+C by default) hides Voogle Route windows while keeping route lines visible.
+- Start AUTO-WALK or AUTO-DRIVE directly from the selected building on the city map.
+
+### Fixed
+
+- Map actions synchronize the selected destination; AUTO-DRIVE waits for the new route before showing its confirmation.
+- The building panel automatically expands to enclose the navigation button and preserve its bottom margin.
 
 ## [1.0.2] - 2026-09-02
 

@@ -1,0 +1,1 @@
+La version 1.0.3 ajoute la navigation directe depuis la carte et un raccourci configurable pour masquer l’interface. Le panneau du bâtiment s’agrandit pour accueillir son bouton de navigation.

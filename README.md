@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.2` package supports both |
+| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.3` package supports both |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/1331550/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
 | **Requires** | [`LIB_BaPlayerLocation 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) and [`LIB_BaUnifiedUI 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI), both installed and enabled separately |
@@ -24,23 +24,19 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Current Workshop description copy: [`releases/1.0.2/`](releases/1.0.2/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+Current Workshop description copy: [`releases/1.0.3/`](releases/1.0.3/), in English and French. Earlier release texts remain in [`releases/`](releases/).
 
-## What's new in 1.0.2
+## What's new in 1.0.3
 
-- **No more failed-route loops** — identical vehicle or indoor failures retry with backoff and stop after three attempts until the destination, movement mode, or player position changes materially.
-- **Faster, bounded vehicle routing** — one cancelable multi-start/multi-target search reuses its arrays and binary heap instead of launching many allocation-heavy A* searches.
-- **Reachable one-way arrivals** — a bounded direction-diverse fallback finds a nearby reachable road when the six closest destination lanes form an inaccessible directed pocket.
-- **Industry City fixes** — the audited Road 213 terminal U-turn is restored, and dense Road 236 lanes can no longer hide a nearby reachable arrival road.
-- **Safer asynchronous results** — canceled or superseded searches cannot replace the route for the current request.
-- **Quieter hot paths** — diagnostics are buffered and throttled, lazy messages are skipped when disabled, and foot routes refresh only after useful movement with a valid active NavMesh agent.
-
-The 1.0.2 routing core passes 203 automated tests and a 60,000-call stability soak covering successful Industry routes and expected unreachable-route rejection.
+- Configurable Hide/Show UI shortcut (Ctrl+Shift+C by default) hides Voogle Route windows while keeping route lines visible.
+- Start AUTO-WALK or AUTO-DRIVE directly from the selected building on the city map.
+- Map actions synchronize the selected destination; AUTO-DRIVE waits for the new route before showing its confirmation.
+- The building panel automatically expands to enclose the navigation button and preserve its bottom margin.
 
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
-- **One cross-version package** — the same Voogle Route 1.0.2 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
+- **One cross-version package** — the same Voogle Route 1.0.3 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding), with bounded reachable-arrival fallback when the nearest one-way lanes cannot be entered
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
@@ -142,20 +138,16 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.2 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
+Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.3 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
-## Nouveautés de la version 1.0.2
+## Nouveautés de la version 1.0.3
 
-- **Fin des boucles d’échec** — un même trajet véhicule ou intérieur est retenté avec temporisation, puis bloqué après trois échecs jusqu’à un changement réel de destination, de mode ou de position.
-- **Routage véhicule plus rapide et borné** — une recherche multi-départs/multi-arrivées annulable réutilise ses tableaux et son tas binaire au lieu de lancer de nombreux A* fortement allocateurs.
-- **Arrivées à sens unique atteignables** — un repli borné et diversifié par direction choisit une route proche réellement accessible lorsque les six voies les plus proches forment une poche orientée fermée.
-- **Correctifs Industry City** — le demi-tour terminal audité de la Road 213 est restauré et les voies denses de la Road 236 ne masquent plus une arrivée atteignable voisine.
-- **Résultats asynchrones sûrs** — une recherche annulée ou remplacée ne peut plus écraser l’itinéraire de la demande courante.
-- **Chemins critiques allégés** — diagnostics tamponnés et limités, messages paresseux ignorés lorsqu’ils sont désactivés, et recalcul à pied seulement après un déplacement utile avec un agent NavMesh actif.
-
-Le cœur de routage 1.0.2 passe 203 tests automatisés et un test d’endurance de 60 000 calculs couvrant les trajets réussis vers Industry ainsi que le rejet attendu des trajets inaccessibles.
+- Le raccourci configurable masquer/afficher (Ctrl+Maj+C par défaut) masque les fenêtres Voogle Route tout en conservant les lignes de trajet.
+- Lancez MARCHE AUTO ou CONDUITE AUTO directement depuis le bâtiment sélectionné sur la carte.
+- Les actions de la carte synchronisent la destination sélectionnée ; CONDUITE AUTO attend le nouveau trajet avant de proposer sa confirmation.
+- Le panneau du bâtiment s’agrandit automatiquement pour contenir le bouton de navigation et conserver sa marge inférieure.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 
