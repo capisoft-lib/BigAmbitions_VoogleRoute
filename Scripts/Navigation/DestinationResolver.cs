@@ -44,6 +44,37 @@ namespace VoogleRoute.Navigation
             NavigationTargetTracker.SetMapGpsTarget(worldPos);
             return true;
         }
+
+        /// <summary>
+        /// Syncs the map target from the already-selected vanilla building instead of
+        /// asking CityManager to resolve the same address again during the button click.
+        /// </summary>
+        internal static bool TrySyncBuildingNow(CityBuildingController buildingController)
+        {
+            if (!GameState.IsWorldReady() || buildingController?.building == null)
+                return false;
+
+            var address = buildingController.building.Address;
+            if (IsInvalidAddress(address))
+                return false;
+
+            _lastResolvedAddress = address;
+            _hasLastAddress = true;
+            _lastPollTime = Time.unscaledTime;
+
+            if (!TryGetEntranceDoorPosition(buildingController, out var worldPos))
+            {
+                var poi = buildingController.GetPoiPosition();
+                if (poi == null)
+                    return false;
+
+                worldPos = poi.position;
+            }
+
+            ModLog.Info("Selected building destination synced: " + address + " -> " + worldPos);
+            NavigationTargetTracker.SetMapGpsTarget(worldPos);
+            return true;
+        }
     
         private static void SyncFromMapDestination()
         {

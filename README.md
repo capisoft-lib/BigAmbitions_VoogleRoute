@@ -56,7 +56,7 @@ The 1.0.2 routing core passes 203 automated tests and a 60,000-call stability so
 - **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`
 - **UI** — vanilla-style panels supplied by the separate **LIB BA Unified UI** Workshop dependency
 - **Draggable UI** — all seven interactive Voogle Route windows remember their positions
-- **Configurable shortcuts** — route line and auto-move actions can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y** and **Ctrl+Shift+X**
+- **Configurable shortcuts** — route line, auto-move and Hide/Show UI can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y**, **Ctrl+Shift+X** and **Ctrl+Shift+C**
 - **Configurable route colors** — on-foot, indoor and vehicle lines each have a native color picker under **Options → Mods**
 - **Indoor navigation** — optional route line and auto-walk to the building exit (**WAY OUT** / **GET OUT**)
 - **Hamptons exits** — dedicated entrance-first routing for open-world mansion plots and their property gates
@@ -159,7 +159,7 @@ Le cœur de routage 1.0.2 passe 203 tests automatisés et un test d’endurance 
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 
-En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi, raccourcis et couleurs des trois types de trajet dans **Options → Mods**. Favoris dans `bookmarks.json`. Les fenêtres sont déplaçables et les actions principales utilisent par défaut **Ctrl+Maj+Y** et **Ctrl+Maj+X**, configurables dans les options du mod.
+En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi, raccourcis et couleurs des trois types de trajet dans **Options → Mods**. Favoris dans `bookmarks.json`. Les fenêtres sont déplaçables et les actions principales utilisent par défaut **Ctrl+Maj+Y**, **Ctrl+Maj+X** et **Ctrl+Maj+C** (masquer / afficher l'interface), configurables dans les options du mod.
 
 **Routage véhicule :** voir [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding).
 

@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Gyorsbillentyűk",
   "voogle_route_options_route_shortcut": "Útvonalvonal gyorsbillentyű",
   "voogle_route_options_auto_move_shortcut": "Automatikus séta / vezetés gyorsbillentyű",
+  "voogle_route_options_hide_ui_shortcut": "UI elrejtése/megjelenítése",
   "voogle_route_shortcut_unbound": "Nincs hozzárendelve",
   "voogle_route_shortcut_capture": "Nyomjon meg egy billentyűt...",
   "voogle_route_shortcut_conflict": "Ütközés"

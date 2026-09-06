@@ -132,9 +132,9 @@ namespace VoogleRoute.UI
             }
 
             var indoor = GameState.IsIndoorNavigationContext();
-            var active = indoor
+            var active = !GameState.IsModUiHidden && (indoor
                 ? GameState.ShouldShowIndoorNavigationPanel()
-                : GameState.ShouldShowNavigationPanel() && MovementModeDetector.ShouldShowActionPanel();
+                : GameState.ShouldShowNavigationPanel() && MovementModeDetector.ShouldShowActionPanel());
             if (_forceApply || active != _lastActive)
             {
                 _lastActive = active;
@@ -174,6 +174,12 @@ namespace VoogleRoute.UI
             if (active && !RouteSettingsUi.IsOpen && !AutoDriveConfirmPopup.IsOpen &&
                 !CityMapBookmarkAddDialog.IsOpen && !VisitHistoryPanel.IsOpen && !GameState.IsCityMapOpen())
                 BaUiFocus.ReleaseForMovement();
+        }
+
+        internal static void ForceUpdateVisibility()
+        {
+            _forceApply = true;
+            UpdateVisibility();
         }
 
         internal static void RefreshLocalizedText() => RefreshVisual();

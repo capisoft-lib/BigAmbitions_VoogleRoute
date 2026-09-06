@@ -3,52 +3,42 @@ using Streets;
 using TMPro;
 using UI;
 using UI.InGameUI;
+using UI.Notification;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using VoogleRoute.Navigation;
 
-using Capisoft.Lib.BaUnifiedUI.Chrome;
-using Capisoft.Lib.BaUnifiedUI.Controls;
 using Capisoft.Lib.BaUnifiedUI.Core;
-using Capisoft.Lib.BaUnifiedUI.Fluent;
 
 namespace VoogleRoute.UI
 {
-    /// <summary>Drive / walk shortcuts beside the vanilla city-map set-destination button.</summary>
+    /// <summary>Adds a real third action button to the vanilla city-map building panel.</summary>
     internal static class CityMapBuildingNavBar
     {
-        private const string RootName = "VoogleRoute_MapBuildingNav_v1";
-        private const int CanvasSortOrder = 11500;
-        private const float ButtonWidth = 132f;
-        private const float ButtonHeight = 40f;
-        private const float ButtonGap = 8f;
-        private const float AnchorGapPx = 10f;
-
+        private const string RootName = "VoogleRoute_MapBuildingAutoAction_v3";
         private static GameObject _root;
-        private static RectTransform _barRect;
-        private static Button _driveButton;
-        private static Button _walkButton;
-        private static TextMeshProUGUI _driveLabel;
-        private static TextMeshProUGUI _walkLabel;
+        private static Button _sourceButton;
+        private static RectTransform _actionRect;
+        private static Button _actionButton;
+        private static TextMeshProUGUI _actionLabel;
 
         internal static void Tick()
         {
-            if (!ShouldShow())
+            if (!ShouldShow(out var resume))
             {
                 if (_root != null)
                     _root.SetActive(false);
                 return;
             }
 
-            EnsureCreated();
+            EnsureCreated(resume);
             if (_root == null)
                 return;
 
             _root.SetActive(true);
             RefreshLocalizedText();
-            RefreshInteractable();
-            SyncPosition();
+            _actionButton.interactable = true;
         }
 
         internal static void Suppress()
@@ -59,160 +49,114 @@ namespace VoogleRoute.UI
 
         internal static void RefreshLocalizedText()
         {
-            if (_driveLabel != null)
-                _driveLabel.text = ModUiText.MapDriveThere;
-            if (_walkLabel != null)
-                _walkLabel.text = ModUiText.MapWalkThere;
+            if (_actionLabel != null)
+                _actionLabel.text = ResolveActionLabel();
         }
 
-        private static bool ShouldShow()
+        private static bool ShouldShow(out BuildingResume resume)
         {
-            if (!GameState.ShouldShowCityMapBookmarks())
+            resume = null;
+
+            if (!GameState.ShouldShowCityMapBookmarks() || IsTaxiMode())
                 return false;
 
-            if (IsTaxiMode())
-                return false;
-
-            if (!TryGetBuildingResume(out var resume))
+            if (!TryGetBuildingResume(out resume))
                 return false;
 
             var cbc = resume.CityBuildingController;
             if (cbc == null || cbc.building == null)
                 return false;
 
-            var destButton = resume.setDestinationButton;
-            if (destButton == null || !destButton.gameObject.activeInHierarchy)
-                return false;
-
-            return MovementModeDetector.CurrentMode is MovementMode.OnFoot or MovementMode.Vehicle;
+            var destinationButton = resume.setDestinationButton;
+            return destinationButton != null && destinationButton.gameObject.activeInHierarchy;
         }
 
-        private static void EnsureCreated()
+        private static void EnsureCreated(BuildingResume resume)
         {
-            VoogleRoutePanelLifecycle.DestroyIfStale(ref _root, RootName, Destroy);
+            var sourceButton = resume?.setDestinationButton;
+            if (sourceButton == null)
+                return;
+
+            if (_root != null &&
+                (_sourceButton != sourceButton || _root.transform.parent != sourceButton.transform.parent))
+            {
+                DestroyActionButton();
+            }
+
             if (_root != null)
                 return;
 
-            BaUi.EnsureReady();
-
-            _root = new GameObject(RootName);
-            Object.DontDestroyOnLoad(_root);
-            BaUiChrome.SetupOverlayCanvas(_root, CanvasSortOrder);
-            var stamp = _root.AddComponent<BaUiLayoutStamp>();
-            stamp.LayoutRevision = BaUiVersion.LayoutRevision;
-
-            _barRect = BaUiWidgets.CreateRect(_root.transform, "Bar");
-            _barRect.anchorMin = Vector2.zero;
-            _barRect.anchorMax = Vector2.zero;
-            _barRect.pivot = new Vector2(0f, 0.5f);
-
-            var scale = Mathf.Max(1f, ModConfig.HudButtonScale);
-            var totalWidth = ButtonWidth * 2f + ButtonGap;
-            _barRect.sizeDelta = new Vector2(totalWidth, ButtonHeight);
-
-            var driveResult = BaUiControls.CreateVanillaButton(
-                _barRect,
-                ModUiText.MapDriveThere,
-                BaButtonStyle.Blue,
-                scale,
-                ButtonWidth,
-                ButtonHeight,
-                BaUiFocus.Wrap((UnityAction)OnDriveClicked));
-            _driveButton = driveResult.Button;
-            _driveLabel = driveResult.Label;
-            PositionButton(driveResult.Graphic.rectTransform, 0f);
-
-            var walkResult = BaUiControls.CreateVanillaButton(
-                _barRect,
-                ModUiText.MapWalkThere,
-                BaButtonStyle.Blue,
-                scale,
-                ButtonWidth,
-                ButtonHeight,
-                BaUiFocus.Wrap((UnityAction)OnWalkClicked));
-            _walkButton = walkResult.Button;
-            _walkLabel = walkResult.Label;
-            PositionButton(walkResult.Graphic.rectTransform, ButtonWidth + ButtonGap);
-
+            // Clone the actual green SET DESTINATION control in the actual vanilla
+            // hierarchy. The source button remains untouched and keeps its own action.
+            _root = Object.Instantiate(sourceButton.gameObject, sourceButton.transform.parent, false);
+            _root.name = RootName;
             _root.SetActive(false);
+
+            _sourceButton = sourceButton;
+            _actionButton = _root.GetComponent<Button>();
+            _actionRect = _root.GetComponent<RectTransform>();
+            _actionLabel = _root.GetComponentInChildren<TextMeshProUGUI>(true);
+
+            if (_actionButton == null || _actionRect == null || _actionLabel == null)
+            {
+                ModLog.Error("City map building nav: could not clone the vanilla destination button.");
+                DestroyActionButton();
+                return;
+            }
+
+            // Remove the copied vanilla SET DESTINATION event only from the clone.
+            _actionButton.onClick = new Button.ButtonClickedEvent();
+            _actionButton.onClick.AddListener(BaUiFocus.Wrap((UnityAction)OnActionClicked));
+
+            var layoutElement = _root.GetComponent<LayoutElement>() ?? _root.AddComponent<LayoutElement>();
+            // Options and Panel both use native VerticalLayoutGroups; Panel also
+            // has a ContentSizeFitter (vertical PreferredSize). Include our row in
+            // that calculation so the background encloses it after canvas layout.
+            // Writing panel.sizeDelta in LateUpdate loses to the fitter and leaves
+            // this button outside the background. Native spacing/padding already
+            // supplies the gap and bottom margin, and collapses when we hide it.
+            layoutElement.ignoreLayout = false;
+            _root.transform.SetSiblingIndex(sourceButton.transform.GetSiblingIndex() + 1);
+            RefreshLocalizedText();
         }
 
-        private static void PositionButton(RectTransform rect, float x)
-        {
-            rect.anchorMin = new Vector2(0f, 0.5f);
-            rect.anchorMax = new Vector2(0f, 0.5f);
-            rect.pivot = new Vector2(0f, 0.5f);
-            rect.anchoredPosition = new Vector2(x, 0f);
-        }
+        private static string ResolveActionLabel() =>
+            MovementModeDetector.CanUseAutoDrive()
+                ? ModUiText.AutoDrive
+                : ModUiText.AutoWalk;
 
-        private static void RefreshInteractable()
+        private static void OnActionClicked()
         {
-            if (_driveButton == null || _walkButton == null)
+            var useAutoDrive = MovementModeDetector.CanUseAutoDrive();
+            if (!TryNavigateSelectedBuilding(useAutoDrive))
                 return;
 
-            var inVehicle = MovementModeDetector.CanUseAutoDrive();
-            var onFoot = MovementModeDetector.IsEffectivelyOnFootForNavigation();
-            _driveButton.interactable = inVehicle;
-            _walkButton.interactable = onFoot;
+            ModLog.Info("City map building nav: " + (useAutoDrive ? "auto-drive." : "auto-walk."));
         }
 
-        private static void SyncPosition()
-        {
-            if (_barRect == null || !TryGetBuildingResume(out var resume))
-                return;
-
-            var anchor = resume.setDestinationButton?.GetComponent<RectTransform>();
-            if (anchor == null)
-                return;
-
-            var cam = GameManager.GetMainCamera();
-
-            var worldCenter = anchor.TransformPoint(anchor.rect.center);
-            var screenPoint = RectTransformUtility.WorldToScreenPoint(cam, worldCenter);
-            var barWidth = _barRect.sizeDelta.x;
-            var anchorHalfWidth = anchor.rect.width * 0.5f;
-
-            _barRect.position = new Vector3(
-                screenPoint.x - anchorHalfWidth - AnchorGapPx - barWidth,
-                screenPoint.y,
-                0f);
-        }
-
-        private static void OnDriveClicked()
-        {
-            if (!TryNavigateSelectedBuilding(drive: true))
-                return;
-
-            ModLog.Info("City map building nav: drive there.");
-        }
-
-        private static void OnWalkClicked()
-        {
-            if (!TryNavigateSelectedBuilding(drive: false))
-                return;
-
-            ModLog.Info("City map building nav: walk there.");
-        }
-
-        private static bool TryNavigateSelectedBuilding(bool drive)
+        private static bool TryNavigateSelectedBuilding(bool useAutoDrive)
         {
             if (!TryGetBuildingResume(out var resume))
                 return false;
 
-            var cbc = resume.CityBuildingController;
-            var address = cbc?.building?.Address;
+            var buildingController = resume.CityBuildingController;
+            var address = buildingController?.building?.Address;
             if (address == null)
                 return false;
 
             VanillaDestinationService.SetMapDestination(address);
-            DestinationResolver.TrySyncAddressNow(address);
-
-            if (drive)
+            if (!DestinationResolver.TrySyncBuildingNow(buildingController) &&
+                !DestinationResolver.TrySyncAddressNow(address))
             {
-                if (!MovementModeDetector.CanUseAutoDrive())
-                    return false;
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+                return false;
+            }
 
-                AutoDriveSkipTravelService.RequestFromBookmark();
+            BookmarkQuickNavService.CloseNavigationPanels();
+
+            if (useAutoDrive)
+            {
+                AutoDriveSkipTravelService.RequestFromMapSelection();
                 return true;
             }
 
@@ -250,19 +194,18 @@ namespace VoogleRoute.UI
             }
         }
 
-        private static void Destroy()
+        private static void DestroyActionButton()
         {
             if (_root != null)
-            {
                 Object.Destroy(_root);
-                _root = null;
-            }
 
-            _barRect = null;
-            _driveButton = null;
-            _walkButton = null;
-            _driveLabel = null;
-            _walkLabel = null;
+            _root = null;
+            _sourceButton = null;
+            _actionRect = null;
+            _actionButton = null;
+            _actionLabel = null;
         }
+
+        private static void Destroy() => DestroyActionButton();
     }
 }

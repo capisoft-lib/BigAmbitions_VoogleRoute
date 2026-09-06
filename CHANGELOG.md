@@ -2,6 +2,12 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [Unreleased]
+
+### Added
+
+- **Hide/Show UI shortcut** — configurable under **Options → Mods**; default **Ctrl+Shift+C**. Toggles all Voogle Route windows on every screen (HUD, indoor panel, city-map bookmarks and History). Route lines stay visible. The binding is session-only and does not change Display Outside / Display Inside.
+
 ## [1.0.2] - 2026-09-02
 
 ### Changed

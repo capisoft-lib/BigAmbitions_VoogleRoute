@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Skróty",
   "voogle_route_options_route_shortcut": "Skrót linii trasy",
   "voogle_route_options_auto_move_shortcut": "Skrót automatycznego chodu / jazdy",
+  "voogle_route_options_hide_ui_shortcut": "Ukryj/pokaż interfejs",
   "voogle_route_shortcut_unbound": "Nieprzypisany",
   "voogle_route_shortcut_capture": "Naciśnij klawisz...",
   "voogle_route_shortcut_conflict": "Konflikt"
