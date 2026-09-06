@@ -79,9 +79,14 @@ namespace VoogleRoute
             }
         }
 
+        internal static bool IsModUiHidden => RouteActionShortcuts.UiHidden;
+
         /// <summary>Bookmarks panel: map open and no BizMan/purchase/dialog overlay on top.</summary>
         internal static bool ShouldShowCityMapBookmarks()
         {
+            if (IsModUiHidden)
+                return false;
+
             if (!IsCityMapOpen())
                 return false;
 

@@ -16,8 +16,8 @@ namespace VoogleRoute
 
         private void Update()
         {
-            VoogleRouteLoop.Tick();
             RouteActionShortcuts.Tick();
+            VoogleRouteLoop.Tick();
         }
     }
 }

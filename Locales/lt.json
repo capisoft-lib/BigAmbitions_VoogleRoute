@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Spartieji klavišai",
   "voogle_route_options_route_shortcut": "Maršruto linijos spartusis klavišas",
   "voogle_route_options_auto_move_shortcut": "Automatinio ėjimo / važiavimo spartusis klavišas",
+  "voogle_route_options_hide_ui_shortcut": "Slėpti/rodyti sąsają",
   "voogle_route_shortcut_unbound": "Nepriskirta",
   "voogle_route_shortcut_capture": "Paspauskite klavišą...",
   "voogle_route_shortcut_conflict": "Konfliktas"

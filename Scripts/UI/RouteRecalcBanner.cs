@@ -36,6 +36,9 @@ namespace VoogleRoute.UI
 
         internal static void Show()
         {
+            if (GameState.IsModUiHidden)
+                return;
+
             EnsureCreated();
             _shownAtUnscaled = Time.unscaledTime;
             _hideRequested = false;
@@ -47,6 +50,9 @@ namespace VoogleRoute.UI
 
         internal static void ShowUnavailable()
         {
+            if (GameState.IsModUiHidden)
+                return;
+
             EnsureCreated();
             _shownAtUnscaled = Time.unscaledTime;
             _hideRequested = false;
@@ -70,6 +76,12 @@ namespace VoogleRoute.UI
 
         internal static void Tick()
         {
+            if (GameState.IsModUiHidden)
+            {
+                ForceHide();
+                return;
+            }
+
             if (GameState.IsSubwayNavigationActive())
             {
                 ForceHide();

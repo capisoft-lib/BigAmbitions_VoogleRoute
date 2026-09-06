@@ -75,6 +75,7 @@
   "voogle_route_options_shortcuts_header": "Scorciatoie",
   "voogle_route_options_route_shortcut": "Scorciatoia linea percorso",
   "voogle_route_options_auto_move_shortcut": "Scorciatoia cammino / guida automatica",
+  "voogle_route_options_hide_ui_shortcut": "Mostra/nascondi interfaccia",
   "voogle_route_shortcut_unbound": "Non assegnato",
   "voogle_route_shortcut_capture": "Premi un tasto...",
   "voogle_route_shortcut_conflict": "Conflitto"
