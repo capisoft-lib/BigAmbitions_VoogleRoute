@@ -14,7 +14,7 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v39";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v40";
         private const string DragPositionId = "voogleroute:city-map-bookmarks";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
@@ -35,6 +35,12 @@ namespace VoogleRoute.UI
         private static BaUiScrollList _scrollList;
         private static float _textScale = 1f;
         private static float _panelHeight;
+        private static bool _showBusinesses = true;
+        private static Button _businessTab;
+        private static Button _bookmarksTab;
+        private static Button _addButton;
+        private static Button _clearButton;
+        private static readonly CityMapBusinessRows BusinessRows = new CityMapBusinessRows();
 
         private static readonly List<RowUi> QuickRows = new List<RowUi>();
         private static readonly List<RowUi> VehicleRows = new List<RowUi>();
@@ -140,6 +146,10 @@ namespace VoogleRoute.UI
                     .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1"))
                 .Content(c => c
                     .QuickRows(QuickBookmarkStore.SlotCount, MapActionsOnPanelTemplate, OnQuickRowCreated, out _)
+                    .HorizontalStack(BaUi.Layout.ButtonHeight, h => h
+                        .Button(ModUiText.BusinessesTitle, BaButtonStyle.Blue, () => SelectBusinessTab(true), FooterButtonWidth, "BusinessesTab")
+                        .Gap(BaUi.Layout.ButtonGap)
+                        .Button(ModUiText.BookmarksTitle, BaButtonStyle.Blue, () => SelectBusinessTab(false), FooterButtonWidth, "BookmarksTab"))
                     .Search(ModUiText.BookmarksSearchPlaceholder, OnSearchChanged, out search, OnSearchFieldSelected)
                     .PickHint(out _pickHintLabel)
                     .ScrollList(VisibleListRowCount, out _scrollList)
@@ -157,8 +167,18 @@ namespace VoogleRoute.UI
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
             _searchField = search?.Field;
             _searchPlaceholder = search?.Placeholder;
-            _addButtonLabel = built.Panel.Find("AddButton/Label")?.GetComponent<TextMeshProUGUI>();
-            _clearButtonLabel = built.Panel.Find("ClearButton/Label")?.GetComponent<TextMeshProUGUI>();
+            foreach (var button in built.Panel.GetComponentsInChildren<Button>(true))
+            {
+                switch (button.name)
+                {
+                    case "BusinessesTab": _businessTab = button; break;
+                    case "BookmarksTab": _bookmarksTab = button; break;
+                    case "AddButton": _addButton = button; break;
+                    case "ClearButton": _clearButton = button; break;
+                }
+            }
+            _addButtonLabel = _addButton?.GetComponentInChildren<TextMeshProUGUI>();
+            _clearButtonLabel = _clearButton?.GetComponentInChildren<TextMeshProUGUI>();
 
             BaUi.ApplyLayer(_root);
             _root.SetActive(false);
@@ -245,6 +265,7 @@ namespace VoogleRoute.UI
 
             var y = 0f;
             var activeCount = 0;
+            activeCount += BusinessRows.Layout(_scrollList, ref y);
             activeCount += BaUiListRowPools.LayoutHoldersInScroll(
                 _scrollList,
                 VehicleRows,
@@ -267,7 +288,10 @@ namespace VoogleRoute.UI
 
             SyncVehicleRows();
             SyncBookmarkRows();
-            _panelRect.sizeDelta = new Vector2(PanelWidth, _panelHeight);
+            var height = _showBusinesses
+                ? _panelHeight - BaUi.Layout.ButtonHeight - BaUiListMetrics.FooterTopMargin
+                : _panelHeight;
+            _panelRect.sizeDelta = new Vector2(PanelWidth, height);
             BaUiWidgets.RestoreDockedPanelChrome(_panelRect, PanelWidth, wideMapPanel: true);
             if (!_loggedBookmarksChrome)
             {
@@ -332,10 +356,12 @@ namespace VoogleRoute.UI
 
         internal static void RefreshList(bool fullDistanceRefresh = false, int addedBookmarkIndex = -1)
         {
+            PlayerBusinessBookmarkStore.Refresh();
             ApplyPanelLayout();
             RefreshQuickRows();
             RefreshVehicleRows();
             RefreshBookmarkRows();
+            RefreshBusinessRows();
             LayoutListContent();
             RefreshDistances(fullDistanceRefresh, addedBookmarkIndex);
             RefreshPickHint();
@@ -353,7 +379,7 @@ namespace VoogleRoute.UI
                     continue;
                 }
 
-                var visible = bookmark.MatchesFilter(_searchFilter);
+                var visible = !_showBusinesses && bookmark.MatchesFilter(_searchFilter);
                 ui.Root.SetActive(visible);
                 if (!visible)
                     continue;
@@ -376,7 +402,7 @@ namespace VoogleRoute.UI
                 ui.Kind = RowKind.Bookmark;
                 ui.BookmarkIndex = i;
                 var bookmark = BookmarkStore.GetAt(i);
-                if (bookmark == null || !bookmark.MatchesFilter(_searchFilter))
+                if (_showBusinesses || bookmark == null || !bookmark.MatchesFilter(_searchFilter))
                 {
                     ui.Root.SetActive(false);
                     continue;
@@ -722,13 +748,18 @@ namespace VoogleRoute.UI
         internal static void RefreshLocalizedText()
         {
             if (_titleLabel != null)
-                _titleLabel.text = ModUiText.BookmarksTitle;
+                _titleLabel.text = _showBusinesses ? ModUiText.BusinessesTitle : ModUiText.BookmarksTitle;
             if (_searchPlaceholder != null)
-                _searchPlaceholder.text = ModUiText.BookmarksSearchPlaceholder;
+                _searchPlaceholder.text = _showBusinesses ? ModUiText.BusinessesSearch : ModUiText.BookmarksSearchPlaceholder;
             if (_addButtonLabel != null)
                 _addButtonLabel.text = ModUiText.BookmarksAdd;
             if (_clearButtonLabel != null)
                 _clearButtonLabel.text = ModUiText.BookmarksClearAll;
+            if (_businessTab != null)
+                _businessTab.GetComponentInChildren<TextMeshProUGUI>().text = ModUiText.BusinessesTitle;
+            if (_bookmarksTab != null)
+                _bookmarksTab.GetComponentInChildren<TextMeshProUGUI>().text = ModUiText.BookmarksTitle;
+            RefreshBusinessRows();
 
             RefreshRowButtonLabels(QuickRows);
             RefreshRowButtonLabels(VehicleRows);
@@ -750,6 +781,7 @@ namespace VoogleRoute.UI
             _lastMapActionMode = mode;
             RefreshActionButtonLabels();
             RefreshNavigateButtonStates();
+            RefreshBusinessRows();
         }
 
         private static string ResolveMapActionLabel() => ModUiText.BookmarksDrive;
@@ -821,9 +853,13 @@ namespace VoogleRoute.UI
             if (_pickHintLabel == null)
                 return;
 
-            _pickHintLabel.gameObject.SetActive(_pickMode);
+            _pickHintLabel.gameObject.SetActive(_pickMode || _showBusinesses);
             if (_pickMode)
                 _pickHintLabel.text = ModUiText.BookmarksPickHint;
+            else if (_showBusinesses)
+                _pickHintLabel.text = PlayerBusinessBookmarkStore.All.Count == 0
+                    ? ModUiText.BusinessesEmpty
+                    : BusinessRows.VisibleCount == 0 ? ModUiText.BusinessesNoMatches : ModUiText.BusinessesHint;
         }
 
         internal static void BeginPickMode()
@@ -831,6 +867,8 @@ namespace VoogleRoute.UI
             if (!BookmarkStore.CanAdd())
                 return;
 
+            if (_showBusinesses)
+                SelectBusinessTab(false);
             _pickMode = true;
             BaUiFocus.ReleaseForMovement();
             RefreshPickHint();
@@ -877,7 +915,39 @@ namespace VoogleRoute.UI
             RefreshQuickRows();
             RefreshVehicleRows();
             RefreshBookmarkRows();
+            RefreshBusinessRows();
+            LayoutListContent();
+            ResetListScroll();
             RefreshPickHint();
+        }
+
+        private static void SelectBusinessTab(bool businesses)
+        {
+            CancelPickMode();
+            CityMapBookmarkAddDialog.Close();
+            _showBusinesses = businesses;
+            _searchFilter = "";
+            _searchField?.SetTextWithoutNotify("");
+            RefreshList(fullDistanceRefresh: true);
+            RefreshLocalizedText();
+            ResetListScroll();
+            BaUiFocus.ReleaseForMovement();
+        }
+
+        private static void ResetListScroll()
+        {
+            if (_scrollList?.Scroll == null) return;
+            _scrollList.Scroll.StopMovement();
+            _scrollList.Scroll.verticalNormalizedPosition = 1f;
+        }
+
+        private static void RefreshBusinessRows()
+        {
+            BusinessRows.Refresh(_scrollList, _textScale, _showBusinesses, _searchFilter);
+            if (_businessTab != null) _businessTab.interactable = !_showBusinesses;
+            if (_bookmarksTab != null) _bookmarksTab.interactable = _showBusinesses;
+            if (_addButton != null) _addButton.gameObject.SetActive(!_showBusinesses);
+            if (_clearButton != null) _clearButton.gameObject.SetActive(!_showBusinesses);
         }
 
         private static void OnSearchFieldSelected()
@@ -1027,6 +1097,14 @@ namespace VoogleRoute.UI
             QuickRows.Clear();
             VehicleRows.Clear();
             Rows.Clear();
+            BusinessRows.Clear();
+            PlayerBusinessBookmarkStore.Clear();
+            _showBusinesses = true;
+            _searchFilter = "";
+            _businessTab = null;
+            _bookmarksTab = null;
+            _addButton = null;
+            _clearButton = null;
             _panelRect = null;
             _dragState = null;
             _scrollList = null;

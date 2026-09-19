@@ -78,5 +78,10 @@
   "voogle_route_options_hide_ui_shortcut": "Masquer / afficher l'interface",
   "voogle_route_shortcut_unbound": "Non assigné",
   "voogle_route_shortcut_capture": "Appuyez sur une touche...",
-  "voogle_route_shortcut_conflict": "Conflit"
+  "voogle_route_shortcut_conflict": "Conflit",
+  "voogle_route_businesses_title": "MES ENTREPRISES",
+  "voogle_route_businesses_search": "Rechercher une entreprise ou une adresse…",
+  "voogle_route_businesses_empty": "Aucune entreprise dans cette sauvegarde.",
+  "voogle_route_businesses_no_matches": "Aucune entreprise correspondante.",
+  "voogle_route_businesses_hint": "Cliquez sur un nom pour le localiser sur la carte."
 }

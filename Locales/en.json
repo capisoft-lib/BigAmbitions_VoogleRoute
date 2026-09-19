@@ -78,5 +78,10 @@
   "voogle_route_options_hide_ui_shortcut": "Hide/Show UI",
   "voogle_route_shortcut_unbound": "Unbound",
   "voogle_route_shortcut_capture": "Press a key...",
-  "voogle_route_shortcut_conflict": "Conflict"
+  "voogle_route_shortcut_conflict": "Conflict",
+  "voogle_route_businesses_title": "MY BUSINESSES",
+  "voogle_route_businesses_search": "Search businesses or addresses...",
+  "voogle_route_businesses_empty": "No businesses in this save.",
+  "voogle_route_businesses_no_matches": "No matching businesses.",
+  "voogle_route_businesses_hint": "Click a business name to locate it on the map."
 }
