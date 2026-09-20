@@ -306,6 +306,7 @@ namespace VoogleRoute.Navigation
 
         private static void DisableAtDestination()
         {
+            NavigationArrivalService.RememberCompletedTarget();
             var target = NavigationTargetTracker.ActiveTarget;
             var source = NavigationTargetTracker.LastSource;
 

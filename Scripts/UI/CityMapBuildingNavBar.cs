@@ -87,7 +87,7 @@ namespace VoogleRoute.UI
                 return;
 
             // Clone the actual green SET DESTINATION control in the actual vanilla
-            // hierarchy. The source button remains untouched and keeps its own action.
+            // hierarchy. The source button keeps its native action.
             _root = Object.Instantiate(sourceButton.gameObject, sourceButton.transform.parent, false);
             _root.name = RootName;
             _root.SetActive(false);
@@ -107,6 +107,8 @@ namespace VoogleRoute.UI
             // Remove the copied vanilla SET DESTINATION event only from the clone.
             _actionButton.onClick = new Button.ButtonClickedEvent();
             _actionButton.onClick.AddListener(BaUiFocus.Wrap((UnityAction)OnActionClicked));
+            // An actual user click can request the same stop again; passive GPS sync cannot.
+            _sourceButton.onClick.AddListener(NavigationTargetTracker.BeginExplicitNavigation);
 
             var layoutElement = _root.GetComponent<LayoutElement>() ?? _root.AddComponent<LayoutElement>();
             // Options and Panel both use native VerticalLayoutGroups; Panel also
@@ -196,6 +198,9 @@ namespace VoogleRoute.UI
 
         private static void DestroyActionButton()
         {
+            if (_sourceButton != null)
+                _sourceButton.onClick.RemoveListener(NavigationTargetTracker.BeginExplicitNavigation);
+
             if (_root != null)
                 Object.Destroy(_root);
 
@@ -206,6 +211,6 @@ namespace VoogleRoute.UI
             _actionLabel = null;
         }
 
-        private static void Destroy() => DestroyActionButton();
+        internal static void Destroy() => DestroyActionButton();
     }
 }

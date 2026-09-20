@@ -9,8 +9,11 @@ namespace VoogleRoute.Navigation
     {
         internal static void ClearActiveDestination(string reason)
         {
-            ClearVanillaMapDestination();
-            ResetDestinationGuider();
+            if (!JobDestinationSync.ShouldPreserveDestinationOnArrival())
+            {
+                ClearVanillaMapDestination();
+                ResetDestinationGuider();
+            }
 
             DestinationResolver.Clear();
             NavigationTargetTracker.ClearMapGpsTarget(reason);

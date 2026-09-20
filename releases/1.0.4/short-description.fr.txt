@@ -1,0 +1,1 @@
+La version 1.0.4 corrige les notifications d’arrivée répétées avec les mods de travail et de mission, conserve leurs destinations et empêche le redémarrage des trajets terminés lors des resynchronisations du GPS.

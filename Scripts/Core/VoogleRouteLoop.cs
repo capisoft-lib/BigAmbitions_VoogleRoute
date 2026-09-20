@@ -129,6 +129,8 @@ namespace VoogleRoute
             _lastGroundRouteRestoreWaitReason = null;
             RouteRecalcBanner.ForceHide();
             NavigationArrivalService.Reset();
+            CompletedNavigationTarget.Reset();
+            CityMapBuildingNavBar.Destroy();
             TaxiTravelArrivalGuard.Reset();
             _wasSubwayRidingForNav = false;
             ModLog.Info("VoogleRoute loop shut down.");

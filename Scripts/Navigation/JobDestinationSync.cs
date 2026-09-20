@@ -50,6 +50,29 @@ namespace VoogleRoute.Navigation
         internal static bool ShouldDeferDestinationArrivalHandling() =>
             IsInDeliveryMissionContext();
 
+        /// <summary>External missions own their GPS, including custom missions using map GPS.</summary>
+        internal static bool ShouldPreserveDestinationOnArrival()
+        {
+            if (NavigationTargetTracker.LastSource == NavigationTargetTracker.JobSource)
+                return true;
+
+            // Parked-car and world bookmarks create a guider owned by Voogle Route itself.
+            if (NavigationTargetTracker.LastSource != NavigationTargetTracker.MapSource)
+                return false;
+
+            try
+            {
+                return SaveGameManager.Current?.currentPlayerMission != null ||
+                    (InstanceBehavior<GuidersManager>.IsInitialized &&
+                     InstanceBehavior<GuidersManager>.Instance?.jobDestinationGuider?.target != null);
+            }
+            catch
+            {
+                // If ownership cannot be read, avoid modifying another system's destination.
+                return true;
+            }
+        }
+
         internal static bool TryGetActiveJobAddress(out Address address)
         {
             if (_hasLastAddress && _lastAddress != null)
@@ -141,6 +164,9 @@ namespace VoogleRoute.Navigation
 
             _lastAddress = address;
             _hasLastAddress = address != null;
+
+            if (CompletedNavigationTarget.ShouldSuppress(worldPos))
+                return;
 
             ModLog.Info("Job destination synced: " + (address?.ToFormattedString() ?? worldPos.ToString()));
             BuildingDestinationEnterService.ResetDeliveryStopInteract();

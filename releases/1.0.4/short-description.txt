@@ -1,0 +1,1 @@
+Version 1.0.4 fixes repeated arrival notifications with job and mission mods, preserves mission destinations and prevents completed routes from restarting on GPS synchronization.

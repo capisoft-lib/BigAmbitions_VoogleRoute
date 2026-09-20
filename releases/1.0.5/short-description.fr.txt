@@ -1,0 +1,1 @@
+La version 1.0.5 conserve les destinations de bâtiments après l’arrivée en voiture pour se garer puis poursuivre à pied, sans déclencher la marche automatique. Uniquement hors mission.

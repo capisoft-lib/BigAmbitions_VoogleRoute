@@ -14,13 +14,27 @@ namespace VoogleRoute.Navigation
         private static float _trackedTargetChangeTime = -1f;
         private static bool _armed;
         private static bool _announced;
+        private static bool _vehicleArrivalAnnounced;
 
         internal static void Reset()
         {
             _trackedTargetChangeTime = -1f;
             _armed = false;
             _announced = false;
+            _vehicleArrivalAnnounced = false;
             NavigationAutoEnterService.Reset();
+        }
+
+        internal static void RememberCompletedTarget()
+        {
+            if (!NavigationTargetTracker.HasTarget)
+                return;
+
+            CompletedNavigationTarget.Remember(
+                NavigationTargetTracker.ActiveTarget,
+                ResolveArrivalTarget(),
+                MovementModeDetector.CurrentMode == MovementMode.Vehicle
+                    ? VehicleArrivalRadiusMeters : FootArrivalRadiusMeters);
         }
 
         internal static void TryCompleteNearbyDestination()
@@ -28,7 +42,11 @@ namespace VoogleRoute.Navigation
             if (JobDestinationSync.ShouldDeferDestinationArrivalHandling())
                 return;
 
-            if (_announced || !NavigationTargetTracker.HasMapGpsTarget)
+            if (!NavigationTargetTracker.HasMapGpsTarget)
+                return;
+
+            SyncTrackedTarget();
+            if (_announced)
                 return;
 
             if (MovementModeDetector.CurrentMode is not (MovementMode.OnFoot or MovementMode.Vehicle))
@@ -46,8 +64,19 @@ namespace VoogleRoute.Navigation
             if (distance > radius)
                 return;
 
-            AnnounceArrival();
-            _announced = true;
+            // Only ordinary building GPS routes continue after parking. Mission ownership
+            // (including a job guider without a mission object) keeps the existing behavior.
+            var keepDestination = MovementModeDetector.CurrentMode == MovementMode.Vehicle &&
+                NavigationTargetTracker.LastSource == NavigationTargetTracker.MapSource &&
+                !JobDestinationSync.ShouldPreserveDestinationOnArrival();
+            if (keepDestination && _vehicleArrivalAnnounced)
+                return;
+
+            AnnounceArrival(keepDestination);
+            if (keepDestination)
+                _vehicleArrivalAnnounced = true;
+            else
+                _announced = true;
         }
 
         internal static void Tick()
@@ -68,12 +97,7 @@ namespace VoogleRoute.Navigation
                 return;
 
             var targetChange = NavigationTargetTracker.LastChangeTime;
-            if (!Mathf.Approximately(targetChange, _trackedTargetChangeTime))
-            {
-                _trackedTargetChangeTime = targetChange;
-                _armed = false;
-                _announced = false;
-            }
+            SyncTrackedTarget();
 
             if (_announced)
                 return;
@@ -99,14 +123,41 @@ namespace VoogleRoute.Navigation
             TryCompleteNearbyDestination();
         }
 
-        private static void AnnounceArrival()
+        private static void SyncTrackedTarget()
         {
+            var targetChange = NavigationTargetTracker.LastChangeTime;
+            if (Mathf.Approximately(targetChange, _trackedTargetChangeTime))
+                return;
+
+            _trackedTargetChangeTime = targetChange;
+            _armed = false;
+            _announced = false;
+            _vehicleArrivalAnnounced = false;
+        }
+
+        private static void AnnounceArrival(bool keepDestination)
+        {
+            if (!keepDestination)
+                RememberCompletedTarget();
             AutoWalkService.PrepareForDestinationArrival();
 
             var target = NavigationTargetTracker.ActiveTarget;
             var source = NavigationTargetTracker.LastSource;
-            NavigationAutoEnterService.TryOnArrival(target, source);
+            if (!keepDestination)
+                NavigationAutoEnterService.TryOnArrival(target, source);
 
+            if (!_vehicleArrivalAnnounced || JobDestinationSync.ShouldPreserveDestinationOnArrival())
+                ShowArrivalNotification();
+
+            ModLog.Info(keepDestination
+                ? "Vehicle destination reached; keeping GPS for walking."
+                : "Navigation destination reached.");
+            if (!keepDestination)
+                NavigationDestinationClear.ClearActiveDestination("navigation_arrival");
+        }
+
+        private static void ShowArrivalNotification()
+        {
             try
             {
                 Notifications.Show(
@@ -124,8 +175,6 @@ namespace VoogleRoute.Navigation
                 ModLog.Error("Navigation arrival notification failed", ex);
             }
 
-            ModLog.Info("Navigation destination reached.");
-            NavigationDestinationClear.ClearActiveDestination("navigation_arrival");
         }
 
         private static bool TryGetHorizontalPosition(out Vector3 position)

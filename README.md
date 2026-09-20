@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.3` package supports both |
+| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.5` package supports both |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/1331550/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
 | **Requires** | [`LIB_BaPlayerLocation 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) and [`LIB_BaUnifiedUI 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI), both installed and enabled separately |
@@ -24,19 +24,18 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Current Workshop description copy: [`releases/1.0.3/`](releases/1.0.3/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+Current Workshop description copy: [`releases/1.0.5/`](releases/1.0.5/), in English and French. Earlier release texts remain in [`releases/`](releases/).
 
-## What's new in 1.0.3
+## What's new in 1.0.5
 
-- Configurable Hide/Show UI shortcut (Ctrl+Shift+C by default) hides Voogle Route windows while keeping route lines visible.
-- Start AUTO-WALK or AUTO-DRIVE directly from the selected building on the city map.
-- Map actions synchronize the selected destination; AUTO-DRIVE waits for the new route before showing its confirmation.
-- The building panel automatically expands to enclose the navigation button and preserve its bottom margin.
+- Keep ordinary building destinations active after arrival by car, so navigation remains available while finding parking and continues on foot after exiting.
+- Announce vehicle arrival once and defer auto-entry until arrival on foot, without automatically starting Auto Walk.
+- Apply this change only outside missions; vanilla delivery handling, including the return to depot, keeps its existing behavior.
 
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
-- **One cross-version package** — the same Voogle Route 1.0.3 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
+- **One cross-version package** — the same Voogle Route 1.0.5 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding), with bounded reachable-arrival fallback when the nearest one-way lanes cannot be entered
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
@@ -138,16 +137,15 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.3 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
+Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.5 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
-## Nouveautés de la version 1.0.3
+## Nouveautés de la version 1.0.5
 
-- Le raccourci configurable masquer/afficher (Ctrl+Maj+C par défaut) masque les fenêtres Voogle Route tout en conservant les lignes de trajet.
-- Lancez MARCHE AUTO ou CONDUITE AUTO directement depuis le bâtiment sélectionné sur la carte.
-- Les actions de la carte synchronisent la destination sélectionnée ; CONDUITE AUTO attend le nouveau trajet avant de proposer sa confirmation.
-- Le panneau du bâtiment s’agrandit automatiquement pour contenir le bouton de navigation et conserver sa marge inférieure.
+- La destination d’un bâtiment reste active après l’arrivée en voiture, pour conserver la navigation pendant la recherche de stationnement puis poursuivre à pied.
+- L’arrivée en voiture est annoncée une seule fois et l’entrée automatique attend l’arrivée à pied, sans déclencher la marche automatique.
+- Ce changement s’applique uniquement hors mission ; les livraisons du jeu de base, y compris le retour au dépôt, conservent leur fonctionnement existant.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 

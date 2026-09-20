@@ -1,0 +1,305 @@
+using System;
+using System.Reflection;
+using Helpers;
+using UI.Guiders;
+using UI.Notification;
+using UnityEngine;
+using VoogleRoute.Navigation;
+using Player.PlayerMissions;
+using VoogleRoute;
+
+internal static class Program
+{
+    private static int _passed;
+    private static Address _stop;
+    private static void Equal<T>(T expected, T actual, string message)
+    {
+        if (!Equals(expected, actual)) throw new Exception(message + ": expected " + expected + ", got " + actual);
+    }
+    private static void Setup(bool map = false, bool mission = true)
+    {
+        NavigationTargetTracker.ClearMapGpsTarget("test reset");
+        NavigationArrivalService.Reset();
+        CompletedNavigationTarget.Reset();
+        DestinationResolver.Clear();
+        SaveGameManager.Current = new GameInstance();
+        InstanceBehavior<GuidersManager>.Instance = new GuidersManager();
+        JobDestinationSync.Poll();
+        _stop = new Address();
+        if (mission) SaveGameManager.Current.currentPlayerMission = new object();
+        if (map) SaveGameManager.Current.customDestination = _stop;
+        else SetGuider(_stop);
+        MovementModeDetector.Position = _stop.Position;
+        MovementModeDetector.CurrentMode = MovementMode.Vehicle;
+        MovementModeDetector.HasPosition = true;
+        PathFinderService.Arrival = null;
+        PathFinderService.Requests = 0;
+        Notifications.Count = NavigationAutoEnterService.Attempts = GuidersManager.Resets = 0;
+        ModConfig.AutoWalkEnabled = false;
+        BuildingDestinationEnterService.DeliveryInteractions = 0;
+        Time.unscaledTime += 10;
+    }
+    private static void SetGuider(Address stop)
+    {
+        InstanceBehavior<GuidersManager>.Instance.jobDestinationGuider = stop == null ? null : new Guider
+        { CurrentAddress = stop, target = new Transform { position = stop.Position } };
+    }
+    private static void Frames(int count = 20)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            Time.unscaledTime += 0.3f;
+            DestinationResolver.Poll();
+            NavigationArrivalService.Tick();
+        }
+    }
+    private static void Test(string name, Action test)
+    {
+        test(); _passed++; Console.WriteLine("PASS " + name);
+    }
+    private static void Explicit()
+    {
+        // Reflection also lets this harness demonstrate the failure against pre-fix sources.
+        typeof(NavigationTargetTracker).GetMethod("BeginExplicitNavigation", BindingFlags.Static | BindingFlags.NonPublic)?.Invoke(null, null);
+    }
+    public static void Main(string[] args)
+    {
+        Test("persistent job target: 100 syncs, one toast and route request", () => {
+            Setup(); Frames(100);
+            Equal(1, Notifications.Count, "arrival must not loop");
+            Equal(1, PathFinderService.Requests, "route must stay completed");
+            Equal(false, NavigationTargetTracker.HasTarget, "local target completed");
+            Equal(1, NavigationAutoEnterService.Attempts, "auto-enter must not repeat");
+            Equal(0, GuidersManager.Resets, "external guider preserved");
+        });
+        if (args.Length > 0 && args[0] == "loop-only") return;
+        Test("mission map GPS survives completion", () => {
+            Setup(map:true); Frames(100);
+            Equal(_stop, SaveGameManager.Current.customDestination, "mission GPS ownership");
+            Equal(1, Notifications.Count, "mission map loop");
+            Equal(1, PathFinderService.Requests, "mission map route loop");
+            Equal(0, GuidersManager.Resets, "mission map guider");
+        });
+        Test("guider-only mod without currentPlayerMission", () => {
+            Setup(mission:false); Frames(100);
+            Equal(1, Notifications.Count, "guider loop");
+            Equal(0, GuidersManager.Resets, "guider ownership");
+        });
+        Test("ordinary foot map GPS still clears on arrival", () => {
+            Setup(map:true, mission:false); MovementModeDetector.CurrentMode = MovementMode.OnFoot; Frames();
+            Equal(null, SaveGameManager.Current.customDestination, "ordinary GPS clears");
+            Equal(1, GuidersManager.Resets, "ordinary guider clears");
+            Equal(1, Notifications.Count, "ordinary arrival");
+        });
+        Test("map destination repeatedly restored without mission metadata", () => {
+            Setup(map:true, mission:false);
+            MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            for (int i=0;i<100;i++) { SaveGameManager.Current.customDestination = _stop; Frames(1); }
+            Equal(1, Notifications.Count, "restored map loop");
+            Equal(1, PathFinderService.Requests, "restored map route loop");
+        });
+        Test("ordinary vehicle arrival retains GPS through parking and completes on foot", () => {
+            Setup(map:true, mission:false);
+            MovementModeDetector.Position = new Vector3(120,0,100);
+            ModConfig.AutoWalkEnabled = true;
+            Frames(100);
+            Equal(_stop, SaveGameManager.Current.customDestination, "vehicle GPS retained");
+            Equal(true, NavigationTargetTracker.HasTarget, "vehicle target retained");
+            Equal(false, CompletedNavigationTarget.ShouldSuppress(_stop.Position), "parking is not completion");
+            Equal(1, Notifications.Count, "one vehicle announcement");
+            Equal(0, NavigationAutoEnterService.Attempts, "no vehicle auto-enter attempt");
+            Equal(false, ModConfig.AutoWalkEnabled, "previous auto-walk stopped");
+            Equal(0, GuidersManager.Resets, "guider retained");
+            MovementModeDetector.Position = new Vector3(180,0,100); Frames();
+            MovementModeDetector.Position = new Vector3(120,0,100); Frames();
+            Equal(1, Notifications.Count, "driving around block does not announce again");
+            Equal(1, PathFinderService.Requests, "passive GPS sync does not replace target");
+            MovementModeDetector.CurrentMode = MovementMode.OnFoot; Frames();
+            Equal(true, NavigationTargetTracker.HasTarget, "foot route available from parking");
+            Equal(false, ModConfig.AutoWalkEnabled, "exit does not enable auto-walk");
+            MovementModeDetector.Position = _stop.Position; Frames(100);
+            Equal(1, NavigationAutoEnterService.Attempts, "auto-enter attempted on foot only");
+            Equal(null, SaveGameManager.Current.customDestination, "foot completion clears GPS");
+            Equal(false, NavigationTargetTracker.HasTarget, "foot completion clears tracker");
+            Equal(1, Notifications.Count, "no second arrival toast on foot");
+        });
+        Test("immediate arrival callback before Tick announces only once", () => {
+            Setup(map:true, mission:false); DestinationResolver.Poll();
+            NavigationArrivalService.TryCompleteNearbyDestination(); Frames(100);
+            Equal(1, Notifications.Count, "callback followed by Tick");
+            Equal(true, NavigationTargetTracker.HasTarget, "callback retains GPS");
+            MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            NavigationArrivalService.TryCompleteNearbyDestination();
+            Equal(1, NavigationAutoEnterService.Attempts, "foot callback completes");
+            Equal(false, NavigationTargetTracker.HasTarget, "foot callback clears");
+        });
+        Test("retained arrival resets for a new destination and explicit reselection", () => {
+            Setup(map:true, mission:false); Frames();
+            var next = new Address { streetNumber=2, Position=new Vector3(102,0,100) };
+            SaveGameManager.Current.customDestination = next; Frames();
+            Equal(2, Notifications.Count, "new target announces");
+            DestinationResolver.TrySyncAddressNow(next); Frames();
+            Equal(3, Notifications.Count, "explicit same target announces");
+        });
+        Test("canceling a retained destination removes it", () => {
+            Setup(map:true, mission:false); Frames();
+            NavigationDestinationClear.ClearActiveDestination("user_cancel"); Frames();
+            Equal(false, NavigationTargetTracker.HasTarget, "cancel clears tracker");
+            Equal(null, SaveGameManager.Current.customDestination, "cancel clears GPS");
+            Equal(0, NavigationAutoEnterService.Attempts, "cancel does not auto-enter");
+        });
+        Test("map GPS with job guider but no mission keeps previous completion", () => {
+            Setup(map:true, mission:false); SetGuider(_stop); Frames(100);
+            Equal(_stop, SaveGameManager.Current.customDestination, "external GPS preserved");
+            Equal(false, NavigationTargetTracker.HasTarget, "mission guider uses old local completion");
+            Equal(1, NavigationAutoEnterService.Attempts, "existing arrival path");
+            Equal(1, Notifications.Count, "existing mission announcement");
+        });
+        Test("mission started after parking uses previous mission completion", () => {
+            Setup(map:true, mission:false); Frames();
+            SaveGameManager.Current.currentPlayerMission = new object(); Frames();
+            Equal(false, NavigationTargetTracker.HasTarget, "new mission is not held in parking phase");
+            Equal(_stop, SaveGameManager.Current.customDestination, "mission GPS preserved");
+            Equal(1, NavigationAutoEnterService.Attempts, "mission arrival path restored");
+        });
+        foreach (bool ongoing in new[] { true, false })
+            Test("delivery manual GPS allows vehicle exit and trunk access ongoing=" + ongoing, () => {
+                Setup(map:true, mission:false);
+                SaveGameManager.Current.currentPlayerMission = new DeliveryDriverMission
+                    { Ongoing=ongoing, pinnedAddress=_stop, startAddress=_stop };
+                Frames(); MovementModeDetector.CurrentMode = MovementMode.OnFoot; Frames();
+                NavigationArrivalService.TryCompleteNearbyDestination();
+                Equal(false, AutoWalkService.Tick(true, new PathResult()), "no unsolicited auto-walk");
+                Equal(0, NavigationAutoEnterService.Attempts, "no premature auto-enter");
+                Equal(0, BuildingDestinationEnterService.DeliveryInteractions, "no premature delivery");
+                Equal(0, Notifications.Count, "delivery arrival stays deferred");
+                Equal(_stop, SaveGameManager.Current.customDestination, "manual delivery GPS retained");
+                Equal(true, NavigationTargetTracker.HasTarget, "delivery tracker retained");
+            });
+        foreach (bool parkedVehicle in new[] { true, false })
+            Test("non-building destination still completes parkedVehicle=" + parkedVehicle, () => {
+                Setup(map:true, mission:false); SaveGameManager.Current.customDestination = null;
+                if (parkedVehicle) NavigationTargetTracker.SetParkedVehicleTarget(_stop.Position);
+                else NavigationTargetTracker.SetWorldPositionTarget(_stop.Position);
+                NavigationArrivalService.TryCompleteNearbyDestination();
+                Equal(false, NavigationTargetTracker.HasTarget, "non-building target clears");
+                Equal(1, NavigationAutoEnterService.Attempts, "existing non-building arrival");
+            });
+        Test("map/job source alternation and transient missing guider", () => {
+            Setup(); Frames(); SetGuider(null); Frames(); SetGuider(_stop); Frames();
+            SaveGameManager.Current.customDestination = _stop; Frames();
+            SaveGameManager.Current.customDestination = null; Frames();
+            Equal(1, Notifications.Count, "same stop via alternate sources");
+        });
+        Test("different mission stop rearms even inside the previous radius", () => {
+            Setup(); Frames();
+            var next = new Address { streetNumber=2, Position=new Vector3(102,0,100) };
+            SetGuider(next); Frames(); Equal(2, Notifications.Count, "new nearby stop");
+        });
+        Test("new mission at identical coordinates rearms", () => {
+            Setup(); Frames(); SaveGameManager.Current.currentPlayerMission = new object(); Frames();
+            Equal(2, Notifications.Count, "new mission identity");
+        });
+        Test("leaving with hysteresis then returning rearms", () => {
+            Setup(); Frames(); MovementModeDetector.Position = new Vector3(129,0,100); Frames();
+            Equal(1, PathFinderService.Requests, "boundary jitter does not restart");
+            MovementModeDetector.Position = new Vector3(131,0,100); Frames();
+            Equal(2, PathFinderService.Requests, "outside exit radius restarts route");
+            MovementModeDetector.Position = _stop.Position; Frames();
+            Equal(2, Notifications.Count, "return arrival");
+        });
+        Test("leaving during a GPS gap rearms", () => {
+            Setup(); Frames(); SetGuider(null);
+            MovementModeDetector.Position = new Vector3(150,0,100); Frames();
+            MovementModeDetector.Position = _stop.Position; SetGuider(_stop); Frames();
+            Equal(2, Notifications.Count, "return during GPS gap");
+        });
+        Test("exiting a vehicle at the same stop does not rearm", () => {
+            Setup(); MovementModeDetector.Position = new Vector3(120,0,100); Frames();
+            MovementModeDetector.CurrentMode = MovementMode.OnFoot; Frames();
+            Equal(1, Notifications.Count, "vehicle to foot");
+            Equal(1, PathFinderService.Requests, "vehicle to foot route");
+        });
+        Test("foot radius and vertical coordinate remain unchanged", () => {
+            Setup(); MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            MovementModeDetector.Position = new Vector3(108,99,100); Frames();
+            Equal(0, Notifications.Count, "outside 7m");
+            MovementModeDetector.Position = new Vector3(106,99,100); Frames();
+            Equal(1, Notifications.Count, "horizontal foot arrival");
+        });
+        Test("effective foot endpoint retained after route cache invalidation", () => {
+            Setup(); MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            MovementModeDetector.Position = new Vector3(150,0,100);
+            DestinationResolver.Poll();
+            PathFinderService.Arrival = MovementModeDetector.Position;
+            NavigationArrivalService.TryCompleteNearbyDestination(); Frames(100);
+            Equal(1, Notifications.Count, "effective endpoint must not rearm at distant raw target");
+            Equal(1, PathFinderService.Requests, "effective endpoint route");
+        });
+        Test("explicit address selection at identical stop rearms", () => {
+            Setup(map:true); Frames(); DestinationResolver.TrySyncAddressNow(_stop); Frames();
+            Equal(2, Notifications.Count, "bookmark explicit request");
+        });
+        Test("explicit building selection at identical stop rearms", () => {
+            Setup(map:true); Frames();
+            DestinationResolver.TrySyncBuildingNow(CityManager.Instance.FindCityBuildingController(_stop)); Frames();
+            Equal(2, Notifications.Count, "building explicit request");
+        });
+        Test("vanilla button rearm then passive sync", () => {
+            Setup(map:true); Frames(); Explicit(); Frames();
+            Equal(2, Notifications.Count, "vanilla click rearm");
+        });
+        Test("explicit parked vehicle navigation rearms", () => {
+            Setup(); Frames(); NavigationTargetTracker.SetParkedVehicleTarget(_stop.Position);
+            NavigationArrivalService.TryCompleteNearbyDestination();
+            Equal(2, Notifications.Count, "parked vehicle explicit request");
+            Equal(1, GuidersManager.Resets, "our parked-vehicle guider still clears during a mission");
+        });
+        foreach (bool ongoing in new[] { true, false })
+            Test("native delivery guard ongoing=" + ongoing, () => {
+                Setup(); SaveGameManager.Current.currentPlayerMission = new DeliveryDriverMission
+                    { Ongoing=ongoing, pinnedAddress=_stop, startAddress=_stop };
+                Frames(); NavigationArrivalService.TryCompleteNearbyDestination();
+                Equal(0, Notifications.Count, "native delivery must defer");
+                Equal(true, NavigationTargetTracker.HasTarget, "native delivery target retained");
+                Equal(0, GuidersManager.Resets, "native delivery guider retained");
+            });
+        Test("missing player position does not forget completed stop", () => {
+            Setup(); Frames(); MovementModeDetector.HasPosition=false; Frames();
+            MovementModeDetector.HasPosition=true; Frames(); Equal(1, Notifications.Count, "position gap");
+        });
+        Test("session reset allows same stop", () => {
+            Setup(); Frames(); NavigationArrivalService.Reset(); CompletedNavigationTarget.Reset(); Frames();
+            Equal(2, Notifications.Count, "new session");
+        });
+        Test("actual auto-walk completion preserves external GPS and stays completed", () => {
+            Setup(map:true); MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            DestinationResolver.Poll(); ModConfig.AutoWalkEnabled = true;
+            Equal(true, AutoWalkService.Tick(true, new PathResult()), "auto-walk handled arrival");
+            Equal(false, ModConfig.AutoWalkEnabled, "auto-walk stops");
+            Equal(_stop, SaveGameManager.Current.customDestination, "auto-walk mission GPS");
+            Equal(false, NavigationTargetTracker.HasTarget, "auto-walk local target cleared");
+            Frames(100);
+            Equal(1, PathFinderService.Requests, "auto-walk does not resync completed target");
+            Equal(1, NavigationAutoEnterService.Attempts, "auto-walk auto-enter once");
+            Equal(0, Notifications.Count, "auto-walk does not trigger follow-up arrival loop");
+        });
+        Test("ordinary auto-walk still clears GPS", () => {
+            Setup(map:true, mission:false); MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            DestinationResolver.Poll(); ModConfig.AutoWalkEnabled = true;
+            AutoWalkService.Tick(true, new PathResult());
+            Equal(null, SaveGameManager.Current.customDestination, "auto-walk ordinary GPS");
+            Equal(false, ModConfig.AutoWalkEnabled, "ordinary auto-walk stops");
+        });
+        Test("native delivery auto-walk still interacts instead of clearing GPS", () => {
+            Setup(map:true); MovementModeDetector.CurrentMode = MovementMode.OnFoot;
+            SaveGameManager.Current.currentPlayerMission = new DeliveryDriverMission { pinnedAddress=_stop };
+            DestinationResolver.Poll(); ModConfig.AutoWalkEnabled = true;
+            AutoWalkService.Tick(true, new PathResult());
+            Equal(1, BuildingDestinationEnterService.DeliveryInteractions, "delivery interaction");
+            Equal(_stop, SaveGameManager.Current.customDestination, "delivery GPS retained");
+            Equal(true, NavigationTargetTracker.HasTarget, "delivery tracker retained");
+        });
+        Console.WriteLine(_passed + " arrival regression scenarios passed.");
+    }
+}

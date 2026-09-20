@@ -19,6 +19,8 @@ namespace VoogleRoute.Navigation
         {
             if (!GameState.IsWorldReady())
                 return;
+
+            CompletedNavigationTarget.ObservePlayer();
     
             if (Time.unscaledTime - _lastPollTime < 0.25f)
                 return;
@@ -40,6 +42,7 @@ namespace VoogleRoute.Navigation
             if (!TryResolveWorldPosition(address, out var worldPos))
                 return false;
 
+            NavigationTargetTracker.BeginExplicitNavigation();
             ModLog.Info("Map destination synced (immediate): " + address + " -> " + worldPos);
             NavigationTargetTracker.SetMapGpsTarget(worldPos);
             return true;
@@ -71,6 +74,7 @@ namespace VoogleRoute.Navigation
                 worldPos = poi.position;
             }
 
+            NavigationTargetTracker.BeginExplicitNavigation();
             ModLog.Info("Selected building destination synced: " + address + " -> " + worldPos);
             NavigationTargetTracker.SetMapGpsTarget(worldPos);
             return true;
@@ -109,6 +113,9 @@ namespace VoogleRoute.Navigation
     
                 if (TryResolveWorldPosition(address, out var worldPos))
                 {
+                    if (CompletedNavigationTarget.ShouldSuppress(worldPos))
+                        return;
+
                     ModLog.Info("Map destination synced: " + address + " -> " + worldPos);
                     NavigationTargetTracker.SetMapGpsTarget(worldPos);
                 }

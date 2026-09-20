@@ -2,6 +2,22 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.5] - 2026-09-13
+
+### Fixed
+
+- Keep ordinary building destinations active after arrival by car, so navigation remains available while finding parking and continues on foot after exiting.
+- Announce vehicle arrival once and defer auto-entry until arrival on foot, without automatically starting Auto Walk.
+- Apply this change only outside missions; vanilla delivery handling, including the return to depot, keeps its existing behavior.
+
+## [1.0.4] - 2026-09-12
+
+### Fixed
+
+- Fixed repeated arrival notifications when a job or mission mod keeps its destination active.
+- Mission destinations and guiders are preserved when Voogle Route completes its own navigation.
+- Completed stops stay quiet across GPS resynchronization; a new stop, leaving the arrival area or explicitly selecting a destination allows navigation again.
+
 ## [1.0.3] - 2026-09-06
 
 ### Added

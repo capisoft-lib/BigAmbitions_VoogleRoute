@@ -1,0 +1,224 @@
+using System;
+namespace UnityEngine
+{
+    public struct Vector3
+    {
+        public float x, y, z;
+        public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
+        public float sqrMagnitude => x*x + y*y + z*z;
+        public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.x-b.x,a.y-b.y,a.z-b.z);
+        public static float Distance(Vector3 a, Vector3 b) => (float)Math.Sqrt((a-b).sqrMagnitude);
+    }
+    public class Transform { public Vector3 position; }
+    public static class Time { public static float unscaledTime; }
+    public static class Mathf { public static bool Approximately(float a, float b) => Math.Abs(a-b) < 0.00001f; }
+}
+public class Address
+{
+    public string streetName = "Test";
+    public int streetNumber = 1;
+    public UnityEngine.Vector3 Position = new UnityEngine.Vector3(100,0,100);
+    public bool IsUndefined() => false;
+    public string ToFormattedString() => streetName + streetNumber;
+}
+public class GameInstance { public Address customDestination; public object currentPlayerMission; }
+public static class SaveGameManager { public static GameInstance Current = new GameInstance(); }
+namespace Helpers
+{
+    public class InstanceBehavior<T> where T : new()
+    {
+        public static bool IsInitialized = true;
+        public static T Instance = new T();
+    }
+}
+namespace Streets { }
+namespace Player.PlayerMissions
+{
+    public class DeliveryStop { public Address address; public bool IsCompleted() => false; }
+    public class DeliveryDriverMission
+    {
+        public bool Ongoing = true;
+        public bool IsOngoing() => Ongoing;
+        public Address pinnedAddress, startAddress;
+        public System.Collections.Generic.List<DeliveryStop> destinations;
+    }
+}
+namespace Vehicles.DeliveryDriverJob
+{
+    public class DeliveryJobStartController
+    {
+        public UnityEngine.Transform transform;
+        public static DeliveryJobStartController GetByAddress(Address a) => null;
+    }
+}
+namespace UI.Guiders
+{
+    public enum DirectionGuiderType { Destination }
+    public class Guider { public Address CurrentAddress; public UnityEngine.Transform target; }
+    public class GuidersManager
+    {
+        public Guider jobDestinationGuider;
+        public static int Resets;
+        public static void ResetGuider(DirectionGuiderType type) { Resets++; }
+    }
+}
+namespace UI.Notification
+{
+    public enum NotificationType { Success }
+    public static class Notifications
+    {
+        public static int Count;
+        public static void Show(NotificationType type, string key, object a, float seconds, object b, object c,
+            bool notificationSound, bool trackOnSaveGame) { Count++; }
+    }
+}
+namespace Buildings
+{
+    public class Building { public Address Address; }
+    public class Door { public UnityEngine.Transform doorTransform; }
+    public class CityBuildingController
+    {
+        public Building building;
+        public Door[] entranceDoors;
+        public UnityEngine.Transform GetPoiPosition() => entranceDoors[0].doorTransform;
+    }
+    public static class BuildingHelper
+    {
+        public static Building GetBuildingRegistration(Address a) => new Building { Address = a };
+    }
+}
+public class CityManager
+{
+    public static bool IsInitialized = true;
+    public static CityManager Instance = new CityManager();
+    public Buildings.CityBuildingController FindCityBuildingController(Address a) => new Buildings.CityBuildingController
+    {
+        building = new Buildings.Building { Address = a },
+        entranceDoors = new[] { new Buildings.Door { doorTransform = new UnityEngine.Transform { position = a.Position } } }
+    };
+}
+namespace VoogleRoute.Live { }
+namespace VoogleRoute
+{
+    public static class GameState
+    {
+        public static bool Ready = true;
+        public static bool IsWorldReady() => Ready;
+        public static bool ShouldRunNavigationSystems() => Ready;
+    }
+    public static class ModLog
+    {
+        public static void Info(string s) { }
+        public static void Error(string s, Exception e) { }
+    }
+    public static class BigAmbitionsCompatibility
+    {
+        public static UnityEngine.Transform GetAddressEntranceTransform(Address a) => null;
+    }
+    internal static class ModConfig
+    {
+        internal static bool AutoWalkEnabled;
+        internal static bool UseSubwayEnabled = true;
+        internal static void SetAutoWalkEnabled(bool enabled, bool persist) { AutoWalkEnabled = enabled; }
+    }
+    public static class PlayerLocationSession
+    {
+        public static bool IsAvailable => false;
+        public static Location Snapshot;
+        public struct Location { public UnityEngine.Vector3 Position; }
+    }
+}
+namespace VoogleRoute.Rendering
+{
+    public static class RouteLineRenderer { public static int Hides; public static void Hide() { Hides++; } }
+}
+namespace VoogleRoute.UI
+{
+    public static class RouteActionPanel { public static void RefreshVisual() { } }
+}
+namespace VoogleRoute.Navigation
+{
+    internal enum MovementMode { OnFoot, Vehicle, Other }
+    internal static class MovementModeDetector
+    {
+        internal static MovementMode CurrentMode = MovementMode.Vehicle;
+        internal static UnityEngine.Vector3 Position;
+        internal static bool HasPosition = true;
+        internal static bool TryGetPathOrigin(out UnityEngine.Vector3 p) { p = Position; return HasPosition; }
+        internal static bool TryGetPlayerOrigin(out UnityEngine.Vector3 p) => TryGetPathOrigin(out p);
+        internal static bool IsEffectivelyOnFootForNavigation() => CurrentMode == MovementMode.OnFoot;
+    }
+    internal static class PathFinderService
+    {
+        internal static int Requests;
+        internal static UnityEngine.Vector3? Arrival;
+        internal static void NotifyMapDestinationChanged() { Requests++; }
+        internal static void InvalidateCache(string reason) { Arrival = null; }
+        internal static bool TryGetEffectiveFootArrivalTarget(out UnityEngine.Vector3 p)
+        { p = Arrival.GetValueOrDefault(); return Arrival.HasValue; }
+    }
+    internal static class NavigationAutoEnterService
+    {
+        internal static int Attempts;
+        internal static void Reset() { }
+        internal static void NotifyTargetChanged() { }
+        internal static void TryOnArrival(UnityEngine.Vector3 p, string s) { Attempts++; }
+    }
+    internal static class BuildingDestinationEnterService
+    {
+        internal static int DeliveryInteractions;
+        internal static void ResetDeliveryStopInteract() { }
+        internal static void TryDeliveryJobStopInteract(UnityEngine.Vector3 p) { DeliveryInteractions++; }
+    }
+    internal static class NavigationSpawnGuard { internal static bool IsAutoWalkSuppressed => false; }
+    internal static class NavigationProximityService { internal static bool IsNearActiveDestination() => true; }
+    internal static class ManualMovementInputDetector
+    {
+        internal static bool HasManualMovementInput() => false;
+        internal static void SuppressBriefly() { }
+    }
+    internal static class PlayerNavigationRelease { internal static void Release() { } }
+    internal class PathResult
+    {
+        internal bool Success = true;
+        internal bool IsPartial;
+        internal UnityEngine.Vector3[] Points;
+        internal SubwayPlan Subway = new SubwayPlan();
+    }
+    internal class SubwayPlan
+    {
+        internal bool Active;
+        internal string BoardStationName, ExitStationName;
+        internal UnityEngine.Vector3 BoardWorldPosition, BoardNavPosition;
+    }
+    internal static class SubwayLegTracker
+    {
+        internal static bool IsRideCompleted => false;
+        internal static void Clear() { }
+        internal static void MarkRideCompleted() { }
+        internal static bool MatchesPlannedPath(SubwayPlan p) => false;
+    }
+    internal static class SubwayNavigationNotifier
+    {
+        internal static void Reset() { }
+        internal static void ShowContinueHint() { }
+        internal static void ShowBoardHint(string s) { }
+    }
+    internal static class SubwayAutoRideService
+    {
+        internal static void Reset() { }
+        internal static bool TryBeginRide(string a, string b) => false;
+    }
+    internal class Station { internal UnityEngine.Vector3 WorldPosition; }
+    internal static class SubwayStationStore
+    {
+        internal static bool TryFindByName(string n, out Station s) { s = null; return false; }
+    }
+}
+public static class SubwaySystem { public static bool IsRiding => false; }
+public class PlayerController
+{
+    public bool NavigationDisabled => false;
+    public void SetNewDestination(UnityEngine.Vector3 p, bool showParticleEffect, bool removeGoal) { }
+}
+public static class PlayerHelper { public static PlayerController PlayerController = new PlayerController(); }

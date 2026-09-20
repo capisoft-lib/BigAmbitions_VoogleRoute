@@ -34,7 +34,14 @@ namespace VoogleRoute.Navigation
 
         internal static void SetWorldPositionTarget(Vector3 target, string source = WorldPositionSource)
         {
+            BeginExplicitNavigation();
             SetTarget(target, source);
+        }
+
+        internal static void BeginExplicitNavigation()
+        {
+            CompletedNavigationTarget.Reset();
+            NavigationArrivalService.Reset();
         }
 
         internal static bool IsModNavigationSource =>
@@ -45,6 +52,9 @@ namespace VoogleRoute.Navigation
 
         private static void SetTarget(Vector3 target, string source)
         {
+            if (CompletedNavigationTarget.ShouldSuppress(target))
+                return;
+
             if (HasTarget && (ActiveTarget - target).sqrMagnitude < 0.25f && LastSource == source)
                 return;
 

@@ -1,0 +1,1 @@
+Version 1.0.5 keeps ordinary building destinations active after arrival by car for parking and walking guidance, without automatically starting Auto Walk. Applies outside missions.
