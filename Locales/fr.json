@@ -1,4 +1,11 @@
 {
+  "voogle_route_filter_empty": "Aucun résultat — ajustez filtres ou recherche.",
+  "voogle_route_filter_all": "Tous",
+  "voogle_route_filter_vehicles": "Véhicules",
+  "voogle_route_filter_residential": "Logements",
+  "voogle_route_filter_retail": "Commerces",
+  "voogle_route_filter_office": "Bureaux",
+  "voogle_route_filter_other": "Autres",
   "voogle_route_panel_title": "Voogle Route",
   "voogle_route_phone_app_title": "Voogle Route",
   "voogle_route_phone_search": "Rechercher un favori...",

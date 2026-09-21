@@ -1,0 +1,1 @@
+La version 1.0.7 ajoute des filtres de catégorie dans le panneau Favoris de la carte ville (Véhicules, Résidentiel, Commerce, Bureaux, Autre), combinés à la recherche par nom.

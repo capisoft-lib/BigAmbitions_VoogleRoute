@@ -10,6 +10,9 @@ namespace VoogleRoute.UI
     {
         private static string _activeLocale = string.Empty;
         private static float _nextLocalePoll;
+        internal static string BookmarksNoMatch => Loc("voogle_route_filter_empty", "No matches — adjust filters or search.");
+        internal static string BookmarkFilter(BookmarkCategory category) =>
+            Loc("voogle_route_filter_" + category.ToString().ToLowerInvariant(), category.ToString());
         internal static string PanelTitle => Loc("voogle_route_panel_title", "VOOGLE ROUTE");
         internal static string PhoneAppTitle => Loc("voogle_route_phone_app_title", "Voogle Route");
         internal static string PhoneSearchPlaceholder =>

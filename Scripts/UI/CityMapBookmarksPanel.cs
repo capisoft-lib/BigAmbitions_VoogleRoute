@@ -14,7 +14,11 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v39";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v40";
+        private const string FilterPreferenceKey = "voogleroute:bookmark-category-mask-v1";
+        private static BookmarkCategory _categories = BookmarkCategory.All;
+        private static readonly List<(BookmarkCategory Category, Image Graphic, TextMeshProUGUI Label)> FilterButtons =
+            new List<(BookmarkCategory, Image, TextMeshProUGUI)>();
         private const string DragPositionId = "voogleroute:city-map-bookmarks";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
@@ -129,6 +133,8 @@ namespace VoogleRoute.UI
             QuickBookmarkStore.Changed += OnQuickBookmarksChanged;
 
             QuickRows.Clear();
+            FilterButtons.Clear();
+            _categories = (BookmarkCategory)UnityEngine.PlayerPrefs.GetInt(FilterPreferenceKey, (int)BookmarkCategory.All) & BookmarkCategory.All;
             BaUiSearchField search = null;
 
             var built = BaUi.Overlay(RootName, CanvasSortOrder)
@@ -141,6 +147,8 @@ namespace VoogleRoute.UI
                 .Content(c => c
                     .QuickRows(QuickBookmarkStore.SlotCount, MapActionsOnPanelTemplate, OnQuickRowCreated, out _)
                     .Search(ModUiText.BookmarksSearchPlaceholder, OnSearchChanged, out search, OnSearchFieldSelected)
+                    .HorizontalStack(26f, h => CreateFilterButtons(h, BookmarkCategory.All, BookmarkCategory.Vehicles, BookmarkCategory.Residential), topMargin: 6f)
+                    .HorizontalStack(26f, h => CreateFilterButtons(h, BookmarkCategory.Retail, BookmarkCategory.Office, BookmarkCategory.Other), topMargin: 4f)
                     .PickHint(out _pickHintLabel)
                     .ScrollList(VisibleListRowCount, out _scrollList)
                     .Footer(BaUi.Layout.ButtonHeight, h => h
@@ -353,7 +361,7 @@ namespace VoogleRoute.UI
                     continue;
                 }
 
-                var visible = bookmark.MatchesFilter(_searchFilter);
+                var visible = (_categories & BookmarkCategory.Vehicles) != 0 && bookmark.MatchesFilter(_searchFilter);
                 ui.Root.SetActive(visible);
                 if (!visible)
                     continue;
@@ -376,7 +384,8 @@ namespace VoogleRoute.UI
                 ui.Kind = RowKind.Bookmark;
                 ui.BookmarkIndex = i;
                 var bookmark = BookmarkStore.GetAt(i);
-                if (bookmark == null || !bookmark.MatchesFilter(_searchFilter))
+                if (bookmark == null || !bookmark.MatchesFilter(_searchFilter) ||
+                    (_categories & BookmarkCategoryResolver.Resolve(bookmark)) == 0)
                 {
                     ui.Root.SetActive(false);
                     continue;
@@ -721,6 +730,7 @@ namespace VoogleRoute.UI
 
         internal static void RefreshLocalizedText()
         {
+            RefreshFilterButtons();
             if (_titleLabel != null)
                 _titleLabel.text = ModUiText.BookmarksTitle;
             if (_searchPlaceholder != null)
@@ -821,9 +831,12 @@ namespace VoogleRoute.UI
             if (_pickHintLabel == null)
                 return;
 
-            _pickHintLabel.gameObject.SetActive(_pickMode);
+            var empty = !_pickMode && !VehicleRows.Exists(r => r.Root.activeSelf) && !Rows.Exists(r => r.Root.activeSelf);
+            _pickHintLabel.gameObject.SetActive(_pickMode || empty);
             if (_pickMode)
                 _pickHintLabel.text = ModUiText.BookmarksPickHint;
+            else if (empty)
+                _pickHintLabel.text = ModUiText.BookmarksNoMatch;
         }
 
         internal static void BeginPickMode()
@@ -873,10 +886,52 @@ namespace VoogleRoute.UI
         private static void OnSearchChanged(string value)
         {
             _searchFilter = value ?? "";
-            ApplyPanelLayout();
-            RefreshQuickRows();
+            RefreshFilteredRows();
+        }
+
+        private static void CreateFilterButtons(BaHorizontalStackBuilder row, params BookmarkCategory[] categories)
+        {
+            var width = (row.RemainingWidth - 8f) / 3f;
+            foreach (var category in categories)
+            {
+                row.ActionButton("Filter" + category, BaButtonStyle.Grey,
+                    () => ToggleCategory(category), width, out var graphic, out var label);
+                label.enableAutoSizing = true;
+                label.fontSizeMin = 9f;
+                label.fontSizeMax = 13f;
+                FilterButtons.Add((category, graphic, label));
+                row.Gap(4f);
+            }
+        }
+
+        private static void ToggleCategory(BookmarkCategory category)
+        {
+            _categories = category == BookmarkCategory.All ? BookmarkCategory.All : _categories ^ category;
+            UnityEngine.PlayerPrefs.SetInt(FilterPreferenceKey, (int)_categories);
+            UnityEngine.PlayerPrefs.Save();
+            RefreshFilterButtons();
+            RefreshFilteredRows();
+            BaUiFocus.ReleaseForMovement();
+        }
+
+        private static void RefreshFilterButtons()
+        {
+            foreach (var button in FilterButtons)
+            {
+                var selected = (_categories & button.Category) == button.Category;
+                BaUiWidgets.ApplyButtonGraphic(button.Graphic, selected ? BaButtonStyle.Green : BaButtonStyle.Grey);
+                button.Label.text = (selected ? "✓ " : "") + ModUiText.BookmarkFilter(button.Category);
+            }
+        }
+
+        private static void RefreshFilteredRows()
+        {
             RefreshVehicleRows();
             RefreshBookmarkRows();
+            LayoutListContent();
+            if (_scrollList?.Scroll != null)
+                _scrollList.Scroll.verticalNormalizedPosition = 1f;
+            RefreshDistances();
             RefreshPickHint();
         }
 
@@ -1027,6 +1082,7 @@ namespace VoogleRoute.UI
             QuickRows.Clear();
             VehicleRows.Clear();
             Rows.Clear();
+            FilterButtons.Clear();
             _panelRect = null;
             _dragState = null;
             _scrollList = null;
