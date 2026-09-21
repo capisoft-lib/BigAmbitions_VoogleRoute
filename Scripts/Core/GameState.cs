@@ -79,6 +79,25 @@ namespace VoogleRoute
             }
         }
 
+        /// <summary>City map or BizMan is covering the HUD phone.</summary>
+        internal static bool HidesSmartphone()
+        {
+            if (IsCityMapOpen())
+                return true;
+
+            try
+            {
+                if (FullMenu.IsOpen)
+                    return true;
+            }
+            catch
+            {
+                return true;
+            }
+
+            return IsBizManBusinessPanelOpen();
+        }
+
         internal static bool IsModUiHidden => RouteActionShortcuts.UiHidden;
 
         /// <summary>Bookmarks panel: map open and no BizMan/purchase/dialog overlay on top.</summary>

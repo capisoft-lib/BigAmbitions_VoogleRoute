@@ -14,6 +14,18 @@ namespace VoogleRoute.UI
         internal static string BookmarkFilter(BookmarkCategory category) =>
             Loc("voogle_route_filter_" + category.ToString().ToLowerInvariant(), category.ToString());
         internal static string PanelTitle => Loc("voogle_route_panel_title", "VOOGLE ROUTE");
+        internal static string PhoneAppTitle => Loc("voogle_route_phone_app_title", "Voogle Route");
+        internal static string PhoneSearchPlaceholder =>
+            Loc("voogle_route_phone_search", "Search bookmarks...");
+        internal static string PhoneOpenMap(string key) =>
+            Loc("voogle_route_phone_open_map", "Map [{key}]").Replace("{key}", key ?? "M");
+        internal static string PhoneNoDestination =>
+            Loc("voogle_route_phone_no_destination", "Tap the map or search for a stop.");
+        internal static string PhoneDroppedPin => Loc("voogle_route_phone_dropped_pin", "Dropped pin");
+        internal static string PhoneSetDestination =>
+            Loc("voogle_route_phone_set_destination", "Set destination");
+        internal static string PhoneNoMatch =>
+            Loc("voogle_route_phone_no_match", "No matching bookmarks.");
         internal static string RouteOn => Loc("voogle_route_route_on", "ROUTE ON");
         internal static string RouteOff => Loc("voogle_route_route_off", "ROUTE OFF");
         internal static string AutoWalk => Loc("voogle_route_autowalk", "AUTO-WALK");
@@ -200,6 +212,8 @@ namespace VoogleRoute.UI
             CityMapBookmarkAddDialog.RefreshLocalizedText();
             VisitHistoryPanel.RefreshLocalizedText();
             CityMapBuildingNavBar.RefreshLocalizedText();
+            VoogleRoute.Phone.VoogleRoutePhoneApp.RefreshLocalizedText();
+            VoogleRoute.Phone.PhoneGpsPanel.RefreshLocalizedText();
         }
 
         private static string Loc(string key, string fallback)
