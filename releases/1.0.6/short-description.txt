@@ -1,0 +1,1 @@
+Version 1.0.6 adds a phone GPS app on Aluna's Phone Pages, resumes after BizMan or the city map, pans without moving the player, and uses long-press pins with Set destination.

@@ -6,6 +6,7 @@ using Streets;
 using UnityEngine;
 using VoogleRoute.Live;
 using VoogleRoute.Navigation;
+using VoogleRoute.Phone;
 using VoogleRoute.Rendering;
 using VoogleRoute.UI;
 
@@ -131,6 +132,7 @@ namespace VoogleRoute
             NavigationArrivalService.Reset();
             CompletedNavigationTarget.Reset();
             CityMapBuildingNavBar.Destroy();
+            VoogleRoutePhoneApp.Shutdown();
             TaxiTravelArrivalGuard.Reset();
             _wasSubwayRidingForNav = false;
             ModLog.Info("VoogleRoute loop shut down.");
@@ -160,6 +162,8 @@ namespace VoogleRoute
             CityMapBuildingNavBar.Tick();
             CityMapClickService.Tick();
             NavigationScreenRecovery.Tick();
+            VoogleRoutePhoneApp.Tick();
+            PhoneGpsPanel.Tick();
 
             if (GameState.IsWorldReady() && !SubwayStationStore.TryEnsureLoaded())
                 SubwayStationStore.WarmUp();
