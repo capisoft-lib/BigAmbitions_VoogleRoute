@@ -1,0 +1,1 @@
+Version 1.0.7 adds category filters on the city-map Bookmarks panel (Vehicles, Residential, Retail, Office, Other), combined with the existing name search.

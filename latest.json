@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "gameVersion": "EA 0.11 / 1.0",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "1.0.6: phone GPS on Aluna's Phone Pages — resume after BizMan or city map, pan without moving the player, long-press pin with Set destination. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
+  "releaseNotes": "1.0.7: city-map Bookmarks gain category filters (Vehicles, Residential, Retail, Office, Other) with the existing name search. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }

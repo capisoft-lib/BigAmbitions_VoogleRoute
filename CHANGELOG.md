@@ -2,6 +2,12 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.7] - 2026-09-21
+
+### Added
+
+- **Bookmark category filters** on the city-map Bookmarks panel — toggle Vehicles, Residential, Retail, Office and Other, combined with the existing name search. The selection is remembered.
+
 ## [1.0.6] - 2026-09-21
 
 ### Added
