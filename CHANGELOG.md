@@ -2,6 +2,18 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.6] - 2026-09-21
+
+### Added
+
+- **Phone GPS app** on Aluna's Phone Pages — heading-up vanilla map inside the HUD phone, bookmark search, recenter and a shortcut to the full city map.
+- **Long-press pin** — hold a still point on the phone map to drop a pin, then confirm with **Set destination**.
+
+### Fixed
+
+- **Resume after overlays** — closing BizMan or the city map returns to the in-phone GPS view with the same map framing.
+- **Pan without walking** — dragging the phone map no longer issues ground click-to-move on the player.
+
 ## [1.0.5] - 2026-09-13
 
 ### Fixed

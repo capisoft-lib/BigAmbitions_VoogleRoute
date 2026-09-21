@@ -1,0 +1,1 @@
+La version 1.0.6 ajoute un GPS téléphone sur Aluna's Phone Pages, reprend la carte après BizMan ou la carte ville, permet de la déplacer sans marcher, et pose une épingle au appui long avec Définir la destination.

@@ -26,6 +26,7 @@ namespace VoogleRoute.UI
             "VoogleRoute_MapBuildingNav",
             "VoogleRoute_AutoDrivePopup",
             "VoogleRoute_BookmarkAddDialog",
+            "VoogleRoute_PhoneGps",
         };
 
         internal static bool ShouldRecreate(GameObject root, string rootName) =>
