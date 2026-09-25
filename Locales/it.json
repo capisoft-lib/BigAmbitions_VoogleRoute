@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "Mostra/nascondi interfaccia",
   "voogle_route_shortcut_unbound": "Non assegnato",
   "voogle_route_shortcut_capture": "Premi un tasto...",
-  "voogle_route_shortcut_conflict": "Conflitto"
+  "voogle_route_shortcut_conflict": "Conflitto",
+  "voogle_route_options_window_scale": "Dimensione finestre",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

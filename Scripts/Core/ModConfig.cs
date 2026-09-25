@@ -23,6 +23,7 @@ namespace VoogleRoute
         private const string IndoorAutoWalkKey = "indoor_autowalk";
         private const string UseSubwayKey = "use_subway";
         private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
+        private const string WindowScaleKey = "window_scale";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
@@ -54,6 +55,7 @@ namespace VoogleRoute
         internal static bool ShowPartialPaths { get; private set; }
         internal static bool ShowLineDetection { get; private set; }
         internal static float HudButtonScale { get; private set; } = 1f;
+        internal static int WindowScalePercent { get; private set; } = 100;
         internal static float NavHudOffsetY { get; private set; } = 16f;
 
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
@@ -135,6 +137,8 @@ namespace VoogleRoute
             AllowUturnAtStartEnabled = data.AllowUturnAtStart;
             AutoEnterDestinationEnabled = data.AutoEnterDestination;
             BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
+            WindowScalePercent = Mathf.Clamp(data.WindowScalePercent, 100, 160);
+            UiWindowScale.Refresh();
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
             _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor);
             _indoorFootLineColor = ReadLineColor(data.IndoorRouteLineColor);
@@ -152,6 +156,7 @@ namespace VoogleRoute
                 IndoorAutowalk = false,
                 UseSubway = UseSubwayEnabled,
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
+                WindowScalePercent = WindowScalePercent,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
                 AllowUturnAtStart = AllowUturnAtStartEnabled,
                 AutoEnterDestination = AutoEnterDestinationEnabled,
@@ -177,6 +182,7 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, AllowUturnAtStartKey, AllowUturnAtStartEnabled);
             ModGameOptionPrefs.SaveToggle(modId, AutoEnterDestinationKey, AutoEnterDestinationEnabled);
             ModGameOptionPrefs.SaveInt(modId, BaseTaxiMultiplierKey, BaseTaxiMultiplier);
+            ModGameOptionPrefs.SaveInt(modId, WindowScaleKey, WindowScalePercent);
             ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
             ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
             ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
@@ -330,6 +336,18 @@ namespace VoogleRoute
             ModLog.Info("Base taxi multiplier = " + clamped);
         }
 
+        internal static void SetWindowScalePercent(int value, bool persist = true)
+        {
+            var clamped = Mathf.Clamp(value, 100, 160);
+            if (WindowScalePercent == clamped)
+                return;
+
+            WindowScalePercent = clamped;
+            UiWindowScale.Refresh();
+            if (persist)
+                ModOptionsSaveStore.PersistFromModConfig();
+        }
+
         internal static void SetFootLineColor(Color color, bool persist = true)
         {
             _footLineColor = NormalizeLineColor(color);
@@ -375,6 +393,7 @@ namespace VoogleRoute
         private static void OnUseSubwayOptionChanged(bool value) => SetUseSubwayEnabled(value);
 
         private static void OnBaseTaxiMultiplierChanged(int value) => SetBaseTaxiMultiplier(value);
+        private static void OnWindowScaleChanged(int value) => SetWindowScalePercent(value);
 
         private static void OnForceCorrectSideArrivalOptionChanged(bool value) =>
             SetForceCorrectSideArrivalEnabled(value);
@@ -402,6 +421,8 @@ namespace VoogleRoute
                 .AddHeader("voogle_route_panel_title")
                 .AddToggle(DisplayOutsideKey, "voogle_route_options_display_outside", DisplayOutsideEnabled,
                     OnDisplayOutsideOptionChanged)
+                .AddSlider(WindowScaleKey, "voogle_route_options_window_scale", 100, 160,
+                    WindowScalePercent, OnWindowScaleChanged, "voogle_route_options_window_scale_value")
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
                     BaseTaxiMultiplier, OnBaseTaxiMultiplierChanged,
                     "voogle_route_options_base_taxi_multiplier_value")

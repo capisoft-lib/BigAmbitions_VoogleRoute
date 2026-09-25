@@ -72,6 +72,7 @@ namespace VoogleRoute
             CityMapBookmarkAddDialog.Destroy();
             CityMapBookmarksPanel.Destroy();
             VisitHistoryPanel.Destroy();
+            UiWindowScale.Clear();
             RouteLineRenderer.Destroy();
             ModLog.Info("UI and route renderers destroyed.");
 

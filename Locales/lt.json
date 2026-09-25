@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "Slėpti/rodyti sąsają",
   "voogle_route_shortcut_unbound": "Nepriskirta",
   "voogle_route_shortcut_capture": "Paspauskite klavišą...",
-  "voogle_route_shortcut_conflict": "Konfliktas"
+  "voogle_route_shortcut_conflict": "Konfliktas",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

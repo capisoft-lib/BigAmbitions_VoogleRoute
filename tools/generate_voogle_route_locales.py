@@ -411,6 +411,8 @@ LOCALES: dict[str, dict[str, str]] = {
 # Keys added after 0.11.3 (indoor nav, city map overlay, recalc banner).
 NEW_KEYS: dict[str, dict[str, str]] = {
     "en": {
+        "voogle_route_options_window_scale": "Window size",
+        "voogle_route_options_window_scale_value": "{value}%",
         "voogle_route_options_indoor_route": "Indoor route line to exit",
         "voogle_route_options_indoor_autowalk": "Indoor auto-walk to exit",
         "voogle_route_way_out_on": "WAY OUT",
@@ -423,6 +425,8 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "CANCEL",
     },
     "fr": {
+        "voogle_route_options_window_scale": "Taille des fenêtres",
+        "voogle_route_options_window_scale_value": "{value}%",
         "voogle_route_options_indoor_route": "Ligne intérieure vers la sortie",
         "voogle_route_options_indoor_autowalk": "Marche auto intérieure vers la sortie",
         "voogle_route_way_out_on": "SORTIE",
@@ -435,6 +439,7 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "ANNULER",
     },
     "de": {
+        "voogle_route_options_window_scale": "Fenstergröße",
         "voogle_route_options_indoor_route": "Innenroutenlinie zum Ausgang",
         "voogle_route_options_indoor_autowalk": "Automatisch im Gebäude zum Ausgang",
         "voogle_route_way_out_on": "AUSGANG",
@@ -447,6 +452,7 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "ABBRECHEN",
     },
     "es": {
+        "voogle_route_options_window_scale": "Tamaño de ventanas",
         "voogle_route_options_indoor_route": "Línea interior hacia la salida",
         "voogle_route_options_indoor_autowalk": "Caminar automáticamente hacia la salida",
         "voogle_route_way_out_on": "SALIDA",
@@ -459,6 +465,7 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "CANCELAR",
     },
     "it": {
+        "voogle_route_options_window_scale": "Dimensione finestre",
         "voogle_route_options_indoor_route": "Linea interna verso l'uscita",
         "voogle_route_options_indoor_autowalk": "Cammino automatico verso l'uscita",
         "voogle_route_way_out_on": "USCITA",
@@ -471,6 +478,7 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "ANNULLA",
     },
     "pt-BR": {
+        "voogle_route_options_window_scale": "Tamanho das janelas",
         "voogle_route_options_indoor_route": "Linha interna até a saída",
         "voogle_route_options_indoor_autowalk": "Caminhar automaticamente até a saída",
         "voogle_route_way_out_on": "SAÍDA",
@@ -507,6 +515,7 @@ NEW_KEYS: dict[str, dict[str, str]] = {
         "voogle_route_map_dest_cancel": "ANULUJ",
     },
     "nl": {
+        "voogle_route_options_window_scale": "Venstergrootte",
         "voogle_route_options_indoor_route": "Binnenroutelijn naar uitgang",
         "voogle_route_options_indoor_autowalk": "Automatisch binnen naar uitgang",
         "voogle_route_way_out_on": "UITGANG",
@@ -679,7 +688,8 @@ NEW_KEYS: dict[str, dict[str, str]] = {
 
 def merged_locale(locale: str) -> dict[str, str]:
     base = dict(LOCALES[locale])
-    extra = NEW_KEYS.get(locale, NEW_KEYS["en"])
+    extra = dict(NEW_KEYS["en"])
+    extra.update(NEW_KEYS.get(locale, {}))
     base.update(extra)
     return base
 

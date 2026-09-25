@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "Απόκρυψη/εμφάνιση διεπαφής",
   "voogle_route_shortcut_unbound": "Χωρίς ανάθεση",
   "voogle_route_shortcut_capture": "Πατήστε ένα πλήκτρο...",
-  "voogle_route_shortcut_conflict": "Διένεξη"
+  "voogle_route_shortcut_conflict": "Διένεξη",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

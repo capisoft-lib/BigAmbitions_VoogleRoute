@@ -120,6 +120,7 @@ namespace VoogleRoute.UI
                         AnchorBottomLeft(_panelRect);
                     ApplyPanelLayout();
                     LayoutListContent();
+                    UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
                 }
                 return;
             }
@@ -165,6 +166,7 @@ namespace VoogleRoute.UI
             _lastBookmarkCount = BookmarkStore.All.Count;
             RefreshLocalizedText();
             RefreshList();
+            UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
         }
 
         private static void OnQuickRowCreated(int index, BaUiListRow ui)
@@ -309,6 +311,7 @@ namespace VoogleRoute.UI
                 {
                     _lastMapActionMode = MovementMode.Unavailable;
                     RefreshList(fullDistanceRefresh: true);
+                    UiWindowScale.Refresh();
                 }
                 else
                 {

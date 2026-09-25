@@ -99,6 +99,7 @@ namespace VoogleRoute.UI
             _root = built.Root;
             _canvas = _root.GetComponent<Canvas>();
             _panelRect = built.Panel;
+            UiWindowScale.Register(_root, _panelRect);
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
 
             _root.SetActive(false);
@@ -124,6 +125,7 @@ namespace VoogleRoute.UI
 
             RefreshLocalizedText();
             _root.SetActive(true);
+            UiWindowScale.Refresh();
         }
 
         internal static void Close()

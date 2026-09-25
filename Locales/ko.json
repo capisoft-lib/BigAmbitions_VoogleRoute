@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "UI 숨기기/표시",
   "voogle_route_shortcut_unbound": "할당되지 않음",
   "voogle_route_shortcut_capture": "키를 누르세요...",
-  "voogle_route_shortcut_conflict": "충돌"
+  "voogle_route_shortcut_conflict": "충돌",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }
