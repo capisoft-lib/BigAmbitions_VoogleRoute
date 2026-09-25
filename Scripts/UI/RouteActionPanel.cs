@@ -15,7 +15,7 @@ namespace VoogleRoute.UI
     /// <summary>Bottom-left VOOGLE ROUTE action panel (route / walk controls).</summary>
     internal static class RouteActionPanel
     {
-        private const string RootName = "VoogleRoute_ActionPanel_v85";
+        private const string RootName = "VoogleRoute_ActionPanel_v86";
         private const string DragPositionId = "voogleroute:action-panel";
 
         private static GameObject _root;
@@ -60,6 +60,7 @@ namespace VoogleRoute.UI
                 .Header(h => h
                     .TitleLeft(ModUiText.PanelTitle)
                     .Icons(i => i
+                        .Icon(BaIcons.Settings, () => RouteSettingsUi.Toggle(), "⚙")
                         .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1")
                         .Icon(BaIcons.Car, OnLastVehicleClicked, "\u2295", BaButtonStyle.Green)
                         .Icon(BaIcons.Add, OnBookmarkPinClicked, "+", BaButtonStyle.Blue)))
@@ -98,6 +99,7 @@ namespace VoogleRoute.UI
             _root = built.Root;
             _panelRect = built.Panel;
             _dragState = built.Drag;
+            UiWindowScale.Register(_root, _panelRect);
             _panelTitleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
             _loggedVisibleChrome = false;
 

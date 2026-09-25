@@ -24,6 +24,7 @@ namespace VoogleRoute
             AppendBool(sb, "indoorAutowalk", data.IndoorAutowalk);
             AppendBool(sb, "useSubway", data.UseSubway);
             AppendInt(sb, "baseTaxiMultiplier", data.BaseTaxiMultiplier);
+            AppendInt(sb, "windowScalePercent", data.WindowScalePercent);
             AppendBool(sb, "forceCorrectSideArrival", data.ForceCorrectSideArrival);
             AppendBool(sb, "allowUturnAtStart", data.AllowUturnAtStart);
             AppendBool(sb, "autoEnterDestination", data.AutoEnterDestination);
@@ -46,6 +47,7 @@ namespace VoogleRoute
                 IndoorAutowalk = ReadBool(json, "indoorAutowalk", false),
                 UseSubway = ReadBool(json, "useSubway", true),
                 BaseTaxiMultiplier = ReadInt(json, "baseTaxiMultiplier", 2),
+                WindowScalePercent = ReadInt(json, "windowScalePercent", 100),
                 ForceCorrectSideArrival = ReadBool(json, "forceCorrectSideArrival", false),
                 AllowUturnAtStart = ReadBool(json, "allowUturnAtStart", false),
                 AutoEnterDestination = ReadBool(json, "autoEnterDestination", true),

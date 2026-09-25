@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "UIの表示/非表示",
   "voogle_route_shortcut_unbound": "未割り当て",
   "voogle_route_shortcut_capture": "キーを押してください...",
-  "voogle_route_shortcut_conflict": "競合"
+  "voogle_route_shortcut_conflict": "競合",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

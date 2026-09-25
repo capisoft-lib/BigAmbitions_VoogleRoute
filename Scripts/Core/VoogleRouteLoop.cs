@@ -151,6 +151,7 @@ namespace VoogleRoute
         internal static void Tick()
         {
             ModUiText.PollLanguageChange();
+            UiWindowScale.Tick();
             NavigationSpawnGuard.Tick();
             RouteRecalcBanner.Tick();
             RouteSettingsUi.TickOverlay();

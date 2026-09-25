@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "隐藏/显示界面",
   "voogle_route_shortcut_unbound": "未绑定",
   "voogle_route_shortcut_capture": "请按一个键...",
-  "voogle_route_shortcut_conflict": "冲突"
+  "voogle_route_shortcut_conflict": "冲突",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

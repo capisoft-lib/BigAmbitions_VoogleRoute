@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using VoogleRoute;
 
 using Capisoft.Lib.BaUnifiedUI.Controls;
@@ -13,7 +14,7 @@ namespace VoogleRoute.UI
     /// <summary>Route color settings modal — fluent Content API (same pipeline as bookmarks).</summary>
     internal static class RouteSettingsUi
     {
-        private const string RootName = "VoogleRoute_Settings_fluent_v18";
+        private const string RootName = "VoogleRoute_Settings_fluent_v19";
         private const string DragPositionId = "voogleroute:settings";
         private const float CloseButtonExtraInset = 5f;
         private const int CanvasSortOrder = 11500;
@@ -32,6 +33,11 @@ namespace VoogleRoute.UI
         private static BaUiColorSwatchDisplay _footSwatch;
         private static BaUiColorSwatchDisplay _indoorSwatch;
         private static BaUiColorSwatchDisplay _vehicleSwatch;
+        private static Slider _windowScaleSlider;
+        private static TextMeshProUGUI _windowScaleLabel;
+        private static TextMeshProUGUI _windowScaleValue;
+        private static bool _scaleDirty;
+        private static float _scaleChangedAt;
         private static bool _loweredForPicker;
 
         private enum ColorTarget
@@ -61,7 +67,8 @@ namespace VoogleRoute.UI
                     .TitleLeft(ModUiText.SettingsTitle)
                     .CloseButton(Close, CloseButtonExtraInset))
                 .Content(c => c.SettingsModal(
-                    BaSettingsModalLayout.ColorLines(3, pinFooterClose: false, autoHeight: true),
+                    new BaSettingsModalLayout(colorLineCount: 3, buttonCount: 1,
+                        pinFooterClose: false, autoHeight: true),
                     m =>
                 {
                     m.ColorLine(
@@ -99,7 +106,9 @@ namespace VoogleRoute.UI
             _root = built.Root;
             _canvas = _root.GetComponent<Canvas>();
             _panelRect = built.Panel;
+            UiWindowScale.Register(_root, _panelRect);
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();
+            CreateWindowScaleRow(built.Panel.Find("Content") as RectTransform);
 
             _root.SetActive(false);
             RefreshLocalizedText();
@@ -123,11 +132,15 @@ namespace VoogleRoute.UI
                 return;
 
             RefreshLocalizedText();
+            if (_windowScaleSlider != null)
+                _windowScaleSlider.SetValueWithoutNotify(ModConfig.WindowScalePercent);
             _root.SetActive(true);
+            UiWindowScale.Refresh();
         }
 
         internal static void Close()
         {
+            SavePendingScale();
             BaUiFocus.ReleaseForMovement();
             RestoreCanvasSortOrder();
             if (_root != null)
@@ -137,6 +150,9 @@ namespace VoogleRoute.UI
         internal static void TickOverlay()
         {
             UpdateVisibility();
+
+            if (_scaleDirty && Time.unscaledTime - _scaleChangedAt >= 0.25f)
+                SavePendingScale();
 
             if (!_loweredForPicker)
                 return;
@@ -164,6 +180,7 @@ namespace VoogleRoute.UI
 
         internal static void Destroy()
         {
+            SavePendingScale();
             if (_root != null)
             {
                 Object.Destroy(_root);
@@ -182,6 +199,9 @@ namespace VoogleRoute.UI
             _footSwatch = null;
             _indoorSwatch = null;
             _vehicleSwatch = null;
+            _windowScaleSlider = null;
+            _windowScaleLabel = null;
+            _windowScaleValue = null;
             _loweredForPicker = false;
         }
 
@@ -201,8 +221,91 @@ namespace VoogleRoute.UI
                 _indoorChooseColorLabel.text = ModUiText.SettingChooseColor;
             if (_vehicleChooseColorLabel != null)
                 _vehicleChooseColorLabel.text = ModUiText.SettingChooseColor;
+            if (_windowScaleLabel != null)
+                _windowScaleLabel.text = ModUiText.WindowScaleLabel;
+            if (_windowScaleValue != null)
+                _windowScaleValue.text = ModConfig.WindowScalePercent + "%";
 
             RefreshColorSwatches();
+        }
+
+        private static void CreateWindowScaleRow(RectTransform content)
+        {
+            if (content == null)
+                return;
+
+            var row = BaUiWidgets.CreateRect(content, "WindowScaleRow");
+            var rowLayout = row.gameObject.AddComponent<LayoutElement>();
+            rowLayout.minHeight = rowLayout.preferredHeight =
+                BaUiSettingsMetrics.RowHeight + BaUiSettingsMetrics.CloseButtonExtraHeight;
+
+            var labelRect = BaUiWidgets.CreateRect(row, "Label");
+            labelRect.anchorMin = new Vector2(0f, 0f);
+            labelRect.anchorMax = new Vector2(0.30f, 1f);
+            labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
+            _windowScaleLabel = labelRect.gameObject.AddComponent<TextMeshProUGUI>();
+            _windowScaleLabel.fontSize = 14f;
+            _windowScaleLabel.alignment = TextAlignmentOptions.MidlineLeft;
+            _windowScaleLabel.raycastTarget = false;
+            BaUi.ApplyButtonFont(_windowScaleLabel);
+
+            var track = BaUiWidgets.CreateRect(row, "WindowScaleSlider");
+            track.anchorMin = new Vector2(0.33f, 0.35f);
+            track.anchorMax = new Vector2(0.85f, 0.65f);
+            track.offsetMin = track.offsetMax = Vector2.zero;
+            var trackImage = track.gameObject.AddComponent<Image>();
+            trackImage.color = new Color(0.16f, 0.22f, 0.30f, 1f);
+
+            var fill = BaUiWidgets.CreateRect(track, "Fill");
+            fill.anchorMin = Vector2.zero;
+            fill.anchorMax = Vector2.one;
+            fill.offsetMin = fill.offsetMax = Vector2.zero;
+            var fillImage = fill.gameObject.AddComponent<Image>();
+            fillImage.color = new Color(0.12f, 0.69f, 1f, 1f);
+            fillImage.raycastTarget = false;
+
+            var handle = BaUiWidgets.CreateRect(track, "Handle");
+            handle.anchorMin = new Vector2(0f, 0.5f);
+            handle.anchorMax = new Vector2(0f, 0.5f);
+            handle.sizeDelta = new Vector2(18f, 30f);
+            var handleImage = handle.gameObject.AddComponent<Image>();
+            handleImage.color = Color.white;
+
+            _windowScaleSlider = track.gameObject.AddComponent<Slider>();
+            _windowScaleSlider.fillRect = fill;
+            _windowScaleSlider.handleRect = handle;
+            _windowScaleSlider.targetGraphic = handleImage;
+            _windowScaleSlider.minValue = 10f;
+            _windowScaleSlider.maxValue = 160f;
+            _windowScaleSlider.wholeNumbers = true;
+            _windowScaleSlider.SetValueWithoutNotify(ModConfig.WindowScalePercent);
+            _windowScaleSlider.onValueChanged.AddListener(value =>
+            {
+                ModConfig.SetWindowScalePercent(Mathf.RoundToInt(value), persist: false);
+                if (_windowScaleValue != null)
+                    _windowScaleValue.text = ModConfig.WindowScalePercent + "%";
+                _scaleDirty = true;
+                _scaleChangedAt = Time.unscaledTime;
+            });
+
+            var valueRect = BaUiWidgets.CreateRect(row, "Value");
+            valueRect.anchorMin = new Vector2(0.87f, 0f);
+            valueRect.anchorMax = Vector2.one;
+            valueRect.offsetMin = valueRect.offsetMax = Vector2.zero;
+            _windowScaleValue = valueRect.gameObject.AddComponent<TextMeshProUGUI>();
+            _windowScaleValue.fontSize = 14f;
+            _windowScaleValue.alignment = TextAlignmentOptions.MidlineRight;
+            _windowScaleValue.raycastTarget = false;
+            BaUi.ApplyButtonFont(_windowScaleValue);
+        }
+
+        private static void SavePendingScale()
+        {
+            if (!_scaleDirty)
+                return;
+
+            _scaleDirty = false;
+            ModOptionsSaveStore.PersistFromModConfig();
         }
 
         private static void ApplyColor(ColorTarget target, Color color)

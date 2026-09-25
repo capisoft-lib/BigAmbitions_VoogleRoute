@@ -75,6 +75,7 @@ namespace VoogleRoute.UI
                 built.Panel, "AddButton", new Vector2(130f, 24f), new Vector2(220f, 44f), textScale,
                 ModUiText.BookmarkAddConfirm, BaButtonStyle.Green, Confirm);
 
+            UiWindowScale.Register(_root, built.Panel);
             BaUi.ApplyLayer(_root);
             _root.SetActive(false);
         }
@@ -146,6 +147,7 @@ namespace VoogleRoute.UI
             _infoLabel.text = BuildInfoText(locationLabel, worldPos, address);
             _nameField.text = "";
             _root.SetActive(true);
+            UiWindowScale.Refresh();
             _nameField.ActivateInputField();
             OnNameFieldSelected();
         }

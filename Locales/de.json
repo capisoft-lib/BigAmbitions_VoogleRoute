@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "UI ein-/ausblenden",
   "voogle_route_shortcut_unbound": "Nicht belegt",
   "voogle_route_shortcut_capture": "Taste drücken...",
-  "voogle_route_shortcut_conflict": "Konflikt"
+  "voogle_route_shortcut_conflict": "Konflikt",
+  "voogle_route_options_window_scale": "Fenstergröße",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

@@ -79,6 +79,7 @@ namespace VoogleRoute.UI
                 new Vector2(buttonWidth, FooterButtonHeight), textScale,
                 ModUiText.AutoDriveConfirm, BaButtonStyle.Green, Confirm);
 
+            UiWindowScale.Register(_root, built.Panel);
             _root.SetActive(false);
         }
 
@@ -88,6 +89,7 @@ namespace VoogleRoute.UI
             _pendingPlan = plan;
             RefreshLocalizedText();
             _root.SetActive(true);
+            UiWindowScale.Refresh();
         }
 
         internal static void Close()
