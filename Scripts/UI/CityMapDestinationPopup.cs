@@ -66,6 +66,7 @@ namespace VoogleRoute.UI
                 built.Panel, "ConfirmButton", new Vector2(130f, 24f), new Vector2(220f, 44f), scale,
                 ModUiText.MapDestConfirm, BaButtonStyle.Green, Confirm);
 
+            UiWindowScale.Register(_root, built.Panel);
             _root.SetActive(false);
         }
 
@@ -77,6 +78,7 @@ namespace VoogleRoute.UI
             RefreshLocalizedText();
             _addressLabel.text = displayLabel;
             _root.SetActive(true);
+            UiWindowScale.Refresh();
         }
 
         internal static void Close()

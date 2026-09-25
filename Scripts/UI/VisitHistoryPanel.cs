@@ -70,6 +70,7 @@ namespace VoogleRoute.UI
                 {
                     ApplyPanelLayout();
                     LayoutListContent();
+                    UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
                 }
                 return;
             }
@@ -101,6 +102,7 @@ namespace VoogleRoute.UI
             _root.SetActive(false);
             RefreshLocalizedText();
             RefreshList(fullDistanceRefresh: true);
+            UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
         }
 
         private static void ApplyScreenAnchor()
@@ -223,6 +225,7 @@ namespace VoogleRoute.UI
             RefreshLocalizedText();
             RefreshList(fullDistanceRefresh: true);
             _root.SetActive(true);
+            UiWindowScale.Refresh();
         }
 
         internal static void Close()

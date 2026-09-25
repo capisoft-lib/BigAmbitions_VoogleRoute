@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "Ocultar/exibir interface",
   "voogle_route_shortcut_unbound": "Não atribuído",
   "voogle_route_shortcut_capture": "Pressione uma tecla...",
-  "voogle_route_shortcut_conflict": "Conflito"
+  "voogle_route_shortcut_conflict": "Conflito",
+  "voogle_route_options_window_scale": "Tamanho das janelas",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

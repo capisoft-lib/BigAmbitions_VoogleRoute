@@ -85,5 +85,7 @@
   "voogle_route_options_hide_ui_shortcut": "Hide/Show UI",
   "voogle_route_shortcut_unbound": "Unbound",
   "voogle_route_shortcut_capture": "Press a key...",
-  "voogle_route_shortcut_conflict": "Conflict"
+  "voogle_route_shortcut_conflict": "Conflict",
+  "voogle_route_options_window_scale": "Window size",
+  "voogle_route_options_window_scale_value": "{value}%"
 }

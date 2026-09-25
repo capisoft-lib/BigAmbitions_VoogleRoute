@@ -53,6 +53,7 @@ Current Workshop description copy: [`releases/1.0.5/`](releases/1.0.5/), in Engl
 - **Draggable UI** — all seven interactive Voogle Route windows remember their positions
 - **Configurable shortcuts** — route line, auto-move and Hide/Show UI can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y**, **Ctrl+Shift+X** and **Ctrl+Shift+C**
 - **Configurable route colors** — on-foot, indoor and vehicle lines each have a native color picker under **Options → Mods**
+- **Readable windows** — **Options → Mods → Window size** scales bookmarks, history, settings and confirmation dialogs from 100% to 160%; the maximum adapts to the screen resolution
 - **Indoor navigation** — optional route line and auto-walk to the building exit (**WAY OUT** / **GET OUT**)
 - **Hamptons exits** — dedicated entrance-first routing for open-world mansion plots and their property gates
 - **City map overlay** — route line on the city map (**M**); click to set a destination
