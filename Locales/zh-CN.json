@@ -78,5 +78,10 @@
   "voogle_route_options_hide_ui_shortcut": "隐藏/显示界面",
   "voogle_route_shortcut_unbound": "未绑定",
   "voogle_route_shortcut_capture": "请按一个键...",
-  "voogle_route_shortcut_conflict": "冲突"
+  "voogle_route_shortcut_conflict": "冲突",
+  "voogle_route_businesses_title": "我的企业",
+  "voogle_route_businesses_search": "搜索企业名称或地址…",
+  "voogle_route_businesses_empty": "当前存档暂无企业。",
+  "voogle_route_businesses_no_matches": "没有匹配的企业。",
+  "voogle_route_businesses_hint": "点击企业名称可在地图上定位。"
 }

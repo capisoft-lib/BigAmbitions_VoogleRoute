@@ -72,7 +72,9 @@ Current Workshop description copy: [`releases/1.0.5/`](releases/1.0.5/), in Engl
 
 ### City map bookmarks
 
-Open the city map (**M**) to show the **BOOKMARKS** panel:
+The map panel now opens on **MY BUSINESSES**: named businesses operated by the player are listed automatically, including headquarters, warehouses and factories. Search by name or address, click a name to focus its building, or use the existing destination / walk / drive buttons. The list refreshes when the map opens or a tab is selected and does not create saved bookmarks. Select **BOOKMARKS** to access the existing bookmark and vehicle list. See the [feature guide and validation checklist](docs/business-map-shortcuts.md).
+
+Open the city map (**M**) and select **BOOKMARKS** for the original features:
 
 1. **Custom bookmarks** — **ADD BOOKMARK**, then click the map, or tap **+** on the GPS panel to save your current position.
 2. **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** update as you park, enter home, or enter a business.

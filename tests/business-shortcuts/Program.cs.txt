@@ -1,0 +1,100 @@
+// Standalone fixtures for the game APIs. The production store is compiled unchanged.
+using System;
+using System.Collections.Generic;
+using VoogleRoute.Navigation;
+
+internal sealed class BuildingRegistration
+{
+    internal bool RentedByPlayer;
+    internal string BusinessName, StreetName, businessTypeName;
+    internal int StreetNumber;
+    internal string BuildingType = "commercial";
+    internal bool Broken;
+    internal string GetBuildingType() => Broken ? throw new InvalidOperationException("Unavailable building") : BuildingType;
+}
+internal sealed class Save { internal List<BuildingRegistration> BuildingRegistrations = new(); }
+internal static class SaveGameManager { internal static Save Current; }
+internal static class ModLog { internal static void Error(string message, Exception ex) { } }
+namespace Streets
+{
+    internal sealed class Address
+    {
+        private readonly string _street;
+        private readonly int _number;
+        internal Address(string street, int number) { _street = street; _number = number; }
+        internal string ToFormattedString() => _number + " " + _street;
+    }
+}
+namespace VoogleRoute.Navigation
+{
+    internal sealed class BookmarkEntry
+    {
+        internal string Name, StreetName, LocationLabel;
+        internal int StreetNumber;
+        internal string DisplayName => Name;
+    }
+}
+internal static class Program
+{
+    private static int _checks;
+    private static void Check(bool condition, string message)
+    {
+        if (!condition) throw new Exception(message);
+        _checks++;
+    }
+    private static BuildingRegistration Business(string name, int number, string type = "retail") =>
+        new() { RentedByPlayer = true, BusinessName = name, StreetName = "Broadway", StreetNumber = number, businessTypeName = type };
+
+    private static void Main()
+    {
+        PlayerBusinessBookmarkStore.Refresh();
+        Check(PlayerBusinessBookmarkStore.All.Count == 0, "No loaded save must yield an empty list.");
+        SaveGameManager.Current = new Save();
+        var tenant = Business("Someone else's business", 1); tenant.RentedByPlayer = false;
+        var residential = Business("Home", 2); residential.BuildingType = "ba:buildingtype_residential";
+        var missingAddress = Business("Unaddressed", 3); missingAddress.StreetName = " ";
+        var broken = Business("Broken", 4); broken.Broken = true;
+        SaveGameManager.Current.BuildingRegistrations.AddRange(new[]
+        {
+            null, tenant, residential, missingAddress, broken, Business(" ", 5),
+            Business("Unused", 6, "ba:businesstype_empty"),
+            Business("Warehouse", 7, "ba:businesstype_warehouse"),
+            Business("Headquarters", 8, "ba:businesstype_headquarters"),
+            Business("Factory", 9, "ba:businesstype_factory"),
+            Business("Same name", 20), Business("Same name", 10),
+            Business("我的商店", 30)
+        });
+        var duplicate = Business("Duplicate address", 20); duplicate.StreetName = "BROADWAY";
+        SaveGameManager.Current.BuildingRegistrations.Add(duplicate);
+        PlayerBusinessBookmarkStore.Refresh();
+        var rows = PlayerBusinessBookmarkStore.All;
+        Check(rows.Count == 6, "Must exclude NPCs, residences, invalid/empty entries and duplicate addresses.");
+        Check(Contains("Warehouse") && Contains("Headquarters") && Contains("Factory"), "Support businesses must be included.");
+        Check(Contains("我的商店"), "Unicode business names must survive.");
+        var firstSame = -1;
+        for (var i = 0; i < rows.Count; i++) if (rows[i].Name == "Same name") { firstSame = i; break; }
+        Check(firstSame >= 0 && rows[firstSame].StreetNumber == 10 && rows[firstSame + 1].StreetNumber == 20,
+            "Same-name businesses must stay distinct and sort by address.");
+        Check(rows[firstSame].LocationLabel == "10 Broadway", "Rows need a formatted address.");
+
+        var renamed = Business("Renamed", 10);
+        SaveGameManager.Current.BuildingRegistrations.Clear();
+        SaveGameManager.Current.BuildingRegistrations.Add(renamed);
+        PlayerBusinessBookmarkStore.Refresh();
+        Check(rows.Count == 1 && rows[0].Name == "Renamed", "Refresh must remove sold businesses and pick up renames.");
+        SaveGameManager.Current = new Save();
+        PlayerBusinessBookmarkStore.Refresh();
+        Check(rows.Count == 0, "Switching saves must not retain previous businesses.");
+        SaveGameManager.Current.BuildingRegistrations.Add(Business("New", 40));
+        PlayerBusinessBookmarkStore.Refresh();
+        Check(rows.Count == 1, "New businesses must appear on refresh.");
+        PlayerBusinessBookmarkStore.Clear();
+        Check(rows.Count == 0, "Unload must clear the snapshot.");
+        Console.WriteLine($"PASS: {_checks} business-shortcut regression checks.");
+    }
+    private static bool Contains(string name)
+    {
+        foreach (var row in PlayerBusinessBookmarkStore.All) if (row.Name == name) return true;
+        return false;
+    }
+}

@@ -79,6 +79,16 @@ namespace VoogleRoute.UI
             Loc("voogle_route_autodrive_popup_cancel", "CANCEL");
         internal static string BookmarksTitle =>
             Loc("voogle_route_bookmarks_title", "BOOKMARKS");
+        internal static string BusinessesTitle =>
+            Loc("voogle_route_businesses_title", "MY BUSINESSES");
+        internal static string BusinessesSearch =>
+            Loc("voogle_route_businesses_search", "Search businesses or addresses...");
+        internal static string BusinessesEmpty =>
+            Loc("voogle_route_businesses_empty", "No businesses in this save.");
+        internal static string BusinessesNoMatches =>
+            Loc("voogle_route_businesses_no_matches", "No matching businesses.");
+        internal static string BusinessesHint =>
+            Loc("voogle_route_businesses_hint", "Click a business name to locate it on the map.");
         internal static string BookmarksSearchPlaceholder =>
             Loc("voogle_route_bookmarks_search", "Search bookmarks...");
         internal static string BookmarksAdd =>
