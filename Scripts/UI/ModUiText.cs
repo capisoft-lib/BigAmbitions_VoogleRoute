@@ -34,6 +34,7 @@ namespace VoogleRoute.UI
         internal static string GetOut => Loc("voogle_route_get_out", "GET OUT");
         internal static string GetOutOn => Loc("voogle_route_get_out_on", "GET OUT ON");
         internal static string SettingsTitle => Loc("voogle_route_settings_title", "VOOGLE ROUTE SETTINGS");
+        internal static string WindowScaleLabel => Loc("voogle_route_options_window_scale", "Window size");
         internal static string SettingRouteLineColor => Loc("voogle_route_setting_route_color", "Route line color");
         internal static string SettingFootRouteColor =>
             Loc("voogle_route_setting_foot_route_color", "On-foot route color");

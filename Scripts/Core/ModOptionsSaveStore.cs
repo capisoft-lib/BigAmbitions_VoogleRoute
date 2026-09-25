@@ -191,6 +191,7 @@ namespace VoogleRoute
         public bool IndoorAutowalk { get; set; }
         public bool UseSubway { get; set; } = true;
         public int BaseTaxiMultiplier { get; set; } = 2;
+        public int WindowScalePercent { get; set; } = 100;
         public bool ForceCorrectSideArrival { get; set; }
         public bool AllowUturnAtStart { get; set; }
         public bool AutoEnterDestination { get; set; } = true;
@@ -220,6 +221,7 @@ namespace VoogleRoute
                 IndoorAutowalk = legacy.IndoorAutowalk,
                 UseSubway = legacy.UseSubway,
                 BaseTaxiMultiplier = legacy.BaseTaxiMultiplier,
+                WindowScalePercent = 100,
                 ForceCorrectSideArrival = legacy.ForceCorrectSideArrival,
                 AllowUturnAtStart = legacy.AllowUturnAtStart,
                 AutoEnterDestination = legacy.AutoEnterDestination,
@@ -247,6 +249,9 @@ namespace VoogleRoute
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
+
+            if (data.WindowScalePercent < 10 || data.WindowScalePercent > 160)
+                data.WindowScalePercent = 100;
         }
 
         private static float[] DefaultRouteLineColor() =>

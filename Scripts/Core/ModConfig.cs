@@ -54,6 +54,7 @@ namespace VoogleRoute
         internal static bool ShowPartialPaths { get; private set; }
         internal static bool ShowLineDetection { get; private set; }
         internal static float HudButtonScale { get; private set; } = 1f;
+        internal static int WindowScalePercent { get; private set; } = 100;
         internal static float NavHudOffsetY { get; private set; } = 16f;
 
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
@@ -135,6 +136,8 @@ namespace VoogleRoute
             AllowUturnAtStartEnabled = data.AllowUturnAtStart;
             AutoEnterDestinationEnabled = data.AutoEnterDestination;
             BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
+            WindowScalePercent = Mathf.Clamp(data.WindowScalePercent, 10, 160);
+            UiWindowScale.Refresh();
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
             _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor);
             _indoorFootLineColor = ReadLineColor(data.IndoorRouteLineColor);
@@ -152,6 +155,7 @@ namespace VoogleRoute
                 IndoorAutowalk = false,
                 UseSubway = UseSubwayEnabled,
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
+                WindowScalePercent = WindowScalePercent,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
                 AllowUturnAtStart = AllowUturnAtStartEnabled,
                 AutoEnterDestination = AutoEnterDestinationEnabled,
@@ -328,6 +332,18 @@ namespace VoogleRoute
             if (persist)
                 ModOptionsSaveStore.PersistFromModConfig();
             ModLog.Info("Base taxi multiplier = " + clamped);
+        }
+
+        internal static void SetWindowScalePercent(int value, bool persist = true)
+        {
+            var clamped = Mathf.Clamp(value, 10, 160);
+            if (WindowScalePercent == clamped)
+                return;
+
+            WindowScalePercent = clamped;
+            UiWindowScale.Refresh();
+            if (persist)
+                ModOptionsSaveStore.PersistFromModConfig();
         }
 
         internal static void SetFootLineColor(Color color, bool persist = true)

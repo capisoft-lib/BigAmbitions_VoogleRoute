@@ -14,7 +14,7 @@ namespace VoogleRoute.UI
 {
     internal static class CityMapBookmarksPanel
     {
-        private const string RootName = "VoogleRoute_BookmarksPanel_v39";
+        private const string RootName = "VoogleRoute_BookmarksPanel_v40";
         private const string DragPositionId = "voogleroute:city-map-bookmarks";
         private const int VisibleListRowCount = 8;
         private const int CanvasSortOrder = 11000;
@@ -120,6 +120,7 @@ namespace VoogleRoute.UI
                         AnchorBottomLeft(_panelRect);
                     ApplyPanelLayout();
                     LayoutListContent();
+                    UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
                 }
                 return;
             }
@@ -137,6 +138,7 @@ namespace VoogleRoute.UI
                 .Draggable(DragPositionId)
                 .Header(h => h
                     .TitleLeft(ModUiText.BookmarksTitle)
+                    .Icon(BaIcons.Settings, () => RouteSettingsUi.Toggle(), "⚙")
                     .Icon(BaIcons.History, () => VisitHistoryPanel.Toggle(), "\u23F1"))
                 .Content(c => c
                     .QuickRows(QuickBookmarkStore.SlotCount, MapActionsOnPanelTemplate, OnQuickRowCreated, out _)
@@ -165,6 +167,7 @@ namespace VoogleRoute.UI
             _lastBookmarkCount = BookmarkStore.All.Count;
             RefreshLocalizedText();
             RefreshList();
+            UiWindowScale.Register(_root, _panelRect, sharesMapRow: true);
         }
 
         private static void OnQuickRowCreated(int index, BaUiListRow ui)
@@ -309,6 +312,7 @@ namespace VoogleRoute.UI
                 {
                     _lastMapActionMode = MovementMode.Unavailable;
                     RefreshList(fullDistanceRefresh: true);
+                    UiWindowScale.Refresh();
                 }
                 else
                 {

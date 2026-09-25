@@ -78,5 +78,7 @@
   "voogle_route_options_hide_ui_shortcut": "UI verbergen/tonen",
   "voogle_route_shortcut_unbound": "Niet toegewezen",
   "voogle_route_shortcut_capture": "Druk op een toets...",
-  "voogle_route_shortcut_conflict": "Conflict"
+  "voogle_route_shortcut_conflict": "Conflict",
+  "voogle_route_options_window_scale": "Venstergrootte",
+  "voogle_route_options_window_scale_value": "{value}%"
 }
