@@ -4,6 +4,7 @@ using Helpers;
 using UnityEngine;
 using VoogleRoute.Pathfinding.Routing;
 using System.Globalization;
+using UnityEngine.SceneManagement;
 
 namespace VoogleRoute.Navigation.Driving
 {
@@ -12,6 +13,11 @@ namespace VoogleRoute.Navigation.Driving
         internal CarController Car;
         internal Vector3 Destination;
         internal DrivingPath Path;
+        internal object SaveIdentity, TrafficSource, GraphSource;
+        internal int SceneHandle, CruiseKmh;
+        internal float CreatedAt, StartProgress, MinimumRadius;
+        internal Vector3 Origin, Forward;
+        internal bool PreferBuildingSide;
         internal readonly List<TrafficMarker> Traffic = new List<TrafficMarker>();
         internal sealed class TrafficMarker
         {
@@ -22,7 +28,19 @@ namespace VoogleRoute.Navigation.Driving
 
     internal static class PhysicalDrivePlanner
     {
+        private static object _trafficSource, _trafficGraph, _trafficSave;
+        private static int _trafficScene;
+        private static Dictionary<Vector2Int, List<Waypoint>> _trafficGrid;
+        private static readonly Dictionary<int, Waypoint> TrafficMatches = new Dictionary<int, Waypoint>();
+
         internal static bool TryBuild(out PhysicalDrivePlan plan, out string failure)
+        {
+            var started = DrivingPerformance.Begin();
+            try { return TryBuildCore(out plan, out failure); }
+            finally { DrivingPerformance.End(DrivingStage.Plan, started); }
+        }
+
+        private static bool TryBuildCore(out PhysicalDrivePlan plan, out string failure)
         {
             plan = null;
             failure = "voogle_route_physical_no_route";
@@ -78,13 +96,46 @@ namespace VoogleRoute.Navigation.Driving
                 if (AutoDriveVehicleFuel.TryEstimate(path.Length, out var fuel) && !fuel.HasEnoughFuel)
                     return Reject("insufficient_fuel", "", out failure, "voogle_route_autodrive_insufficient_fuel");
 
-                plan = new PhysicalDrivePlan { Car = car, Destination = destination, Path = path };
-                BindTraffic(plan, route.Path);
+                plan = new PhysicalDrivePlan
+                {
+                    Car = car, Destination = destination, Path = path,
+                    SaveIdentity = SaveGameManager.Current, SceneHandle = SceneManager.GetActiveScene().handle,
+                    GraphSource = RouteGraphStore.Graph,
+                    CruiseKmh = ModConfig.PhysicalDriveSpeedKmh, PreferBuildingSide = ModConfig.ForceCorrectSideArrivalEnabled,
+                    Origin = origin, Forward = geometry.Vehicle.transform.forward,
+                    StartProgress = progress, MinimumRadius = geometry.MinRadius
+                };
+                var bindStarted = DrivingPerformance.Begin();
+                try { BindTraffic(plan, route.Path); }
+                finally { DrivingPerformance.End(DrivingStage.TrafficBinding, bindStarted); }
                 plan.Path.ApplyBrakingEnvelope();
+                plan.CreatedAt = Time.realtimeSinceStartup;
                 Debug.Log("[VoogleRoute][PhysicalDrive] plan_ok distance=" + Mathf.RoundToInt(path.Length) +
                     " samples=" + samples.Count + " traffic_markers=" + plan.Traffic.Count);
                 return true;
             }
+        }
+
+        internal static bool CanReuse(PhysicalDrivePlan plan, VehicleControlLease car, out float progress, out string reason)
+        {
+            progress = 0f;
+            reason = "context_changed";
+            if (plan == null || plan.Car != car.Car || !ReferenceEquals(plan.SaveIdentity, SaveGameManager.Current) ||
+                plan.SceneHandle != SceneManager.GetActiveScene().handle ||
+                !ReferenceEquals(plan.GraphSource, RouteGraphStore.Graph) ||
+                !ReferenceEquals(plan.TrafficSource, GleyUrbanAssets.CurrentSceneData.GetSceneInstance()?.allWaypoints)) return false;
+            reason = "expired";
+            if (Time.realtimeSinceStartup - plan.CreatedAt > 60f) return false;
+            reason = "options_or_geometry_changed";
+            if (plan.CruiseKmh != ModConfig.PhysicalDriveSpeedKmh || plan.PreferBuildingSide != ModConfig.ForceCorrectSideArrivalEnabled ||
+                Mathf.Abs(plan.MinimumRadius - car.MinRadius) > 0.05f) return false;
+            reason = "car_moved";
+            if (car.Speed > 0.7f || (car.RearPosition - plan.Origin).sqrMagnitude > 4f ||
+                Vector3.Angle(plan.Forward, car.Vehicle.transform.forward) > 10f) return false;
+            progress = plan.Path.Project(car.RearPosition, plan.StartProgress, out var lateral);
+            if (lateral > 2.5f || float.IsInfinity(lateral)) return false;
+            reason = "valid";
+            return true;
         }
 
         private static bool Reject(string stage, string detail, out string failure,
@@ -129,33 +180,44 @@ namespace VoogleRoute.Navigation.Driving
             var scene = GleyUrbanAssets.CurrentSceneData.GetSceneInstance();
             var waypoints = scene?.allWaypoints;
             if (waypoints == null) throw new System.InvalidOperationException("Live traffic graph is unavailable.");
-            var grid = new Dictionary<Vector2Int, List<Waypoint>>();
-            foreach (var wp in waypoints)
+            plan.TrafficSource = waypoints;
+            if (!ReferenceEquals(_trafficSource, waypoints) || !ReferenceEquals(_trafficGraph, RouteGraphStore.Graph) ||
+                !ReferenceEquals(_trafficSave, SaveGameManager.Current) || _trafficScene != SceneManager.GetActiveScene().handle)
             {
-                if (wp == null || wp.temporaryDisabled) continue;
-                var key = Cell(wp.position);
-                if (!grid.TryGetValue(key, out var bucket)) grid[key] = bucket = new List<Waypoint>();
-                bucket.Add(wp);
+                InvalidateTrafficIndex();
+                var grid = new Dictionary<Vector2Int, List<Waypoint>>();
+                foreach (var wp in waypoints)
+                {
+                    if (wp == null) continue;
+                    var key = Cell(wp.position);
+                    if (!grid.TryGetValue(key, out var bucket)) grid[key] = bucket = new List<Waypoint>();
+                    bucket.Add(wp);
+                }
+                _trafficGrid = grid; _trafficSource = waypoints; _trafficGraph = RouteGraphStore.Graph;
+                _trafficSave = SaveGameManager.Current; _trafficScene = SceneManager.GetActiveScene().handle;
             }
             var seen = new HashSet<int>();
             foreach (var node in nodes)
             {
                 var p = PhysicalRoutingGraph.Unity(RouteGraphStore.Graph.GetPosition(node));
-                var cell = Cell(p);
-                Waypoint nearest = null;
-                var best = 1.5f * 1.5f;
-                for (var x = -1; x <= 1; x++) for (var z = -1; z <= 1; z++)
+                if (!TrafficMatches.TryGetValue(node, out var nearest))
                 {
-                    if (!grid.TryGetValue(cell + new Vector2Int(x, z), out var bucket)) continue;
-                    foreach (var wp in bucket)
+                    var cell = Cell(p);
+                    var best = 1.5f * 1.5f;
+                    for (var x = -1; x <= 1; x++) for (var z = -1; z <= 1; z++)
                     {
-                        var d = (wp.position - p).sqrMagnitude;
-                        if (d >= best) continue;
-                        best = d; nearest = wp;
+                        if (!_trafficGrid.TryGetValue(cell + new Vector2Int(x, z), out var bucket)) continue;
+                        foreach (var wp in bucket)
+                        {
+                            var d = (wp.position - p).sqrMagnitude;
+                            if (d >= best) continue;
+                            best = d; nearest = wp;
+                        }
                     }
+                    TrafficMatches[node] = nearest;
                 }
                 if (nearest == null || !seen.Add(nearest.listIndex)) continue;
-                var distance = NearestDistance(plan.Path, nearest.position);
+                var distance = plan.Path.NearestDistance(nearest.position);
                 plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance });
                 if (nearest.maxSpeed > 0)
                 {
@@ -172,16 +234,12 @@ namespace VoogleRoute.Navigation.Driving
         }
 
         private static Vector2Int Cell(Vector3 p) => new Vector2Int(Mathf.FloorToInt(p.x / 8f), Mathf.FloorToInt(p.z / 8f));
-        private static float NearestDistance(DrivingPath path, Vector3 p)
+        internal static void InvalidateTrafficIndex()
         {
-            var best = float.PositiveInfinity; var distance = 0f;
-            for (var i = 0; i < path.Points.Length; i++)
-            {
-                var d = (path.Points[i] - p).sqrMagnitude;
-                if (d >= best) continue;
-                best = d; distance = path.Distances[i];
-            }
-            return distance;
+            _trafficSource = _trafficGraph = _trafficSave = null;
+            _trafficScene = 0;
+            _trafficGrid = null;
+            TrafficMatches.Clear();
         }
     }
 }

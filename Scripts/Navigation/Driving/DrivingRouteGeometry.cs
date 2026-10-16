@@ -14,13 +14,25 @@ namespace VoogleRoute.Navigation.Driving
             detail = "graph_search_failed";
             for (var attempt = 0; attempt < 8; attempt++)
             {
-                if (!WaypointPathfinder.TryFindBestRoute(graph, query, out route) || route.Path.Count < 2)
+                var searchStarted = DrivingPerformance.Begin();
+                bool found;
+                try { found = WaypointPathfinder.TryFindBestRoute(graph, query, out route); }
+                finally { DrivingPerformance.End(DrivingStage.Search, searchStarted); }
+                if (!found || route.Path.Count < 2)
                 {
                     detail = "graph_search_failed attempt=" + attempt + " previous=" + detail;
                     return false;
                 }
-                var anchors = BuildAnchors(graph, route.Path);
-                if (DrivingPathGeometry.TryBuild(anchors, radius, out samples, out var curveDetail, out var failurePoint))
+                var curveStarted = DrivingPerformance.Begin();
+                string curveDetail;
+                Vector3 failurePoint;
+                try
+                {
+                    var anchors = BuildAnchors(graph, route.Path);
+                    found = DrivingPathGeometry.TryBuild(anchors, radius, out samples, out curveDetail, out failurePoint);
+                }
+                finally { DrivingPerformance.End(DrivingStage.Curve, curveStarted); }
+                if (found)
                 {
                     detail = "attempt=" + attempt + " graph_nodes=" + route.Path.Count + " " + curveDetail;
                     return true;

@@ -2,7 +2,7 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.2`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.3`.
 
 ## Utilisation
 
@@ -60,9 +60,9 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 2 du 16 octobre 2026 : 151 sources compilées, 32 fichiers livrés et comparés.
+Installation révision 3 du 16 octobre 2026 : 152 sources compilées, 32 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`B9205F090231BB03EC4962CC02F5E61D14F020E555B454A00DE3702111CD60EC`.
+`9EB0152835518C374FAF2481680E50861C8D63425609A09DFCFA4E84CFC8241A`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
@@ -106,3 +106,51 @@ optionnel du mod est désactivé : `plan_request`, paramètres de voiture, origi
 cible, `curve_fit_ok`, `plan_ok` ou `plan_rejected stage=...`, avec présence du
 trajet affiché. Une géométrie trop serrée possède son propre message localisé.
 Le trajet réel de l'utilisateur reste à refaire en jeu avec cette révision.
+
+## Révision 3 : fluidité et mesures du pilote
+
+- La confirmation réutilise le plan préparé si voiture, position, cap, géométrie,
+  destination, sauvegarde, scène, graphe, source de trafic et options restent valides.
+  Le plan expire après 60 secondes ; un plan périmé est recalculé une fois. Le carburant
+  est revérifié au départ. Les contrôles de validité restent sur le thread principal.
+- La projection sur la trajectoire commence par une recherche binaire autour de la
+  progression, suivie de la fenêtre locale de 18 m. Elle ne reparcourt plus tous
+  les points déjà dépassés. Les marqueurs de trafic dépassés utilisent un curseur.
+- La grille des waypoints vivants et les correspondances avec les nœuds routiers
+  sont conservées par contexte de sauvegarde/scène/graphe/source et libérées au
+  déchargement. Le rattachement d'un marqueur à la trajectoire utilise une grille
+  spatiale, avec repli exact hors du voisinage attendu.
+- Les composants des colliders sont conservés pendant un trajet dans un cache
+  borné à 512 entrées. Leur vitesse est toujours relue ; les doublons d'obstacles
+  d'un même balayage sont éliminés. Le cache est vidé à l'arrêt du pilote.
+- Les balayages proches et les courbes restent découpés à 4 m. Au-delà de 8 m,
+  les portions rectilignes vérifiées sur tous les points intermédiaires peuvent
+  être regroupées jusqu'à 12 m, avec une boîte élargie. La fréquence de 0.08 s,
+  les layers, la détection des feux/priorités et les distances de freinage restent
+  les mêmes. La saturation d'un résultat PhysX impose toujours l'arrêt.
+- Le calcul de vitesse cible n'alloue plus de tableau via `Mathf.Min(params)`
+  à chaque tick physique.
+
+### Lecture des nouveaux logs
+
+Une ligne `[VoogleRoute][Perf]` est écrite toutes les cinq secondes dans Player.log,
+même avec `logging: false`. Une fenêtre partielle est vidée à la désactivation du
+driver. Les sondes cumulent des compteurs sans construire de texte à chaque frame.
+
+- `frame_wall_ms_avg`, `max`, `peak_frame`, `over33`, `over100` : durée réelle entre
+  deux Update ; comprend aussi le travail du moteur, le rendu et les attentes.
+- `update`, `navigation`, `phone_ui` : callbacks du driver, boucle du mod et panneau
+  GPS ; cela ne couvre pas tout le moteur UI natif.
+- `fixed`, `projection`, `sensor` : contrôle physique et ses sous-étapes.
+- `plan`, `search`, `curve`, `traffic_bind`, `start` : préparation et confirmation.
+- Pour chaque étape : durée moyenne et maximale en ms, nombre d'appels, frame du pic.
+  Les étapes sont imbriquées : leurs durées ne doivent pas être additionnées.
+- `boxes`, `overlaps`, `component_lookups`, `projection_segments`, `reused_plans` :
+  volumes de travail dans la fenêtre.
+
+Les événements `plan_reused`, `plan_refresh`, `drive_started` et `drive_stopped`
+précisent la frame et le temps réel depuis le lancement. Un appui normal sur GO
+après la confirmation doit produire `plan_reused` sans seconde requête de calcul.
+
+La compilation et l'installation ne mesurent pas le gain d'images/s. Il faut un
+nouvel essai en jeu pour comparer les saccades avec la session précédente.

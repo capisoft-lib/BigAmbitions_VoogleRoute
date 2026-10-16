@@ -10,6 +10,8 @@ namespace VoogleRoute.Navigation.Driving
         internal readonly Vector3[] Points;
         internal readonly float[] Distances;
         internal readonly float[] SpeedLimits;
+        private Dictionary<Vector2Int, List<int>> _pointCells;
+        internal int LastProjectionSegments { get; private set; }
         internal float Length => Distances[Distances.Length - 1];
 
         internal DrivingPath(List<Vector3> points, float cruise)
@@ -41,10 +43,13 @@ namespace VoogleRoute.Navigation.Driving
         {
             var best = float.PositiveInfinity;
             var result = progress;
-            for (var i = 0; i < Points.Length - 1; i++)
+            LastProjectionSegments = 0;
+            var first = Mathf.Max(0, SegmentAt(Mathf.Max(0f, progress - 2f)) - 1);
+            for (var i = first; i < Points.Length - 1; i++)
             {
                 if (Distances[i + 1] < progress - 2f) continue;
                 if (Distances[i] > progress + searchAhead) break;
+                LastProjectionSegments++;
                 var segment = Flat(Points[i + 1] - Points[i]);
                 var t = Mathf.Clamp01(Vector3.Dot(Flat(position - Points[i]), segment) /
                     Mathf.Max(0.001f, segment.sqrMagnitude));
@@ -57,6 +62,61 @@ namespace VoogleRoute.Navigation.Driving
             }
             lateralError = Mathf.Sqrt(best);
             return Mathf.Max(progress, result);
+        }
+
+        internal float NearestDistance(Vector3 position)
+        {
+            if (_pointCells == null)
+            {
+                _pointCells = new Dictionary<Vector2Int, List<int>>();
+                for (var i = 0; i < Points.Length; i++)
+                {
+                    var key = PointCell(Points[i]);
+                    if (!_pointCells.TryGetValue(key, out var bucket)) _pointCells[key] = bucket = new List<int>();
+                    bucket.Add(i);
+                }
+            }
+            var cell = PointCell(position);
+            var best = float.PositiveInfinity;
+            var index = 0;
+            for (var x = -1; x <= 1; x++) for (var z = -1; z <= 1; z++)
+            {
+                if (!_pointCells.TryGetValue(cell + new Vector2Int(x, z), out var bucket)) continue;
+                foreach (var i in bucket)
+                {
+                    var distance = (Points[i] - position).sqrMagnitude;
+                    if (distance > best || (distance == best && i > index)) continue;
+                    best = distance; index = i;
+                }
+            }
+            // Every point outside these cells is at least 4 m away in X or Z.
+            // Keep an exact fallback for unusual graph anchors beyond that distance.
+            if (best >= 16f)
+                for (var i = 0; i < Points.Length; i++)
+                {
+                    var distance = (Points[i] - position).sqrMagnitude;
+                    if (distance > best || (distance == best && i > index)) continue;
+                    best = distance; index = i;
+                }
+            return Distances[index];
+        }
+
+        private static Vector2Int PointCell(Vector3 p) => new Vector2Int(Mathf.FloorToInt(p.x / 4f), Mathf.FloorToInt(p.z / 4f));
+
+        internal bool IsStraightSweep(float start, float end)
+        {
+            var a = At(start); var b = At(end);
+            var direction = Flat(b - a);
+            var lengthSq = direction.sqrMagnitude;
+            if (lengthSq < 0.01f) return false;
+            for (var i = SegmentAt(start) + 1; i < Points.Length && Distances[i] < end; i++)
+            {
+                var t = Mathf.Clamp01(Vector3.Dot(Flat(Points[i] - a), direction) / lengthSq);
+                var projected = Vector3.Lerp(a, b, t);
+                if (Flat(Points[i] - projected).sqrMagnitude > 0.0064f || Mathf.Abs(Points[i].y - projected.y) > 0.02f)
+                    return false;
+            }
+            return true;
         }
 
         internal Vector3 At(float distance)

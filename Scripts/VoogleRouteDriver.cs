@@ -12,7 +12,11 @@ namespace VoogleRoute
 
         private void OnDisable()
         {
-            if (Instance == this) Navigation.Driving.PhysicalDriveService.Stop();
+            if (Instance == this)
+            {
+                Navigation.Driving.PhysicalDriveService.Stop(reason: "driver_disabled");
+                Navigation.Driving.DrivingPerformance.Flush(force: true);
+            }
         }
 
         private void OnDestroy()
@@ -26,17 +30,34 @@ namespace VoogleRoute
 
         private void Update()
         {
-            Navigation.Driving.PhysicalDriveService.TickInput();
-            RouteActionShortcuts.Tick();
-            VoogleRouteLoop.Tick();
+            Navigation.Driving.DrivingPerformance.Frame();
+            var started = Navigation.Driving.DrivingPerformance.Begin();
+            try
+            {
+                Navigation.Driving.PhysicalDriveService.TickInput();
+                RouteActionShortcuts.Tick();
+                var navigationStarted = Navigation.Driving.DrivingPerformance.Begin();
+                try { VoogleRouteLoop.Tick(); }
+                finally { Navigation.Driving.DrivingPerformance.End(Navigation.Driving.DrivingStage.Navigation, navigationStarted); }
+            }
+            finally { Navigation.Driving.DrivingPerformance.End(Navigation.Driving.DrivingStage.Update, started); }
         }
 
         private void LateUpdate()
         {
             Navigation.Driving.PhysicalDriveService.LateTick();
-            PhoneGpsPanel.LateTick();
+            var started = Navigation.Driving.DrivingPerformance.Begin();
+            try { PhoneGpsPanel.LateTick(); }
+            finally { Navigation.Driving.DrivingPerformance.End(Navigation.Driving.DrivingStage.PhoneUi, started); }
+            Navigation.Driving.DrivingPerformance.Flush();
         }
 
-        private void FixedUpdate() => Navigation.Driving.PhysicalDriveService.FixedTick();
+        private void FixedUpdate()
+        {
+            if (!Navigation.Driving.PhysicalDriveService.IsActive) return;
+            var started = Navigation.Driving.DrivingPerformance.Begin();
+            try { Navigation.Driving.PhysicalDriveService.FixedTick(); }
+            finally { Navigation.Driving.DrivingPerformance.End(Navigation.Driving.DrivingStage.Fixed, started); }
+        }
     }
 }

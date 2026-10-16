@@ -40,7 +40,14 @@ namespace VoogleRoute.Navigation.Driving
 
         internal static void Start(PhysicalDrivePlan confirmed)
         {
-            if (confirmed == null || IsActive || AutoDriveSkipTravelService.IsInProgress) return;
+            var started = DrivingPerformance.Begin();
+            try { StartCore(confirmed); }
+            finally { DrivingPerformance.End(DrivingStage.Start, started); }
+        }
+
+        private static void StartCore(PhysicalDrivePlan confirmed)
+        {
+            if (confirmed == null || !ModConfig.PhysicalAutoDriveEnabled || IsActive || AutoDriveSkipTravelService.IsInProgress) return;
             try
             {
                 // Confirmation can stay open while the player changes car, position or destination.
@@ -48,13 +55,31 @@ namespace VoogleRoute.Navigation.Driving
                     !NavigationTargetTracker.HasMapGpsTarget ||
                     (NavigationTargetTracker.ActiveTarget - confirmed.Destination).sqrMagnitude > 1f)
                 { Notifications.ShowError("voogle_route_physical_start_lane"); return; }
-                if (!PhysicalDrivePlanner.TryBuild(out var fresh, out var failure))
-                { Notifications.ShowError(failure); return; }
+                var fresh = confirmed;
+                float startProgress;
+                using (var geometry = new VehicleControlLease(confirmed.Car, acquire: false))
+                {
+                    if (PhysicalDrivePlanner.CanReuse(confirmed, geometry, out startProgress, out var reason))
+                    {
+                        DrivingPerformance.ReusedPlan();
+                        DrivingPerformance.Event("plan_reused samples=" + confirmed.Path.Points.Length);
+                    }
+                    else
+                    {
+                        DrivingPerformance.Event("plan_refresh reason=" + reason);
+                        if (!PhysicalDrivePlanner.TryBuild(out fresh, out var failure))
+                        { Notifications.ShowError(failure); return; }
+                        startProgress = fresh.StartProgress;
+                    }
+                }
+                if (AutoDriveVehicleFuel.TryEstimate(fresh.Path.Length - startProgress, out var fuel) && !fuel.HasEnoughFuel)
+                { Notifications.ShowError("voogle_route_autodrive_insufficient_fuel"); return; }
                 _lease = new VehicleControlLease(fresh.Car);
                 _plan = fresh;
                 _save = SaveGameManager.Current;
                 _scene = SceneManager.GetActiveScene().handle;
-                _progress = fresh.Path.Project(_lease.RearPosition, 0f, out _, searchAhead: 50f);
+                _progress = startProgress;
+                Sensor.Reset();
                 _lastProgress = _progress;
                 _stalled = _offRoute = _steering = 0f;
                 _stoppingReason = null;
@@ -64,7 +89,7 @@ namespace VoogleRoute.Navigation.Driving
                 _previousPosition = _lease.RearPosition;
                 _manualGrace = Time.unscaledTime + 0.5f;
                 RouteActionPanel.RefreshVisual();
-                ModLog.Info("Physical drive started.");
+                DrivingPerformance.Event("drive_started distance=" + Mathf.RoundToInt(fresh.Path.Length - _progress));
             }
             catch (Exception ex)
             {
@@ -83,11 +108,11 @@ namespace VoogleRoute.Navigation.Driving
                     SceneManager.GetActiveScene().handle != _scene || !GameState.IsPlayable() ||
                     !NavigationTargetTracker.HasMapGpsTarget ||
                     (_plan.Destination - NavigationTargetTracker.ActiveTarget).sqrMagnitude > 1f)
-                { Stop(); return; }
+                { Stop(reason: "context_changed"); return; }
                 if (Time.unscaledTime >= _manualGrace &&
                     ((PlayerAction.Move.Pressing() && PlayerAction.Move.Vector().sqrMagnitude > 0.04f) ||
                      PlayerAction.Cancel.Pressed() || PlayerAction.Interact.Pressed() ||
-                     Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))) Stop();
+                     Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))) Stop(reason: "manual_input");
             }
             catch (Exception ex) { Fail(ex); }
         }
@@ -108,7 +133,10 @@ namespace VoogleRoute.Navigation.Driving
                 var position = _lease.RearPosition;
                 if ((position - _previousPosition).sqrMagnitude > 100f) { Stop(); return; }
                 _previousPosition = position;
+                var projectionStarted = DrivingPerformance.Begin();
                 _progress = _plan.Path.Project(position, _progress, out var lateral);
+                DrivingPerformance.End(DrivingStage.Projection, projectionStarted);
+                DrivingPerformance.ProjectionWork(_plan.Path.LastProjectionSegments);
                 _offRoute = lateral > 4f ? _offRoute + Time.fixedDeltaTime : 0f;
                 if (_offRoute > 1.2f || float.IsInfinity(lateral)) { BrakeToStop("voogle_route_physical_blocked"); return; }
                 var speed = _lease.Speed;
@@ -137,11 +165,13 @@ namespace VoogleRoute.Navigation.Driving
                 _steering = Mathf.MoveTowards(_steering, Mathf.Clamp(desired, -1f, 1f), 2.5f * Time.fixedDeltaTime);
                 if (Time.time >= _nextSensorTime)
                 {
-                    _trafficLimit = Sensor.SpeedLimit(_plan, _lease, _progress, ModConfig.PhysicalDriveSpeedKmh / 3.6f);
+                    var sensorStarted = DrivingPerformance.Begin();
+                    try { _trafficLimit = Sensor.SpeedLimit(_plan, _lease, _progress, ModConfig.PhysicalDriveSpeedKmh / 3.6f); }
+                    finally { DrivingPerformance.End(DrivingStage.Sensor, sensorStarted); }
                     _nextSensorTime = Time.time + 0.08f;
                 }
-                var targetSpeed = Mathf.Min(_trafficLimit, _plan.Path.TargetSpeed(_progress),
-                    ModConfig.PhysicalDriveSpeedKmh / 3.6f, Mathf.Sqrt(4f * Mathf.Max(0f, remaining - 0.4f)));
+                var targetSpeed = Mathf.Min(Mathf.Min(_trafficLimit, _plan.Path.TargetSpeed(_progress)),
+                    Mathf.Min(ModConfig.PhysicalDriveSpeedKmh / 3.6f, Mathf.Sqrt(4f * Mathf.Max(0f, remaining - 0.4f))));
                 if (lateral > 1.5f) targetSpeed = Mathf.Min(targetSpeed, 3f);
                 var error = targetSpeed - speed;
                 var brake = targetSpeed < 0.15f ? 1f : Mathf.Clamp01(-error * 0.55f);
@@ -161,16 +191,17 @@ namespace VoogleRoute.Navigation.Driving
             _stoppingReason = message;
             _lease?.Write(_steering, 0f, 1f);
         }
-        internal static void Stop(string message = null)
+        internal static void Stop(string message = null, string reason = "requested")
         {
             var owned = _lease;
             _lease = null; _plan = null; _save = null; _stoppingReason = null;
+            Sensor.Reset();
             try { owned?.Dispose(); }
             finally
             {
                 if (owned != null)
                 {
-                    ModLog.Info("Physical drive stopped" + (message == null ? "." : ": " + message));
+                    DrivingPerformance.Event("drive_stopped reason=" + (message ?? reason) + " progress=" + Mathf.RoundToInt(_progress));
                     RouteActionPanel.RefreshVisual();
                     if (message != null) Notifications.Show(
                         message == "voogle_route_physical_arrived" ? NotificationType.Success : NotificationType.Warning, message);
