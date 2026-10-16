@@ -32,6 +32,7 @@ namespace VoogleRoute.UI
         private static TextMeshProUGUI _titleLabel;
         private static TextMeshProUGUI _bodyLabel;
         private static AutoDriveSkipPlanner.Plan _pendingPlan;
+        private static Navigation.Driving.PhysicalDrivePlan _physicalPlan;
 
         internal static bool IsOpen => _root != null && _root.activeSelf;
 
@@ -86,7 +87,17 @@ namespace VoogleRoute.UI
         internal static void Show(AutoDriveSkipPlanner.Plan plan)
         {
             EnsureCreated();
+            _physicalPlan = null;
             _pendingPlan = plan;
+            RefreshLocalizedText();
+            _root.SetActive(true);
+        }
+
+        internal static void Show(Navigation.Driving.PhysicalDrivePlan plan)
+        {
+            EnsureCreated();
+            _pendingPlan = default;
+            _physicalPlan = plan;
             RefreshLocalizedText();
             _root.SetActive(true);
         }
@@ -99,6 +110,7 @@ namespace VoogleRoute.UI
                 _root.SetActive(false);
 
             _pendingPlan = default;
+            _physicalPlan = null;
         }
 
         internal static void TickOverlay()
@@ -115,6 +127,9 @@ namespace VoogleRoute.UI
             if (_titleLabel != null)
                 _titleLabel.text = ModUiText.AutoDrivePopupTitle;
 
+            if (_bodyLabel != null && _physicalPlan != null)
+                _bodyLabel.text = ModUiText.PhysicalDriveBody(Mathf.RoundToInt(_physicalPlan.Path.Length));
+
             if (_bodyLabel != null && _pendingPlan.Success)
             {
                 _bodyLabel.text = ModUiText.FormatAutoDrivePopupBody(
@@ -128,7 +143,14 @@ namespace VoogleRoute.UI
         private static void Confirm()
         {
             var plan = _pendingPlan;
+            var physical = _physicalPlan;
             Close();
+            if (physical != null)
+            {
+                CityMapHelper.CloseIfOpen();
+                Navigation.Driving.PhysicalDriveService.Start(physical);
+                return;
+            }
             if (!plan.Success)
                 return;
 
@@ -138,6 +160,8 @@ namespace VoogleRoute.UI
 
         internal static void Destroy()
         {
+            _physicalPlan = null;
+            _pendingPlan = default;
             if (_root != null)
             {
                 UnityEngine.Object.Destroy(_root);

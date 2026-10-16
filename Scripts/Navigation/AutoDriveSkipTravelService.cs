@@ -27,6 +27,11 @@ namespace VoogleRoute.Navigation
 
         internal static void RequestFromActionPanel()
         {
+            if (Driving.PhysicalDriveService.IsActive)
+            {
+                Driving.PhysicalDriveService.Stop();
+                return;
+            }
             if (_inProgress)
                 return;
 
@@ -147,6 +152,11 @@ namespace VoogleRoute.Navigation
 
         private static void TryShowConfirmPopup()
         {
+            if (ModConfig.PhysicalAutoDriveEnabled)
+            {
+                Driving.PhysicalDriveService.Request();
+                return;
+            }
             if (!MovementModeDetector.CanUseAutoDrive())
             {
                 Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
@@ -176,7 +186,7 @@ namespace VoogleRoute.Navigation
 
         internal static void StartTravel(AutoDriveSkipPlanner.Plan plan)
         {
-            if (_inProgress || !plan.Success || !MovementModeDetector.CanUseAutoDrive())
+            if (_inProgress || Driving.PhysicalDriveService.IsActive || !plan.Success || !MovementModeDetector.CanUseAutoDrive())
                 return;
 
             if (float.IsNaN(plan.TravelMinutes) || float.IsInfinity(plan.TravelMinutes) ||

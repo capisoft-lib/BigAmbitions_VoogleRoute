@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+from physical_drive_locales import strings as physical_drive_strings
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "Locales"
@@ -773,6 +774,7 @@ def merged_locale(locale: str) -> dict[str, str]:
     extra = NEW_KEYS.get(locale, NEW_KEYS["en"])
     base.update(extra)
     base.update(UI_SCALE_KEYS.get(locale, UI_SCALE_KEYS["en"]))
+    base.update(physical_drive_strings(locale))
     return base
 
 

@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "Arayüzü gizle/göster",
   "voogle_route_shortcut_unbound": "Atanmamış",
   "voogle_route_shortcut_capture": "Bir tuşa basın...",
-  "voogle_route_shortcut_conflict": "Çakışma"
+  "voogle_route_shortcut_conflict": "Çakışma",
+  "voogle_route_options_physical_autodrive": "Gerçek sürüş (beta; kapalı = hızlı seyahat)",
+  "voogle_route_options_physical_drive_speed": "Azami hız",
+  "voogle_route_physical_stop": "DURDUR",
+  "voogle_route_physical_body": "Aracınız sokakları izleyecek: ~{distance} m.\nHareket tuşları veya DURDUR: kontrolü alın.\nYolda varış; elle park edin.",
+  "voogle_route_physical_no_route": "Sürülebilir rota yok. Hedefi değiştirin veya hızlı seyahati seçin.",
+  "voogle_route_physical_start_lane": "Başlamadan önce bir şeritte sürüş yönünde durun.",
+  "voogle_route_physical_blocked": "Sürüş kesildi. Direksiyonu alın.",
+  "voogle_route_physical_arrived": "Hedefe ulaşıldı. Elle park edin.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

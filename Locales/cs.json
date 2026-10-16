@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "Skrýt/zobrazit UI",
   "voogle_route_shortcut_unbound": "Nepřiřazeno",
   "voogle_route_shortcut_capture": "Stiskněte klávesu...",
-  "voogle_route_shortcut_conflict": "Konflikt"
+  "voogle_route_shortcut_conflict": "Konflikt",
+  "voogle_route_options_physical_autodrive": "Skutečná jízda (beta; vypnuto = rychlé cestování)",
+  "voogle_route_options_physical_drive_speed": "Maximální rychlost",
+  "voogle_route_physical_stop": "ZASTAVIT",
+  "voogle_route_physical_body": "Auto pojede ulicemi: ~{distance} m.\nPohybové klávesy nebo ZASTAVIT: převzít řízení.\nPříjezd na silnici; zaparkujte ručně.",
+  "voogle_route_physical_no_route": "Žádná sjízdná trasa. Změňte cíl nebo použijte rychlé cestování.",
+  "voogle_route_physical_start_lane": "Před spuštěním zastavte v jízdním pruhu ve směru jízdy.",
+  "voogle_route_physical_blocked": "Jízda přerušena. Převezměte řízení.",
+  "voogle_route_physical_arrived": "Cíl dosažen. Zaparkujte ručně.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

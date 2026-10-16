@@ -209,8 +209,9 @@ namespace VoogleRoute.UI
             var inVehicle = MovementModeDetector.CanUseAutoDrive();
             if (inVehicle)
             {
-                BaUi.StyleButton(_autoWalkButtonImage, BaButtonStyle.Grey);
-                _autoWalkLabel.text = RouteActionShortcuts.AddAutoMoveButtonHint(ModUiText.AutoDrive);
+                var driving = Navigation.Driving.PhysicalDriveService.IsActive;
+                BaUi.StyleButton(_autoWalkButtonImage, driving ? BaButtonStyle.Green : BaButtonStyle.Grey);
+                _autoWalkLabel.text = RouteActionShortcuts.AddAutoMoveButtonHint(driving ? ModUiText.StopDriving : ModUiText.AutoDrive);
                 _autoWalkLabel.color = AutoDriveSkipTravelService.IsInProgress ? LabelDisabled : ButtonLabelColor;
             }
             else if (!onFoot && !indoor)

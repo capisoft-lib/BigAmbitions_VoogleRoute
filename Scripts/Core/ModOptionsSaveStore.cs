@@ -192,6 +192,8 @@ namespace VoogleRoute
         public bool UseSubway { get; set; } = true;
         public int BaseTaxiMultiplier { get; set; } = 2;
         public int UiScalePercent { get; set; } = 100;
+        public bool PhysicalAutoDrive { get; set; } = true;
+        public int PhysicalDriveSpeedKmh { get; set; } = 40;
         public bool ForceCorrectSideArrival { get; set; }
         public bool AllowUturnAtStart { get; set; }
         public bool AutoEnterDestination { get; set; } = true;
@@ -248,6 +250,8 @@ namespace VoogleRoute
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
+            if (data.PhysicalDriveSpeedKmh < 20 || data.PhysicalDriveSpeedKmh > 60)
+                data.PhysicalDriveSpeedKmh = 40;
 
             if (data.UiScalePercent < ModConfig.MinUiScalePercent ||
                 data.UiScalePercent > ModConfig.MaxUiScalePercent)

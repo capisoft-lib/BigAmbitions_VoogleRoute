@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "UI elrejtése/megjelenítése",
   "voogle_route_shortcut_unbound": "Nincs hozzárendelve",
   "voogle_route_shortcut_capture": "Nyomjon meg egy billentyűt...",
-  "voogle_route_shortcut_conflict": "Ütközés"
+  "voogle_route_shortcut_conflict": "Ütközés",
+  "voogle_route_options_physical_autodrive": "Valódi vezetés (béta; ki = gyorsutazás)",
+  "voogle_route_options_physical_drive_speed": "Legnagyobb sebesség",
+  "voogle_route_physical_stop": "LEÁLLÍTÁS",
+  "voogle_route_physical_body": "Az autó az utcákat követi: ~{distance} m.\nMozgásgombok vagy LEÁLLÍTÁS: átvétel.\nÉrkezés az úton; parkolj kézzel.",
+  "voogle_route_physical_no_route": "Nincs járható útvonal. Válassz másik célt vagy gyorsutazást.",
+  "voogle_route_physical_start_lane": "Indítás előtt állj meg egy sávban a menetirány felé.",
+  "voogle_route_physical_blocked": "Vezetés megszakítva. Vedd át az irányítást.",
+  "voogle_route_physical_arrived": "Cél elérve. Parkolj kézzel.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

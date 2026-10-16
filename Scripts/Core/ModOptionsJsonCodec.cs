@@ -25,6 +25,8 @@ namespace VoogleRoute
             AppendBool(sb, "useSubway", data.UseSubway);
             AppendInt(sb, "baseTaxiMultiplier", data.BaseTaxiMultiplier);
             AppendInt(sb, "uiScalePercent", data.UiScalePercent);
+            AppendBool(sb, "physicalAutoDrive", data.PhysicalAutoDrive);
+            AppendInt(sb, "physicalDriveSpeedKmh", data.PhysicalDriveSpeedKmh);
             AppendBool(sb, "forceCorrectSideArrival", data.ForceCorrectSideArrival);
             AppendBool(sb, "allowUturnAtStart", data.AllowUturnAtStart);
             AppendBool(sb, "autoEnterDestination", data.AutoEnterDestination);
@@ -48,6 +50,8 @@ namespace VoogleRoute
                 UseSubway = ReadBool(json, "useSubway", true),
                 BaseTaxiMultiplier = ReadInt(json, "baseTaxiMultiplier", 2),
                 UiScalePercent = ReadInt(json, "uiScalePercent", 100),
+                PhysicalAutoDrive = ReadBool(json, "physicalAutoDrive", true),
+                PhysicalDriveSpeedKmh = ReadInt(json, "physicalDriveSpeedKmh", 40),
                 ForceCorrectSideArrival = ReadBool(json, "forceCorrectSideArrival", false),
                 AllowUturnAtStart = ReadBool(json, "allowUturnAtStart", false),
                 AutoEnterDestination = ReadBool(json, "autoEnterDestination", true),

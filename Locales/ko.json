@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "UI 숨기기/표시",
   "voogle_route_shortcut_unbound": "할당되지 않음",
   "voogle_route_shortcut_capture": "키를 누르세요...",
-  "voogle_route_shortcut_conflict": "충돌"
+  "voogle_route_shortcut_conflict": "충돌",
+  "voogle_route_options_physical_autodrive": "실제 주행 (베타; 끄면 빠른 이동)",
+  "voogle_route_options_physical_drive_speed": "최대 주행 속도",
+  "voogle_route_physical_stop": "주행 중지",
+  "voogle_route_physical_body": "자동차로 도로를 따라 약 {distance} m 주행합니다.\n이동 키 또는 주행 중지: 직접 조작.\n도로에 도착하며 주차는 수동입니다.",
+  "voogle_route_physical_no_route": "이 차로 주행 가능한 경로가 없습니다. 목적지를 바꾸거나 빠른 이동을 선택하세요.",
+  "voogle_route_physical_start_lane": "시작 전에 차선에서 주행 방향을 향해 정차하세요.",
+  "voogle_route_physical_blocked": "자동 주행이 중단되었습니다. 직접 운전하세요.",
+  "voogle_route_physical_arrived": "목적지에 도착했습니다. 직접 주차하세요.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

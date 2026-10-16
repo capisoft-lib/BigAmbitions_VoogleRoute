@@ -30,6 +30,10 @@ namespace VoogleRoute.UI
         internal static string RouteOff => Loc("voogle_route_route_off", "ROUTE OFF");
         internal static string AutoWalk => Loc("voogle_route_autowalk", "AUTO-WALK");
         internal static string AutoDrive => Loc("voogle_route_autodrive", "AUTO-DRIVE");
+        internal static string StopDriving => Loc("voogle_route_physical_stop", "STOP DRIVING");
+        internal static string PhysicalDriveBody(int distance) =>
+            Loc("voogle_route_physical_body", "Drive your car along the streets: ~{distance} m.\nTake over with movement keys or STOP DRIVING.\nArrival on the road; park manually.")
+                .Replace("{distance}", distance.ToString());
         internal static string DriveOn => Loc("voogle_route_drive_on", "DRIVE ON");
         internal static string WalkOn => Loc("voogle_route_walk_on", "WALK ON");
         internal static string WayOutOn => Loc("voogle_route_way_out_on", "WAY OUT");

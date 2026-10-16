@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "Hide/Show UI",
   "voogle_route_shortcut_unbound": "Unbound",
   "voogle_route_shortcut_capture": "Press a key...",
-  "voogle_route_shortcut_conflict": "Conflict"
+  "voogle_route_shortcut_conflict": "Conflict",
+  "voogle_route_options_physical_autodrive": "Auto-drive: real driving (beta; off = fast travel)",
+  "voogle_route_options_physical_drive_speed": "Maximum driving speed",
+  "voogle_route_physical_stop": "STOP DRIVING",
+  "voogle_route_physical_body": "Drive your car along the streets: ~{distance} m.\nMovement keys or STOP DRIVING: take over.\nArrival on the road; park manually.",
+  "voogle_route_physical_no_route": "No drivable route for this car. Try another destination or use fast travel in the mod options.",
+  "voogle_route_physical_start_lane": "Stop on a traffic lane, facing its direction, before starting auto-drive.",
+  "voogle_route_physical_blocked": "Auto-drive interrupted: blocked road, lane departure or unavailable vehicle. Take the wheel.",
+  "voogle_route_physical_arrived": "Destination reached. Take the wheel to park.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

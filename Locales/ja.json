@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "UIの表示/非表示",
   "voogle_route_shortcut_unbound": "未割り当て",
   "voogle_route_shortcut_capture": "キーを押してください...",
-  "voogle_route_shortcut_conflict": "競合"
+  "voogle_route_shortcut_conflict": "競合",
+  "voogle_route_options_physical_autodrive": "実際に運転（ベータ・オフ＝高速移動）",
+  "voogle_route_options_physical_drive_speed": "最高速度",
+  "voogle_route_physical_stop": "運転を停止",
+  "voogle_route_physical_body": "自分の車で道路を走行：約{distance} m。\n移動キーまたは「運転を停止」で操作を再開。\n道路上に到着します。駐車は手動です。",
+  "voogle_route_physical_no_route": "この車で走行可能な経路がありません。目的地を変更するか高速移動を選択してください。",
+  "voogle_route_physical_start_lane": "開始前に車線上で進行方向に向けて停止してください。",
+  "voogle_route_physical_blocked": "自動運転を中断しました。運転を引き継いでください。",
+  "voogle_route_physical_arrived": "目的地に到着しました。手動で駐車してください。",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

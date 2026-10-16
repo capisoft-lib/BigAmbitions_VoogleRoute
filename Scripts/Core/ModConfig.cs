@@ -24,6 +24,8 @@ namespace VoogleRoute
         private const string UseSubwayKey = "use_subway";
         private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
         private const string UiScalePercentKey = "ui_scale_percent";
+        private const string PhysicalAutoDriveKey = "physical_autodrive";
+        private const string PhysicalDriveSpeedKey = "physical_drive_speed";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
@@ -57,6 +59,8 @@ namespace VoogleRoute
         internal const int MinUiScalePercent = 50;
         internal const int MaxUiScalePercent = 150;
         internal static int UiScalePercent { get; private set; } = 100;
+        internal static bool PhysicalAutoDriveEnabled { get; private set; } = true;
+        internal static int PhysicalDriveSpeedKmh { get; private set; } = 40;
         internal static float NavHudOffsetY { get; private set; } = 16f;
 
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
@@ -139,6 +143,10 @@ namespace VoogleRoute
             AutoEnterDestinationEnabled = data.AutoEnterDestination;
             BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
             UiScalePercent = Mathf.Clamp(data.UiScalePercent, MinUiScalePercent, MaxUiScalePercent);
+            if (PhysicalAutoDriveEnabled != data.PhysicalAutoDrive)
+                Navigation.Driving.PhysicalDriveService.Stop();
+            PhysicalAutoDriveEnabled = data.PhysicalAutoDrive;
+            PhysicalDriveSpeedKmh = Mathf.Clamp(data.PhysicalDriveSpeedKmh, 20, 60);
             VoogleRouteUiScale.SetScaleFactor(UiScalePercent / 100f);
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
             _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor);
@@ -157,6 +165,8 @@ namespace VoogleRoute
                 IndoorAutowalk = false,
                 UseSubway = UseSubwayEnabled,
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
+                PhysicalAutoDrive = PhysicalAutoDriveEnabled,
+                PhysicalDriveSpeedKmh = PhysicalDriveSpeedKmh,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
                 AllowUturnAtStart = AllowUturnAtStartEnabled,
                 AutoEnterDestination = AutoEnterDestinationEnabled,
@@ -184,6 +194,8 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, AutoEnterDestinationKey, AutoEnterDestinationEnabled);
             ModGameOptionPrefs.SaveInt(modId, BaseTaxiMultiplierKey, BaseTaxiMultiplier);
             ModGameOptionPrefs.SaveInt(modId, UiScalePercentKey, UiScalePercent);
+            ModGameOptionPrefs.SaveToggle(modId, PhysicalAutoDriveKey, PhysicalAutoDriveEnabled);
+            ModGameOptionPrefs.SaveInt(modId, PhysicalDriveSpeedKey, PhysicalDriveSpeedKmh);
             ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
             ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
             ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
@@ -398,6 +410,19 @@ namespace VoogleRoute
 
         private static void OnUiScalePercentChanged(int value) => SetUiScalePercent(value);
 
+        private static void OnPhysicalAutoDriveChanged(bool value)
+        {
+            Navigation.Driving.PhysicalDriveService.Stop();
+            PhysicalAutoDriveEnabled = value;
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
+        private static void OnPhysicalDriveSpeedChanged(int value)
+        {
+            PhysicalDriveSpeedKmh = Mathf.Clamp(value, 20, 60);
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
         private static void OnForceCorrectSideArrivalOptionChanged(bool value) =>
             SetForceCorrectSideArrivalEnabled(value);
 
@@ -426,6 +451,10 @@ namespace VoogleRoute
                     UiScalePercent, OnUiScalePercentChanged, "voogle_route_options_ui_scale_value")
                 .AddToggle(DisplayOutsideKey, "voogle_route_options_display_outside", DisplayOutsideEnabled,
                     OnDisplayOutsideOptionChanged)
+                .AddToggle(PhysicalAutoDriveKey, "voogle_route_options_physical_autodrive", PhysicalAutoDriveEnabled,
+                    OnPhysicalAutoDriveChanged)
+                .AddSlider(PhysicalDriveSpeedKey, "voogle_route_options_physical_drive_speed", 20, 60,
+                    PhysicalDriveSpeedKmh, OnPhysicalDriveSpeedChanged, "voogle_route_options_physical_drive_speed_value")
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
                     BaseTaxiMultiplier, OnBaseTaxiMultiplierChanged,
                     "voogle_route_options_base_taxi_multiplier_value")

@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "Mostra/nascondi interfaccia",
   "voogle_route_shortcut_unbound": "Non assegnato",
   "voogle_route_shortcut_capture": "Premi un tasto...",
-  "voogle_route_shortcut_conflict": "Conflitto"
+  "voogle_route_shortcut_conflict": "Conflitto",
+  "voogle_route_options_physical_autodrive": "Guida reale (beta; no = viaggio rapido)",
+  "voogle_route_options_physical_drive_speed": "Velocità massima",
+  "voogle_route_physical_stop": "FERMA",
+  "voogle_route_physical_body": "La tua auto seguirà le strade: ~{distance} m.\nTasti di movimento o FERMA: riprendi il controllo.\nArrivo in strada; parcheggio manuale.",
+  "voogle_route_physical_no_route": "Nessun percorso praticabile. Cambia destinazione o usa il viaggio rapido.",
+  "voogle_route_physical_start_lane": "Fermati su una corsia nel senso di marcia prima di iniziare.",
+  "voogle_route_physical_blocked": "Guida interrotta. Riprendi il volante.",
+  "voogle_route_physical_arrived": "Destinazione raggiunta. Parcheggia manualmente.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

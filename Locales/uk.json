@@ -94,5 +94,14 @@
   "voogle_route_options_hide_ui_shortcut": "Приховати / показати інтерфейс",
   "voogle_route_shortcut_unbound": "Не призначено",
   "voogle_route_shortcut_capture": "Натисніть клавішу...",
-  "voogle_route_shortcut_conflict": "Конфлікт"
+  "voogle_route_shortcut_conflict": "Конфлікт",
+  "voogle_route_options_physical_autodrive": "Справжнє водіння (бета; вимк. = швидка подорож)",
+  "voogle_route_options_physical_drive_speed": "Максимальна швидкість",
+  "voogle_route_physical_stop": "ЗУПИНИТИ",
+  "voogle_route_physical_body": "Авто поїде вулицями: ~{distance} м.\nКлавіші руху або ЗУПИНИТИ: взяти керування.\nПрибуття на дорозі; паркування вручну.",
+  "voogle_route_physical_no_route": "Немає проїзного маршруту. Змініть ціль або оберіть швидку подорож.",
+  "voogle_route_physical_start_lane": "Перед початком зупиніться на смузі за напрямком руху.",
+  "voogle_route_physical_blocked": "Водіння перервано. Візьміть керування.",
+  "voogle_route_physical_arrived": "Мети досягнуто. Припаркуйтеся вручну.",
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
 }

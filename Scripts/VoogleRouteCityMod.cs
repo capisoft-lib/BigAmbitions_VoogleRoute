@@ -56,6 +56,7 @@ namespace VoogleRoute
         public Task OnUnloadAsync()
         {
             ModLog.Info("Voogle Route city unload starting.");
+            Navigation.Driving.PhysicalDriveService.Stop();
 
             if (_driverObject != null)
             {
