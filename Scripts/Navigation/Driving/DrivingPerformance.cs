@@ -7,7 +7,7 @@ using Debug = UnityEngine.Debug;
 
 namespace VoogleRoute.Navigation.Driving
 {
-    internal enum DrivingStage { Update, Navigation, PhoneUi, Fixed, Projection, Sensor, Plan, Search, Curve, TrafficBinding, Start, Count }
+    internal enum DrivingStage { Update, Navigation, PhoneUi, Fixed, Projection, Sensor, Plan, Search, Curve, TrafficBinding, Start, Preview, StartValidation, FuelCheck, AcquireInput, TrafficIndex, TrafficMatch, Count }
 
     /// <summary>Allocation-free probes; one aggregate line every five seconds, regardless of optional mod logging.</summary>
     internal static class DrivingPerformance
@@ -16,7 +16,7 @@ namespace VoogleRoute.Navigation.Driving
         private static readonly long[] Maximum = new long[(int)DrivingStage.Count];
         private static readonly int[] Calls = new int[(int)DrivingStage.Count];
         private static readonly int[] PeakFrame = new int[(int)DrivingStage.Count];
-        private static readonly string[] Names = { "update", "navigation", "phone_ui", "fixed", "projection", "sensor", "plan", "search", "curve", "traffic_bind", "start" };
+        private static readonly string[] Names = { "update", "navigation", "phone_ui", "fixed", "projection", "sensor", "plan", "search", "curve", "traffic_bind", "start", "preview", "start_validate", "fuel_check", "acquire_input", "traffic_index", "traffic_match" };
         private static long _windowStart, _lastFrame, _frameTicks, _worstFrame;
         private static int _lastFrameId, _worstFrameId, _frames, _activeFrames, _slow33, _slow100;
         private static int _boxCasts, _overlaps, _componentLookups, _projectionSegments, _reusedPlans;

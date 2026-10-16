@@ -189,57 +189,67 @@ namespace VoogleRoute.Navigation.Driving
             var waypoints = scene?.allWaypoints;
             if (waypoints == null) throw new System.InvalidOperationException("Live traffic graph is unavailable.");
             plan.TrafficSource = waypoints;
-            if (!ReferenceEquals(_trafficSource, waypoints) || !ReferenceEquals(_trafficGraph, RouteGraphStore.Graph) ||
-                !ReferenceEquals(_trafficSave, SaveGameManager.Current) || _trafficScene != SceneManager.GetActiveScene().handle)
+            var indexStarted = DrivingPerformance.Begin();
+            try
             {
-                InvalidateTrafficIndex();
-                if (scene.allLightsIntersections != null)
-                    foreach (var intersection in scene.allLightsIntersections)
-                    {
-                        if (intersection?.stopWaypoints == null) continue;
-                        foreach (var road in intersection.stopWaypoints)
-                            if (road?.roadWaypoints != null)
-                                foreach (var waypointId in road.roadWaypoints) SignalWaypoints.Add(waypointId);
-                    }
-                var grid = new Dictionary<Vector2Int, List<Waypoint>>();
-                foreach (var wp in waypoints)
+                if (!ReferenceEquals(_trafficSource, waypoints) || !ReferenceEquals(_trafficGraph, RouteGraphStore.Graph) ||
+                    !ReferenceEquals(_trafficSave, SaveGameManager.Current) || _trafficScene != SceneManager.GetActiveScene().handle)
                 {
-                    if (wp == null) continue;
-                    var key = Cell(wp.position);
-                    if (!grid.TryGetValue(key, out var bucket)) grid[key] = bucket = new List<Waypoint>();
-                    bucket.Add(wp);
-                }
-                _trafficGrid = grid; _trafficSource = waypoints; _trafficGraph = RouteGraphStore.Graph;
-                _trafficSave = SaveGameManager.Current; _trafficScene = SceneManager.GetActiveScene().handle;
-            }
-            var seen = new HashSet<int>();
-            foreach (var node in nodes)
-            {
-                var p = PhysicalRoutingGraph.Unity(RouteGraphStore.Graph.GetPosition(node));
-                if (!TrafficMatches.TryGetValue(node, out var nearest))
-                {
-                    var cell = Cell(p);
-                    var best = 1.5f * 1.5f;
-                    for (var x = -1; x <= 1; x++) for (var z = -1; z <= 1; z++)
-                    {
-                        if (!_trafficGrid.TryGetValue(cell + new Vector2Int(x, z), out var bucket)) continue;
-                        foreach (var wp in bucket)
+                    InvalidateTrafficIndex();
+                    if (scene.allLightsIntersections != null)
+                        foreach (var intersection in scene.allLightsIntersections)
                         {
-                            var d = (wp.position - p).sqrMagnitude;
-                            if (d >= best) continue;
-                            best = d; nearest = wp;
+                            if (intersection?.stopWaypoints == null) continue;
+                            foreach (var road in intersection.stopWaypoints)
+                                if (road?.roadWaypoints != null)
+                                    foreach (var waypointId in road.roadWaypoints) SignalWaypoints.Add(waypointId);
                         }
+                    var grid = new Dictionary<Vector2Int, List<Waypoint>>();
+                    foreach (var wp in waypoints)
+                    {
+                        if (wp == null) continue;
+                        var key = Cell(wp.position);
+                        if (!grid.TryGetValue(key, out var bucket)) grid[key] = bucket = new List<Waypoint>();
+                        bucket.Add(wp);
                     }
-                    TrafficMatches[node] = nearest;
+                    _trafficGrid = grid; _trafficSource = waypoints; _trafficGraph = RouteGraphStore.Graph;
+                    _trafficSave = SaveGameManager.Current; _trafficScene = SceneManager.GetActiveScene().handle;
                 }
-                if (nearest == null || !seen.Add(nearest.listIndex)) continue;
-                var distance = plan.Path.NearestDistance(nearest.position);
-                plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance,
-                    SignalControlled = SignalWaypoints.Contains(nearest.listIndex) });
-                // Gley maxSpeed is the NPC's desired pace, not the legal road limit.
             }
-            plan.Traffic.Sort((a, b) => a.Distance.CompareTo(b.Distance));
-            if (plan.Traffic.Count < 2) throw new System.InvalidOperationException("Cannot match live road controls to the route.");
+            finally { DrivingPerformance.End(DrivingStage.TrafficIndex, indexStarted); }
+            var matchStarted = DrivingPerformance.Begin();
+            try
+            {
+                var seen = new HashSet<int>();
+                foreach (var node in nodes)
+                {
+                    var p = PhysicalRoutingGraph.Unity(RouteGraphStore.Graph.GetPosition(node));
+                    if (!TrafficMatches.TryGetValue(node, out var nearest))
+                    {
+                        var cell = Cell(p);
+                        var best = 1.5f * 1.5f;
+                        for (var x = -1; x <= 1; x++) for (var z = -1; z <= 1; z++)
+                        {
+                            if (!_trafficGrid.TryGetValue(cell + new Vector2Int(x, z), out var bucket)) continue;
+                            foreach (var wp in bucket)
+                            {
+                                var d = (wp.position - p).sqrMagnitude;
+                                if (d >= best) continue;
+                                best = d; nearest = wp;
+                            }
+                        }
+                        TrafficMatches[node] = nearest;
+                    }
+                    if (nearest == null || !seen.Add(nearest.listIndex)) continue;
+                    var distance = plan.Path.NearestDistance(nearest.position);
+                    plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance,
+                        SignalControlled = SignalWaypoints.Contains(nearest.listIndex) });
+                    // Gley maxSpeed is the NPC's desired pace, not the legal road limit.
+                }
+                plan.Traffic.Sort((a, b) => a.Distance.CompareTo(b.Distance));
+                if (plan.Traffic.Count < 2) throw new System.InvalidOperationException("Cannot match live road controls to the route.");
+            }
+            finally { DrivingPerformance.End(DrivingStage.TrafficMatch, matchStarted); }
         }
 
         private static Vector2Int Cell(Vector3 p) => new Vector2Int(Mathf.FloorToInt(p.x / 8f), Mathf.FloorToInt(p.z / 8f));

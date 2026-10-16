@@ -44,24 +44,36 @@ namespace VoogleRoute.Navigation.Driving
                 { Notifications.ShowError("voogle_route_physical_start_lane"); return; }
                 var fresh = confirmed;
                 float startProgress;
-                using (var geometry = new VehicleControlLease(confirmed.Car, acquire: false))
+                var validationStarted = DrivingPerformance.Begin();
+                try
                 {
-                    if (PhysicalDrivePlanner.CanReuse(confirmed, geometry, out startProgress, out var reason))
+                    using (var geometry = new VehicleControlLease(confirmed.Car, acquire: false))
                     {
-                        DrivingPerformance.ReusedPlan();
-                        DrivingPerformance.Event("plan_reused samples=" + confirmed.Path.Points.Length);
-                    }
-                    else
-                    {
-                        DrivingPerformance.Event("plan_refresh reason=" + reason);
-                        if (!PhysicalDrivePlanner.TryBuild(out fresh, out var failure))
-                        { Notifications.ShowError(failure); return; }
-                        startProgress = fresh.StartProgress;
+                        if (PhysicalDrivePlanner.CanReuse(confirmed, geometry, out startProgress, out var reason))
+                        {
+                            DrivingPerformance.ReusedPlan();
+                            DrivingPerformance.Event("plan_reused samples=" + confirmed.Path.Points.Length);
+                        }
+                        else
+                        {
+                            DrivingPerformance.Event("plan_refresh reason=" + reason);
+                            if (!PhysicalDrivePlanner.TryBuild(out fresh, out var failure))
+                            { Notifications.ShowError(failure); return; }
+                            startProgress = fresh.StartProgress;
+                        }
                     }
                 }
-                if (AutoDriveVehicleFuel.TryEstimate(fresh.Path.Length - startProgress, out var fuel) && !fuel.HasEnoughFuel)
-                { Notifications.ShowError("voogle_route_autodrive_insufficient_fuel"); return; }
-                _lease = new VehicleControlLease(fresh.Car);
+                finally { DrivingPerformance.End(DrivingStage.StartValidation, validationStarted); }
+                var fuelStarted = DrivingPerformance.Begin();
+                try
+                {
+                    if (AutoDriveVehicleFuel.TryEstimate(fresh.Path.Length - startProgress, out var fuel) && !fuel.HasEnoughFuel)
+                    { Notifications.ShowError("voogle_route_autodrive_insufficient_fuel"); return; }
+                }
+                finally { DrivingPerformance.End(DrivingStage.FuelCheck, fuelStarted); }
+                var acquireStarted = DrivingPerformance.Begin();
+                try { _lease = new VehicleControlLease(fresh.Car); }
+                finally { DrivingPerformance.End(DrivingStage.AcquireInput, acquireStarted); }
                 _plan = fresh;
                 _save = SaveGameManager.Current;
                 _scene = SceneManager.GetActiveScene().handle;

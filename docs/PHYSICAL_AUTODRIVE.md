@@ -2,7 +2,7 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.6`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.7`.
 
 ## Utilisation
 
@@ -26,6 +26,9 @@ Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-p
    **Voyage rapide**, vérifier les détails puis confirmer le départ. Le voyage
    rapide conserve l'estimation de durée, d'arrivée et de carburant. Si la conduite
    réelle ne trouve pas de trajet, sélectionner le voyage rapide dans la même fenêtre.
+   Si la fenêtre est ouverte en roulant, Voir conduire devient disponible après
+   l'arrêt et la préparation du trajet, sans fermer la fenêtre. Un départ exige
+   toujours une voie praticable et une voiture alignée dans son sens.
 4. Pendant Voir conduire, les touches de déplacement, l'interaction de sortie, Échap ou ARRÊTER rendent
    immédiatement la main. À l'arrivée sur la voie, stationner manuellement.
 
@@ -77,16 +80,16 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 6 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
+Installation révision 7 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`4DD39074F61308133F285532916FFA688788B5E4954A9BEFECB0961E4242CCED`.
+`FE033782E1A853DCD7E9A7E075DF15DBF0214F577F0C46554C487F8D11417860`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
-L'utilisateur a essayé la révision 5 ; ses logs montrent des trajets réels en AlfaGiulia,
-avec changements de rapports et options de dépassement/feux rouges actives.
-**Les nouvelles vitesses et la fenêtre de choix de la révision 6 restent à observer
-en jeu.** La compilation et les empreintes ne constituent
+L'utilisateur a essayé la révision 6 ; ses logs montrent un trajet réel en AlfaGiulia
+et il signale l'absence de rafraîchissement du dialogue après l'arrêt.
+**Le rafraîchissement automatique de la révision 7 reste à observer en jeu.**
+La compilation et les empreintes ne constituent
 pas une mesure du comportement physique.
 Il n'y a pas de marche arrière, de stationnement automatique ni de récupération par
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
@@ -281,3 +284,52 @@ Build avec les DLL BA 1.0 installées réussi, quatre warnings TMP existants,
 installation et empreintes comparées. Aucune suite de tests ajoutée ou exécutée.
 Le réglage des courbes et la régulation restent à confirmer avec la physique réelle ;
 le rendu BAUI et les deux départs n'ont pas été exercés dans le jeu pour cette révision.
+
+## Révision 7 : disponibilité du dialogue et diagnostic des pauses
+
+### Mesures sur la révision 6
+
+Player.log de la session terminée à 16:37 le 16 octobre :
+
+- Préparation du trajet : 216.509 ms, dont A* 54.085 ms, courbe 2.955 ms et
+  rattachement au trafic 153.501 ms. Départ : 136.719 ms malgré un plan réutilisé.
+  Ce sont des pauses mesurées dans des enveloppes VoogleRoute. Le détail ne permet
+  pas encore de séparer initialisation à froid, travail métier et runtime dans ces phases.
+- Pendant les fenêtres entièrement en conduite, contrôle physique moyen
+  0.108–0.207 ms par tick, capteurs moyens 0.175–0.655 ms. Maximum régulier du
+  contrôle 1.560 ms ; premier tick de démarrage 5.706 ms. Les 179–302 ms de certaines
+  frames entières ne sont pas localisés par ces seules sondes du pilote.
+- Des pics hors conduite existent aussi, dont navigation VoogleRoute 126.302 ms
+  au chargement et 71.325 ms dans une fenêtre d'interaction avec la carte. Le coût
+  du pilote en régime établi ne prouve pas l'absence de toutes les autres sources
+  de saccades ; aucune régression globale entre sessions différentes n'est établie.
+- Quatre refus `start_lane_not_found` à la même pose, puis un trajet valide après
+  repositionnement : le rafraîchissement doit tenir compte du cap et de la position,
+  en plus de l'arrêt. Un refus immobile reste valide et ne doit pas relancer A* en boucle.
+
+### Correctif
+
+- Surveillance de l'option Voir conduire toutes les 0.2 s, uniquement lorsque ce
+  mode est sélectionné dans un dialogue ouvert. Lecture directe du Rigidbody
+  conservé à l'ouverture ; aucune reconstruction de géométrie pour cette lecture.
+- En mouvement au-dessus de 0.2 m/s, le plan est invalidé et le départ désactivé.
+  Après au moins 0.25 s d'arrêt observé, une préparation est déclenchée et les détails
+  ainsi que l'état du bouton sont actualisés. Avec la fréquence de lecture, prévoir
+  0.4–0.6 s après l'arrêt, auxquels s'ajoute le calcul éventuel du trajet.
+- Plan valide conservé à pose/options/contexte identiques. Un refus stationnaire
+  n'est réessayé qu'après repositionnement d'au moins 0.5 m, rotation d'au moins
+  5 degrés, changement de graphe/source de trafic ou paramètres de trajet.
+  Un plan valide est renouvelé après déplacement de 1.5 m, rotation de 5 degrés,
+  changement de paramètres/contexte ou expiration à 60 s. Un clic explicite peut
+  réessayer un refus ; un plan valide reste réutilisé.
+- Une nouvelle vérification légère est faite à la confirmation avant fermeture,
+  afin de conserver le dialogue si la voiture est repartie entre deux lectures.
+  Les contrôles complets de départ restent dans le service de conduite.
+- Sondes supplémentaires : `preview`, `start_validate`, `fuel_check`, `acquire_input`,
+  `traffic_index`, `traffic_match`. Elles sont imbriquées dans les étapes existantes
+  et ne doivent pas être additionnées à leur parent. Leur ajout ne constitue pas
+  une optimisation démontrée des pauses de préparation et de départ.
+
+Compilation et installation locale réussies ; 33 fichiers comparés et config
+utilisateur préservée. Aucun test ajouté/exécuté et aucun essai interactif de ce
+correctif ; sa réactivité et son coût réel restent à mesurer lors du prochain essai.
