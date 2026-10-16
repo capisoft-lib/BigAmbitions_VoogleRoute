@@ -1,8 +1,10 @@
-# Conduite physique — branche de développement
+# Conduite physique — Voogle Route 1.0.12
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.7`.
+Version publiée : `AssemblyInformationalVersion = 1.0.12`, reprenant la révision
+de développement `1.0.11-physical-autodrive.7`. Preuves de publication :
+[`releases/1.0.12/VALIDATION.md`](../releases/1.0.12/VALIDATION.md).
 
 ## Utilisation
 
@@ -80,9 +82,9 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 7 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
+Installation 1.0.12 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`FE033782E1A853DCD7E9A7E075DF15DBF0214F577F0C46554C487F8D11417860`.
+`5914507B8840325FE8E9BA9C44E887E429C11DDF0389A6BF7096B34603266357`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
@@ -94,7 +96,9 @@ pas une mesure du comportement physique.
 Il n'y a pas de marche arrière, de stationnement automatique ni de récupération par
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
 conduite de cette première version. Les trajets sans voie compatible sont refusés ; le voyage rapide reste
-disponible dans les options. Aucune publication Steam de cette branche n'est effectuée.
+disponible au départ. La version 1.0.12 a été publiée sur l'élément Workshop existant
+le 16 octobre 2026 ; les détails des anciennes révisions ci-dessous décrivent leurs
+contrôles au moment de leur développement.
 
 ## Révision 2 : refus malgré une ligne au sol
 

@@ -2,6 +2,29 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.12] - 2026-10-16
+
+### Added
+
+- **Visible auto-drive (beta)** for Big Ambitions 1.0 Build 3682: the occupied car follows a fitted street route using its native engine, transmission, fuel and physics.
+- **Choose each trip**: WATCH THE DRIVE or FAST TRAVEL in the confirmation dialog. The mod options set the default selection; fast travel keeps its time, arrival and fuel estimates.
+- **Driving options saved per save**: automatic cruising or a manual 20–80 km/h cap, stop for pedestrians, allow speeding up to 80 km/h and run red lights. Pedestrian stopping defaults on; speeding and red-light overrides default off.
+- **Native gear changes** with upshifts/downshifts, predicted RPM checks and restoration of vehicle controls on takeover.
+
+### Changed
+
+- Fit and validate complete vehicle trajectories, retrying alternate connections when a turn cannot be driven.
+- Revise corner speed, braking anticipation, steering look-ahead and cruise regulation. Obstacles, crossing vehicles and arrival constraints still limit speed.
+- Reuse valid confirmation plans and cache traffic/collider lookups; add phase timings for performance diagnosis.
+- Keep the 50–150% UI scale option and all previous navigation features, with the new driving texts in all 22 runtime languages.
+
+### Fixed
+
+- Refresh the visible-driving dialog after stopping or repositioning, without closing it. Repeated stationary refusals are cached until the start conditions change.
+- Keep the alternative travel mode selectable when a route cannot be prepared.
+
+Visible driving starts from a stopped car aligned on a traffic lane. Reverse, U-turns, automatic parking and elevated/underground driving routes are not included. Fast travel remains available. The release was built against BA 1.0; EA 0.11 was not revalidated for this update. Fully restart the game after updating.
+
 ## [1.0.11] - 2026-10-16
 
 ### Added

@@ -1,12 +1,12 @@
 # Voogle Route
 
-**Voogle Route** extends **Voogle Maps** in Big Ambitions: set a destination on the city map, then follow a glowing **on-ground route line** on foot or in a vehicle, with optional **auto-walk**, **auto-drive fast travel** (time skip), and a **city map bookmarks** panel for saved places.
+**Voogle Route** extends **Voogle Maps** in Big Ambitions: set a destination on the city map, then follow a glowing **on-ground route line** on foot or in a vehicle, with optional **auto-walk**, **visible auto-drive (beta)** or **fast travel** (time skip), and a **city map bookmarks** panel for saved places.
 
 > ☕ If Voogle Route has saved you from getting lost—or from remembering where you parked—you can support its development by [buying me a coffee](https://buymeacoffee.com/capitaine). Coffee keeps the developer awake, so auto-walk can keep doing the walking.
 
 | | |
 |---|---|
-| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.11` package supports both |
+| **Game** | Big Ambitions **1.0 Build 3682** — Voogle Route **1.0.12** |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/1331550/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
 | **Requires** | [`LIB_BaPlayerLocation 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) and [`LIB_BaUnifiedUI 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI), both installed and enabled separately |
@@ -24,7 +24,15 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Current Workshop description copy: [`releases/1.0.11/`](releases/1.0.11/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+Current Workshop description copy: [`releases/1.0.12/`](releases/1.0.12/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+
+## What's new in 1.0.12
+
+- **Choose each trip** — WATCH THE DRIVE follows the streets with your car; FAST TRAVEL keeps the time skip. Set the default selection in mod options.
+- **Visible driving (beta)** — native upshifts/downshifts, road-speed cruising and controls for pedestrian stopping, speeding and red lights. Corner speeds, braking and cruise regulation have been revised.
+- **Live availability** — a dialog opened while driving updates after you stop or reposition. Unchanged stationary refusals stay cached.
+- Start stopped on a traffic lane, facing its direction. No reverse, U-turns, automatic parking or elevated/underground driving routes; choose fast travel when visible driving is unavailable.
+- Built against Big Ambitions 1.0 Build 3682. Legacy API adapters remain in the source; EA 0.11 was not revalidated for 1.0.12.
 
 ## What's new in 1.0.11
 
@@ -39,7 +47,7 @@ Current Workshop description copy: [`releases/1.0.11/`](releases/1.0.11/), in En
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
-- **One cross-version package** — the same Voogle Route 1.0.11 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
+- **Visible auto-drive (beta)** — street-following control of the occupied car, with native gears and per-save driving options
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding), with bounded reachable-arrival fallback when the nearest one-way lanes cannot be entered
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
@@ -50,7 +58,7 @@ Current Workshop description copy: [`releases/1.0.11/`](releases/1.0.11/), in En
 - **City-map DRIVE / WALK** — shortcuts beside the vanilla set-destination button when a building is selected
 - **Quick shortcuts** — **Last Car**, **Last Home**, **Last Shop** (auto-tracked); owned parked vehicles listed automatically
 - **HUD shortcuts** — blue **+** saves a bookmark at your position; green **car** routes to your last parked vehicle
-- **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only); fuel estimate shown in the confirmation popup
+- **Travel mode choice** — in a vehicle, tap **AUTO-DRIVE** and select **WATCH THE DRIVE** or **FAST TRAVEL** before confirming
 - **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), distance, and fuel for auto-drive; **ESC** closes the dialog
 - **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`
 - **UI** — vanilla-style panels supplied by the separate **LIB BA Unified UI** Workshop dependency, with a per-save 50–150% scale slider in **Options → Mods**
@@ -64,15 +72,16 @@ Current Workshop description copy: [`releases/1.0.11/`](releases/1.0.11/), in En
 - **Hidden while using the computer** — the panel and open History hide throughout computer-game sessions, including the launcher, pause and game-over screens; route shortcuts are blocked, and the previous visibility returns when you leave
 - Hidden in the **subway** and when navigation is unavailable
 
-### Auto-drive fast travel (vehicle)
+### Auto-drive (vehicle)
 
-**AUTO-DRIVE** is fast travel only — it does not steer the car along the route line.
+**AUTO-DRIVE** offers visible driving and fast travel for each trip.
 
 1. Set a **Voogle Maps** destination (map GPS target).
 2. Enter a vehicle — the panel shows **AUTO-DRIVE** instead of auto-walk.
-3. Tap **AUTO-DRIVE** → review travel time, arrival time, and distance → confirm **DRIVE**.
-4. The game fades, teleports you near the destination on the road network, and advances time.
-5. Adjust skip duration under **Mods → Voogle Route → Base taxi multiplier** (or `base_taxi_multiplier` in `config.json`).
+3. Tap **AUTO-DRIVE** and choose **WATCH THE DRIVE** or **FAST TRAVEL**, then review the details and confirm.
+4. Visible driving needs a stopped car aligned on its lane. Movement keys, ESC or STOP DRIVING return control; park manually at arrival. The dialog refreshes automatically after stopping or repositioning.
+5. Fast travel fades, moves the car near the destination and advances time. Its dialog shows travel time, arrival, distance and fuel. Adjust skip duration with **Base taxi multiplier** in mod options.
+6. Driving options offer automatic cruise or a 20–80 km/h manual cap, stopping for pedestrians, speeding up to 80 km/h and red-light overrides. Speeding and red-light overrides default off; collision and fine systems remain active.
 
 ### City map bookmarks
 
@@ -141,9 +150,16 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.11 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
+Mod **Steam Workshop** pour Big Ambitions **1.0 Build 3682** : Voogle Route **1.0.12** fournit la ligne d'itinéraire au sol, la marche auto, la **conduite visible (bêta)** ou le **voyage rapide** en véhicule, les favoris sur la carte ville, la navigation intérieure et les itinéraires Hamptons.
 
-Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
+Le graphe routier 1.0 est inclus. Les adaptateurs legacy restent dans le code ; EA 0.11 n'a pas été revalidée pour cette mise à jour.
+
+## Nouveautés de la version 1.0.12
+
+- **Choix par trajet** — Voir conduire ou Voyage rapide dans la confirmation AUTO-DRIVE ; mode présélectionné configurable.
+- **Conduite visible (bêta)** — passages de rapports natifs, vitesse de croisière et options piétons, dépassement des limitations et feux rouges. Allure en virage, freinage et régulation révisés.
+- **Dialogue réactif** — la disponibilité se réévalue après l'arrêt ou un repositionnement, sans fermer la fenêtre et sans recalcul répété sur un refus inchangé.
+- Départ à l'arrêt, aligné sur une voie. Pas de marche arrière, demi-tour, stationnement automatique ni conduite sur voie élevée/souterraine ; le voyage rapide reste disponible.
 
 ## Nouveautés de la version 1.0.11
 
@@ -157,7 +173,7 @@ Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la vi
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 
-En véhicule : **AUTO-DRIVE** = voyage rapide uniquement. Confirmation avec temps estimé, heure d'arrivée et distance ; **Échap** ferme le dialogue. Multiplicateur taxi, raccourcis et couleurs des trois types de trajet dans **Options → Mods**. Favoris dans `bookmarks.json`. Les fenêtres sont déplaçables et les actions principales utilisent par défaut **Ctrl+Maj+Y**, **Ctrl+Maj+X** et **Ctrl+Maj+C** (masquer / afficher l'interface), configurables dans les options du mod.
+En véhicule : **AUTO-DRIVE** propose **Voir conduire** ou **Voyage rapide**. Le voyage rapide conserve ses estimations de durée, arrivée, distance et carburant. Pendant la conduite visible, les touches de déplacement, Échap ou Arrêter rendent le volant ; le stationnement reste manuel. Les options du mod définissent le mode par défaut, la vitesse automatique ou un plafond de 20–80 km/h, l'arrêt aux piétons, le dépassement et les feux rouges. Ces deux dernières dérogations sont désactivées par défaut ; collisions et amendes restent actives. Multiplicateur taxi, raccourcis et couleurs sont dans **Options → Mods**. Favoris dans `bookmarks.json`.
 
 **Routage véhicule :** voir [BigAmbitions_VoogleRoute.PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding).
 

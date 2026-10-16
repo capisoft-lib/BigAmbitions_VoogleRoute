@@ -1,12 +1,12 @@
 {
   "name": "Voogle Route",
   "id": "VoogleRoute",
-  "version": "1.0.11",
-  "gameVersion": "EA 0.11 / 1.0",
+  "version": "1.0.12",
+  "gameVersion": "1.0 (Build 3682)",
   "author": "capisoft-lib",
   "distribution": "steam-workshop",
   "sourceUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute",
   "manifestUrl": "https://raw.githubusercontent.com/capisoft-lib/BigAmbitions_VoogleRoute/main/latest.json",
   "changelogUrl": "https://github.com/capisoft-lib/BigAmbitions_VoogleRoute/blob/main/CHANGELOG.md",
-  "releaseNotes": "1.0.11: add a 50-150% UI scale slider in mod options, applied immediately and saved per save. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
+  "releaseNotes": "1.0.12: choose visible auto-drive (beta) or fast travel for each trip. Adds native gear changes, road-speed cruising, pedestrian/speeding/red-light options, revised cornering and cruise control, and a dialog that refreshes after stopping. Requires LIB BA Player Location 1.0.0+ and LIB BA Unified UI 1.0.0+."
 }
