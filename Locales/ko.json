@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "시작 전에 차선에서 주행 방향을 향해 정차하세요.",
   "voogle_route_physical_blocked": "자동 주행이 중단되었습니다. 직접 운전하세요.",
   "voogle_route_physical_arrived": "목적지에 도착했습니다. 직접 주차하세요.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "경로는 있지만 이 차로 돌기에는 커브가 너무 급합니다. 목적지를 바꾸거나 빠른 이동을 이용하세요."
 }

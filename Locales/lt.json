@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Prieš pradėdami sustokite eismo juostoje važiavimo kryptimi.",
   "voogle_route_physical_blocked": "Važiavimas nutrauktas. Perimkite vairą.",
   "voogle_route_physical_arrived": "Tikslas pasiektas. Pastatykite automobilį.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Maršrutas yra, tačiau posūkiai šiam automobiliui per siauri. Pakeiskite tikslą arba rinkitės greitą kelionę."
 }

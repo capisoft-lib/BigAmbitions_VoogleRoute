@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Przed startem zatrzymaj się na pasie zgodnie z kierunkiem jazdy.",
   "voogle_route_physical_blocked": "Jazda przerwana. Przejmij kierownicę.",
   "voogle_route_physical_arrived": "Cel osiągnięty. Zaparkuj ręcznie.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Trasa istnieje, ale zakręty są zbyt ciasne dla tego auta. Zmień cel lub użyj szybkiej podróży."
 }

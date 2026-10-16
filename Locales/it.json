@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Fermati su una corsia nel senso di marcia prima di iniziare.",
   "voogle_route_physical_blocked": "Guida interrotta. Riprendi il volante.",
   "voogle_route_physical_arrived": "Destinazione raggiunta. Parcheggia manualmente.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Una strada esiste, ma le curve sono troppo strette per questa auto. Cambia destinazione o usa il viaggio rapido."
 }

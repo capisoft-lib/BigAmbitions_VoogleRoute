@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Σταματήστε σε λωρίδα προς τη φορά κίνησης πριν ξεκινήσετε.",
   "voogle_route_physical_blocked": "Η οδήγηση διακόπηκε. Αναλάβετε το τιμόνι.",
   "voogle_route_physical_arrived": "Φτάσατε. Σταθμεύστε χειροκίνητα.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Υπάρχει διαδρομή, αλλά οι στροφές είναι πολύ κλειστές για αυτό το όχημα. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι."
 }

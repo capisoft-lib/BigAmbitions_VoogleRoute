@@ -2,7 +2,7 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.2`.
 
 ## Utilisation
 
@@ -21,10 +21,10 @@ Le build local se distingue par `AssemblyInformationalVersion = 1.0.11-physical-
 - `VehicleControlLease` lit l'empattement des vraies roues NWH et prend seulement
   les entrées de la voiture occupée. Les réglages `autoSetInput`,
   `swapInputInReverse`, `useRawInput` et l'assistance externe sont restaurés.
-- `PhysicalRoutingGraph` filtre les demi-tours et courbes synthétiques incompatibles
-  avec le rayon de braquage. Le départ appartient à une voie orientée comme le véhicule.
+- `PhysicalRoutingGraph` filtre les demi-tours et transitions interdites, et préfère
+  les raccords larges. Le départ appartient à une voie orientée comme le véhicule.
 - `PhysicalDrivePlanner` utilise A* et le graphe routier existant. Il conserve les
-  ancrages de voie, arrondit les angles praticables et vérifie la courbure. Aucune
+  ancrages de voie, lisse les courbes complètes et vérifie la courbure. Aucune
   corde finale vers le bâtiment n'est ajoutée. Une route incompatible est refusée.
 - `DrivingPath` suit une progression locale monotone, avec visée depuis l'essieu
   arrière et profil de vitesse anticipant virages, limites de voie et arrêt final.
@@ -60,9 +60,9 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation du 16 octobre 2026 : 149 sources compilées, 32 fichiers livrés et comparés.
+Installation révision 2 du 16 octobre 2026 : 151 sources compilées, 32 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`1EACE24AD57B07F5B6E5AD59CC9D9AA0AEBD000DE3E7A2495891FDFB490C6545`.
+`B9205F090231BB03EC4962CC02F5E61D14F020E555B454A00DE3702111CD60EC`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
@@ -72,3 +72,37 @@ Il n'y a pas de marche arrière, de stationnement automatique ni de récupérati
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
 conduite de cette première version. Les trajets sans voie compatible sont refusés ; le voyage rapide reste
 disponible dans les options. Aucune publication Steam de cette branche n'est effectuée.
+
+## Révision 2 : refus malgré une ligne au sol
+
+Le Player.log de la session du 16 octobre (démarrée à 14:14) ne contient pas
+d'exception du pilote. Les refus normaux n'étaient pas journalisés et le niveau
+de log du mod était `error`, donc ce fichier ne permet pas d'identifier le garde
+exact déclenché lors de l'essai de l'utilisateur.
+
+Une reproduction depuis la zone de voiture observée dans les logs, autour de
+`(-208.2, 0, -80)`, démontre néanmoins un défaut : A* trouve des routes, mais
+l'ancien `TryRoundCorners` contraint le rayon au plus petit segment de waypoint
+adjacent, multiplié par 0.45. Au nœud 8499, les segments de 4.43 m et 3.22 m avec
+un angle de 70.8° limitent artificiellement le rayon à 2.04 m. Aucun détour n'était
+essayé après le refus de cette géométrie.
+
+La révision 2 utilise `DrivingPathGeometry` : rééchantillonnage régulier, relaxation
+de la courbe complète dans un couloir borné à 1.8 m, puis contrôle du rayon réel.
+`DrivingRouteGeometry` essaye jusqu'à huit routes en excluant les raccords dont la
+trajectoire reste incompatible. Les tangentes des courbes synthétiques remplacent
+les cordes pour contrôler les raccords ; leur courbure brute devient une pénalité,
+avec décision de faisabilité sur la trajectoire lissée. Le choix du côté d'arrivée
+respecte désormais le réglage utilisé pour le trait au sol.
+
+Rejeu hors jeu des sources de routage et de géométrie : origine ci-dessus, premier
+nœud 11223, cibles `(-266, -70)`, `(0, 0)`, `(100, -200)`, rayons de 3, 5 et 7 m :
+**neuf trajectoires calculées sur neuf**. Les détours demandent de zéro à trois
+recherches supplémentaires. Les rayons et destinations sont des cas de diagnostic,
+pas une capture de la requête utilisateur, qui n'était pas enregistrée.
+
+Chaque demande écrit désormais dans Player.log, même lorsque le fichier de log
+optionnel du mod est désactivé : `plan_request`, paramètres de voiture, origine,
+cible, `curve_fit_ok`, `plan_ok` ou `plan_rejected stage=...`, avec présence du
+trajet affiché. Une géométrie trop serrée possède son propre message localisé.
+Le trajet réel de l'utilisateur reste à refaire en jeu avec cette révision.

@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Stands i en kørebane i kørselsretningen før start.",
   "voogle_route_physical_blocked": "Kørsel afbrudt. Overtag rattet.",
   "voogle_route_physical_arrived": "Målet er nået. Parkér selv.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Der findes en rute, men svingene er for snævre til denne bil. Vælg et andet mål eller hurtig rejse."
 }

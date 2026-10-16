@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "开始前请在车道内沿行驶方向停车。",
   "voogle_route_physical_blocked": "自动驾驶已中断，请接管方向盘。",
   "voogle_route_physical_arrived": "已到达目的地，请手动停车。",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "道路路线存在，但转弯对这辆车仍然太急。请更改目的地或使用快速旅行。"
 }

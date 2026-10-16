@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Pare numa faixa no sentido do trânsito antes de iniciar.",
   "voogle_route_physical_blocked": "Direção interrompida. Assuma o volante.",
   "voogle_route_physical_arrived": "Destino alcançado. Estacione manualmente.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Existe uma rota, mas as curvas são estreitas demais para este carro. Mude o destino ou use viagem rápida."
 }

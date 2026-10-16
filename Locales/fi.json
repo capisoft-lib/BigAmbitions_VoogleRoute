@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Pysähdy ajokaistalle sen kulkusuuntaan ennen aloitusta.",
   "voogle_route_physical_blocked": "Ajo keskeytyi. Ota ohjat.",
   "voogle_route_physical_arrived": "Kohde saavutettu. Pysäköi itse.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Reitti on olemassa, mutta sen mutkat ovat liian tiukkoja tälle autolle. Vaihda kohdetta tai käytä pikamatkaa."
 }

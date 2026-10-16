@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Před spuštěním zastavte v jízdním pruhu ve směru jízdy.",
   "voogle_route_physical_blocked": "Jízda přerušena. Převezměte řízení.",
   "voogle_route_physical_arrived": "Cíl dosažen. Zaparkujte ručně.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Trasa existuje, ale zatáčky jsou pro toto auto příliš těsné. Změňte cíl nebo použijte rychlé cestování."
 }

@@ -6,16 +6,19 @@ using VoogleRoute.Pathfinding.Graph;
 
 namespace VoogleRoute.Navigation.Driving
 {
-    /// <summary>Excludes U-turns and synthetic edges tighter than this vehicle can steer.</summary>
+    /// <summary>Filters forbidden transitions and prefers wider connectors; fitted curves decide feasibility.</summary>
     internal sealed class PhysicalRoutingGraph : IRoutingGraph
     {
         private readonly IRoutingGraph _graph;
         private readonly float _radius;
         private readonly Dictionary<int, int[]> _forward = new Dictionary<int, int[]>();
         private readonly Dictionary<int, int[]> _lanes = new Dictionary<int, int[]>();
+        private readonly HashSet<long> _excluded = new HashSet<long>();
+        private readonly Dictionary<long, float> _curvePenalties = new Dictionary<long, float>();
         internal PhysicalRoutingGraph(IRoutingGraph graph, float radius) { _graph = graph; _radius = radius; }
         private bool Allowed(int a, int b)
         {
+            if (_excluded.Contains(((long)a << 32) | (uint)b)) return false;
             if (_graph.IsAuthorizedUturnEdge(a, b)) return false;
             if (_graph.TryGetSyntheticTurnAbsAngle(a, b, out var angle) && angle > 125f) return false;
             var start = GetPosition(a);
@@ -23,17 +26,36 @@ namespace VoogleRoute.Navigation.Driving
             // This first driver supports city streets, not bridge/underground transitions.
             if (start.Y > 6f || end.Y > 6f || start.Y < -3f || end.Y < -3f) return false;
             if (Mathf.Abs(start.Y - end.Y) > Vec3.FlatLength(start, end) * 0.25f + 0.5f) return false;
-            if (!_graph.TryGetSyntheticTurnControl(a, b, out var control)) return true;
+            return true;
+        }
+
+        internal void ExcludeConnection(int from, int to)
+        {
+            _excluded.Add(((long)from << 32) | (uint)to);
+            _forward.Remove(from);
+            _lanes.Remove(from);
+        }
+
+        private float CurvaturePenalty(int a, int b)
+        {
+            var key = ((long)a << 32) | (uint)b;
+            if (_curvePenalties.TryGetValue(key, out var cached)) return cached;
+            if (!_graph.TryGetSyntheticTurnControl(a, b, out var control)) return 0f;
+            var start = GetPosition(a); var end = GetPosition(b);
             var p = Unity(start); var c = Unity(control); var q = Unity(end);
+            var maximum = 0f;
             for (var i = 0; i <= 16; i++)
             {
                 var t = i / 16f;
                 var d = DrivingPath.Flat(2f * ((1f - t) * (c - p) + t * (q - c)));
                 var dd = DrivingPath.Flat(2f * (q - 2f * c + p));
                 var curvature = Mathf.Abs(Vector3.Cross(d, dd).y) / Mathf.Max(0.001f, d.magnitude * d.sqrMagnitude);
-                if (curvature > 1f / Mathf.Max(1f, _radius)) return false;
+                maximum = Mathf.Max(maximum, curvature);
             }
-            return true;
+            // Raw connector curvature is a route preference, not proof that the fitted curve is impossible.
+            var penalty = Mathf.Max(0f, maximum * _radius - 1f) * 30f;
+            _curvePenalties[key] = penalty;
+            return penalty;
         }
         private ReadOnlySpan<int> Neighbors(int index, bool lane)
         {
@@ -60,11 +82,13 @@ namespace VoogleRoute.Navigation.Driving
         {
             if (!_graph.IsForwardEdgeAllowed(incoming, at, next) || !Allowed(at, next)) return false;
             if (incoming < 0) return true;
-            var a = DrivingPath.Flat(Unity(GetPosition(at) - GetPosition(incoming)));
-            var b = DrivingPath.Flat(Unity(GetPosition(next) - GetPosition(at)));
-            return Vector3.Angle(a, b) < 125f;
+            var a = DrivingPath.Flat(Unity(GetPosition(at) -
+                (_graph.TryGetSyntheticTurnControl(incoming, at, out var entryControl) ? entryControl : GetPosition(incoming))));
+            var b = DrivingPath.Flat(Unity(
+                (_graph.TryGetSyntheticTurnControl(at, next, out var exitControl) ? exitControl : GetPosition(next)) - GetPosition(at)));
+            return Vector3.Angle(a, b) < 150f;
         }
-        public float GetForwardTravelCost(int a, int b, int c) => _graph.GetForwardTravelCost(a, b, c);
+        public float GetForwardTravelCost(int a, int b, int c) => _graph.GetForwardTravelCost(a, b, c) + CurvaturePenalty(a, b);
         public float EstimatePathTravelCost(IReadOnlyList<int> p) => _graph.EstimatePathTravelCost(p);
         public bool IsAuthorizedUturnEdge(int a, int b) => false;
         public bool IsIntersectionNode(int i) => _graph.IsIntersectionNode(i);

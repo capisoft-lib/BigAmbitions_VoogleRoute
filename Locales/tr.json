@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Başlamadan önce bir şeritte sürüş yönünde durun.",
   "voogle_route_physical_blocked": "Sürüş kesildi. Direksiyonu alın.",
   "voogle_route_physical_arrived": "Hedefe ulaşıldı. Elle park edin.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Bir rota var, ancak dönüşler bu araç için çok dar. Hedefi değiştirin veya hızlı seyahati kullanın."
 }

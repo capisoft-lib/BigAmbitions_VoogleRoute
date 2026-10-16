@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Indítás előtt állj meg egy sávban a menetirány felé.",
   "voogle_route_physical_blocked": "Vezetés megszakítva. Vedd át az irányítást.",
   "voogle_route_physical_arrived": "Cél elérve. Parkolj kézzel.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Van útvonal, de a kanyarok túl szűkek ehhez az autóhoz. Válassz másik célt vagy gyorsutazást."
 }

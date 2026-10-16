@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Oprește pe o bandă în sensul de mers înainte de pornire.",
   "voogle_route_physical_blocked": "Condus întrerupt. Preia volanul.",
   "voogle_route_physical_arrived": "Destinație atinsă. Parchează manual.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Există o rută, dar virajele sunt prea strânse pentru această mașină. Schimbă destinația sau folosește călătoria rapidă."
 }

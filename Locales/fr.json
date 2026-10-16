@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Arrêtez-vous sur une voie de circulation, dans le sens de la voie, avant de lancer la conduite automatique.",
   "voogle_route_physical_blocked": "Conduite interrompue : obstacle prolongé, sortie de voie ou véhicule indisponible. Reprenez le volant.",
   "voogle_route_physical_arrived": "Destination atteinte. Reprenez le volant pour stationner.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Une route existe, mais ses virages restent trop serrés pour cette voiture. Changez de destination ou utilisez le voyage rapide."
 }

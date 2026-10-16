@@ -3,6 +3,7 @@ using GleyTrafficSystem;
 using Helpers;
 using UnityEngine;
 using VoogleRoute.Pathfinding.Routing;
+using System.Globalization;
 
 namespace VoogleRoute.Navigation.Driving
 {
@@ -28,77 +29,72 @@ namespace VoogleRoute.Navigation.Driving
             var car = VehicleHelper.GetCurrentVehicleBase() as CarController;
             if (car?.vehicleController == null || !MovementModeDetector.CanUseAutoDrive())
             { failure = "voogle_route_autodrive_not_in_vehicle"; return false; }
-            if (!NavigationTargetTracker.HasMapGpsTarget || RouteGraphStore.Graph == null) return false;
+            if (!NavigationTargetTracker.HasMapGpsTarget || RouteGraphStore.Graph == null)
+                return Reject("missing_destination_or_graph", "", out failure);
             using (var geometry = new VehicleControlLease(car, acquire: false))
             {
-                if (geometry.Speed > 0.7f) { failure = "voogle_route_physical_start_lane"; return false; }
+                Debug.Log("[VoogleRoute][PhysicalDrive] plan_request car=" + car.name + " rear=" + geometry.RearPosition.ToString("F2") +
+                    " forward=" + geometry.Vehicle.transform.forward.ToString("F2") + " destination=" + NavigationTargetTracker.ActiveTarget.ToString("F2") +
+                    " wheelbase=" + geometry.Wheelbase.ToString("F2", CultureInfo.InvariantCulture) +
+                    " steer=" + geometry.MaxSteer.ToString("F1", CultureInfo.InvariantCulture) +
+                    " radius=" + geometry.MinRadius.ToString("F2", CultureInfo.InvariantCulture));
+                if (geometry.Speed > 0.7f)
+                    return Reject("vehicle_moving", "speed=" + geometry.Speed, out failure, "voogle_route_physical_start_lane");
                 var origin = geometry.RearPosition;
                 var destination = NavigationTargetTracker.ActiveTarget;
-                var options = VehicleRoutePathOptions.FromMainThread(destination, true);
-                var query = new VehicleRoutePathOptions(true, false, options.HasArrivalRoadHint, options.ArrivalRoadHint)
+                var options = VehicleRoutePathOptions.FromMainThread(destination);
+                var query = new VehicleRoutePathOptions(options.PreferBuildingSideArrival, false, options.HasArrivalRoadHint, options.ArrivalRoadHint)
                     .ToRouteQuery(PhysicalRoutingGraph.Native(origin), PhysicalRoutingGraph.Native(destination),
                         PhysicalRoutingGraph.Native(car.vehicleController.transform.forward), true);
                 var graph = new PhysicalRoutingGraph(RouteGraphStore.Graph, geometry.MinRadius * 1.1f);
                 if (!TryFindLaneStart(graph, geometry, out var start))
-                { failure = "voogle_route_physical_start_lane"; return false; }
+                    return Reject("start_lane_not_found", "", out failure, "voogle_route_physical_start_lane");
                 query = new RouteQuery
                 {
                     Origin = query.Origin, Destination = query.Destination, Forward = query.Forward,
                     HasPose = true, ForcedStartWaypoint = start, ForcedEndWaypoint = -1,
-                    AllowUturnAtStart = false, PreferBuildingSideArrival = true,
+                    AllowUturnAtStart = false, PreferBuildingSideArrival = options.PreferBuildingSideArrival,
                     HasArrivalRoadHint = query.HasArrivalRoadHint, ArrivalRoadHint = query.ArrivalRoadHint
                 };
-                if (!WaypointPathfinder.TryFindBestRoute(graph, query, out var route) || route.Path.Count < 2) return false;
-
-                // Retain every graph anchor. Never append the building GPS chord or teleport fallback.
-                var raw = new List<Vector3>();
-                raw.Add(PhysicalRoutingGraph.Unity(graph.GetPosition(route.Path[0])));
-                for (var i = 1; i < route.Path.Count; i++)
-                {
-                    var a = PhysicalRoutingGraph.Unity(graph.GetPosition(route.Path[i - 1]));
-                    var b = PhysicalRoutingGraph.Unity(graph.GetPosition(route.Path[i]));
-                    if (graph.TryGetSyntheticTurnControl(route.Path[i - 1], route.Path[i], out var cp) &&
-                        !graph.IsLaneChangeEdge(route.Path[i - 1], route.Path[i]))
-                    {
-                        var c = PhysicalRoutingGraph.Unity(cp);
-                        var count = Mathf.Max(8, Mathf.CeilToInt((Vector3.Distance(a, c) + Vector3.Distance(c, b)) / 1.5f));
-                        for (var j = 1; j <= count; j++)
-                        {
-                            var t = j / (float)count;
-                            Add(raw, Vector3.Lerp(Vector3.Lerp(a, c, t), Vector3.Lerp(c, b, t), t));
-                        }
-                    }
-                    else Add(raw, b);
-                }
-                if (!TryRoundCorners(raw, geometry.MinRadius * 1.15f, out var rounded)) return false;
-                var samples = new List<Vector3> { rounded[0] };
-                for (var i = 1; i < rounded.Count; i++)
-                {
-                    var n = Mathf.Max(1, Mathf.CeilToInt(DrivingPath.FlatDistance(rounded[i - 1], rounded[i])));
-                    for (var j = 1; j <= n; j++) Add(samples, Vector3.Lerp(rounded[i - 1], rounded[i], j / (float)n));
-                }
+                if (!DrivingRouteGeometry.TryBuild(graph, query, geometry.MinRadius * 1.08f,
+                    out var route, out var samples, out var geometryDetail))
+                    return Reject("trajectory_unavailable", geometryDetail + " start=" + start,
+                        out failure, geometryDetail.StartsWith("graph_search_failed attempt=0")
+                            ? "voogle_route_physical_no_route" : "voogle_route_physical_turn_tight");
+                Debug.Log("[VoogleRoute][PhysicalDrive] curve_fit_ok " + geometryDetail);
                 var path = new DrivingPath(samples, ModConfig.PhysicalDriveSpeedKmh / 3.6f);
-                for (var i = 1; i < samples.Count - 1; i++)
-                    if (DrivingPath.Curvature(samples[i - 1], samples[i], samples[i + 1]) > 1.2f / geometry.MinRadius)
-                        return false;
-                if (path.Length < 12f) { failure = "voogle_route_autodrive_too_close"; return false; }
+                if (path.Length < 12f) return Reject("destination_too_close", "", out failure, "voogle_route_autodrive_too_close");
                 var progress = path.Project(origin, 0f, out var lateral, searchAhead: 50f);
                 var direction = DrivingPath.Flat(path.At(progress + 3f) - path.At(progress));
                 if (lateral > 2.5f ||
                     Vector3.Angle(direction, geometry.Vehicle.transform.forward) > 35f)
-                { failure = "voogle_route_physical_start_lane"; return false; }
-                if (path.Length - progress < 12f) { failure = "voogle_route_autodrive_too_close"; return false; }
+                    return Reject("start_not_aligned", "lateral=" + lateral + " progress=" + progress,
+                        out failure, "voogle_route_physical_start_lane");
+                if (path.Length - progress < 12f)
+                    return Reject("destination_too_close", "", out failure, "voogle_route_autodrive_too_close");
                 var arrivalAnchor = options.HasArrivalRoadHint ? PhysicalRoutingGraph.Unity(options.ArrivalRoadHint) : destination;
-                if (DrivingPath.FlatDistance(samples[samples.Count - 1], arrivalAnchor) > 80f) return false;
+                if (DrivingPath.FlatDistance(samples[samples.Count - 1], arrivalAnchor) > 80f)
+                    return Reject("arrival_too_far", "end=" + samples[samples.Count - 1] + " anchor=" + arrivalAnchor, out failure);
                 if (AutoDriveVehicleFuel.TryEstimate(path.Length, out var fuel) && !fuel.HasEnoughFuel)
-                { failure = "voogle_route_autodrive_insufficient_fuel"; return false; }
+                    return Reject("insufficient_fuel", "", out failure, "voogle_route_autodrive_insufficient_fuel");
 
                 plan = new PhysicalDrivePlan { Car = car, Destination = destination, Path = path };
                 BindTraffic(plan, route.Path);
                 plan.Path.ApplyBrakingEnvelope();
-                ModLog.Info("Physical drive planned: " + Mathf.RoundToInt(path.Length) + " m, " + samples.Count + " samples.");
+                Debug.Log("[VoogleRoute][PhysicalDrive] plan_ok distance=" + Mathf.RoundToInt(path.Length) +
+                    " samples=" + samples.Count + " traffic_markers=" + plan.Traffic.Count);
                 return true;
             }
+        }
+
+        private static bool Reject(string stage, string detail, out string failure,
+            string key = "voogle_route_physical_no_route")
+        {
+            failure = key;
+            var displayed = PathFinderService.TryGetCachedRouteForDisplay(out var visible);
+            Debug.Log("[VoogleRoute][PhysicalDrive] plan_rejected stage=" + stage + " " + detail +
+                " displayed_route=" + displayed + " displayed_points=" + (visible.Points?.Length ?? 0));
+            return false;
         }
 
         private static bool TryFindLaneStart(PhysicalRoutingGraph graph, VehicleControlLease car, out int start)
@@ -127,35 +123,6 @@ namespace VoogleRoute.Navigation.Driving
             }
             return start >= 0;
         }
-
-        private static bool TryRoundCorners(List<Vector3> raw, float radius, out List<Vector3> result)
-        {
-            result = new List<Vector3> { raw[0] };
-            for (var i = 1; i < raw.Count - 1; i++)
-            {
-                var incoming = DrivingPath.Flat(raw[i] - raw[i - 1]).normalized;
-                var outgoing = DrivingPath.Flat(raw[i + 1] - raw[i]).normalized;
-                var angle = Vector3.SignedAngle(incoming, outgoing, Vector3.up);
-                if (Mathf.Abs(angle) < 28f) { Add(result, raw[i]); continue; }
-                if (Mathf.Abs(angle) > 125f) return false;
-                var tangent = radius * Mathf.Tan(Mathf.Abs(angle) * Mathf.Deg2Rad * 0.5f);
-                if (tangent > Mathf.Min(DrivingPath.FlatDistance(raw[i - 1], raw[i]),
-                    DrivingPath.FlatDistance(raw[i], raw[i + 1])) * 0.45f) return false;
-                var entry = raw[i] - incoming * tangent;
-                var exit = raw[i] + outgoing * tangent;
-                var center = entry + Vector3.Cross(Vector3.up, incoming) * (Mathf.Sign(angle) * radius);
-                Add(result, entry);
-                var segments = Mathf.Max(3, Mathf.CeilToInt(Mathf.Abs(angle) * Mathf.Deg2Rad * radius));
-                for (var j = 1; j <= segments; j++)
-                    Add(result, center + Quaternion.AngleAxis(angle * j / segments, Vector3.up) * (entry - center));
-                result[result.Count - 1] = exit;
-            }
-            Add(result, raw[raw.Count - 1]);
-            return result.Count >= 2;
-        }
-
-        private static void Add(List<Vector3> list, Vector3 p)
-        { if (list.Count == 0 || Vector3.SqrMagnitude(p - list[list.Count - 1]) > 0.01f) list.Add(p); }
 
         private static void BindTraffic(PhysicalDrivePlan plan, IReadOnlyList<int> nodes)
         {

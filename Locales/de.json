@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Vor dem Start auf einer Fahrspur in Fahrtrichtung anhalten.",
   "voogle_route_physical_blocked": "Autofahrt unterbrochen. Bitte das Steuer übernehmen.",
   "voogle_route_physical_arrived": "Ziel erreicht. Bitte selbst parken.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Eine Straßenroute existiert, aber ihre Kurven sind zu eng für dieses Auto. Anderes Ziel oder Schnellreise wählen."
 }

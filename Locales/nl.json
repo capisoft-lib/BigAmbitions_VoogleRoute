@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Stop op een rijstrook in de rijrichting om te beginnen.",
   "voogle_route_physical_blocked": "Rit onderbroken. Neem het stuur over.",
   "voogle_route_physical_arrived": "Bestemming bereikt. Parkeer zelf.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Er is een route, maar de bochten zijn te krap voor deze auto. Kies een ander doel of snelreizen."
 }

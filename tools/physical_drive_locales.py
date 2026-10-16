@@ -103,9 +103,36 @@ TEXT = {
 }
 
 
+TURN_TIGHT = {
+    "en": "A road route exists, but its turns cannot be fitted to this car. Choose another destination or fast travel.",
+    "fr": "Une route existe, mais ses virages restent trop serrés pour cette voiture. Changez de destination ou utilisez le voyage rapide.",
+    "de": "Eine Straßenroute existiert, aber ihre Kurven sind zu eng für dieses Auto. Anderes Ziel oder Schnellreise wählen.",
+    "es": "Hay una ruta, pero sus curvas son demasiado cerradas para este coche. Cambia de destino o usa viaje rápido.",
+    "it": "Una strada esiste, ma le curve sono troppo strette per questa auto. Cambia destinazione o usa il viaggio rapido.",
+    "pt-BR": "Existe uma rota, mas as curvas são estreitas demais para este carro. Mude o destino ou use viagem rápida.",
+    "nl": "Er is een route, maar de bochten zijn te krap voor deze auto. Kies een ander doel of snelreizen.",
+    "da": "Der findes en rute, men svingene er for snævre til denne bil. Vælg et andet mål eller hurtig rejse.",
+    "fi": "Reitti on olemassa, mutta sen mutkat ovat liian tiukkoja tälle autolle. Vaihda kohdetta tai käytä pikamatkaa.",
+    "cs": "Trasa existuje, ale zatáčky jsou pro toto auto příliš těsné. Změňte cíl nebo použijte rychlé cestování.",
+    "pl": "Trasa istnieje, ale zakręty są zbyt ciasne dla tego auta. Zmień cel lub użyj szybkiej podróży.",
+    "hu": "Van útvonal, de a kanyarok túl szűkek ehhez az autóhoz. Válassz másik célt vagy gyorsutazást.",
+    "ro": "Există o rută, dar virajele sunt prea strânse pentru această mașină. Schimbă destinația sau folosește călătoria rapidă.",
+    "tr": "Bir rota var, ancak dönüşler bu araç için çok dar. Hedefi değiştirin veya hızlı seyahati kullanın.",
+    "el": "Υπάρχει διαδρομή, αλλά οι στροφές είναι πολύ κλειστές για αυτό το όχημα. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι.",
+    "lt": "Maršrutas yra, tačiau posūkiai šiam automobiliui per siauri. Pakeiskite tikslą arba rinkitės greitą kelionę.",
+    "ru": "Маршрут есть, но повороты слишком крутые для этой машины. Измените цель или выберите быстрое перемещение.",
+    "uk": "Маршрут є, але повороти надто круті для цього авто. Змініть ціль або оберіть швидку подорож.",
+    "ja": "経路はありますが、この車にはカーブが急すぎます。目的地を変更するか高速移動を利用してください。",
+    "ko": "경로는 있지만 이 차로 돌기에는 커브가 너무 급합니다. 목적지를 바꾸거나 빠른 이동을 이용하세요.",
+    "zh-CN": "道路路线存在，但转弯对这辆车仍然太急。请更改目的地或使用快速旅行。",
+    "zh-TW": "道路路線存在，但轉彎對這輛車仍然太急。請更改目的地或使用快速旅行。",
+}
+
+
 def strings(locale):
     result = dict(zip(KEYS, TEXT[locale]))
     result["voogle_route_options_physical_drive_speed_value"] = "{value} km/h"
+    result["voogle_route_physical_turn_tight"] = TURN_TIGHT[locale]
     return result
 
 

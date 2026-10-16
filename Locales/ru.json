@@ -103,5 +103,6 @@
   "voogle_route_physical_start_lane": "Перед началом остановитесь на полосе по направлению движения.",
   "voogle_route_physical_blocked": "Вождение прервано. Возьмите управление.",
   "voogle_route_physical_arrived": "Цель достигнута. Припаркуйтесь вручную.",
-  "voogle_route_options_physical_drive_speed_value": "{value} km/h"
+  "voogle_route_options_physical_drive_speed_value": "{value} km/h",
+  "voogle_route_physical_turn_tight": "Маршрут есть, но повороты слишком крутые для этой машины. Измените цель или выберите быстрое перемещение."
 }
