@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Atanmamış",
   "voogle_route_shortcut_capture": "Bir tuşa basın...",
   "voogle_route_shortcut_conflict": "Çakışma",
-  "voogle_route_options_physical_autodrive": "Gerçek sürüş (beta; kapalı = hızlı seyahat)",
+  "voogle_route_options_physical_autodrive": "Varsayılan olarak sürüşü izle",
   "voogle_route_options_physical_drive_speed": "Azami hız (otomatik mod kapalı)",
   "voogle_route_physical_stop": "DURDUR",
   "voogle_route_physical_body": "Aracınız sokakları izleyecek: ~{distance} m.\nHareket tuşları veya DURDUR: kontrolü alın.\nYolda varış; elle park edin.",
-  "voogle_route_physical_no_route": "Sürülebilir rota yok. Hedefi değiştirin veya hızlı seyahati seçin.",
+  "voogle_route_physical_no_route": "Bu araç için sürülebilir rota yok. Hızlı seyahat veya başka bir hedef seçin.",
   "voogle_route_physical_start_lane": "Başlamadan önce bir şeritte sürüş yönünde durun.",
   "voogle_route_physical_blocked": "Sürüş kesildi. Direksiyonu alın.",
   "voogle_route_physical_arrived": "Hedefe ulaşıldı. Elle park edin.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Otomatik seyir hızı",
   "voogle_route_options_stop_for_pedestrians": "Yayalar için dur",
   "voogle_route_options_allow_speeding": "Hız sınırını aş (en fazla 80 km/sa)",
-  "voogle_route_options_run_red_lights": "Kırmızı ışıkta geç"
+  "voogle_route_options_run_red_lights": "Kırmızı ışıkta geç",
+  "voogle_route_travel_watch": "SÜRÜŞÜ İZLE",
+  "voogle_route_travel_skip": "HIZLI SEYAHAT"
 }

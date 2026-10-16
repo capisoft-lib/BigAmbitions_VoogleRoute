@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Niet toegewezen",
   "voogle_route_shortcut_capture": "Druk op een toets...",
   "voogle_route_shortcut_conflict": "Conflict",
-  "voogle_route_options_physical_autodrive": "Echt rijden (bèta; uit = snelreizen)",
+  "voogle_route_options_physical_autodrive": "Standaard de rit bekijken",
   "voogle_route_options_physical_drive_speed": "Snelheidsgrens (automatische modus uit)",
   "voogle_route_physical_stop": "STOPPEN",
   "voogle_route_physical_body": "Je auto volgt de straten: ~{distance} m.\nBewegingstoetsen of STOPPEN: neem over.\nAankomst op de weg; parkeer zelf.",
-  "voogle_route_physical_no_route": "Geen berijdbare route. Kies een ander doel of snelreizen.",
+  "voogle_route_physical_no_route": "Geen berijdbare route voor deze auto. Kies Snelreizen of een ander doel.",
   "voogle_route_physical_start_lane": "Stop op een rijstrook in de rijrichting om te beginnen.",
   "voogle_route_physical_blocked": "Rit onderbroken. Neem het stuur over.",
   "voogle_route_physical_arrived": "Bestemming bereikt. Parkeer zelf.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automatische kruissnelheid",
   "voogle_route_options_stop_for_pedestrians": "Stoppen voor voetgangers",
   "voogle_route_options_allow_speeding": "Snelheidslimieten overschrijden (tot 80 km/h)",
-  "voogle_route_options_run_red_lights": "Door rood rijden"
+  "voogle_route_options_run_red_lights": "Door rood rijden",
+  "voogle_route_travel_watch": "RIT BEKIJKEN",
+  "voogle_route_travel_skip": "SNELREIZEN"
 }

@@ -84,6 +84,9 @@ namespace VoogleRoute.UI
             Loc("voogle_route_autodrive_popup_confirm", "GO");
         internal static string AutoDriveCancel =>
             Loc("voogle_route_autodrive_popup_cancel", "CANCEL");
+        internal static string WatchDriving => Loc("voogle_route_travel_watch", "WATCH THE DRIVE");
+        internal static string TimeSkip => Loc("voogle_route_travel_skip", "FAST TRAVEL");
+        internal static string TravelModeFailure(string key) => Loc(key, "This travel mode is unavailable. Choose the other mode.");
         internal static string BookmarksTitle =>
             Loc("voogle_route_bookmarks_title", "BOOKMARKS");
         internal static string BookmarksSearchPlaceholder =>

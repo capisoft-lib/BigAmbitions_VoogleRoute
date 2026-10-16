@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Nincs hozzárendelve",
   "voogle_route_shortcut_capture": "Nyomjon meg egy billentyűt...",
   "voogle_route_shortcut_conflict": "Ütközés",
-  "voogle_route_options_physical_autodrive": "Valódi vezetés (béta; ki = gyorsutazás)",
+  "voogle_route_options_physical_autodrive": "Vezetés követése alapértelmezés szerint",
   "voogle_route_options_physical_drive_speed": "Sebességkorlát (automatikus mód kikapcsolva)",
   "voogle_route_physical_stop": "LEÁLLÍTÁS",
   "voogle_route_physical_body": "Az autó az utcákat követi: ~{distance} m.\nMozgásgombok vagy LEÁLLÍTÁS: átvétel.\nÉrkezés az úton; parkolj kézzel.",
-  "voogle_route_physical_no_route": "Nincs járható útvonal. Válassz másik célt vagy gyorsutazást.",
+  "voogle_route_physical_no_route": "Nincs járható útvonal ehhez az autóhoz. Válassz Gyorsutazást vagy másik célt.",
   "voogle_route_physical_start_lane": "Indítás előtt állj meg egy sávban a menetirány felé.",
   "voogle_route_physical_blocked": "Vezetés megszakítva. Vedd át az irányítást.",
   "voogle_route_physical_arrived": "Cél elérve. Parkolj kézzel.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automatikus utazósebesség",
   "voogle_route_options_stop_for_pedestrians": "Megállás gyalogosoknak",
   "voogle_route_options_allow_speeding": "Sebességhatárok túllépése (80 km/h-ig)",
-  "voogle_route_options_run_red_lights": "Áthajtás a piroson"
+  "voogle_route_options_run_red_lights": "Áthajtás a piroson",
+  "voogle_route_travel_watch": "VEZETÉS KÖVETÉSE",
+  "voogle_route_travel_skip": "GYORSUTAZÁS"
 }

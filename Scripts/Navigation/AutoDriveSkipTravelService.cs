@@ -152,9 +152,9 @@ namespace VoogleRoute.Navigation
 
         private static void TryShowConfirmPopup()
         {
-            if (ModConfig.PhysicalAutoDriveEnabled)
+            if (Driving.PhysicalDriveService.IsActive)
             {
-                Driving.PhysicalDriveService.Request();
+                Driving.PhysicalDriveService.Stop();
                 return;
             }
             if (!MovementModeDetector.CanUseAutoDrive())
@@ -175,13 +175,7 @@ namespace VoogleRoute.Navigation
                 return;
             }
 
-            if (!AutoDriveSkipPlanner.TryBuildPlan(out var plan))
-            {
-                Notifications.ShowError(plan.FailureKey ?? "voogle_route_autodrive_no_route");
-                return;
-            }
-
-            UI.AutoDriveConfirmPopup.Show(plan);
+            UI.AutoDriveConfirmPopup.ShowChoice();
         }
 
         internal static void StartTravel(AutoDriveSkipPlanner.Plan plan)

@@ -2,11 +2,13 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.5`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.6`.
 
 ## Utilisation
 
-1. Dans Échap → Options → Mods → Voogle Route, laisser **Conduite réelle** activée.
+1. Dans Échap → Options → Mods → Voogle Route, **Voir conduire par défaut** définit
+   le mode présélectionné au départ. Désactiver ce réglage présélectionne le voyage
+   rapide ; les deux modes restent proposés pour chaque trajet.
    **Vitesse de croisière automatique** est activé par défaut : cible proche de
    50 km/h en ville, réduite pour les virages, feux, obstacles et capacités du véhicule.
    Désactiver ce réglage permet de choisir un plafond manuel entre 20 et 80 km/h
@@ -18,11 +20,13 @@ Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-p
    surveiller les véhicules qui traversent. Ces deux dérogations sont désactivées
    par défaut. Sans dépassement autorisé, le plafond légal reste appliqué.
    Ces réglages sont enregistrés dans les options de la sauvegarde.
-   Désactiver Conduite réelle rétablit le voyage rapide existant.
 2. Monter dans une voiture, rejoindre une voie de circulation et s'arrêter dans
    son sens de circulation. Un départ depuis une place de parking n'est pas prévu.
-3. Choisir une destination, demander AUTO-DRIVE puis confirmer.
-4. Les touches de déplacement, l'interaction de sortie, Échap ou ARRÊTER rendent
+3. Choisir une destination, demander AUTO-DRIVE, sélectionner **Voir conduire** ou
+   **Voyage rapide**, vérifier les détails puis confirmer le départ. Le voyage
+   rapide conserve l'estimation de durée, d'arrivée et de carburant. Si la conduite
+   réelle ne trouve pas de trajet, sélectionner le voyage rapide dans la même fenêtre.
+4. Pendant Voir conduire, les touches de déplacement, l'interaction de sortie, Échap ou ARRÊTER rendent
    immédiatement la main. À l'arrivée sur la voie, stationner manuellement.
 
 ## Implémentation
@@ -73,15 +77,16 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 5 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
+Installation révision 6 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`EFEF58BEC164581DDA90C89FB9BC74A5397B6E0805D4642BC05A017BF97D231A`.
+`4DD39074F61308133F285532916FFA688788B5E4954A9BEFECB0961E4242CCED`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
-L'utilisateur a essayé la révision 3 et indique que la conduite semble bonne.
-**Les nouveaux réglages et comportements de la révision 5 restent à observer en
-jeu, ainsi que les rapports introduits en révision 4.** La compilation et les empreintes ne constituent
+L'utilisateur a essayé la révision 5 ; ses logs montrent des trajets réels en AlfaGiulia,
+avec changements de rapports et options de dépassement/feux rouges actives.
+**Les nouvelles vitesses et la fenêtre de choix de la révision 6 restent à observer
+en jeu.** La compilation et les empreintes ne constituent
 pas une mesure du comportement physique.
 Il n'y a pas de marche arrière, de stationnement automatique ni de récupération par
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
@@ -229,3 +234,50 @@ publication Steam.
 Compilation avec les DLL installées et installation des 33 fichiers réussies ;
 config locale conservée. Aucune suite de tests ajoutée ou exécutée et aucun essai
 interactif de ces nouveaux réglages effectué. Aucune publication Steam.
+
+## Révision 6 : courbes, maintien de vitesse et choix au départ
+
+### Constat de la session précédente
+
+Dans Player.log du 16 octobre à 16:06, révision 5, le trajet en AlfaGiulia
+montre `speed_kmh=13.3 target_kmh=14.4 path_kmh=14.4 traffic_kmh=80.0`
+à `realtime_s=243.002` : le profil de courbure impose ici le ralentissement.
+À `realtime_s=300.241`, `305.240`, `310.232`, `315.283`, les relevés donnent
+respectivement 80.2, 80.4, 80.0 et 80.2 km/h pour une cible de 80 km/h.
+Ils montrent un maintien proche de la cible sur cette portion, sans exclure des
+variations plus courtes entre les relevés espacés de cinq secondes. D'autres
+ralentissements sont explicitement imposés par le trafic ou le profil anticipé.
+
+### Changements
+
+- Courbure mesurée sur un voisinage de deux mètres de part et d'autre au lieu
+  des seuls trois échantillons adjacents, pour réduire l'effet des petits raccords.
+  Accélération latérale cible 3.5 m/s², contre 1.6 ; anticipation du freinage pour
+  les courbes et l'arrivée à 3.5 m/s², contre 2. Les capteurs conservent leur
+  anticipation plus prudente pour le trafic et les obstacles.
+- Visée de suivi raccourcie selon la courbure pour ne pas couper un virage serré.
+  Entre 1.5 et 3.5 m d'écart latéral, le plafond de récupération diminue
+  progressivement de 43.2 à 10.8 km/h. Le freinage de sortie de voie est conservé.
+- Correction intégrale signée (-0.25 à +0.7), permettant aussi de retirer un excès
+  d'accélérateur à vitesse constante. Filtrage de l'accélération mesurée sur 0.2 s,
+  correction de l'accélération, commande d'accélérateur progressive et absence
+  d'apprentissage pendant la coupure de couple d'un changement de rapport.
+  La correction est réinitialisée lors du ralentissement prévu et des pauses.
+- La confirmation présente deux sélecteurs BAUI : Voir conduire et Voyage rapide,
+  puis Annuler et Départ. Le corps affiche les détails propres au mode choisi.
+  L'échec de préparation désactive le départ de ce mode en conservant l'autre
+  choix accessible ; une préparation partielle en exception est rejetée.
+- Le plan physique reste réutilisable à la confirmation avec ses contrôles de
+  contexte et de pose. Le voyage rapide revérifie route et carburant au départ.
+  La fenêtre est liée à la voiture, destination, sauvegarde et scène ; les anciens
+  choix ne sont pas exécutés après changement de contexte.
+- La clé sauvegardée `physicalAutoDrive` conserve sa compatibilité et définit
+  maintenant la présélection (Voir conduire par défaut), sans interdire l'autre
+  mode ni modifier un trajet en cours. Textes et choix disponibles dans 22 langues.
+- Télémétrie enrichie : `lateral_m`, `cruise_kmh`, `shifting` pour distinguer plafond
+  configuré, écart de suivi et coupure temporaire de transmission.
+
+Build avec les DLL BA 1.0 installées réussi, quatre warnings TMP existants,
+installation et empreintes comparées. Aucune suite de tests ajoutée ou exécutée.
+Le réglage des courbes et la régulation restent à confirmer avec la physique réelle ;
+le rendu BAUI et les deux départs n'ont pas été exercés dans le jeu pour cette révision.

@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "未割り当て",
   "voogle_route_shortcut_capture": "キーを押してください...",
   "voogle_route_shortcut_conflict": "競合",
-  "voogle_route_options_physical_autodrive": "実際に運転（ベータ・オフ＝高速移動）",
+  "voogle_route_options_physical_autodrive": "既定で走行を見守る",
   "voogle_route_options_physical_drive_speed": "上限速度（自動モードがオフのとき）",
   "voogle_route_physical_stop": "運転を停止",
   "voogle_route_physical_body": "自分の車で道路を走行：約{distance} m。\n移動キーまたは「運転を停止」で操作を再開。\n道路上に到着します。駐車は手動です。",
-  "voogle_route_physical_no_route": "この車で走行可能な経路がありません。目的地を変更するか高速移動を選択してください。",
+  "voogle_route_physical_no_route": "この車で走行可能な経路がありません。「高速移動」を選ぶか目的地を変更してください。",
   "voogle_route_physical_start_lane": "開始前に車線上で進行方向に向けて停止してください。",
   "voogle_route_physical_blocked": "自動運転を中断しました。運転を引き継いでください。",
   "voogle_route_physical_arrived": "目的地に到着しました。手動で駐車してください。",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "巡航速度を自動設定",
   "voogle_route_options_stop_for_pedestrians": "歩行者のために停止",
   "voogle_route_options_allow_speeding": "制限速度を超える（最大80 km/h）",
-  "voogle_route_options_run_red_lights": "赤信号を無視"
+  "voogle_route_options_run_red_lights": "赤信号を無視",
+  "voogle_route_travel_watch": "走行を見守る",
+  "voogle_route_travel_skip": "高速移動"
 }

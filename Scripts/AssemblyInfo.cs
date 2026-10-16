@@ -6,4 +6,4 @@ using System.Reflection;
 [assembly: AssemblyProduct("Voogle Route")]
 [assembly: AssemblyVersion("1.0.11.0")]
 [assembly: AssemblyFileVersion("1.0.11.0")]
-[assembly: AssemblyInformationalVersion("1.0.11-physical-autodrive.5")]
+[assembly: AssemblyInformationalVersion("1.0.11-physical-autodrive.6")]

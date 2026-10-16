@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Não atribuído",
   "voogle_route_shortcut_capture": "Pressione uma tecla...",
   "voogle_route_shortcut_conflict": "Conflito",
-  "voogle_route_options_physical_autodrive": "Direção real (beta; não = viagem rápida)",
+  "voogle_route_options_physical_autodrive": "Acompanhar a viagem por padrão",
   "voogle_route_options_physical_drive_speed": "Velocidade máxima (modo automático desligado)",
   "voogle_route_physical_stop": "PARAR",
   "voogle_route_physical_body": "Seu carro seguirá as ruas: ~{distance} m.\nTeclas de movimento ou PARAR: assumir o controle.\nChegada na rua; estacione manualmente.",
-  "voogle_route_physical_no_route": "Nenhuma rota transitável. Mude o destino ou use viagem rápida.",
+  "voogle_route_physical_no_route": "Nenhuma rota transitável para este carro. Escolha Viagem rápida ou outro destino.",
   "voogle_route_physical_start_lane": "Pare numa faixa no sentido do trânsito antes de iniciar.",
   "voogle_route_physical_blocked": "Direção interrompida. Assuma o volante.",
   "voogle_route_physical_arrived": "Destino alcançado. Estacione manualmente.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Velocidade de cruzeiro automática",
   "voogle_route_options_stop_for_pedestrians": "Parar para pedestres",
   "voogle_route_options_allow_speeding": "Exceder limites (até 80 km/h)",
-  "voogle_route_options_run_red_lights": "Avançar sinais vermelhos"
+  "voogle_route_options_run_red_lights": "Avançar sinais vermelhos",
+  "voogle_route_travel_watch": "ACOMPANHAR VIAGEM",
+  "voogle_route_travel_skip": "VIAGEM RÁPIDA"
 }

@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Sin asignar",
   "voogle_route_shortcut_capture": "Pulsa una tecla...",
   "voogle_route_shortcut_conflict": "Conflicto",
-  "voogle_route_options_physical_autodrive": "Conducción real (beta; no = viaje rápido)",
+  "voogle_route_options_physical_autodrive": "Ver la conducción por defecto",
   "voogle_route_options_physical_drive_speed": "Velocidad máxima (modo automático desactivado)",
   "voogle_route_physical_stop": "DETENER",
   "voogle_route_physical_body": "Tu coche seguirá las calles: ~{distance} m.\nTeclas de movimiento o DETENER: retomar el control.\nLlegada en la calle; aparca manualmente.",
-  "voogle_route_physical_no_route": "No hay ruta transitable para este coche. Elige otro destino o viaje rápido.",
+  "voogle_route_physical_no_route": "No hay ruta transitable para este coche. Elige Viaje rápido u otro destino.",
   "voogle_route_physical_start_lane": "Detente en un carril en su sentido antes de iniciar.",
   "voogle_route_physical_blocked": "Conducción interrumpida. Retoma el control.",
   "voogle_route_physical_arrived": "Destino alcanzado. Aparca manualmente.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Velocidad de crucero automática",
   "voogle_route_options_stop_for_pedestrians": "Detenerse por peatones",
   "voogle_route_options_allow_speeding": "Superar límites (hasta 80 km/h)",
-  "voogle_route_options_run_red_lights": "Saltarse semáforos rojos"
+  "voogle_route_options_run_red_lights": "Saltarse semáforos rojos",
+  "voogle_route_travel_watch": "VER CONDUCCIÓN",
+  "voogle_route_travel_skip": "VIAJE RÁPIDO"
 }

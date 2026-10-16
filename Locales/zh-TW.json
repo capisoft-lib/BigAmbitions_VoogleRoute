@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "未綁定",
   "voogle_route_shortcut_capture": "請按一個鍵...",
   "voogle_route_shortcut_conflict": "衝突",
-  "voogle_route_options_physical_autodrive": "實際駕駛（測試版；關閉＝快速旅行）",
+  "voogle_route_options_physical_autodrive": "預設觀看駕駛",
   "voogle_route_options_physical_drive_speed": "最高速度（自動模式關閉時）",
   "voogle_route_physical_stop": "停止駕駛",
   "voogle_route_physical_body": "駕駛自己的汽車沿街道行駛：約 {distance} 公尺。\n按移動鍵或「停止駕駛」接管。\n抵達道路上，需手動停車。",
-  "voogle_route_physical_no_route": "此車沒有可行駛路線。請更改目的地或選擇快速旅行。",
+  "voogle_route_physical_no_route": "此車沒有可行駛路線。請選擇快速旅行或更改目的地。",
   "voogle_route_physical_start_lane": "開始前請在車道內沿行駛方向停車。",
   "voogle_route_physical_blocked": "自動駕駛已中斷，請接管方向盤。",
   "voogle_route_physical_arrived": "已抵達目的地，請手動停車。",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "自動巡航速度",
   "voogle_route_options_stop_for_pedestrians": "為行人停車",
   "voogle_route_options_allow_speeding": "超過速限（最高80 km/h）",
-  "voogle_route_options_run_red_lights": "闖紅燈"
+  "voogle_route_options_run_red_lights": "闖紅燈",
+  "voogle_route_travel_watch": "觀看駕駛",
+  "voogle_route_travel_skip": "快速旅行"
 }

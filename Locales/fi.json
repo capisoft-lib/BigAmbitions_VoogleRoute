@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Ei määritetty",
   "voogle_route_shortcut_capture": "Paina näppäintä...",
   "voogle_route_shortcut_conflict": "Ristiriita",
-  "voogle_route_options_physical_autodrive": "Oikea ajaminen (beta; pois = pikamatka)",
+  "voogle_route_options_physical_autodrive": "Seuraa ajoa oletuksena",
   "voogle_route_options_physical_drive_speed": "Enimmäisnopeus (automaattitila pois)",
   "voogle_route_physical_stop": "PYSÄYTÄ",
   "voogle_route_physical_body": "Autosi seuraa katuja: ~{distance} m.\nLiikenäppäimet tai PYSÄYTÄ: ota ohjat.\nSaapuminen tielle; pysäköi itse.",
-  "voogle_route_physical_no_route": "Ei ajettavaa reittiä. Valitse toinen kohde tai pikamatka.",
+  "voogle_route_physical_no_route": "Ei ajettavaa reittiä tälle autolle. Valitse Pikamatka tai toinen kohde.",
   "voogle_route_physical_start_lane": "Pysähdy ajokaistalle sen kulkusuuntaan ennen aloitusta.",
   "voogle_route_physical_blocked": "Ajo keskeytyi. Ota ohjat.",
   "voogle_route_physical_arrived": "Kohde saavutettu. Pysäköi itse.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automaattinen matkanopeus",
   "voogle_route_options_stop_for_pedestrians": "Pysähdy jalankulkijoille",
   "voogle_route_options_allow_speeding": "Ylitä nopeusrajoitukset (enintään 80 km/h)",
-  "voogle_route_options_run_red_lights": "Aja päin punaista"
+  "voogle_route_options_run_red_lights": "Aja päin punaista",
+  "voogle_route_travel_watch": "SEURAA AJOA",
+  "voogle_route_travel_skip": "PIKAMATKA"
 }

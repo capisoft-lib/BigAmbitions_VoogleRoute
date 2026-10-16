@@ -7,6 +7,8 @@ namespace VoogleRoute.Navigation.Driving
     /// <summary>Arc-length path; progress is local and monotonic, including at overlapping junctions.</summary>
     internal sealed class DrivingPath
     {
+        internal const float LateralAcceleration = 3.5f;
+        internal const float PlannedDeceleration = 3.5f;
         internal readonly Vector3[] Points;
         internal readonly float[] Distances;
         internal readonly float[] SpeedLimits;
@@ -26,10 +28,10 @@ namespace VoogleRoute.Navigation.Driving
                 Distances[i] = Distances[i - 1] + FlatDistance(Points[i - 1], Points[i]);
             for (var i = 0; i < Points.Length; i++)
             {
-                var curvature = i == 0 || i == Points.Length - 1 ? 0f :
-                    Curvature(Points[i - 1], Points[i], Points[i + 1]);
+                // A metre-scale chord avoids braking for tiny sample-to-sample kinks.
+                var curvature = CurvatureAt(Distances[i]);
                 _roadLimits[i] = roadLimits != null ? roadLimits[i] : float.PositiveInfinity;
-                _cornerLimits[i] = Mathf.Sqrt(1.6f / Mathf.Max(curvature, 0.001f));
+                _cornerLimits[i] = Mathf.Sqrt(LateralAcceleration / Mathf.Max(curvature, 0.001f));
             }
             SetCruiseSpeed(cruise);
         }
@@ -48,7 +50,17 @@ namespace VoogleRoute.Navigation.Driving
             // Propagate future braking constraints backwards, before entering a bend.
             for (var i = SpeedLimits.Length - 2; i >= 0; i--)
                 SpeedLimits[i] = Mathf.Min(SpeedLimits[i], Mathf.Sqrt(SpeedLimits[i + 1] * SpeedLimits[i + 1] +
-                    2f * 2f * (Distances[i + 1] - Distances[i])));
+                    2f * PlannedDeceleration * (Distances[i + 1] - Distances[i])));
+        }
+
+        private float CurvatureAt(float distance) => Curvature(At(distance - 2f), At(distance), At(distance + 2f));
+
+        internal float LookAhead(float distance, float speed)
+        {
+            var straight = Mathf.Clamp(2.8f + speed * 0.6f, 3f, 12f);
+            var curvature = Mathf.Max(CurvatureAt(distance), CurvatureAt(distance + straight * 0.5f));
+            // Keep the aim point on a tight turn instead of cutting across its inside.
+            return Mathf.Min(straight, Mathf.Clamp(0.8f / Mathf.Max(curvature, 0.001f), 3f, 12f));
         }
 
         internal float Project(Vector3 position, float progress, out float lateralError, float searchAhead = 18f)

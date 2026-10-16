@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Nicht belegt",
   "voogle_route_shortcut_capture": "Taste drücken...",
   "voogle_route_shortcut_conflict": "Konflikt",
-  "voogle_route_options_physical_autodrive": "Echtes Fahren (Beta; aus = Schnellreise)",
+  "voogle_route_options_physical_autodrive": "Standardmäßig Fahrt ansehen",
   "voogle_route_options_physical_drive_speed": "Höchsttempo (Automatikmodus aus)",
   "voogle_route_physical_stop": "ANHALTEN",
   "voogle_route_physical_body": "Ihr Auto folgt den Straßen: ~{distance} m.\nBewegungstasten oder ANHALTEN: übernehmen.\nAnkunft auf der Straße; selbst parken.",
-  "voogle_route_physical_no_route": "Keine befahrbare Route für dieses Auto. Anderes Ziel oder Schnellreise wählen.",
+  "voogle_route_physical_no_route": "Keine befahrbare Route für dieses Auto. Schnellreise oder anderes Ziel wählen.",
   "voogle_route_physical_start_lane": "Vor dem Start auf einer Fahrspur in Fahrtrichtung anhalten.",
   "voogle_route_physical_blocked": "Autofahrt unterbrochen. Bitte das Steuer übernehmen.",
   "voogle_route_physical_arrived": "Ziel erreicht. Bitte selbst parken.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automatische Reisegeschwindigkeit",
   "voogle_route_options_stop_for_pedestrians": "Für Fußgänger anhalten",
   "voogle_route_options_allow_speeding": "Tempolimits überschreiten (bis 80 km/h)",
-  "voogle_route_options_run_red_lights": "Bei Rot weiterfahren"
+  "voogle_route_options_run_red_lights": "Bei Rot weiterfahren",
+  "voogle_route_travel_watch": "FAHRT ANSEHEN",
+  "voogle_route_travel_skip": "SCHNELLREISE"
 }

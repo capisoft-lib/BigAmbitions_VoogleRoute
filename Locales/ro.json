@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Neatribuit",
   "voogle_route_shortcut_capture": "Apasă o tastă...",
   "voogle_route_shortcut_conflict": "Conflict",
-  "voogle_route_options_physical_autodrive": "Condus real (beta; oprit = călătorie rapidă)",
+  "voogle_route_options_physical_autodrive": "Urmărește condusul implicit",
   "voogle_route_options_physical_drive_speed": "Viteză maximă (mod automat dezactivat)",
   "voogle_route_physical_stop": "OPREȘTE",
   "voogle_route_physical_body": "Mașina va urma străzile: ~{distance} m.\nTastele de mișcare sau OPREȘTE: preia controlul.\nSosire pe șosea; parcare manuală.",
-  "voogle_route_physical_no_route": "Nicio rută practicabilă. Schimbă destinația sau alege călătoria rapidă.",
+  "voogle_route_physical_no_route": "Nicio rută practicabilă pentru această mașină. Alege Călătorie rapidă sau altă destinație.",
   "voogle_route_physical_start_lane": "Oprește pe o bandă în sensul de mers înainte de pornire.",
   "voogle_route_physical_blocked": "Condus întrerupt. Preia volanul.",
   "voogle_route_physical_arrived": "Destinație atinsă. Parchează manual.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Viteză de croazieră automată",
   "voogle_route_options_stop_for_pedestrians": "Oprește pentru pietoni",
   "voogle_route_options_allow_speeding": "Depășește limitele (până la 80 km/h)",
-  "voogle_route_options_run_red_lights": "Treci pe roșu"
+  "voogle_route_options_run_red_lights": "Treci pe roșu",
+  "voogle_route_travel_watch": "URMĂREȘTE CONDUSUL",
+  "voogle_route_travel_skip": "CĂLĂTORIE RAPIDĂ"
 }

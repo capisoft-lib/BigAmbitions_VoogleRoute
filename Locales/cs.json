@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Nepřiřazeno",
   "voogle_route_shortcut_capture": "Stiskněte klávesu...",
   "voogle_route_shortcut_conflict": "Konflikt",
-  "voogle_route_options_physical_autodrive": "Skutečná jízda (beta; vypnuto = rychlé cestování)",
+  "voogle_route_options_physical_autodrive": "Ve výchozím stavu sledovat jízdu",
   "voogle_route_options_physical_drive_speed": "Maximální rychlost (automatický režim vypnutý)",
   "voogle_route_physical_stop": "ZASTAVIT",
   "voogle_route_physical_body": "Auto pojede ulicemi: ~{distance} m.\nPohybové klávesy nebo ZASTAVIT: převzít řízení.\nPříjezd na silnici; zaparkujte ručně.",
-  "voogle_route_physical_no_route": "Žádná sjízdná trasa. Změňte cíl nebo použijte rychlé cestování.",
+  "voogle_route_physical_no_route": "Pro toto auto není sjízdná trasa. Zvolte Rychlé cestování nebo jiný cíl.",
   "voogle_route_physical_start_lane": "Před spuštěním zastavte v jízdním pruhu ve směru jízdy.",
   "voogle_route_physical_blocked": "Jízda přerušena. Převezměte řízení.",
   "voogle_route_physical_arrived": "Cíl dosažen. Zaparkujte ručně.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automatická cestovní rychlost",
   "voogle_route_options_stop_for_pedestrians": "Zastavovat před chodci",
   "voogle_route_options_allow_speeding": "Překračovat limity (až 80 km/h)",
-  "voogle_route_options_run_red_lights": "Projíždět na červenou"
+  "voogle_route_options_run_red_lights": "Projíždět na červenou",
+  "voogle_route_travel_watch": "SLEDOVAT JÍZDU",
+  "voogle_route_travel_skip": "RYCHLÉ CESTOVÁNÍ"
 }

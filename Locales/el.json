@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Χωρίς ανάθεση",
   "voogle_route_shortcut_capture": "Πατήστε ένα πλήκτρο...",
   "voogle_route_shortcut_conflict": "Διένεξη",
-  "voogle_route_options_physical_autodrive": "Πραγματική οδήγηση (beta· εκτός = γρήγορο ταξίδι)",
+  "voogle_route_options_physical_autodrive": "Παρακολούθηση οδήγησης από προεπιλογή",
   "voogle_route_options_physical_drive_speed": "Μέγιστη ταχύτητα (αυτόματη λειτουργία εκτός)",
   "voogle_route_physical_stop": "ΔΙΑΚΟΠΗ",
   "voogle_route_physical_body": "Το αυτοκίνητο θα ακολουθήσει τους δρόμους: ~{distance} m.\nΠλήκτρα κίνησης ή ΔΙΑΚΟΠΗ: ανάληψη ελέγχου.\nΆφιξη στον δρόμο· χειροκίνητη στάθμευση.",
-  "voogle_route_physical_no_route": "Δεν υπάρχει βατή διαδρομή. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι.",
+  "voogle_route_physical_no_route": "Δεν υπάρχει βατή διαδρομή για αυτό το όχημα. Επιλέξτε Γρήγορο ταξίδι ή άλλον προορισμό.",
   "voogle_route_physical_start_lane": "Σταματήστε σε λωρίδα προς τη φορά κίνησης πριν ξεκινήσετε.",
   "voogle_route_physical_blocked": "Η οδήγηση διακόπηκε. Αναλάβετε το τιμόνι.",
   "voogle_route_physical_arrived": "Φτάσατε. Σταθμεύστε χειροκίνητα.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Αυτόματη ταχύτητα πορείας",
   "voogle_route_options_stop_for_pedestrians": "Στάση για πεζούς",
   "voogle_route_options_allow_speeding": "Υπέρβαση ορίων (έως 80 km/h)",
-  "voogle_route_options_run_red_lights": "Διέλευση με κόκκινο"
+  "voogle_route_options_run_red_lights": "Διέλευση με κόκκινο",
+  "voogle_route_travel_watch": "ΠΑΡΑΚΟΛΟΥΘΗΣΗ",
+  "voogle_route_travel_skip": "ΓΡΗΓΟΡΟ ΤΑΞΙΔΙ"
 }

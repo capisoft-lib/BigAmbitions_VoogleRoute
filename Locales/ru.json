@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Не назначено",
   "voogle_route_shortcut_capture": "Нажмите клавишу...",
   "voogle_route_shortcut_conflict": "Конфликт",
-  "voogle_route_options_physical_autodrive": "Реальное вождение (бета; выкл. = быстрое перемещение)",
+  "voogle_route_options_physical_autodrive": "По умолчанию смотреть поездку",
   "voogle_route_options_physical_drive_speed": "Предел скорости (авторежим выключен)",
   "voogle_route_physical_stop": "ОСТАНОВИТЬ",
   "voogle_route_physical_body": "Машина поедет по улицам: ~{distance} м.\nКлавиши движения или ОСТАНОВИТЬ: взять управление.\nПрибытие на дороге; парковка вручную.",
-  "voogle_route_physical_no_route": "Нет проезжаемого маршрута. Измените цель или выберите быстрое перемещение.",
+  "voogle_route_physical_no_route": "Нет проезжаемого маршрута для этой машины. Выберите Быстрое перемещение или другую цель.",
   "voogle_route_physical_start_lane": "Перед началом остановитесь на полосе по направлению движения.",
   "voogle_route_physical_blocked": "Вождение прервано. Возьмите управление.",
   "voogle_route_physical_arrived": "Цель достигнута. Припаркуйтесь вручную.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Автоматическая крейсерская скорость",
   "voogle_route_options_stop_for_pedestrians": "Останавливаться перед пешеходами",
   "voogle_route_options_allow_speeding": "Превышать скорость (до 80 км/ч)",
-  "voogle_route_options_run_red_lights": "Проезжать на красный"
+  "voogle_route_options_run_red_lights": "Проезжать на красный",
+  "voogle_route_travel_watch": "СМОТРЕТЬ ПОЕЗДКУ",
+  "voogle_route_travel_skip": "БЫСТРОЕ ПЕРЕМЕЩЕНИЕ"
 }

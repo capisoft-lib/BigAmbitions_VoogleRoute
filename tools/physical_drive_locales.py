@@ -180,6 +180,54 @@ ROAD_RULE_OPTIONS = {
 }
 
 
+TRAVEL_CHOICES = {
+    "en": ("WATCH THE DRIVE", "FAST TRAVEL", "Watch the drive by default",
+           "No drivable route for this car. Choose Fast travel or another destination."),
+    "fr": ("VOIR CONDUIRE", "VOYAGE RAPIDE", "Voir conduire par défaut",
+           "Aucun trajet praticable pour cette voiture. Choisissez Voyage rapide ou une autre destination."),
+    "de": ("FAHRT ANSEHEN", "SCHNELLREISE", "Standardmäßig Fahrt ansehen",
+           "Keine befahrbare Route für dieses Auto. Schnellreise oder anderes Ziel wählen."),
+    "es": ("VER CONDUCCIÓN", "VIAJE RÁPIDO", "Ver la conducción por defecto",
+           "No hay ruta transitable para este coche. Elige Viaje rápido u otro destino."),
+    "it": ("SEGUI LA GUIDA", "VIAGGIO RAPIDO", "Segui la guida per impostazione predefinita",
+           "Nessun percorso praticabile per questa auto. Scegli Viaggio rapido o un'altra destinazione."),
+    "pt-BR": ("ACOMPANHAR VIAGEM", "VIAGEM RÁPIDA", "Acompanhar a viagem por padrão",
+           "Nenhuma rota transitável para este carro. Escolha Viagem rápida ou outro destino."),
+    "nl": ("RIT BEKIJKEN", "SNELREIZEN", "Standaard de rit bekijken",
+           "Geen berijdbare route voor deze auto. Kies Snelreizen of een ander doel."),
+    "da": ("FØLG KØRSLEN", "HURTIG REJSE", "Følg kørslen som standard",
+           "Ingen farbar rute for denne bil. Vælg Hurtig rejse eller et andet mål."),
+    "fi": ("SEURAA AJOA", "PIKAMATKA", "Seuraa ajoa oletuksena",
+           "Ei ajettavaa reittiä tälle autolle. Valitse Pikamatka tai toinen kohde."),
+    "cs": ("SLEDOVAT JÍZDU", "RYCHLÉ CESTOVÁNÍ", "Ve výchozím stavu sledovat jízdu",
+           "Pro toto auto není sjízdná trasa. Zvolte Rychlé cestování nebo jiný cíl."),
+    "pl": ("OBSERWUJ JAZDĘ", "SZYBKA PODRÓŻ", "Domyślnie obserwuj jazdę",
+           "Brak przejezdnej trasy dla tego auta. Wybierz Szybką podróż lub inny cel."),
+    "hu": ("VEZETÉS KÖVETÉSE", "GYORSUTAZÁS", "Vezetés követése alapértelmezés szerint",
+           "Nincs járható útvonal ehhez az autóhoz. Válassz Gyorsutazást vagy másik célt."),
+    "ro": ("URMĂREȘTE CONDUSUL", "CĂLĂTORIE RAPIDĂ", "Urmărește condusul implicit",
+           "Nicio rută practicabilă pentru această mașină. Alege Călătorie rapidă sau altă destinație."),
+    "tr": ("SÜRÜŞÜ İZLE", "HIZLI SEYAHAT", "Varsayılan olarak sürüşü izle",
+           "Bu araç için sürülebilir rota yok. Hızlı seyahat veya başka bir hedef seçin."),
+    "el": ("ΠΑΡΑΚΟΛΟΥΘΗΣΗ", "ΓΡΗΓΟΡΟ ΤΑΞΙΔΙ", "Παρακολούθηση οδήγησης από προεπιλογή",
+           "Δεν υπάρχει βατή διαδρομή για αυτό το όχημα. Επιλέξτε Γρήγορο ταξίδι ή άλλον προορισμό."),
+    "lt": ("STEBĖTI VAŽIAVIMĄ", "GREITA KELIONĖ", "Pagal numatymą stebėti važiavimą",
+           "Šiam automobiliui nėra pravažiuojamo maršruto. Rinkitės Greitą kelionę arba kitą tikslą."),
+    "ru": ("СМОТРЕТЬ ПОЕЗДКУ", "БЫСТРОЕ ПЕРЕМЕЩЕНИЕ", "По умолчанию смотреть поездку",
+           "Нет проезжаемого маршрута для этой машины. Выберите Быстрое перемещение или другую цель."),
+    "uk": ("СПОСТЕРІГАТИ ПОЇЗДКУ", "ШВИДКА ПОДОРОЖ", "Типово спостерігати поїздку",
+           "Немає проїзного маршруту для цього авто. Оберіть Швидку подорож або іншу ціль."),
+    "ja": ("走行を見守る", "高速移動", "既定で走行を見守る",
+           "この車で走行可能な経路がありません。「高速移動」を選ぶか目的地を変更してください。"),
+    "ko": ("주행 지켜보기", "빠른 이동", "기본으로 주행 지켜보기",
+           "이 차로 주행 가능한 경로가 없습니다. 빠른 이동을 선택하거나 목적지를 바꾸세요."),
+    "zh-CN": ("观看驾驶", "快速旅行", "默认观看驾驶",
+           "此车没有可行驶路线。请选择快速旅行或更改目的地。"),
+    "zh-TW": ("觀看駕駛", "快速旅行", "預設觀看駕駛",
+           "此車沒有可行駛路線。請選擇快速旅行或更改目的地。"),
+}
+
+
 def strings(locale):
     result = dict(zip(KEYS, TEXT[locale]))
     result["voogle_route_options_physical_drive_speed_value"] = "{value} km/h"
@@ -187,6 +235,11 @@ def strings(locale):
     result["voogle_route_options_physical_speed_auto"], result["voogle_route_options_physical_drive_speed"] = SPEED_OPTIONS[locale]
     for key, value in zip(("stop_for_pedestrians", "allow_speeding", "run_red_lights"), ROAD_RULE_OPTIONS[locale]):
         result["voogle_route_options_" + key] = value
+    watch, skip, default_mode, no_route = TRAVEL_CHOICES[locale]
+    result["voogle_route_travel_watch"] = watch
+    result["voogle_route_travel_skip"] = skip
+    result["voogle_route_options_physical_autodrive"] = default_mode
+    result["voogle_route_physical_no_route"] = no_route
     return result
 
 

@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Nepriskirta",
   "voogle_route_shortcut_capture": "Paspauskite klavišą...",
   "voogle_route_shortcut_conflict": "Konfliktas",
-  "voogle_route_options_physical_autodrive": "Tikras vairavimas (beta; išjungta = greita kelionė)",
+  "voogle_route_options_physical_autodrive": "Pagal numatymą stebėti važiavimą",
   "voogle_route_options_physical_drive_speed": "Didžiausias greitis (automatinis režimas išjungtas)",
   "voogle_route_physical_stop": "SUSTABDYTI",
   "voogle_route_physical_body": "Automobilis važiuos gatvėmis: ~{distance} m.\nJudėjimo klavišai arba SUSTABDYTI: perimti valdymą.\nAtvykimas kelyje; pastatykite rankiniu būdu.",
-  "voogle_route_physical_no_route": "Nėra pravažiuojamo maršruto. Pakeiskite tikslą arba rinkitės greitą kelionę.",
+  "voogle_route_physical_no_route": "Šiam automobiliui nėra pravažiuojamo maršruto. Rinkitės Greitą kelionę arba kitą tikslą.",
   "voogle_route_physical_start_lane": "Prieš pradėdami sustokite eismo juostoje važiavimo kryptimi.",
   "voogle_route_physical_blocked": "Važiavimas nutrauktas. Perimkite vairą.",
   "voogle_route_physical_arrived": "Tikslas pasiektas. Pastatykite automobilį.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Automatinis kelionės greitis",
   "voogle_route_options_stop_for_pedestrians": "Sustoti dėl pėsčiųjų",
   "voogle_route_options_allow_speeding": "Viršyti greičio ribojimus (iki 80 km/h)",
-  "voogle_route_options_run_red_lights": "Važiuoti degant raudonai"
+  "voogle_route_options_run_red_lights": "Važiuoti degant raudonai",
+  "voogle_route_travel_watch": "STEBĖTI VAŽIAVIMĄ",
+  "voogle_route_travel_skip": "GREITA KELIONĖ"
 }

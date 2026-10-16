@@ -1,8 +1,10 @@
 using System;
+using Helpers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UI.Notification;
 using VoogleRoute.Navigation;
 
 using Capisoft.Lib.BaUnifiedUI.Controls;
@@ -13,11 +15,12 @@ namespace VoogleRoute.UI
 {
     internal static class AutoDriveConfirmPopup
     {
-        private const string RootName = "VoogleRoute_AutoDrivePopup_v2";
+        private const string RootName = "VoogleRoute_AutoDrivePopup_v3";
         private const string DragPositionId = "voogleroute:auto-drive-confirm";
         private const int CanvasSortOrder = 12000;
-        private const float PanelWidth = 560f;
-        private const float PanelHeight = 260f;
+        private const float PanelWidth = 600f;
+        private const float PanelHeight = 350f;
+        private const float ModeButtonHeight = 40f;
         private const float HeaderHeight = 48f;
         private const float BodyFontSize = 18f;
         private const float FooterButtonHeight = 44f;
@@ -33,6 +36,12 @@ namespace VoogleRoute.UI
         private static TextMeshProUGUI _bodyLabel;
         private static AutoDriveSkipPlanner.Plan _pendingPlan;
         private static Navigation.Driving.PhysicalDrivePlan _physicalPlan;
+        private static Button _watchButton, _skipButton, _confirmButton, _cancelButton;
+        private static bool _watchDriving;
+        private static string _failureKey;
+        private static object _vehicleIdentity, _saveIdentity;
+        private static Vector3 _destination;
+        private static int _sceneHandle;
 
         internal static bool IsOpen => _root != null && _root.activeSelf;
 
@@ -60,7 +69,7 @@ namespace VoogleRoute.UI
             body.anchorMin = Vector2.zero;
             body.anchorMax = Vector2.one;
             body.offsetMin = new Vector2(built.ContentInset, FooterBottomInset + FooterButtonHeight + BodyBottomGap);
-            body.offsetMax = new Vector2(-built.ContentInset, -(HeaderHeight + BodyTopGap));
+            body.offsetMax = new Vector2(-built.ContentInset, -(HeaderHeight + BodyTopGap * 2f + ModeButtonHeight));
 
             _bodyLabel = body.gameObject.AddComponent<TextMeshProUGUI>();
             _bodyLabel.fontSize = BodyFontSize * textScale;
@@ -72,11 +81,21 @@ namespace VoogleRoute.UI
 
             var buttonWidth = (PanelWidth - built.ContentInset * 2f - ButtonGap * textScale) * 0.5f;
             var buttonX = (buttonWidth + ButtonGap * textScale) * 0.5f;
-            BaUiWidgets.CreateFooterButton(
+            _watchButton = BaUiWidgets.CreateFooterButton(
+                built.Panel, "WatchDrivingButton", Vector2.zero,
+                new Vector2(buttonWidth, ModeButtonHeight), textScale,
+                ModUiText.WatchDriving, BaButtonStyle.Blue, () => SelectMode(true));
+            _skipButton = BaUiWidgets.CreateFooterButton(
+                built.Panel, "TimeSkipButton", Vector2.zero,
+                new Vector2(buttonWidth, ModeButtonHeight), textScale,
+                ModUiText.TimeSkip, BaButtonStyle.Grey, () => SelectMode(false));
+            PlaceModeButton(_watchButton, -buttonX);
+            PlaceModeButton(_skipButton, buttonX);
+            _cancelButton = BaUiWidgets.CreateFooterButton(
                 built.Panel, "CancelButton", new Vector2(-buttonX, FooterBottomInset),
                 new Vector2(buttonWidth, FooterButtonHeight), textScale,
                 ModUiText.AutoDriveCancel, BaButtonStyle.Grey, Close);
-            BaUiWidgets.CreateFooterButton(
+            _confirmButton = BaUiWidgets.CreateFooterButton(
                 built.Panel, "ConfirmButton", new Vector2(buttonX, FooterBottomInset),
                 new Vector2(buttonWidth, FooterButtonHeight), textScale,
                 ModUiText.AutoDriveConfirm, BaButtonStyle.Green, Confirm);
@@ -84,22 +103,54 @@ namespace VoogleRoute.UI
             _root.SetActive(false);
         }
 
-        internal static void Show(AutoDriveSkipPlanner.Plan plan)
+        private static void PlaceModeButton(Button button, float x)
         {
-            EnsureCreated();
-            _physicalPlan = null;
-            _pendingPlan = plan;
-            RefreshLocalizedText();
-            _root.SetActive(true);
+            var rect = (RectTransform)button.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(x, -(HeaderHeight + BodyTopGap));
+            var label = button.GetComponentInChildren<TextMeshProUGUI>();
+            label.enableAutoSizing = true;
+            label.fontSizeMax = label.fontSize;
+            label.fontSizeMin = label.fontSize * 0.75f;
         }
 
-        internal static void Show(Navigation.Driving.PhysicalDrivePlan plan)
+        internal static void ShowChoice()
         {
             EnsureCreated();
             _pendingPlan = default;
-            _physicalPlan = plan;
-            RefreshLocalizedText();
+            _physicalPlan = null;
+            _vehicleIdentity = VehicleHelper.GetCurrentVehicleBase();
+            _saveIdentity = SaveGameManager.Current;
+            _destination = NavigationTargetTracker.ActiveTarget;
+            _sceneHandle = SceneManager.GetActiveScene().handle;
             _root.SetActive(true);
+            SelectMode(ModConfig.WatchDrivingByDefault);
+        }
+
+        private static void SelectMode(bool watchDriving)
+        {
+            _watchDriving = watchDriving;
+            _failureKey = null;
+            try
+            {
+                if (_watchDriving)
+                {
+                    if (_physicalPlan == null)
+                        Navigation.Driving.PhysicalDrivePlanner.TryBuild(out _physicalPlan, out _failureKey);
+                    if (_physicalPlan != null) _failureKey = null;
+                }
+                else if (!AutoDriveSkipPlanner.TryBuildPlan(out _pendingPlan))
+                    _failureKey = _pendingPlan.FailureKey ?? "voogle_route_autodrive_no_route";
+            }
+            catch (Exception ex)
+            {
+                if (_watchDriving) _physicalPlan = null;
+                else _pendingPlan = default;
+                _failureKey = _watchDriving ? "voogle_route_physical_no_route" : "voogle_route_autodrive_no_route";
+                ModLog.Error("Travel mode planning failed", ex);
+            }
+            RefreshLocalizedText();
         }
 
         internal static void Close()
@@ -111,6 +162,8 @@ namespace VoogleRoute.UI
 
             _pendingPlan = default;
             _physicalPlan = null;
+            _vehicleIdentity = _saveIdentity = null;
+            _failureKey = null;
         }
 
         internal static void TickOverlay()
@@ -118,19 +171,42 @@ namespace VoogleRoute.UI
             if (!IsOpen)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) || !IsContextCurrent())
                 Close();
         }
+
+        private static bool IsContextCurrent() =>
+            _vehicleIdentity != null && ReferenceEquals(_vehicleIdentity, VehicleHelper.GetCurrentVehicleBase()) &&
+            ReferenceEquals(_saveIdentity, SaveGameManager.Current) &&
+            _sceneHandle == SceneManager.GetActiveScene().handle && NavigationTargetTracker.HasMapGpsTarget &&
+            (NavigationTargetTracker.ActiveTarget - _destination).sqrMagnitude <= 1f;
 
         internal static void RefreshLocalizedText()
         {
             if (_titleLabel != null)
                 _titleLabel.text = ModUiText.AutoDrivePopupTitle;
 
-            if (_bodyLabel != null && _physicalPlan != null)
+            SetButtonText(_watchButton, ModUiText.WatchDriving);
+            SetButtonText(_skipButton, ModUiText.TimeSkip);
+            SetButtonText(_confirmButton, ModUiText.AutoDriveConfirm);
+            SetButtonText(_cancelButton, ModUiText.AutoDriveCancel);
+            if (_watchButton != null) BaUiWidgets.ApplyButtonGraphic((Image)_watchButton.targetGraphic,
+                _watchDriving ? BaButtonStyle.Blue : BaButtonStyle.Grey);
+            if (_skipButton != null) BaUiWidgets.ApplyButtonGraphic((Image)_skipButton.targetGraphic,
+                !_watchDriving ? BaButtonStyle.Blue : BaButtonStyle.Grey);
+            if (_confirmButton != null)
+                _confirmButton.interactable = _failureKey == null && (_watchDriving ? _physicalPlan != null : _pendingPlan.Success);
+
+            if (_bodyLabel == null) return;
+            if (_failureKey != null)
+            {
+                _bodyLabel.text = ModUiText.TravelModeFailure(_failureKey);
+                return;
+            }
+            if (_watchDriving && _physicalPlan != null)
                 _bodyLabel.text = ModUiText.PhysicalDriveBody(Mathf.RoundToInt(_physicalPlan.Path.Length));
 
-            if (_bodyLabel != null && _pendingPlan.Success)
+            if (!_watchDriving && _pendingPlan.Success)
             {
                 _bodyLabel.text = ModUiText.FormatAutoDrivePopupBody(
                     _pendingPlan.TravelMinutes,
@@ -140,20 +216,34 @@ namespace VoogleRoute.UI
             }
         }
 
+        private static void SetButtonText(Button button, string text)
+        {
+            if (button != null) button.GetComponentInChildren<TextMeshProUGUI>().text = text;
+        }
+
         private static void Confirm()
         {
-            var plan = _pendingPlan;
-            var physical = _physicalPlan;
-            Close();
-            if (physical != null)
+            if (!IsContextCurrent())
             {
+                Close();
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+                return;
+            }
+            if (_failureKey != null) return;
+            if (_watchDriving && _physicalPlan != null)
+            {
+                var physical = _physicalPlan;
+                Close();
                 CityMapHelper.CloseIfOpen();
                 Navigation.Driving.PhysicalDriveService.Start(physical);
                 return;
             }
-            if (!plan.Success)
-                return;
-
+            if (_watchDriving) return;
+            // Recheck the displayed route and fuel before committing a time skip.
+            SelectMode(false);
+            if (_failureKey != null || !_pendingPlan.Success) return;
+            var plan = _pendingPlan;
+            Close();
             CityMapHelper.CloseIfOpen();
             AutoDriveSkipTravelService.StartTravel(plan);
         }
@@ -162,6 +252,9 @@ namespace VoogleRoute.UI
         {
             _physicalPlan = null;
             _pendingPlan = default;
+            _vehicleIdentity = _saveIdentity = null;
+            _failureKey = null;
+            _watchButton = _skipButton = _confirmButton = _cancelButton = null;
             if (_root != null)
             {
                 UnityEngine.Object.Destroy(_root);

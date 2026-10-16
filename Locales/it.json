@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Non assegnato",
   "voogle_route_shortcut_capture": "Premi un tasto...",
   "voogle_route_shortcut_conflict": "Conflitto",
-  "voogle_route_options_physical_autodrive": "Guida reale (beta; no = viaggio rapido)",
+  "voogle_route_options_physical_autodrive": "Segui la guida per impostazione predefinita",
   "voogle_route_options_physical_drive_speed": "Velocità massima (modalità automatica disattivata)",
   "voogle_route_physical_stop": "FERMA",
   "voogle_route_physical_body": "La tua auto seguirà le strade: ~{distance} m.\nTasti di movimento o FERMA: riprendi il controllo.\nArrivo in strada; parcheggio manuale.",
-  "voogle_route_physical_no_route": "Nessun percorso praticabile. Cambia destinazione o usa il viaggio rapido.",
+  "voogle_route_physical_no_route": "Nessun percorso praticabile per questa auto. Scegli Viaggio rapido o un'altra destinazione.",
   "voogle_route_physical_start_lane": "Fermati su una corsia nel senso di marcia prima di iniziare.",
   "voogle_route_physical_blocked": "Guida interrotta. Riprendi il volante.",
   "voogle_route_physical_arrived": "Destinazione raggiunta. Parcheggia manualmente.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Velocità di crociera automatica",
   "voogle_route_options_stop_for_pedestrians": "Fermarsi per i pedoni",
   "voogle_route_options_allow_speeding": "Superare i limiti (fino a 80 km/h)",
-  "voogle_route_options_run_red_lights": "Passare con il rosso"
+  "voogle_route_options_run_red_lights": "Passare con il rosso",
+  "voogle_route_travel_watch": "SEGUI LA GUIDA",
+  "voogle_route_travel_skip": "VIAGGIO RAPIDO"
 }

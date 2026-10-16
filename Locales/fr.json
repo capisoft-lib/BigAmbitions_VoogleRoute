@@ -95,11 +95,11 @@
   "voogle_route_shortcut_unbound": "Non assigné",
   "voogle_route_shortcut_capture": "Appuyez sur une touche...",
   "voogle_route_shortcut_conflict": "Conflit",
-  "voogle_route_options_physical_autodrive": "Conduite réelle (bêta ; désactivé = voyage rapide)",
+  "voogle_route_options_physical_autodrive": "Voir conduire par défaut",
   "voogle_route_options_physical_drive_speed": "Vitesse maxi (mode automatique désactivé)",
   "voogle_route_physical_stop": "ARRÊTER",
   "voogle_route_physical_body": "Votre voiture suivra les rues sur ~{distance} m.\nTouches de déplacement ou ARRÊTER : reprendre le volant.\nArrivée sur la route ; stationnement manuel.",
-  "voogle_route_physical_no_route": "Aucun trajet praticable pour cette voiture. Changez de destination ou activez le voyage rapide dans les options du mod.",
+  "voogle_route_physical_no_route": "Aucun trajet praticable pour cette voiture. Choisissez Voyage rapide ou une autre destination.",
   "voogle_route_physical_start_lane": "Arrêtez-vous sur une voie de circulation, dans le sens de la voie, avant de lancer la conduite automatique.",
   "voogle_route_physical_blocked": "Conduite interrompue : obstacle prolongé, sortie de voie ou véhicule indisponible. Reprenez le volant.",
   "voogle_route_physical_arrived": "Destination atteinte. Reprenez le volant pour stationner.",
@@ -108,5 +108,7 @@
   "voogle_route_options_physical_speed_auto": "Vitesse de croisière automatique",
   "voogle_route_options_stop_for_pedestrians": "S'arrêter pour les piétons",
   "voogle_route_options_allow_speeding": "Dépasser les limites (max. 80 km/h)",
-  "voogle_route_options_run_red_lights": "Griller les feux rouges"
+  "voogle_route_options_run_red_lights": "Griller les feux rouges",
+  "voogle_route_travel_watch": "VOIR CONDUIRE",
+  "voogle_route_travel_skip": "VOYAGE RAPIDE"
 }

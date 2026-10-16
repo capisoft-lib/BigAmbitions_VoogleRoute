@@ -63,7 +63,7 @@ namespace VoogleRoute
         internal const int MinUiScalePercent = 50;
         internal const int MaxUiScalePercent = 150;
         internal static int UiScalePercent { get; private set; } = 100;
-        internal static bool PhysicalAutoDriveEnabled { get; private set; } = true;
+        internal static bool WatchDrivingByDefault { get; private set; } = true;
         internal static int PhysicalDriveSpeedKmh { get; private set; } = 40;
         internal static bool FollowRoadSpeedLimitEnabled { get; private set; } = true;
         internal static bool StopForPedestriansEnabled { get; private set; } = true;
@@ -153,9 +153,7 @@ namespace VoogleRoute
             AutoEnterDestinationEnabled = data.AutoEnterDestination;
             BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
             UiScalePercent = Mathf.Clamp(data.UiScalePercent, MinUiScalePercent, MaxUiScalePercent);
-            if (PhysicalAutoDriveEnabled != data.PhysicalAutoDrive)
-                Navigation.Driving.PhysicalDriveService.Stop();
-            PhysicalAutoDriveEnabled = data.PhysicalAutoDrive;
+            WatchDrivingByDefault = data.PhysicalAutoDrive;
             PhysicalDriveSpeedKmh = Mathf.Clamp(data.PhysicalDriveSpeedKmh, 20, 80);
             FollowRoadSpeedLimitEnabled = data.FollowRoadSpeedLimit;
             StopForPedestriansEnabled = data.StopForPedestrians;
@@ -180,7 +178,7 @@ namespace VoogleRoute
                 IndoorAutowalk = false,
                 UseSubway = UseSubwayEnabled,
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
-                PhysicalAutoDrive = PhysicalAutoDriveEnabled,
+                PhysicalAutoDrive = WatchDrivingByDefault,
                 PhysicalDriveSpeedKmh = PhysicalDriveSpeedKmh,
                 FollowRoadSpeedLimit = FollowRoadSpeedLimitEnabled,
                 StopForPedestrians = StopForPedestriansEnabled,
@@ -213,7 +211,7 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, AutoEnterDestinationKey, AutoEnterDestinationEnabled);
             ModGameOptionPrefs.SaveInt(modId, BaseTaxiMultiplierKey, BaseTaxiMultiplier);
             ModGameOptionPrefs.SaveInt(modId, UiScalePercentKey, UiScalePercent);
-            ModGameOptionPrefs.SaveToggle(modId, PhysicalAutoDriveKey, PhysicalAutoDriveEnabled);
+            ModGameOptionPrefs.SaveToggle(modId, PhysicalAutoDriveKey, WatchDrivingByDefault);
             ModGameOptionPrefs.SaveInt(modId, PhysicalDriveSpeedKey, PhysicalDriveSpeedKmh);
             ModGameOptionPrefs.SaveToggle(modId, FollowRoadSpeedLimitKey, FollowRoadSpeedLimitEnabled);
             ModGameOptionPrefs.SaveToggle(modId, StopForPedestriansKey, StopForPedestriansEnabled);
@@ -433,10 +431,9 @@ namespace VoogleRoute
 
         private static void OnUiScalePercentChanged(int value) => SetUiScalePercent(value);
 
-        private static void OnPhysicalAutoDriveChanged(bool value)
+        private static void OnDefaultTravelModeChanged(bool value)
         {
-            Navigation.Driving.PhysicalDriveService.Stop();
-            PhysicalAutoDriveEnabled = value;
+            WatchDrivingByDefault = value;
             ModOptionsSaveStore.PersistFromModConfig();
         }
 
@@ -503,8 +500,8 @@ namespace VoogleRoute
                     UiScalePercent, OnUiScalePercentChanged, "voogle_route_options_ui_scale_value")
                 .AddToggle(DisplayOutsideKey, "voogle_route_options_display_outside", DisplayOutsideEnabled,
                     OnDisplayOutsideOptionChanged)
-                .AddToggle(PhysicalAutoDriveKey, "voogle_route_options_physical_autodrive", PhysicalAutoDriveEnabled,
-                    OnPhysicalAutoDriveChanged)
+                .AddToggle(PhysicalAutoDriveKey, "voogle_route_options_physical_autodrive", WatchDrivingByDefault,
+                    OnDefaultTravelModeChanged)
                 .AddToggle(FollowRoadSpeedLimitKey, "voogle_route_options_physical_speed_auto", FollowRoadSpeedLimitEnabled,
                     OnFollowRoadSpeedLimitChanged)
                 .AddSlider(PhysicalDriveSpeedKey, "voogle_route_options_physical_drive_speed", 20, 80,

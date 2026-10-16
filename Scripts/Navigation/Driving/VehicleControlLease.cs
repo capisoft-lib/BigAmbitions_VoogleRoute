@@ -82,6 +82,7 @@ namespace VoogleRoute.Navigation.Driving
         internal float MinRadius => Wheelbase / Mathf.Tan(MaxSteer * Mathf.Deg2Rad);
         internal int Gear => Vehicle.powertrain.transmission.Gear;
         internal float Rpm => Mathf.Abs(Vehicle.powertrain.engine.OutputRPM);
+        internal bool IsShifting => Vehicle.powertrain.transmission.isShifting;
 
         internal void Write(float steering, float throttle, float brake)
         {
