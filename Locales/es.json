@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Pulsa una tecla...",
   "voogle_route_shortcut_conflict": "Conflicto",
   "voogle_route_options_physical_autodrive": "Conducción real (beta; no = viaje rápido)",
-  "voogle_route_options_physical_drive_speed": "Velocidad máxima",
+  "voogle_route_options_physical_drive_speed": "Velocidad máxima (modo automático desactivado)",
   "voogle_route_physical_stop": "DETENER",
   "voogle_route_physical_body": "Tu coche seguirá las calles: ~{distance} m.\nTeclas de movimiento o DETENER: retomar el control.\nLlegada en la calle; aparca manualmente.",
   "voogle_route_physical_no_route": "No hay ruta transitable para este coche. Elige otro destino o viaje rápido.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Conducción interrumpida. Retoma el control.",
   "voogle_route_physical_arrived": "Destino alcanzado. Aparca manualmente.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Hay una ruta, pero sus curvas son demasiado cerradas para este coche. Cambia de destino o usa viaje rápido."
+  "voogle_route_physical_turn_tight": "Hay una ruta, pero sus curvas son demasiado cerradas para este coche. Cambia de destino o usa viaje rápido.",
+  "voogle_route_options_physical_speed_auto": "Seguir el límite de la vía"
 }

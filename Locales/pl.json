@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Naciśnij klawisz...",
   "voogle_route_shortcut_conflict": "Konflikt",
   "voogle_route_options_physical_autodrive": "Rzeczywista jazda (beta; wył. = szybka podróż)",
-  "voogle_route_options_physical_drive_speed": "Maksymalna prędkość",
+  "voogle_route_options_physical_drive_speed": "Maksymalna prędkość (tryb automatyczny wyłączony)",
   "voogle_route_physical_stop": "ZATRZYMAJ",
   "voogle_route_physical_body": "Samochód pojedzie ulicami: ~{distance} m.\nKlawisze ruchu lub ZATRZYMAJ: przejmij sterowanie.\nPrzyjazd na drogę; zaparkuj ręcznie.",
   "voogle_route_physical_no_route": "Brak przejezdnej trasy. Zmień cel lub wybierz szybką podróż.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Jazda przerwana. Przejmij kierownicę.",
   "voogle_route_physical_arrived": "Cel osiągnięty. Zaparkuj ręcznie.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Trasa istnieje, ale zakręty są zbyt ciasne dla tego auta. Zmień cel lub użyj szybkiej podróży."
+  "voogle_route_physical_turn_tight": "Trasa istnieje, ale zakręty są zbyt ciasne dla tego auta. Zmień cel lub użyj szybkiej podróży.",
+  "voogle_route_options_physical_speed_auto": "Przestrzegaj limitu prędkości drogi"
 }

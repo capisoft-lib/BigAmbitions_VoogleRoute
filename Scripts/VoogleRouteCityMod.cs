@@ -58,6 +58,7 @@ namespace VoogleRoute
             ModLog.Info("Voogle Route city unload starting.");
             Navigation.Driving.PhysicalDriveService.Stop();
             Navigation.Driving.PhysicalDrivePlanner.InvalidateTrafficIndex();
+            Navigation.Driving.DrivingSpeedLimits.Invalidate();
 
             if (_driverObject != null)
             {

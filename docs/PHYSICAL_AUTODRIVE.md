@@ -2,13 +2,16 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.3`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.4`.
 
 ## Utilisation
 
 1. Dans Échap → Options → Mods → Voogle Route, laisser **Conduite réelle** activée.
-   La vitesse maximale est réglable entre 20 et 60 km/h, avec 40 km/h par défaut.
-   Ces deux réglages sont enregistrés dans les options de la sauvegarde.
+   **Rouler à la limite de la route** est activé par défaut : cible proche de 50 km/h
+   en ville, réduite pour les virages, feux, obstacles et capacités du véhicule.
+   Désactiver ce réglage permet de choisir un plafond manuel entre 20 et 60 km/h
+   (40 par défaut), toujours borné par la limite de la route.
+   Ces réglages sont enregistrés dans les options de la sauvegarde.
    Désactiver Conduite réelle rétablit le voyage rapide existant.
 2. Monter dans une voiture, rejoindre une voie de circulation et s'arrêter dans
    son sens de circulation. Un départ depuis une place de parking n'est pas prévu.
@@ -20,7 +23,8 @@ Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-p
 
 - `VehicleControlLease` lit l'empattement des vraies roues NWH et prend seulement
   les entrées de la voiture occupée. Les réglages `autoSetInput`,
-  `swapInputInReverse`, `useRawInput` et l'assistance externe sont restaurés.
+  `swapInputInReverse`, `useRawInput`, l'assistance externe et le délégué de passage
+  des rapports sont restaurés. Les rapports montent et descendent selon le régime.
 - `PhysicalRoutingGraph` filtre les demi-tours et transitions interdites, et préfère
   les raccords larges. Le départ appartient à une voie orientée comme le véhicule.
 - `PhysicalDrivePlanner` utilise A* et le graphe routier existant. Il conserve les
@@ -28,8 +32,11 @@ Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-p
   corde finale vers le bâtiment n'est ajoutée. Une route incompatible est refusée.
 - `DrivingPath` suit une progression locale monotone, avec visée depuis l'essieu
   arrière et profil de vitesse anticipant virages, limites de voie et arrêt final.
+- `DrivingSpeedLimits` reprend la politique routière 50/80 km/h et le CSV de zones
+  de BetterFines, sans dépendance au DLL de ce mod. Le profil anticipe les baisses
+  de limite et tient compte du maximum du véhicule et de son limiteur natif.
 - `DrivingTrafficSensor` relie les positions du graphe aux waypoints Gley **vivants**,
-  puis lit `stop`, `giveWay`, `CanChange` et les limites de vitesse. Des balayages de
+  puis lit `stop`, `giveWay` et `CanChange`. Des balayages de
   boîte suivent le prochain tronçon pour adapter la vitesse aux obstacles et voitures.
 - `PhysicalDriveService` exécute la commande en FixedUpdate, laisse le jeu gérer
   carburant et dommages et freine avant de rendre la main après un blocage prolongé.
@@ -48,7 +55,7 @@ Depuis ce dossier de mod, en PowerShell :
 ```
 
 Le script reprend les références Player du SDK et du jeu installé, compile sans
-symboles de débogage, construit les 32 fichiers du paquet dans `Output/VoogleRoute`
+symboles de débogage, construit les 33 fichiers du paquet dans `Output/VoogleRoute`
 puis les recopie dans `ModsLocal/VoogleRoute`. Il refuse une installation pendant
 que le jeu tourne, préserve les fichiers utilisateur et compare les empreintes de
 tous les fichiers livrés. Les seules dépendances sont celles déjà requises par le
@@ -60,14 +67,16 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 3 du 16 octobre 2026 : 152 sources compilées, 32 fichiers livrés et comparés.
+Installation révision 4 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`9EB0152835518C374FAF2481680E50861C8D63425609A09DFCFA4E84CFC8241A`.
+`BF2370AE4B98A91008429E987ACC26B86CE68248BFD88485A821983327550C69`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
-**Aucun trajet ni rendu d'interface n'a encore été vérifié dans le jeu.** Les réglages
-de suivi, feux, distances d'obstacle et freinage doivent être confirmés lors de l'essai.
+L'utilisateur a essayé la révision 3 et indique que la conduite semble bonne.
+**La nouvelle régulation de vitesse, les rapports et le rendu du réglage de la
+révision 4 restent à observer en jeu.** La compilation et les empreintes ne constituent
+pas une mesure du comportement physique.
 Il n'y a pas de marche arrière, de stationnement automatique ni de récupération par
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
 conduite de cette première version. Les trajets sans voie compatible sont refusés ; le voyage rapide reste
@@ -154,3 +163,31 @@ après la confirmation doit produire `plan_reused` sans seconde requête de calc
 
 La compilation et l'installation ne mesurent pas le gain d'images/s. Il faut un
 nouvel essai en jeu pour comparer les saccades avec la session précédente.
+
+## Révision 4 : vitesse autorisée et boîte du véhicule
+
+- Suppression du plafond automatique fixe de 40 km/h et des plafonds issus de
+  `Waypoint.maxSpeed`, qui décrivent l'allure désirée des PNJ. La cible suit la
+  politique BetterFines : 50 km/h en ville, 80 dans les zones cartographiées,
+  avec une marge cible de 0.36 km/h. Les routes élevées restent exclues du pilote ;
+  la présence du CSV ne constitue pas une prise en charge des ponts.
+- Le régulateur utilise toute la plage d'accélérateur et une correction intégrale
+  bornée pour compenser la traînée. Il efface cette correction à l'arrêt, à la pause,
+  à une baisse nette de cible ou au changement de politique. Les contraintes de
+  courbure, freinage, feux, obstacles et arrivée restent prioritaires.
+- Le profil conserve les contraintes de route/courbure séparément : un changement
+  de plafond dans les options peut augmenter ou diminuer la vitesse sans recalculer
+  le trajet. L'horizon des capteurs anticipe le freinage à 2 m/s², jusqu'à 150 m.
+- Le pilote prend temporairement le délégué de décision des boîtes à plusieurs
+  rapports, conserve leur type et appelle `TransmissionComponent.ShiftInto`.
+  Hors engagement initial de première, les changements utilisent le délai natif,
+  l'embrayage, la coupure moteur et les événements natifs de la boîte. Seuils de
+  régime, projection du régime après changement et délai entre commandes limitent
+  surrégime et oscillations. Les CVT conservent leur commande native.
+- `gear_request`, `gear_engaged` et `drive_state` rendent les nouveaux comportements
+  observables. `drive_state` est limité à une ligne toutes les cinq secondes :
+  vitesses réelle/cible/route/profil/trafic, rapport, régime, accélérateur et frein.
+
+Build complet réussi avec les DLL installées ; installation comparée fichier par
+fichier. Aucune suite de tests ajoutée ou exécutée pour cette révision. Aucune
+publication Steam.

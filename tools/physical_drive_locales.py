@@ -129,10 +129,37 @@ TURN_TIGHT = {
 }
 
 
+SPEED_OPTIONS = {
+    "en": ("Follow road speed limits", "Speed cap (automatic mode off)"),
+    "fr": ("Rouler à la limite de la route", "Vitesse maxi (mode automatique désactivé)"),
+    "de": ("Tempolimit der Straße einhalten", "Höchsttempo (Automatikmodus aus)"),
+    "es": ("Seguir el límite de la vía", "Velocidad máxima (modo automático desactivado)"),
+    "it": ("Seguire i limiti stradali", "Velocità massima (modalità automatica disattivata)"),
+    "pt-BR": ("Seguir o limite da via", "Velocidade máxima (modo automático desligado)"),
+    "nl": ("Snelheidslimiet van de weg volgen", "Snelheidsgrens (automatische modus uit)"),
+    "da": ("Følg vejens hastighedsgrænse", "Maksimal fart (automatisk tilstand slået fra)"),
+    "fi": ("Noudata tien nopeusrajoitusta", "Enimmäisnopeus (automaattitila pois)"),
+    "cs": ("Dodržovat rychlostní limit silnice", "Maximální rychlost (automatický režim vypnutý)"),
+    "pl": ("Przestrzegaj limitu prędkości drogi", "Maksymalna prędkość (tryb automatyczny wyłączony)"),
+    "hu": ("Közúti sebességhatár követése", "Sebességkorlát (automatikus mód kikapcsolva)"),
+    "ro": ("Respectă limita de viteză a drumului", "Viteză maximă (mod automat dezactivat)"),
+    "tr": ("Yolun hız sınırına uy", "Azami hız (otomatik mod kapalı)"),
+    "el": ("Τήρηση ορίου ταχύτητας δρόμου", "Μέγιστη ταχύτητα (αυτόματη λειτουργία εκτός)"),
+    "lt": ("Laikytis kelio greičio ribojimo", "Didžiausias greitis (automatinis režimas išjungtas)"),
+    "ru": ("Соблюдать ограничение скорости дороги", "Предел скорости (авторежим выключен)"),
+    "uk": ("Дотримуватися обмеження швидкості дороги", "Максимальна швидкість (авторежим вимкнено)"),
+    "ja": ("道路の制限速度に合わせる", "上限速度（自動モードがオフのとき）"),
+    "ko": ("도로 제한 속도 따르기", "최대 속도 (자동 모드 꺼짐)"),
+    "zh-CN": ("按道路限速行驶", "最高速度（自动模式关闭时）"),
+    "zh-TW": ("依道路速限行駛", "最高速度（自動模式關閉時）"),
+}
+
+
 def strings(locale):
     result = dict(zip(KEYS, TEXT[locale]))
     result["voogle_route_options_physical_drive_speed_value"] = "{value} km/h"
     result["voogle_route_physical_turn_tight"] = TURN_TIGHT[locale]
+    result["voogle_route_options_physical_speed_auto"], result["voogle_route_options_physical_drive_speed"] = SPEED_OPTIONS[locale]
     return result
 
 

@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "请按一个键...",
   "voogle_route_shortcut_conflict": "冲突",
   "voogle_route_options_physical_autodrive": "实际驾驶（测试版；关闭＝快速旅行）",
-  "voogle_route_options_physical_drive_speed": "最高驾驶速度",
+  "voogle_route_options_physical_drive_speed": "最高速度（自动模式关闭时）",
   "voogle_route_physical_stop": "停止驾驶",
   "voogle_route_physical_body": "驾驶自己的汽车沿街道行驶：约 {distance} 米。\n按移动键或“停止驾驶”接管。\n到达道路上，需手动停车。",
   "voogle_route_physical_no_route": "此车没有可行驶路线。请更改目的地或选择快速旅行。",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "自动驾驶已中断，请接管方向盘。",
   "voogle_route_physical_arrived": "已到达目的地，请手动停车。",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "道路路线存在，但转弯对这辆车仍然太急。请更改目的地或使用快速旅行。"
+  "voogle_route_physical_turn_tight": "道路路线存在，但转弯对这辆车仍然太急。请更改目的地或使用快速旅行。",
+  "voogle_route_options_physical_speed_auto": "按道路限速行驶"
 }

@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Paina näppäintä...",
   "voogle_route_shortcut_conflict": "Ristiriita",
   "voogle_route_options_physical_autodrive": "Oikea ajaminen (beta; pois = pikamatka)",
-  "voogle_route_options_physical_drive_speed": "Enimmäisnopeus",
+  "voogle_route_options_physical_drive_speed": "Enimmäisnopeus (automaattitila pois)",
   "voogle_route_physical_stop": "PYSÄYTÄ",
   "voogle_route_physical_body": "Autosi seuraa katuja: ~{distance} m.\nLiikenäppäimet tai PYSÄYTÄ: ota ohjat.\nSaapuminen tielle; pysäköi itse.",
   "voogle_route_physical_no_route": "Ei ajettavaa reittiä. Valitse toinen kohde tai pikamatka.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Ajo keskeytyi. Ota ohjat.",
   "voogle_route_physical_arrived": "Kohde saavutettu. Pysäköi itse.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Reitti on olemassa, mutta sen mutkat ovat liian tiukkoja tälle autolle. Vaihda kohdetta tai käytä pikamatkaa."
+  "voogle_route_physical_turn_tight": "Reitti on olemassa, mutta sen mutkat ovat liian tiukkoja tälle autolle. Vaihda kohdetta tai käytä pikamatkaa.",
+  "voogle_route_options_physical_speed_auto": "Noudata tien nopeusrajoitusta"
 }

@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Tryk på en tast...",
   "voogle_route_shortcut_conflict": "Konflikt",
   "voogle_route_options_physical_autodrive": "Rigtig kørsel (beta; fra = hurtig rejse)",
-  "voogle_route_options_physical_drive_speed": "Maksimal hastighed",
+  "voogle_route_options_physical_drive_speed": "Maksimal fart (automatisk tilstand slået fra)",
   "voogle_route_physical_stop": "STOP",
   "voogle_route_physical_body": "Din bil følger gaderne: ~{distance} m.\nBevægelsestaster eller STOP: overtag.\nAnkomst på vejen; parkér selv.",
   "voogle_route_physical_no_route": "Ingen farbar rute. Vælg et andet mål eller hurtig rejse.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Kørsel afbrudt. Overtag rattet.",
   "voogle_route_physical_arrived": "Målet er nået. Parkér selv.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Der findes en rute, men svingene er for snævre til denne bil. Vælg et andet mål eller hurtig rejse."
+  "voogle_route_physical_turn_tight": "Der findes en rute, men svingene er for snævre til denne bil. Vælg et andet mål eller hurtig rejse.",
+  "voogle_route_options_physical_speed_auto": "Følg vejens hastighedsgrænse"
 }

@@ -14,7 +14,8 @@ namespace VoogleRoute.Navigation.Driving
         internal Vector3 Destination;
         internal DrivingPath Path;
         internal object SaveIdentity, TrafficSource, GraphSource;
-        internal int SceneHandle, CruiseKmh;
+        internal int SceneHandle;
+        internal float CruiseKmh, VehicleMaxKmh;
         internal float CreatedAt, StartProgress, MinimumRadius;
         internal Vector3 Origin, Forward;
         internal bool PreferBuildingSide;
@@ -80,7 +81,9 @@ namespace VoogleRoute.Navigation.Driving
                         out failure, geometryDetail.StartsWith("graph_search_failed attempt=0")
                             ? "voogle_route_physical_no_route" : "voogle_route_physical_turn_tight");
                 Debug.Log("[VoogleRoute][PhysicalDrive] curve_fit_ok " + geometryDetail);
-                var path = new DrivingPath(samples, ModConfig.PhysicalDriveSpeedKmh / 3.6f);
+                var roadLimits = new float[samples.Count];
+                for (var i = 0; i < samples.Count; i++) roadLimits[i] = DrivingSpeedLimits.TargetMps(samples[i]);
+                var path = new DrivingPath(samples, DrivingSpeedLimits.CruiseMps(geometry), roadLimits);
                 if (path.Length < 12f) return Reject("destination_too_close", "", out failure, "voogle_route_autodrive_too_close");
                 var progress = path.Project(origin, 0f, out var lateral, searchAhead: 50f);
                 var direction = DrivingPath.Flat(path.At(progress + 3f) - path.At(progress));
@@ -101,14 +104,14 @@ namespace VoogleRoute.Navigation.Driving
                     Car = car, Destination = destination, Path = path,
                     SaveIdentity = SaveGameManager.Current, SceneHandle = SceneManager.GetActiveScene().handle,
                     GraphSource = RouteGraphStore.Graph,
-                    CruiseKmh = ModConfig.PhysicalDriveSpeedKmh, PreferBuildingSide = ModConfig.ForceCorrectSideArrivalEnabled,
+                    CruiseKmh = ModConfig.PhysicalDriveCruiseCeilingKmh, VehicleMaxKmh = geometry.MaxSpeedKmh,
+                    PreferBuildingSide = ModConfig.ForceCorrectSideArrivalEnabled,
                     Origin = origin, Forward = geometry.Vehicle.transform.forward,
                     StartProgress = progress, MinimumRadius = geometry.MinRadius
                 };
                 var bindStarted = DrivingPerformance.Begin();
                 try { BindTraffic(plan, route.Path); }
                 finally { DrivingPerformance.End(DrivingStage.TrafficBinding, bindStarted); }
-                plan.Path.ApplyBrakingEnvelope();
                 plan.CreatedAt = Time.realtimeSinceStartup;
                 Debug.Log("[VoogleRoute][PhysicalDrive] plan_ok distance=" + Mathf.RoundToInt(path.Length) +
                     " samples=" + samples.Count + " traffic_markers=" + plan.Traffic.Count);
@@ -127,7 +130,8 @@ namespace VoogleRoute.Navigation.Driving
             reason = "expired";
             if (Time.realtimeSinceStartup - plan.CreatedAt > 60f) return false;
             reason = "options_or_geometry_changed";
-            if (plan.CruiseKmh != ModConfig.PhysicalDriveSpeedKmh || plan.PreferBuildingSide != ModConfig.ForceCorrectSideArrivalEnabled ||
+            if (plan.CruiseKmh != ModConfig.PhysicalDriveCruiseCeilingKmh || Mathf.Abs(plan.VehicleMaxKmh - car.MaxSpeedKmh) > 0.1f ||
+                plan.PreferBuildingSide != ModConfig.ForceCorrectSideArrivalEnabled ||
                 Mathf.Abs(plan.MinimumRadius - car.MinRadius) > 0.05f) return false;
             reason = "car_moved";
             if (car.Speed > 0.7f || (car.RearPosition - plan.Origin).sqrMagnitude > 4f ||
@@ -219,15 +223,7 @@ namespace VoogleRoute.Navigation.Driving
                 if (nearest == null || !seen.Add(nearest.listIndex)) continue;
                 var distance = plan.Path.NearestDistance(nearest.position);
                 plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance });
-                if (nearest.maxSpeed > 0)
-                {
-                    var index = System.Array.BinarySearch(plan.Path.Distances, distance);
-                    if (index < 0) index = ~index;
-                    // Apply the native road limit until the next native road anchor.
-                    for (var j = Mathf.Clamp(index - 1, 0, plan.Path.SpeedLimits.Length - 1);
-                         j < plan.Path.SpeedLimits.Length && plan.Path.Distances[j] < distance + 15f; j++)
-                        plan.Path.SpeedLimits[j] = Mathf.Min(plan.Path.SpeedLimits[j], nearest.maxSpeed / 3.6f);
-                }
+                // Gley maxSpeed is the NPC's desired pace, not the legal road limit.
             }
             plan.Traffic.Sort((a, b) => a.Distance.CompareTo(b.Distance));
             if (plan.Traffic.Count < 2) throw new System.InvalidOperationException("Cannot match live road controls to the route.");

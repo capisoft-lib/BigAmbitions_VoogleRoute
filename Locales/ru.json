@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Нажмите клавишу...",
   "voogle_route_shortcut_conflict": "Конфликт",
   "voogle_route_options_physical_autodrive": "Реальное вождение (бета; выкл. = быстрое перемещение)",
-  "voogle_route_options_physical_drive_speed": "Максимальная скорость",
+  "voogle_route_options_physical_drive_speed": "Предел скорости (авторежим выключен)",
   "voogle_route_physical_stop": "ОСТАНОВИТЬ",
   "voogle_route_physical_body": "Машина поедет по улицам: ~{distance} м.\nКлавиши движения или ОСТАНОВИТЬ: взять управление.\nПрибытие на дороге; парковка вручную.",
   "voogle_route_physical_no_route": "Нет проезжаемого маршрута. Измените цель или выберите быстрое перемещение.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Вождение прервано. Возьмите управление.",
   "voogle_route_physical_arrived": "Цель достигнута. Припаркуйтесь вручную.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Маршрут есть, но повороты слишком крутые для этой машины. Измените цель или выберите быстрое перемещение."
+  "voogle_route_physical_turn_tight": "Маршрут есть, но повороты слишком крутые для этой машины. Измените цель или выберите быстрое перемещение.",
+  "voogle_route_options_physical_speed_auto": "Соблюдать ограничение скорости дороги"
 }

@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Pressione uma tecla...",
   "voogle_route_shortcut_conflict": "Conflito",
   "voogle_route_options_physical_autodrive": "Direção real (beta; não = viagem rápida)",
-  "voogle_route_options_physical_drive_speed": "Velocidade máxima",
+  "voogle_route_options_physical_drive_speed": "Velocidade máxima (modo automático desligado)",
   "voogle_route_physical_stop": "PARAR",
   "voogle_route_physical_body": "Seu carro seguirá as ruas: ~{distance} m.\nTeclas de movimento ou PARAR: assumir o controle.\nChegada na rua; estacione manualmente.",
   "voogle_route_physical_no_route": "Nenhuma rota transitável. Mude o destino ou use viagem rápida.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Direção interrompida. Assuma o volante.",
   "voogle_route_physical_arrived": "Destino alcançado. Estacione manualmente.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Existe uma rota, mas as curvas são estreitas demais para este carro. Mude o destino ou use viagem rápida."
+  "voogle_route_physical_turn_tight": "Existe uma rota, mas as curvas são estreitas demais para este carro. Mude o destino ou use viagem rápida.",
+  "voogle_route_options_physical_speed_auto": "Seguir o limite da via"
 }

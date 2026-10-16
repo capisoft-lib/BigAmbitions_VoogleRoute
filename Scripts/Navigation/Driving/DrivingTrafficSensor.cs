@@ -44,7 +44,7 @@ namespace VoogleRoute.Navigation.Driving
             var speed = car.Speed;
             var limit = cruise;
             var frontOffset = car.FrontZ - car.RearAxleZ;
-            var horizon = Mathf.Clamp(speed * speed / 5f + speed + 8f, 12f, 70f);
+            var horizon = Mathf.Clamp(speed * speed / 4f + speed * 0.8f + 8f, 12f, 150f);
             while (_firstMarker < plan.Traffic.Count && plan.Traffic[_firstMarker].Distance - progress - frontOffset < -1.5f)
                 _firstMarker++;
             for (var markerIndex = _firstMarker; markerIndex < plan.Traffic.Count; markerIndex++)

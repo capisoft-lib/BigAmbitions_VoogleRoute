@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Appuyez sur une touche...",
   "voogle_route_shortcut_conflict": "Conflit",
   "voogle_route_options_physical_autodrive": "Conduite réelle (bêta ; désactivé = voyage rapide)",
-  "voogle_route_options_physical_drive_speed": "Vitesse maximale de conduite",
+  "voogle_route_options_physical_drive_speed": "Vitesse maxi (mode automatique désactivé)",
   "voogle_route_physical_stop": "ARRÊTER",
   "voogle_route_physical_body": "Votre voiture suivra les rues sur ~{distance} m.\nTouches de déplacement ou ARRÊTER : reprendre le volant.\nArrivée sur la route ; stationnement manuel.",
   "voogle_route_physical_no_route": "Aucun trajet praticable pour cette voiture. Changez de destination ou activez le voyage rapide dans les options du mod.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Conduite interrompue : obstacle prolongé, sortie de voie ou véhicule indisponible. Reprenez le volant.",
   "voogle_route_physical_arrived": "Destination atteinte. Reprenez le volant pour stationner.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Une route existe, mais ses virages restent trop serrés pour cette voiture. Changez de destination ou utilisez le voyage rapide."
+  "voogle_route_physical_turn_tight": "Une route existe, mais ses virages restent trop serrés pour cette voiture. Changez de destination ou utilisez le voyage rapide.",
+  "voogle_route_options_physical_speed_auto": "Rouler à la limite de la route"
 }

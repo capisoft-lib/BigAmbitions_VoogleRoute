@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Apasă o tastă...",
   "voogle_route_shortcut_conflict": "Conflict",
   "voogle_route_options_physical_autodrive": "Condus real (beta; oprit = călătorie rapidă)",
-  "voogle_route_options_physical_drive_speed": "Viteză maximă",
+  "voogle_route_options_physical_drive_speed": "Viteză maximă (mod automat dezactivat)",
   "voogle_route_physical_stop": "OPREȘTE",
   "voogle_route_physical_body": "Mașina va urma străzile: ~{distance} m.\nTastele de mișcare sau OPREȘTE: preia controlul.\nSosire pe șosea; parcare manuală.",
   "voogle_route_physical_no_route": "Nicio rută practicabilă. Schimbă destinația sau alege călătoria rapidă.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Condus întrerupt. Preia volanul.",
   "voogle_route_physical_arrived": "Destinație atinsă. Parchează manual.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Există o rută, dar virajele sunt prea strânse pentru această mașină. Schimbă destinația sau folosește călătoria rapidă."
+  "voogle_route_physical_turn_tight": "Există o rută, dar virajele sunt prea strânse pentru această mașină. Schimbă destinația sau folosește călătoria rapidă.",
+  "voogle_route_options_physical_speed_auto": "Respectă limita de viteză a drumului"
 }

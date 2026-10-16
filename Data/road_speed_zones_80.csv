@@ -1,0 +1,2 @@
+zone_id,edge_id,edge_type,source,from_index,to_index,limit_kmh,center_x,center_y,center_z,forward_x,forward_z,half_length_m,half_width_m,bounds_min_x,bounds_min_z,bounds_max_x,bounds_max_z
+0,merged_corridor,merged,merged,,,80,-947.931280,24.381893,-695.092599,0.768549,0.639791,869.270,25.711,-1632.457712,-1271.003516,-263.404847,-119.181682

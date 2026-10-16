@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Πατήστε ένα πλήκτρο...",
   "voogle_route_shortcut_conflict": "Διένεξη",
   "voogle_route_options_physical_autodrive": "Πραγματική οδήγηση (beta· εκτός = γρήγορο ταξίδι)",
-  "voogle_route_options_physical_drive_speed": "Μέγιστη ταχύτητα",
+  "voogle_route_options_physical_drive_speed": "Μέγιστη ταχύτητα (αυτόματη λειτουργία εκτός)",
   "voogle_route_physical_stop": "ΔΙΑΚΟΠΗ",
   "voogle_route_physical_body": "Το αυτοκίνητο θα ακολουθήσει τους δρόμους: ~{distance} m.\nΠλήκτρα κίνησης ή ΔΙΑΚΟΠΗ: ανάληψη ελέγχου.\nΆφιξη στον δρόμο· χειροκίνητη στάθμευση.",
   "voogle_route_physical_no_route": "Δεν υπάρχει βατή διαδρομή. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Η οδήγηση διακόπηκε. Αναλάβετε το τιμόνι.",
   "voogle_route_physical_arrived": "Φτάσατε. Σταθμεύστε χειροκίνητα.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Υπάρχει διαδρομή, αλλά οι στροφές είναι πολύ κλειστές για αυτό το όχημα. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι."
+  "voogle_route_physical_turn_tight": "Υπάρχει διαδρομή, αλλά οι στροφές είναι πολύ κλειστές για αυτό το όχημα. Αλλάξτε προορισμό ή επιλέξτε γρήγορο ταξίδι.",
+  "voogle_route_options_physical_speed_auto": "Τήρηση ορίου ταχύτητας δρόμου"
 }

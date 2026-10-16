@@ -194,6 +194,7 @@ namespace VoogleRoute
         public int UiScalePercent { get; set; } = 100;
         public bool PhysicalAutoDrive { get; set; } = true;
         public int PhysicalDriveSpeedKmh { get; set; } = 40;
+        public bool FollowRoadSpeedLimit { get; set; } = true;
         public bool ForceCorrectSideArrival { get; set; }
         public bool AllowUturnAtStart { get; set; }
         public bool AutoEnterDestination { get; set; } = true;

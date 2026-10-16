@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Paspauskite klavišą...",
   "voogle_route_shortcut_conflict": "Konfliktas",
   "voogle_route_options_physical_autodrive": "Tikras vairavimas (beta; išjungta = greita kelionė)",
-  "voogle_route_options_physical_drive_speed": "Didžiausias greitis",
+  "voogle_route_options_physical_drive_speed": "Didžiausias greitis (automatinis režimas išjungtas)",
   "voogle_route_physical_stop": "SUSTABDYTI",
   "voogle_route_physical_body": "Automobilis važiuos gatvėmis: ~{distance} m.\nJudėjimo klavišai arba SUSTABDYTI: perimti valdymą.\nAtvykimas kelyje; pastatykite rankiniu būdu.",
   "voogle_route_physical_no_route": "Nėra pravažiuojamo maršruto. Pakeiskite tikslą arba rinkitės greitą kelionę.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Važiavimas nutrauktas. Perimkite vairą.",
   "voogle_route_physical_arrived": "Tikslas pasiektas. Pastatykite automobilį.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Maršrutas yra, tačiau posūkiai šiam automobiliui per siauri. Pakeiskite tikslą arba rinkitės greitą kelionę."
+  "voogle_route_physical_turn_tight": "Maršrutas yra, tačiau posūkiai šiam automobiliui per siauri. Pakeiskite tikslą arba rinkitės greitą kelionę.",
+  "voogle_route_options_physical_speed_auto": "Laikytis kelio greičio ribojimo"
 }

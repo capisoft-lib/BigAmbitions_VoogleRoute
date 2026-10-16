@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Premi un tasto...",
   "voogle_route_shortcut_conflict": "Conflitto",
   "voogle_route_options_physical_autodrive": "Guida reale (beta; no = viaggio rapido)",
-  "voogle_route_options_physical_drive_speed": "Velocità massima",
+  "voogle_route_options_physical_drive_speed": "Velocità massima (modalità automatica disattivata)",
   "voogle_route_physical_stop": "FERMA",
   "voogle_route_physical_body": "La tua auto seguirà le strade: ~{distance} m.\nTasti di movimento o FERMA: riprendi il controllo.\nArrivo in strada; parcheggio manuale.",
   "voogle_route_physical_no_route": "Nessun percorso praticabile. Cambia destinazione o usa il viaggio rapido.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Guida interrotta. Riprendi il volante.",
   "voogle_route_physical_arrived": "Destinazione raggiunta. Parcheggia manualmente.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Una strada esiste, ma le curve sono troppo strette per questa auto. Cambia destinazione o usa il viaggio rapido."
+  "voogle_route_physical_turn_tight": "Una strada esiste, ma le curve sono troppo strette per questa auto. Cambia destinazione o usa il viaggio rapido.",
+  "voogle_route_options_physical_speed_auto": "Seguire i limiti stradali"
 }

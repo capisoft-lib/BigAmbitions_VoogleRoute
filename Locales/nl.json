@@ -96,7 +96,7 @@
   "voogle_route_shortcut_capture": "Druk op een toets...",
   "voogle_route_shortcut_conflict": "Conflict",
   "voogle_route_options_physical_autodrive": "Echt rijden (bèta; uit = snelreizen)",
-  "voogle_route_options_physical_drive_speed": "Maximumsnelheid",
+  "voogle_route_options_physical_drive_speed": "Snelheidsgrens (automatische modus uit)",
   "voogle_route_physical_stop": "STOPPEN",
   "voogle_route_physical_body": "Je auto volgt de straten: ~{distance} m.\nBewegingstoetsen of STOPPEN: neem over.\nAankomst op de weg; parkeer zelf.",
   "voogle_route_physical_no_route": "Geen berijdbare route. Kies een ander doel of snelreizen.",
@@ -104,5 +104,6 @@
   "voogle_route_physical_blocked": "Rit onderbroken. Neem het stuur over.",
   "voogle_route_physical_arrived": "Bestemming bereikt. Parkeer zelf.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
-  "voogle_route_physical_turn_tight": "Er is een route, maar de bochten zijn te krap voor deze auto. Kies een ander doel of snelreizen."
+  "voogle_route_physical_turn_tight": "Er is een route, maar de bochten zijn te krap voor deze auto. Kies een ander doel of snelreizen.",
+  "voogle_route_options_physical_speed_auto": "Snelheidslimiet van de weg volgen"
 }

@@ -26,6 +26,7 @@ namespace VoogleRoute
         private const string UiScalePercentKey = "ui_scale_percent";
         private const string PhysicalAutoDriveKey = "physical_autodrive";
         private const string PhysicalDriveSpeedKey = "physical_drive_speed";
+        private const string FollowRoadSpeedLimitKey = "follow_road_speed_limit";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
@@ -61,6 +62,9 @@ namespace VoogleRoute
         internal static int UiScalePercent { get; private set; } = 100;
         internal static bool PhysicalAutoDriveEnabled { get; private set; } = true;
         internal static int PhysicalDriveSpeedKmh { get; private set; } = 40;
+        internal static bool FollowRoadSpeedLimitEnabled { get; private set; } = true;
+        internal static float PhysicalDriveCruiseCeilingKmh => FollowRoadSpeedLimitEnabled
+            ? Navigation.Driving.DrivingSpeedLimits.MaximumKmh : PhysicalDriveSpeedKmh;
         internal static float NavHudOffsetY { get; private set; } = 16f;
 
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
@@ -147,6 +151,8 @@ namespace VoogleRoute
                 Navigation.Driving.PhysicalDriveService.Stop();
             PhysicalAutoDriveEnabled = data.PhysicalAutoDrive;
             PhysicalDriveSpeedKmh = Mathf.Clamp(data.PhysicalDriveSpeedKmh, 20, 60);
+            FollowRoadSpeedLimitEnabled = data.FollowRoadSpeedLimit;
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
             VoogleRouteUiScale.SetScaleFactor(UiScalePercent / 100f);
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
             _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor);
@@ -167,6 +173,7 @@ namespace VoogleRoute
                 BaseTaxiMultiplier = BaseTaxiMultiplier,
                 PhysicalAutoDrive = PhysicalAutoDriveEnabled,
                 PhysicalDriveSpeedKmh = PhysicalDriveSpeedKmh,
+                FollowRoadSpeedLimit = FollowRoadSpeedLimitEnabled,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
                 AllowUturnAtStart = AllowUturnAtStartEnabled,
                 AutoEnterDestination = AutoEnterDestinationEnabled,
@@ -196,6 +203,7 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveInt(modId, UiScalePercentKey, UiScalePercent);
             ModGameOptionPrefs.SaveToggle(modId, PhysicalAutoDriveKey, PhysicalAutoDriveEnabled);
             ModGameOptionPrefs.SaveInt(modId, PhysicalDriveSpeedKey, PhysicalDriveSpeedKmh);
+            ModGameOptionPrefs.SaveToggle(modId, FollowRoadSpeedLimitKey, FollowRoadSpeedLimitEnabled);
             ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
             ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
             ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
@@ -420,6 +428,14 @@ namespace VoogleRoute
         private static void OnPhysicalDriveSpeedChanged(int value)
         {
             PhysicalDriveSpeedKmh = Mathf.Clamp(value, 20, 60);
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
+        private static void OnFollowRoadSpeedLimitChanged(bool value)
+        {
+            FollowRoadSpeedLimitEnabled = value;
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
             ModOptionsSaveStore.PersistFromModConfig();
         }
 
@@ -453,6 +469,8 @@ namespace VoogleRoute
                     OnDisplayOutsideOptionChanged)
                 .AddToggle(PhysicalAutoDriveKey, "voogle_route_options_physical_autodrive", PhysicalAutoDriveEnabled,
                     OnPhysicalAutoDriveChanged)
+                .AddToggle(FollowRoadSpeedLimitKey, "voogle_route_options_physical_speed_auto", FollowRoadSpeedLimitEnabled,
+                    OnFollowRoadSpeedLimitChanged)
                 .AddSlider(PhysicalDriveSpeedKey, "voogle_route_options_physical_drive_speed", 20, 60,
                     PhysicalDriveSpeedKmh, OnPhysicalDriveSpeedChanged, "voogle_route_options_physical_drive_speed_value")
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
