@@ -42,12 +42,14 @@ namespace VoogleRoute.Navigation
             _subscription = null;
             Snapshot = default;
             MovementModeDetector.Reset();
+            VehicleExitNavigationRelease.Reset();
         }
 
         private static void Apply(PlayerLocationSnapshot snapshot)
         {
             Snapshot = snapshot;
             MovementModeDetector.Apply(snapshot);
+            VehicleExitNavigationRelease.OnLocationApplied(snapshot);
             ModLog.Debug(
                 "LIB pose | available=" + snapshot.IsAvailable +
                 " kind=" + snapshot.MovementKind +

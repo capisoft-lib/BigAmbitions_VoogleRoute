@@ -1,0 +1,1 @@
+La version 1.0.11 ajoute un curseur d’échelle 50–150 %, immédiat et mémorisé par sauvegarde, dans Options → Mods.

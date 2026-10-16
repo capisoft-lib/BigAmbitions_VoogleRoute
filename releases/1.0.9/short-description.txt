@@ -1,0 +1,1 @@
+Version 1.0.9 improves AUTO-DRIVE recovery when a travel fade is interrupted or the time skip remains active after arrival.

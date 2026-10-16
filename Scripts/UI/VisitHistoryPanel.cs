@@ -88,6 +88,7 @@ namespace VoogleRoute.UI
                 .Build();
 
             _root = built.Root;
+            VoogleRouteUiScale.Register(built.Panel);
             _textScale = Mathf.Clamp(built.Scale, 0.85f, 1.15f);
             _panelRect = built.Panel;
             _dragState = built.Drag;

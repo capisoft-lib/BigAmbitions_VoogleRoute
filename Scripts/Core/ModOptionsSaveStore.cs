@@ -191,6 +191,7 @@ namespace VoogleRoute
         public bool IndoorAutowalk { get; set; }
         public bool UseSubway { get; set; } = true;
         public int BaseTaxiMultiplier { get; set; } = 2;
+        public int UiScalePercent { get; set; } = 100;
         public bool ForceCorrectSideArrival { get; set; }
         public bool AllowUturnAtStart { get; set; }
         public bool AutoEnterDestination { get; set; } = true;
@@ -247,6 +248,12 @@ namespace VoogleRoute
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
+
+            if (data.UiScalePercent < ModConfig.MinUiScalePercent ||
+                data.UiScalePercent > ModConfig.MaxUiScalePercent)
+            {
+                data.UiScalePercent = 100;
+            }
         }
 
         private static float[] DefaultRouteLineColor() =>

@@ -50,6 +50,7 @@ namespace VoogleRoute.UI
                 .Build();
 
             _root = built.Root;
+            VoogleRouteUiScale.Register(built.Panel);
             var scale = built.Scale;
             var textScale = Mathf.Clamp(scale, 0.85f, 1.15f);
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();

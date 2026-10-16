@@ -8,7 +8,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 
 [b]Source code and updates:[/b] [url=https://github.com/capisoft-lib/BigAmbitions_VoogleRoute]GitHub — capisoft-lib/BigAmbitions_VoogleRoute[/url]
 
-
 [b]What's new in 0.11.4[/b]
 
 [list]
@@ -16,7 +15,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]City map overlay[/b] — open the city map ([b]M[/b]) to see your route line; [b]click[/b] the map to set a new Voogle destination
 [*][b]Bridge and center-deck routing[/b] — updated road graph for reliable vehicle paths over bridges, the downtown deck, and cross-river routes (including toward the industrial side)
 [/list]
-
 
 [b]Features[/b]
 
@@ -32,7 +30,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*]Does [b]not[/b] replace Voogle Maps — adds guidance on top of your map destination
 [/list]
 
-
 [b]Road network and bridges[/b]
 
 Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic waypoints — not straight lines across the map.
@@ -43,7 +40,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*][b]Long cross-city drives[/b] — better connectivity for trips that span multiple districts (e.g. downtown to industrial areas)
 [*]Guidance is a [b]driving line[/b] on the road network, not turn-by-turn lane GPS
 [/list]
-
 
 [b]How to use[/b]
 
@@ -56,7 +52,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*]Tap the [b]gear[/b] on the panel header for route color (also available under [b]Mods[/b] in the main menu).
 [/list]
 
-
 [b]Compatibility[/b]
 
 [list]
@@ -66,7 +61,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*][b]Saves:[/b] Reads your map destination only; does not alter progression
 [/list]
 
-
 [b]Known limitations[/b]
 
 [list]
@@ -75,7 +69,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*]Vehicle routes are [b]guidance lines[/b], not lane-perfect GPS.
 [*]A few rare road segments may still need graph updates in future releases.
 [/list]
-
 
 [b]Credits[/b]
 

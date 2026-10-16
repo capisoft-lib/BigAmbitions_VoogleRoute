@@ -676,11 +676,103 @@ NEW_KEYS: dict[str, dict[str, str]] = {
     },
 }
 
+UI_SCALE_KEYS: dict[str, dict[str, str]] = {
+    "en": {
+        "voogle_route_options_ui_scale": "UI scale",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "fr": {
+        "voogle_route_options_ui_scale": "Échelle de l’interface",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "de": {
+        "voogle_route_options_ui_scale": "UI-Skalierung",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "es": {
+        "voogle_route_options_ui_scale": "Escala de la interfaz",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "it": {
+        "voogle_route_options_ui_scale": "Scala dell’interfaccia",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "pt-BR": {
+        "voogle_route_options_ui_scale": "Escala da interface",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "ru": {
+        "voogle_route_options_ui_scale": "Масштаб интерфейса",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "pl": {
+        "voogle_route_options_ui_scale": "Skala interfejsu",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "nl": {
+        "voogle_route_options_ui_scale": "Schaal van de interface",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "tr": {
+        "voogle_route_options_ui_scale": "Arayüz ölçeği",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "ja": {
+        "voogle_route_options_ui_scale": "UI の拡大率",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "ko": {
+        "voogle_route_options_ui_scale": "UI 크기",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "zh-CN": {
+        "voogle_route_options_ui_scale": "界面缩放",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "zh-TW": {
+        "voogle_route_options_ui_scale": "介面縮放",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "cs": {
+        "voogle_route_options_ui_scale": "Měřítko uživatelského rozhraní",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "da": {
+        "voogle_route_options_ui_scale": "Skalering af brugerfladen",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "fi": {
+        "voogle_route_options_ui_scale": "Käyttöliittymän skaalaus",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "el": {
+        "voogle_route_options_ui_scale": "Κλίμακα διεπαφής",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "hu": {
+        "voogle_route_options_ui_scale": "Felület méretezése",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "ro": {
+        "voogle_route_options_ui_scale": "Scalarea interfeței",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "uk": {
+        "voogle_route_options_ui_scale": "Масштаб інтерфейсу",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+    "lt": {
+        "voogle_route_options_ui_scale": "Sąsajos mastelis",
+        "voogle_route_options_ui_scale_value": "{value}%",
+    },
+}
+
 
 def merged_locale(locale: str) -> dict[str, str]:
     base = dict(LOCALES[locale])
     extra = NEW_KEYS.get(locale, NEW_KEYS["en"])
     base.update(extra)
+    base.update(UI_SCALE_KEYS.get(locale, UI_SCALE_KEYS["en"]))
     return base
 
 

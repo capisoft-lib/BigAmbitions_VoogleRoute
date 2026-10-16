@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using BigAmbitions.DayNightCycle;
 using Helpers;
+using Timemachine;
 using UI;
 using UI.Notification;
 using UnityEngine;
@@ -19,6 +20,8 @@ namespace VoogleRoute.Navigation
         private const float SelectedRouteTimeoutSeconds = 10f;
         private const float SelectedRouteRetryDelaySeconds = 0.75f;
         private const int SelectedRouteMaxAttempts = 3;
+        private const float TimeMachineArrivalGraceSeconds = 5f;
+        private const float TimeMachineUiGraceSeconds = 10f;
 
         internal static bool IsInProgress => _inProgress;
 
@@ -176,6 +179,14 @@ namespace VoogleRoute.Navigation
             if (_inProgress || !plan.Success || !MovementModeDetector.CanUseAutoDrive())
                 return;
 
+            if (float.IsNaN(plan.TravelMinutes) || float.IsInfinity(plan.TravelMinutes) ||
+                plan.TravelMinutes <= 0f)
+            {
+                ModLog.Error("Auto-drive skip travel: invalid travel duration.");
+                Notifications.ShowError("voogle_route_autodrive_no_route");
+                return;
+            }
+
             if (IsTimeMachineRunning())
                 return;
 
@@ -192,64 +203,144 @@ namespace VoogleRoute.Navigation
         private static IEnumerator TravelCoroutine(AutoDriveSkipPlanner.Plan plan)
         {
             _inProgress = true;
-            var screenFaded = false;
+            var needsUnfade = false;
+            try
+            {
+                var vehicle = VehicleHelper.GetCurrentVehicleBase();
+                if (vehicle == null ||
+                    (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
+                {
+                    Notifications.ShowError("voogle_route_autodrive_no_route");
+                    yield break;
+                }
 
-            var vehicle = VehicleHelper.GetCurrentVehicleBase();
-            if (vehicle == null ||
-                (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
+                needsUnfade = true;
+                yield return BigAmbitionsCompatibility.Fade();
+
+                vehicle = VehicleHelper.GetCurrentVehicleBase();
+                if (!MovementModeDetector.CanUseAutoDrive() ||
+                    vehicle == null ||
+                    (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
+                {
+                    yield return UiFader.UnFade();
+                    needsUnfade = false;
+                    Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
+                    yield break;
+                }
+
+                AutoDriveRoadTeleport.Apply(
+                    vehicle,
+                    plan.RouteLaneHint,
+                    plan.TeleportPosition,
+                    plan.TeleportRotation);
+
+                if (plan.UsesFuel)
+                    AutoDriveVehicleFuel.ApplyConsumption(vehicle, plan.FuelUsedLiters);
+
+                yield return null;
+
+                var timestamp = TimeHelper.Now();
+                timestamp.AddMinutes(plan.TravelMinutes);
+                var timeMachine = InstanceBehavior<UIs>.Instance.timeMachine;
+                if (!BigAmbitionsCompatibility.TryStartTimeMachine(
+                        timeMachine,
+                        timestamp,
+                        disableCancel: true))
+                {
+                    yield return UiFader.UnFade();
+                    needsUnfade = false;
+                    Notifications.ShowError("voogle_route_autodrive_busy");
+                    yield break;
+                }
+
+                var host = VoogleRouteDriver.Instance;
+                if (host != null && host.isActiveAndEnabled)
+                    host.StartCoroutine(WatchTimeMachineArrival(timeMachine, timestamp));
+
+                yield return UiFader.UnFade();
+                needsUnfade = false;
+                RouteActionPanel.RefreshVisual();
+            }
+            finally
             {
                 _inProgress = false;
-                Notifications.ShowError("voogle_route_autodrive_no_route");
-                yield break;
+                if (needsUnfade && UiFader.isFading)
+                {
+                    var host = VoogleRouteDriver.Instance;
+                    if (host != null && host.isActiveAndEnabled)
+                    {
+                        host.StartCoroutine(UiFader.UnFade());
+                        ModLog.Error("Auto-drive skip travel interrupted during fade; restoring screen.");
+                    }
+                }
             }
+        }
 
-            yield return BigAmbitionsCompatibility.Fade();
-            screenFaded = true;
+        private static IEnumerator WatchTimeMachineArrival(TimeMachine timeMachine, Timestamp goal)
+        {
+            var superseded = false;
+            Action onTimeMachineStarted = () => superseded = true;
+            GlobalEvents.onTimeMachineStarted =
+                (Action)Delegate.Combine(GlobalEvents.onTimeMachineStarted, onTimeMachineStarted);
 
-            vehicle = VehicleHelper.GetCurrentVehicleBase();
-            if (!MovementModeDetector.CanUseAutoDrive() ||
-                vehicle == null ||
-                (vehicle.vehicleType != null && vehicle.vehicleType.spawnInPlayerObject))
+            try
             {
-                yield return UiFader.UnFade();
-                screenFaded = false;
-                _inProgress = false;
-                Notifications.ShowError("voogle_route_autodrive_not_in_vehicle");
-                yield break;
+                var reachedGoalAt = -1f;
+                var stoppedAt = -1f;
+                while (!superseded && BigAmbitionsCompatibility.IsTimeMachineBusy(timeMachine))
+                {
+                    if (!timeMachine.isRunning)
+                    {
+                        if (stoppedAt < 0f)
+                            stoppedAt = Time.unscaledTime;
+                        else if (Time.unscaledTime - stoppedAt >= TimeMachineUiGraceSeconds)
+                        {
+                            ModLog.Error("Auto-drive time skip stopped but native UI stayed blocked after arrival.");
+                            yield break;
+                        }
+                    }
+                    else if (TimeHelper.Now().GetTotalMinutes() >= goal.GetTotalMinutes())
+                    {
+                        stoppedAt = -1f;
+                        if (reachedGoalAt < 0f)
+                            reachedGoalAt = Time.unscaledTime;
+                        else if (Time.unscaledTime - reachedGoalAt >= TimeMachineArrivalGraceSeconds)
+                        {
+                            TryFinishReachedTimeMachine(timeMachine);
+                            yield break;
+                        }
+                    }
+                    else
+                    {
+                        reachedGoalAt = -1f;
+                        stoppedAt = -1f;
+                    }
+
+                    yield return null;
+                }
             }
-
-            AutoDriveRoadTeleport.Apply(
-                vehicle,
-                plan.RouteLaneHint,
-                plan.TeleportPosition,
-                plan.TeleportRotation);
-
-            if (plan.UsesFuel)
-                AutoDriveVehicleFuel.ApplyConsumption(vehicle, plan.FuelUsedLiters);
-
-            yield return null;
-
-            var timestamp = TimeHelper.Now();
-            timestamp.AddMinutes(plan.TravelMinutes);
-            if (!BigAmbitionsCompatibility.TryStartTimeMachine(
-                    InstanceBehavior<UIs>.Instance.timeMachine,
-                    timestamp,
-                    disableCancel: true))
+            finally
             {
-                yield return UiFader.UnFade();
-                screenFaded = false;
-                _inProgress = false;
-                Notifications.ShowError("voogle_route_autodrive_busy");
-                yield break;
+                GlobalEvents.onTimeMachineStarted =
+                    (Action)Delegate.Remove(GlobalEvents.onTimeMachineStarted, onTimeMachineStarted);
             }
+        }
 
-            yield return UiFader.UnFade();
-            screenFaded = false;
-            _inProgress = false;
-            RouteActionPanel.RefreshVisual();
+        private static void TryFinishReachedTimeMachine(TimeMachine timeMachine)
+        {
+            try
+            {
+                if (!timeMachine.isRunning)
+                    return;
 
-            if (screenFaded)
-                yield return UiFader.UnFade();
+                ModLog.Error("Auto-drive time skip stayed active after arrival; requesting native completion.");
+                if (!BigAmbitionsCompatibility.TryStopTimeMachine(timeMachine))
+                    ModLog.Error("Auto-drive time skip completion is unavailable on this game version.");
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Auto-drive time skip completion failed", ex);
+            }
         }
 
         private static bool IsTimeMachineRunning()
@@ -257,7 +348,8 @@ namespace VoogleRoute.Navigation
             try
             {
                 return InstanceBehavior<UIs>.IsInitialized &&
-                       InstanceBehavior<UIs>.Instance.timeMachine.isRunning;
+                       BigAmbitionsCompatibility.IsTimeMachineBusy(
+                           InstanceBehavior<UIs>.Instance.timeMachine);
             }
             catch
             {

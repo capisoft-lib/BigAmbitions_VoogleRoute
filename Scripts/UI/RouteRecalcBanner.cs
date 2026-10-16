@@ -31,6 +31,9 @@ namespace VoogleRoute.UI
             var built = BaUi.Banner(RootName, DefaultCanvasSortOrder, PanelWidth, PanelHeight, CenterYOffset);
             _root = built.Root;
             _label = built.Label;
+            VoogleRouteUiScale.Register(built.Label != null
+                ? built.Label.rectTransform.parent as RectTransform
+                : null);
             _root.SetActive(false);
         }
 

@@ -23,6 +23,7 @@ namespace VoogleRoute
         private const string IndoorAutoWalkKey = "indoor_autowalk";
         private const string UseSubwayKey = "use_subway";
         private const string BaseTaxiMultiplierKey = "base_taxi_multiplier";
+        private const string UiScalePercentKey = "ui_scale_percent";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
@@ -53,7 +54,9 @@ namespace VoogleRoute
         internal static float VehicleRecalcIntervalSeconds { get; private set; } = 10f;
         internal static bool ShowPartialPaths { get; private set; }
         internal static bool ShowLineDetection { get; private set; }
-        internal static float HudButtonScale { get; private set; } = 1f;
+        internal const int MinUiScalePercent = 50;
+        internal const int MaxUiScalePercent = 150;
+        internal static int UiScalePercent { get; private set; } = 100;
         internal static float NavHudOffsetY { get; private set; } = 16f;
 
         internal static bool WantsRouteComputation => RouteLineEnabled || AutoWalkEnabled;
@@ -135,6 +138,8 @@ namespace VoogleRoute
             AllowUturnAtStartEnabled = data.AllowUturnAtStart;
             AutoEnterDestinationEnabled = data.AutoEnterDestination;
             BaseTaxiMultiplier = Mathf.Clamp(data.BaseTaxiMultiplier, 1, 10);
+            UiScalePercent = Mathf.Clamp(data.UiScalePercent, MinUiScalePercent, MaxUiScalePercent);
+            VoogleRouteUiScale.SetScaleFactor(UiScalePercent / 100f);
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
             _vehicleLineColor = ReadLineColor(data.VehicleRouteLineColor);
             _indoorFootLineColor = ReadLineColor(data.IndoorRouteLineColor);
@@ -157,7 +162,8 @@ namespace VoogleRoute
                 AutoEnterDestination = AutoEnterDestinationEnabled,
                 FootRouteLineColor = ColorToArray(_footLineColor),
                 VehicleRouteLineColor = ColorToArray(_vehicleLineColor),
-                IndoorRouteLineColor = ColorToArray(_indoorFootLineColor)
+                IndoorRouteLineColor = ColorToArray(_indoorFootLineColor),
+                UiScalePercent = UiScalePercent
             };
 
         internal static void SyncPlayerPrefsForOptionsMenu()
@@ -177,6 +183,7 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, AllowUturnAtStartKey, AllowUturnAtStartEnabled);
             ModGameOptionPrefs.SaveToggle(modId, AutoEnterDestinationKey, AutoEnterDestinationEnabled);
             ModGameOptionPrefs.SaveInt(modId, BaseTaxiMultiplierKey, BaseTaxiMultiplier);
+            ModGameOptionPrefs.SaveInt(modId, UiScalePercentKey, UiScalePercent);
             ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
             ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
             ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
@@ -330,6 +337,19 @@ namespace VoogleRoute
             ModLog.Info("Base taxi multiplier = " + clamped);
         }
 
+        internal static void SetUiScalePercent(int value, bool persist = true)
+        {
+            var clamped = Mathf.Clamp(value, MinUiScalePercent, MaxUiScalePercent);
+            if (UiScalePercent == clamped)
+                return;
+
+            UiScalePercent = clamped;
+            VoogleRouteUiScale.SetScaleFactor(UiScalePercent / 100f);
+            if (persist)
+                ModOptionsSaveStore.PersistFromModConfig();
+            ModLog.Info("VoogleRoute UI scale = " + clamped + "%");
+        }
+
         internal static void SetFootLineColor(Color color, bool persist = true)
         {
             _footLineColor = NormalizeLineColor(color);
@@ -376,6 +396,8 @@ namespace VoogleRoute
 
         private static void OnBaseTaxiMultiplierChanged(int value) => SetBaseTaxiMultiplier(value);
 
+        private static void OnUiScalePercentChanged(int value) => SetUiScalePercent(value);
+
         private static void OnForceCorrectSideArrivalOptionChanged(bool value) =>
             SetForceCorrectSideArrivalEnabled(value);
 
@@ -400,6 +422,8 @@ namespace VoogleRoute
 
             var options = new ModOptions()
                 .AddHeader("voogle_route_panel_title")
+                .AddSlider(UiScalePercentKey, "voogle_route_options_ui_scale", MinUiScalePercent, MaxUiScalePercent,
+                    UiScalePercent, OnUiScalePercentChanged, "voogle_route_options_ui_scale_value")
                 .AddToggle(DisplayOutsideKey, "voogle_route_options_display_outside", DisplayOutsideEnabled,
                     OnDisplayOutsideOptionChanged)
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,

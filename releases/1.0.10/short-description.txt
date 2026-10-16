@@ -1,0 +1,1 @@
+Version 1.0.10 improves walking control after leaving a vehicle, including hidden navigation panels, Hamptons plots and parking interiors.

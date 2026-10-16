@@ -1,0 +1,1 @@
+La version 1.0.9 améliore la récupération d'AUTO-DRIVE si le fondu est interrompu ou si le saut temporel reste actif après l'arrivée.

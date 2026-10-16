@@ -8,7 +8,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 
 [b]Source code and updates:[/b] [url=https://github.com/capisoft-lib/BigAmbitions_VoogleRoute]GitHub — capisoft-lib/BigAmbitions_VoogleRoute[/url]
 
-
 [b]Features[/b]
 
 [list]
@@ -21,7 +20,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*]Does [b]not[/b] replace Voogle Maps — adds guidance on top of your map destination
 [/list]
 
-
 [b]How to use[/b]
 
 [list]
@@ -32,7 +30,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*]Tap the [b]gear[/b] on the panel header for route color (also available under [b]Mods[/b] in the main menu).
 [/list]
 
-
 [b]Compatibility[/b]
 
 [list]
@@ -42,7 +39,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*][b]Saves:[/b] Reads your map destination only; does not alter progression
 [/list]
 
-
 [b]Known limitations[/b]
 
 [list]
@@ -50,7 +46,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] in the in-game [b]M
 [*]No route display during [b]subway[/b] rides.
 [*]Vehicle routes are [b]guidance lines[/b], not lane-perfect GPS.
 [/list]
-
 
 [b]Credits[/b]
 

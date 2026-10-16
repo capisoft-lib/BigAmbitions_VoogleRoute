@@ -1,0 +1,95 @@
+using System;
+using BaPlayerLocation.Subscriber;
+using UnityEngine;
+
+namespace UnityEngine
+{
+    public struct Vector3
+    {
+        public float x, y, z;
+        public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
+        public static Vector3 forward => new Vector3(0, 0, 1);
+        public float sqrMagnitude => x*x + y*y + z*z;
+        public void Normalize() { var n = (float)Math.Sqrt(sqrMagnitude); if (n > 0) { x /= n; y /= n; z /= n; } }
+    }
+    public static class Time { public static float unscaledTime; public static int frameCount; }
+    public static class Mathf
+    {
+        public const float Deg2Rad = (float)Math.PI / 180f;
+        public static float Sin(float v) => (float)Math.Sin(v);
+        public static float Cos(float v) => (float)Math.Cos(v);
+    }
+    public sealed class Transform { public Vector3 position = new Vector3(5, 0, 5); public Vector3 forward = Vector3.forward; }
+}
+public sealed class VehicleType { public bool spawnInPlayerObject; }
+public sealed class VehicleController
+{
+    public VehicleType vehicleType = new VehicleType();
+    public Transform transform = new Transform();
+    public Vector3 FrontPoint => transform.position;
+}
+public sealed class PlayerController
+{
+    public Transform transform = new Transform();
+    public int Attempts, Resets, FailuresRemaining;
+    public bool HasGoal = true;
+    public int LegitimateBlockers = 3;
+    public void ResetNavigation()
+    {
+        Attempts++;
+        if (FailuresRemaining-- > 0) throw new InvalidOperationException("Pedestrian agent still changing state");
+        Resets++;
+        HasGoal = false;
+    }
+}
+namespace Helpers
+{
+    public static class PlayerHelper { public static PlayerController PlayerController; }
+    public static class VehicleHelper { public static VehicleController Vehicle; public static VehicleController GetCurrentVehicleBase() => Vehicle; }
+}
+namespace BaPlayerLocation.Subscriber
+{
+    public static class PlayerLocationSubscriber
+    {
+        public static bool IsActive = true;
+        private static event Action<PlayerLocationSnapshot> Changed;
+        public static IDisposable SubscribeWhenActive(Action<PlayerLocationSnapshot> callback)
+        {
+            Changed += callback;
+            return new Subscription(callback);
+        }
+        public static void Emit(MovementKind kind)
+        {
+            Time.frameCount++;
+            Changed?.Invoke(new PlayerLocationSnapshot(kind, new Vector3(5, 0, 5), 0, 0, "test"));
+        }
+        private sealed class Subscription : IDisposable
+        {
+            private Action<PlayerLocationSnapshot> _callback;
+            public Subscription(Action<PlayerLocationSnapshot> callback) { _callback = callback; }
+            public void Dispose() { Changed -= _callback; _callback = null; }
+        }
+    }
+}
+namespace VoogleRoute
+{
+    public static class ModLog
+    {
+        public static int Errors;
+        public static void Info(string value) { }
+        public static void Debug(string value) { }
+        public static void Error(string value) { Errors++; }
+    }
+}
+namespace VoogleRoute.Navigation
+{
+    public static class HamptonsCompatibility
+    {
+        public static bool InsideHouse;
+        public static bool TryGetCurrentHouseId(out string id) { id = "house"; return InsideHouse; }
+    }
+    public static class ParkedVehicleStore
+    {
+        internal static void OnMovementModeApplied(MovementMode previous, MovementMode current, in PlayerLocationSnapshot snapshot) { }
+    }
+}

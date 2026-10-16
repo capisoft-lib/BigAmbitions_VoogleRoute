@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.5` package supports both |
+| **Game** | Big Ambitions **EA 0.11** and **1.0** — the same `VoogleRoute 1.0.11` package supports both |
 | **Distribution** | **[Steam Workshop](https://steamcommunity.com/app/1331550/workshop/)** — primary install method |
 | **Languages** | All **22** Big Ambitions interface languages |
 | **Requires** | [`LIB_BaPlayerLocation 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaPlayerLocation) and [`LIB_BaUnifiedUI 1.0.0+`](https://github.com/capisoft-lib/BigAmbitions_LIB_BaUnifiedUI), both installed and enabled separately |
@@ -24,18 +24,22 @@ If Voogle Route disappeared after an update, its panel does not open, or the
 game reports mods missing from a save, follow the bilingual
 [LIB BA Unified UI troubleshooting guide](docs/BA_UNIFIED_UI_TROUBLESHOOTING.md).
 
-Current Workshop description copy: [`releases/1.0.5/`](releases/1.0.5/), in English and French. Earlier release texts remain in [`releases/`](releases/).
+Current Workshop description copy: [`releases/1.0.11/`](releases/1.0.11/), in English and French. Earlier release texts remain in [`releases/`](releases/).
 
-## What's new in 1.0.5
+## What's new in 1.0.11
 
-- Keep ordinary building destinations active after arrival by car, so navigation remains available while finding parking and continues on foot after exiting.
-- Announce vehicle arrival once and defer auto-entry until arrival on foot, without automatically starting Auto Walk.
-- Apply this change only outside missions; vanilla delivery handling, including the return to depot, keeps its existing behavior.
+- **UI scaling slider** — set Voogle Route from 50% to 150% under **Options → Mods**; changes apply immediately and are saved per save.
+
+## What's new in 1.0.10
+
+- Release the previous navigation goal when leaving a motor vehicle, including Hamptons plots and parking interiors, even when navigation panels are hidden or another screen is open.
+- Keep vehicle-exit detection across a brief GPS interruption and retry safely while pedestrian navigation is still settling. A successful release does not cancel later manual movement.
+- Keep the AUTO-DRIVE fade and time-skip recovery introduced in 1.0.9.
 
 ## Features
 
 - **Route line on the ground** — neon path to your map destination
-- **One cross-version package** — the same Voogle Route 1.0.5 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
+- **One cross-version package** — the same Voogle Route 1.0.11 DLL adapts at runtime to EA 0.11 and 1.0; 1.0-only Hamptons code stays disabled on 0.11
 - **Subway fallback on foot** — when NavMesh cannot reach the destination, optional **walk → subway → walk** routing (toggle **Use subway** in mod options)
 - **Road-aware driving routes** — via [PathFinding](https://github.com/capisoft-lib/BigAmbitions_VoogleRoute.PathFinding), with bounded reachable-arrival fallback when the nearest one-way lanes cannot be entered
 - **Big Ambitions 1.0 road coverage** — refreshed graph with bidirectional routing for all 18 Hamptons mansion addresses
@@ -49,7 +53,7 @@ Current Workshop description copy: [`releases/1.0.5/`](releases/1.0.5/), in Engl
 - **Auto-drive fast travel** — in a vehicle, tap **AUTO-DRIVE** to confirm a time skip and arrive near your destination (not auto-steering — fast travel only); fuel estimate shown in the confirmation popup
 - **Confirmation popup** — estimated travel time, arrival time (`HH:mm`), distance, and fuel for auto-drive; **ESC** closes the dialog
 - **Base taxi multiplier** — mod option (1–10×, live value next to slider) or `base_taxi_multiplier` in `config.json`
-- **UI** — vanilla-style panels supplied by the separate **LIB BA Unified UI** Workshop dependency
+- **UI** — vanilla-style panels supplied by the separate **LIB BA Unified UI** Workshop dependency, with a per-save 50–150% scale slider in **Options → Mods**
 - **Draggable UI** — all seven interactive Voogle Route windows remember their positions
 - **Configurable shortcuts** — route line, auto-move and Hide/Show UI can be rebound under **Options → Mods**; defaults are **Ctrl+Shift+Y**, **Ctrl+Shift+X** and **Ctrl+Shift+C**
 - **Configurable route colors** — on-foot, indoor and vehicle lines each have a native color picker under **Options → Mods**
@@ -137,15 +141,19 @@ Notable `config.json` keys: `route_line_color`, `indoor_route`, `indoor_autowalk
 
 # Voogle Route (français)
 
-Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.5 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
+Mod **Steam Workshop** pour Big Ambitions **EA 0.11** et **1.0** : un seul paquet Voogle Route 1.0.11 fournit la ligne d'itinéraire au sol, la marche auto, le **voyage rapide auto** en véhicule (saut temporel), les **favoris sur la carte ville** (**M**), la navigation intérieure, les itinéraires Hamptons sur 1.0 et trois couleurs personnalisables pour les trajets à pied, en intérieur et en véhicule.
 
 Le graphe routier 1.0 est inclus dans les deux cas. Sur EA 0.11, il couvre la ville historique en mode compatible ; les lieux et fonctions propres aux Hamptons restent automatiquement inactifs.
 
-## Nouveautés de la version 1.0.5
+## Nouveautés de la version 1.0.11
 
-- La destination d’un bâtiment reste active après l’arrivée en voiture, pour conserver la navigation pendant la recherche de stationnement puis poursuivre à pied.
-- L’arrivée en voiture est annoncée une seule fois et l’entrée automatique attend l’arrivée à pied, sans déclencher la marche automatique.
-- Ce changement s’applique uniquement hors mission ; les livraisons du jeu de base, y compris le retour au dépôt, conservent leur fonctionnement existant.
+- **Échelle de l’interface** — réglez Voogle Route de 50 % à 150 % dans **Options → Mods** ; le changement s’applique immédiatement et est enregistré par sauvegarde.
+
+## Nouveautés de la version 1.0.10
+
+- Libère l'ancien objectif de déplacement à la sortie d'un véhicule motorisé, y compris aux Hamptons et dans les parkings, même si les panneaux de navigation sont masqués ou qu'un autre écran est ouvert.
+- Conserve la détection de sortie pendant une brève interruption GPS et réessaie si la navigation piétonne n'est pas encore prête. Une fois la libération réussie, les nouveaux déplacements manuels sont préservés.
+- Conserve la récupération du fondu et du saut temporel AUTO-DRIVE introduite en 1.0.9.
 
 Sur la carte (**M**) : panneau **FAVORIS** (recherche, **FIXER** destination, **CENTRER**, distances). Raccourcis **Dernière voiture / domicile / magasin** ; véhicules garés listés automatiquement. Sur le panneau GPS : **+** enregistre la position actuelle ; icône **voiture** = retour à la dernière voiture garée.
 

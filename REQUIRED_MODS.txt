@@ -9,3 +9,4 @@ Workshop publish checklist:
 5. Confirm Voogle Route contains no bundled LIB_BaUnifiedUI DLL.
 
 VoogleRoute does not probe player position itself. Navigation is blocked until LIB_BaPlayerLocation is active.
+The build uses LIB_BaUnifiedUI.dll from Output only as a compile reference; players must load the separate Workshop library at runtime.

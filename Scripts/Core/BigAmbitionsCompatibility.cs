@@ -36,6 +36,9 @@ namespace VoogleRoute
             isStatic: true,
             firstParameterType: typeof(float));
         private static readonly MethodInfo StartTimeMachineMethod = FindStartTimeMachineMethod();
+        private static readonly MethodInfo StopTimeMachineMethod = FindStopTimeMachineMethod();
+        private static readonly PropertyInfo TimeMachineBlockingUiProperty =
+            typeof(TimeMachine).GetProperty("isBlockingUi", AllFlags);
         private static readonly MethodInfo CurrentEntranceMethod = FindStaticAddressMethod(
             typeof(BuildingHelper),
             "GetAddressEntranceTransform");
@@ -133,6 +136,43 @@ namespace VoogleRoute
             }
         }
 
+        internal static bool IsTimeMachineBusy(TimeMachine timeMachine)
+        {
+            if (timeMachine == null)
+                return false;
+
+            try
+            {
+                return timeMachine.isRunning ||
+                       (TimeMachineBlockingUiProperty?.GetValue(timeMachine) is bool blockingUi &&
+                        blockingUi);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal static bool TryStopTimeMachine(TimeMachine timeMachine)
+        {
+            if (timeMachine == null || StopTimeMachineMethod == null)
+                return false;
+
+            try
+            {
+                var arguments = BuildDefaultArguments(StopTimeMachineMethod);
+                if (arguments.Length > 0)
+                    arguments[0] = 0f;
+                StopTimeMachineMethod.Invoke(timeMachine, arguments);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ModLog.Error("Compatible TimeMachine stop failed", Unwrap(ex));
+                return false;
+            }
+        }
+
         internal static Transform GetAddressEntranceTransform(Address address)
         {
             if (address == null)
@@ -174,6 +214,17 @@ namespace VoogleRoute
 
             return methods.FirstOrDefault();
         }
+
+        private static MethodInfo FindStopTimeMachineMethod() =>
+            typeof(TimeMachine).GetMethods(AllFlags)
+                .Where(method => method.Name == "StopTimeMachine" &&
+                                 !method.IsStatic &&
+                                 method.ReturnType == typeof(void))
+                .Where(method => method.GetParameters().Length == 0 ||
+                                 (method.GetParameters().Length == 1 &&
+                                  method.GetParameters()[0].ParameterType == typeof(float)))
+                .OrderByDescending(method => method.GetParameters().Length)
+                .FirstOrDefault();
 
         private static MethodInfo FindStaticAddressMethod(Type type, string name) =>
             type.GetMethod(

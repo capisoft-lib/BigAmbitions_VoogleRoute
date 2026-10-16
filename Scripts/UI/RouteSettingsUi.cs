@@ -97,6 +97,7 @@ namespace VoogleRoute.UI
                 .Build();
 
             _root = built.Root;
+            VoogleRouteUiScale.Register(built.Panel);
             _canvas = _root.GetComponent<Canvas>();
             _panelRect = built.Panel;
             _titleLabel = built.Header.Find("Title")?.GetComponent<TextMeshProUGUI>();

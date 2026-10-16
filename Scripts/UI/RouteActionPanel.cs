@@ -50,8 +50,7 @@ namespace VoogleRoute.UI
 
             BaUi.EnsureReady();
 
-            var panelScale = Mathf.Max(1f, ModConfig.HudButtonScale);
-            var layout = BaUi.Layout.CreateMetrics(panelScale);
+            var layout = BaUi.Layout.CreateMetrics(1f);
 
             var built = BaUi.Overlay(RootName, 9000)
                 .Dock(BaDock.BottomLeft, marginY: ModConfig.NavHudOffsetY)
@@ -93,6 +92,7 @@ namespace VoogleRoute.UI
                 .Build();
 
             _builtPanelWidth = layout.PanelWidth;
+            VoogleRouteUiScale.Register(built.Panel);
             VoogleRouteUiDiagnostics.LogPanelChrome("action-built", built.Panel, layout.PanelWidth);
 
             _root = built.Root;

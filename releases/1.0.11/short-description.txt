@@ -1,0 +1,1 @@
+Version 1.0.11 adds an immediately applied, per-save 50–150% UI scale slider in Options → Mods.

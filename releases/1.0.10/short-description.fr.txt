@@ -1,0 +1,1 @@
+La version 1.0.10 améliore la reprise du contrôle à pied après la sortie d’un véhicule, y compris avec les panneaux masqués, aux Hamptons et dans les parkings.

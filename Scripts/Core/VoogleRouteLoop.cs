@@ -150,6 +150,7 @@ namespace VoogleRoute
 
         internal static void Tick()
         {
+            VehicleExitNavigationRelease.Tick();
             ModUiText.PollLanguageChange();
             NavigationSpawnGuard.Tick();
             RouteRecalcBanner.Tick();
@@ -405,13 +406,6 @@ namespace VoogleRoute
             var modeChanged = MovementModeDetector.ModeChangedSinceLastApply;
             if (modeChanged)
             {
-                if (MovementModeDetector.PreviousMode == MovementMode.Vehicle &&
-                    MovementModeDetector.CurrentMode == MovementMode.OnFoot)
-                {
-                    PlayerNavigationRelease.Release();
-                    ModLog.Info("Released mod navigation after exiting vehicle.");
-                }
-
                 InvalidateRouteCache("movement_mode_changed");
                 if (MovementModeDetector.CurrentMode != MovementMode.OnFoot)
                     AutoWalkService.Reset();

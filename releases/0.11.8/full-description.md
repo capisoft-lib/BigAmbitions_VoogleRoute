@@ -8,7 +8,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 
 [b]Source code and updates:[/b] [url=https://github.com/capisoft-lib/BigAmbitions_VoogleRoute]GitHub — capisoft-lib/BigAmbitions_VoogleRoute[/url]
 
-
 [b]What's new in 0.11.8[/b]
 
 [list]
@@ -20,7 +19,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]Subway selection fix[/b] — the city-map [b]BOOKMARKS[/b] panel no longer blocks choosing a subway destination (manual or auto-walk)
 [/list]
 
-
 [b]What's new in 0.11.7[/b]
 
 [list]
@@ -30,7 +28,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]Non-blocking panel[/b] — closes with [b]×[/b], [b]ESC[/b], or when vanilla menus open; data saved in [b]bookmarks.json[/b]
 [*][b]Map polish[/b] — bookmarks stay visible when clicking buildings; history opens on the map; headers aligned with the panel frame; BizMan text fields keep focus
 [/list]
-
 
 [b]What's new in 0.11.6[/b]
 
@@ -42,7 +39,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*][b]Last parked car[/b] — green [b]car[/b] icon on the GPS panel routes you back to where you last parked
 [*][b]Vanilla-style UI[/b] — GPS panel, settings, popups, and bookmarks restyled to match in-game BizPhone windows
 [/list]
-
 
 [b]Features[/b]
 
@@ -62,7 +58,6 @@ Subscribe on Steam Workshop, then enable [b]Voogle Route[/b] and [b]LIB BA Playe
 [*]Does [b]not[/b] replace Voogle Maps — adds guidance on top of your map destination
 [/list]
 
-
 [b]Road network and bridges[/b]
 
 Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic waypoints — not straight lines across the map.
@@ -73,7 +68,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*][b]Long cross-city drives[/b] — better connectivity for trips that span multiple districts (e.g. downtown to industrial areas)
 [*]Guidance is a [b]driving line[/b] on the road network, not turn-by-turn lane GPS
 [/list]
-
 
 [b]How to use[/b]
 
@@ -90,7 +84,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*]Tap the [b]gear[/b] on the panel header for route color (also available under [b]Mods[/b] in the main menu).
 [/list]
 
-
 [b]Compatibility[/b]
 
 [list]
@@ -100,7 +93,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*][b]Saves:[/b] Reads your map destination only; bookmarks and visit history stored in mod data files; does not alter progression
 [/list]
 
-
 [b]Known limitations[/b]
 
 [list]
@@ -109,7 +101,6 @@ Vehicle routing uses an [b]enhanced road graph[/b] built from the game's traffic
 [*]Vehicle routes are [b]guidance lines[/b], not lane-perfect GPS
 [*]A few rare road segments may still need graph updates in future releases
 [/list]
-
 
 [b]Credits[/b]
 

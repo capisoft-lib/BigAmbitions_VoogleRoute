@@ -1,0 +1,98 @@
+using System;
+using BaPlayerLocation.Subscriber;
+using Helpers;
+using UnityEngine;
+using VoogleRoute;
+using VoogleRoute.Navigation;
+
+internal static class Program
+{
+    private static int _passed;
+    private static void Equal<T>(T expected, T actual, string message)
+    {
+        if (!Equals(expected, actual)) throw new Exception(message + ": expected " + expected + ", got " + actual);
+    }
+    private static void Setup()
+    {
+        PlayerLocationSession.Shutdown();
+        PlayerHelper.PlayerController = new PlayerController();
+        VehicleHelper.Vehicle = null;
+        HamptonsCompatibility.InsideHouse = false;
+        Time.unscaledTime = 0;
+        Time.frameCount++;
+        ModLog.Errors = 0;
+        PlayerLocationSession.Initialize();
+    }
+    private static void Car()
+    {
+        VehicleHelper.Vehicle = new VehicleController();
+        PlayerLocationSubscriber.Emit(MovementKind.Car);
+    }
+    private static void Foot(MovementKind kind = MovementKind.Walk)
+    {
+        VehicleHelper.Vehicle = null;
+        PlayerLocationSubscriber.Emit(kind);
+    }
+    private static void Tick(float seconds = 0.11f)
+    {
+        Time.unscaledTime += seconds;
+        Time.frameCount++;
+        VehicleExitNavigationRelease.Tick();
+    }
+    private static void Test(string name, Action action)
+    {
+        Setup();
+        action();
+        Equal(3, PlayerHelper.PlayerController?.LegitimateBlockers ?? 3, "native blockers must remain untouched");
+        _passed++;
+        Console.WriteLine("PASS " + name);
+    }
+    public static void Main()
+    {
+        Test("exit releases before a hidden-navigation listener returns", () => {
+            var calls = 0;
+            Action<PlayerLocationSnapshot> hidden = _ => calls++;
+            PlayerLocationSession.Changed += hidden;
+            try { Car(); Foot(); } finally { PlayerLocationSession.Changed -= hidden; }
+            Equal(2, calls, "UI listener reached");
+            Equal(1, PlayerHelper.PlayerController.Resets, "exit must release without route UI");
+            Equal(false, PlayerHelper.PlayerController.HasGoal, "previous goal cleared");
+        });
+        Test("Hamptons indoor snapshot preserves exit despite dynamic PreviousMode loss", () => {
+            HamptonsCompatibility.InsideHouse = true;
+            VehicleHelper.Vehicle = new VehicleController();
+            PlayerLocationSubscriber.Emit(MovementKind.Indoor);
+            Equal(MovementMode.Vehicle, MovementModeDetector.CurrentMode, "Hamptons motor vehicle");
+            Foot(MovementKind.Indoor);
+            Equal(MovementMode.OnFoot, MovementModeDetector.PreviousMode, "reproduce the old missed edge");
+            Equal(1, PlayerHelper.PlayerController.Resets, "Hamptons exit released");
+        });
+        Test("parking/interior exit releases on indoor GPS", () => { Car(); Foot(MovementKind.Indoor); Equal(1, PlayerHelper.PlayerController.Resets, "indoor exit"); });
+        Test("city-map or overlay listener sees an already released goal", () => {
+            Action<PlayerLocationSnapshot> overlay = s => { if (s.MovementKind == MovementKind.Walk) Equal(false, PlayerHelper.PlayerController.HasGoal, "release precedes blocked overlay"); };
+            PlayerLocationSession.Changed += overlay;
+            try { Car(); Foot(); } finally { PlayerLocationSession.Changed -= overlay; }
+        });
+        Test("GPS-unavailable gap does not lose vehicle exit", () => { Car(); PlayerLocationSubscriber.Emit(MovementKind.Unavailable); Foot(); Equal(1, PlayerHelper.PlayerController.Resets, "exit after missing pose"); });
+        Test("initial pedestrian snapshot does not cancel a manual goal", () => { Foot(); Equal(0, PlayerHelper.PlayerController.Resets, "no exit"); Equal(true, PlayerHelper.PlayerController.HasGoal, "manual goal kept"); });
+        Test("entering and remaining in a car does not release", () => { Car(); PlayerLocationSubscriber.Emit(MovementKind.Car); Tick(); Equal(0, PlayerHelper.PlayerController.Resets, "vehicle navigation kept"); });
+        Test("cargo tool is walking and does not create a vehicle exit", () => { VehicleHelper.Vehicle = new VehicleController(); VehicleHelper.Vehicle.vehicleType.spawnInPlayerObject = true; PlayerLocationSubscriber.Emit(MovementKind.Car); Foot(); Equal(0, PlayerHelper.PlayerController.Resets, "cargo transition"); });
+        Test("subway-to-walk is not a car exit", () => { PlayerLocationSubscriber.Emit(MovementKind.Subway); Foot(); Equal(0, PlayerHelper.PlayerController.Resets, "subway kept separate"); });
+        Test("repeated foot updates do not erase the next manual goal", () => { Car(); Foot(); PlayerHelper.PlayerController.HasGoal = true; Foot(); Tick(); Equal(1, PlayerHelper.PlayerController.Resets, "one release"); Equal(true, PlayerHelper.PlayerController.HasGoal, "new goal kept"); });
+        Test("temporary native-reset failure retries without another GPS event", () => { Car(); PlayerHelper.PlayerController.FailuresRemaining = 1; Foot(); Equal(0, PlayerHelper.PlayerController.Resets, "first attempt fails"); Tick(); Equal(1, PlayerHelper.PlayerController.Resets, "retry succeeds"); Tick(); Equal(2, PlayerHelper.PlayerController.Attempts, "stops after success"); });
+        Test("retry is rate-limited", () => { Car(); PlayerHelper.PlayerController.FailuresRemaining = 10; Foot(); Tick(0.05f); Equal(1, PlayerHelper.PlayerController.Attempts, "no rapid retry"); Tick(0.06f); Equal(2, PlayerHelper.PlayerController.Attempts, "bounded cadence"); });
+        Test("retry stops after two seconds and reports once", () => { Car(); PlayerHelper.PlayerController.FailuresRemaining = 100; Foot(); Tick(2.01f); Tick(10); Equal(1, PlayerHelper.PlayerController.Attempts, "timeout stops retry"); Equal(1, ModLog.Errors, "one diagnostic"); });
+        Test("re-entering a car cancels an outstanding release", () => { Car(); PlayerHelper.PlayerController.FailuresRemaining = 1; Foot(); Car(); Tick(); Equal(1, PlayerHelper.PlayerController.Attempts, "no reset in new car"); });
+        Test("shutdown cancels pending retries", () => { Car(); PlayerHelper.PlayerController.FailuresRemaining = 1; Foot(); PlayerLocationSession.Shutdown(); Tick(); Equal(1, PlayerHelper.PlayerController.Attempts, "no work after teardown"); });
+        Test("shutdown forgets the old session vehicle", () => { Car(); PlayerLocationSession.Shutdown(); PlayerLocationSession.Initialize(); Foot(); Equal(0, PlayerHelper.PlayerController.Resets, "new save does not inherit car edge"); });
+        Test("other observer exception cannot skip release", () => {
+            Car();
+            Action<PlayerLocationSnapshot> broken = _ => throw new InvalidOperationException("test observer");
+            PlayerLocationSession.Changed += broken;
+            try { try { Foot(); } catch (InvalidOperationException) { } } finally { PlayerLocationSession.Changed -= broken; }
+            Equal(1, PlayerHelper.PlayerController.Resets, "release happens first");
+        });
+        PlayerLocationSession.Shutdown();
+        Console.WriteLine(_passed + " vehicle-exit regression scenarios passed.");
+    }
+}

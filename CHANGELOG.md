@@ -2,6 +2,38 @@
 
 All notable changes to **Voogle Route** are documented here.
 
+## [1.0.11] - 2026-10-16
+
+### Added
+
+- **UI scaling** — set the Voogle Route interface from 50% to 150% in **Options → Mods**. The scale applies immediately and is saved per save.
+
+## [1.0.10] - 2026-10-11
+
+### Fixed
+
+- **Vehicle-exit navigation release** — clear the previous navigation goal before route visibility and overlay conditions can skip cleanup; covers walking exits in Hamptons plots and parking interiors.
+- **Vehicle-exit transition tracking** — remember the last available effective movement mode across GPS interruptions and live Hamptons mode changes.
+- **Pedestrian transition retries** — retry a failed native reset at a bounded cadence for up to two seconds; stop after success, vehicle re-entry, session teardown or timeout. Native navigation blockers remain unchanged.
+
+The original player report has not been reproduced in a live save. Regression scenarios reproduce the missed cleanup with the previous bridge and validate the corrected production sources.
+
+## [1.0.9] - 2026-09-26
+
+### Fixed
+
+- **AUTO-DRIVE interruption recovery** — release travel state and restore the fade if a fast-travel coroutine stops unexpectedly.
+- **Time-skip arrival guard** — after the planned arrival time and a five-second grace period, request native completion once if the time skip is still running; never end it before the target time.
+- **Time-skip transition safety** — block a new AUTO-DRIVE while native UI teardown is pending and reject invalid travel durations.
+
+This is a preventive change for reported arrival freezes; the original case has not been reproduced locally.
+
+## [1.0.8] - 2026-09-22
+
+### Changed
+
+- Refreshed the English and French Workshop descriptions for the existing bookmark category filters and navigation features.
+
 ## [1.0.7] - 2026-09-21
 
 ### Added

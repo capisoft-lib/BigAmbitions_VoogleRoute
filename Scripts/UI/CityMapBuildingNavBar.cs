@@ -104,6 +104,8 @@ namespace VoogleRoute.UI
                 return;
             }
 
+            VoogleRouteUiScale.Register(_actionRect);
+
             // Remove the copied vanilla SET DESTINATION event only from the clone.
             _actionButton.onClick = new Button.ButtonClickedEvent();
             _actionButton.onClick.AddListener(BaUiFocus.Wrap((UnityAction)OnActionClicked));
