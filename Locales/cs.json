@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Cíl dosažen. Zaparkujte ručně.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Trasa existuje, ale zatáčky jsou pro toto auto příliš těsné. Změňte cíl nebo použijte rychlé cestování.",
-  "voogle_route_options_physical_speed_auto": "Dodržovat rychlostní limit silnice"
+  "voogle_route_options_physical_speed_auto": "Automatická cestovní rychlost",
+  "voogle_route_options_stop_for_pedestrians": "Zastavovat před chodci",
+  "voogle_route_options_allow_speeding": "Překračovat limity (až 80 km/h)",
+  "voogle_route_options_run_red_lights": "Projíždět na červenou"
 }

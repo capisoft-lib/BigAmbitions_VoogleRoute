@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Målet er nået. Parkér selv.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Der findes en rute, men svingene er for snævre til denne bil. Vælg et andet mål eller hurtig rejse.",
-  "voogle_route_options_physical_speed_auto": "Følg vejens hastighedsgrænse"
+  "voogle_route_options_physical_speed_auto": "Automatisk rejsehastighed",
+  "voogle_route_options_stop_for_pedestrians": "Stop for fodgængere",
+  "voogle_route_options_allow_speeding": "Overskrid fartgrænser (op til 80 km/t)",
+  "voogle_route_options_run_red_lights": "Kør over for rødt"
 }

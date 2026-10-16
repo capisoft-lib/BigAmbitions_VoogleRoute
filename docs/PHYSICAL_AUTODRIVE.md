@@ -2,15 +2,21 @@
 
 Base : VoogleRoute **1.0.11**, commit `45d97b0`, sur **Big Ambitions 1.0 Build 3682**
 (Steam build 25482473, Unity 2022.3.62f2). Branche : `codex/physical-autodrive`.
-Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.4`.
+Le build local courant se distingue par `AssemblyInformationalVersion = 1.0.11-physical-autodrive.5`.
 
 ## Utilisation
 
 1. Dans Échap → Options → Mods → Voogle Route, laisser **Conduite réelle** activée.
-   **Rouler à la limite de la route** est activé par défaut : cible proche de 50 km/h
-   en ville, réduite pour les virages, feux, obstacles et capacités du véhicule.
-   Désactiver ce réglage permet de choisir un plafond manuel entre 20 et 60 km/h
-   (40 par défaut), toujours borné par la limite de la route.
+   **Vitesse de croisière automatique** est activé par défaut : cible proche de
+   50 km/h en ville, réduite pour les virages, feux, obstacles et capacités du véhicule.
+   Désactiver ce réglage permet de choisir un plafond manuel entre 20 et 80 km/h
+   (40 par défaut).
+   **S'arrêter pour les piétons** est activé par défaut.
+   **Dépasser les limites (max. 80 km/h)** retire le plafond légal : le mode
+   automatique vise alors 80 km/h, le mode manuel garde le plafond choisi.
+   **Griller les feux rouges** permet de franchir un feu rouge, en continuant à
+   surveiller les véhicules qui traversent. Ces deux dérogations sont désactivées
+   par défaut. Sans dépassement autorisé, le plafond légal reste appliqué.
    Ces réglages sont enregistrés dans les options de la sauvegarde.
    Désactiver Conduite réelle rétablit le voyage rapide existant.
 2. Monter dans une voiture, rejoindre une voie de circulation et s'arrêter dans
@@ -67,15 +73,15 @@ Compilation du code complet avec les DLL du jeu installé : réussie. Profil Pla
 contrôlé. Quatre avertissements préexistants concernent `TMP_Text.enableWordWrapping`.
 Les fichiers du paquet et les fichiers utilisateur sont contrôlés lors de l'installation.
 
-Installation révision 4 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
+Installation révision 5 du 16 octobre 2026 : 153 sources compilées, 33 fichiers livrés et comparés.
 Empreinte SHA-256 du DLL installé :
-`BF2370AE4B98A91008429E987ACC26B86CE68248BFD88485A821983327550C69`.
+`EFEF58BEC164581DDA90C89FB9BC74A5397B6E0805D4642BC05A017BF97D231A`.
 L'unique fichier utilisateur présent, `config.json`, conserve son empreinte
 `59505653560F93D6E4A8273782B463001FB89049415019B37A877A04BE7EF07D`.
 
 L'utilisateur a essayé la révision 3 et indique que la conduite semble bonne.
-**La nouvelle régulation de vitesse, les rapports et le rendu du réglage de la
-révision 4 restent à observer en jeu.** La compilation et les empreintes ne constituent
+**Les nouveaux réglages et comportements de la révision 5 restent à observer en
+jeu, ainsi que les rapports introduits en révision 4.** La compilation et les empreintes ne constituent
 pas une mesure du comportement physique.
 Il n'y a pas de marche arrière, de stationnement automatique ni de récupération par
 téléportation. Les voies élevées de pont et souterraines sont exclues du graphe de
@@ -191,3 +197,35 @@ nouvel essai en jeu pour comparer les saccades avec la session précédente.
 Build complet réussi avec les DLL installées ; installation comparée fichier par
 fichier. Aucune suite de tests ajoutée ou exécutée pour cette révision. Aucune
 publication Steam.
+
+## Révision 5 : piétons, dépassement et feux rouges
+
+- Trois interrupteurs indépendants dans les options BAUI, sauvegardés par partie,
+  synchronisés avec les PlayerPrefs et traduits dans les 22 langues. Valeurs par
+  défaut : arrêt piétons activé, dépassement désactivé, feux rouges désactivés.
+  Les modifications prennent effet pendant le trajet ; le prochain relevé de
+  capteurs et de télémétrie est demandé immédiatement.
+- Le mode automatique a un libellé distinct du respect des limitations. Le plafond
+  manuel passe à 20–80 km/h. L'autorisation de dépassement agit sur le profil et le
+  contrôle courant ; réactiver les limitations rétablit les contraintes anticipées
+  conservées séparément des limites de courbure. Limiteur du véhicule, ralentissements
+  en courbe, obstacles, véhicules et arrêt final restent pris en compte.
+- Les personnages sont identifiés via `ThirdPersonCharacter`, conservé dans le
+  cache de colliders. Désactiver l'arrêt piétons les exclut des balayages et des
+  contrôles de trafic transversal, sans masquer les autres obstacles. Lorsque
+  l'arrêt est activé, la liste vivante `pedestrianSpawner.activePedestrians` complète
+  les balayages solides : position actuelle et position prédite jusqu'à trois
+  secondes selon la vitesse NavMesh, projection locale sur le prochain tronçon.
+  Cela couvre les piétons de rue dont les colliders sont des triggers ou désactivés.
+- Les nœuds d'arrêt contrôlés par un feu sont identifiés dans
+  `CurrentSceneData.allLightsIntersections[].stopWaypoints[].roadWaypoints` au
+  rattachement du trafic. La dérogation ignore `stop` pour ces nœuds uniquement.
+  `temporaryDisabled` et les autres nœuds d'arrêt restent bloquants. La vérification
+  de trafic transversal reste active lors du franchissement d'un feu ; les règles
+  des intersections de priorité conservent `CanChange`.
+- `drive_state` inclut `stop_pedestrians`, `speeding`, `run_red`. Les amendes, les
+  collisions, les feux et les piétons du jeu ne sont pas modifiés par ces options.
+
+Compilation avec les DLL installées et installation des 33 fichiers réussies ;
+config locale conservée. Aucune suite de tests ajoutée ou exécutée et aucun essai
+interactif de ces nouveaux réglages effectué. Aucune publication Steam.

@@ -196,9 +196,10 @@ namespace VoogleRoute.Navigation.Driving
                 {
                     _nextTelemetryTime = Time.unscaledTime + 5f;
                     DrivingPerformance.Event(string.Format(CultureInfo.InvariantCulture,
-                        "drive_state speed_kmh={0:F1} target_kmh={1:F1} road_kmh={2:F0} path_kmh={3:F1} traffic_kmh={4:F1} gear={5} rpm={6:F0} throttle={7:F2} brake={8:F2}",
+                        "drive_state speed_kmh={0:F1} target_kmh={1:F1} road_kmh={2:F0} path_kmh={3:F1} traffic_kmh={4:F1} gear={5} rpm={6:F0} throttle={7:F2} brake={8:F2} stop_pedestrians={9} speeding={10} run_red={11}",
                         speed * 3.6f, targetSpeed * 3.6f, DrivingSpeedLimits.At(position), pathLimit * 3.6f,
-                        _trafficLimit * 3.6f, _lease.Gear, _lease.Rpm, throttle, brake));
+                        _trafficLimit * 3.6f, _lease.Gear, _lease.Rpm, throttle, brake,
+                        ModConfig.StopForPedestriansEnabled, ModConfig.AllowSpeedingEnabled, ModConfig.RunRedLightsEnabled));
                 }
 
                 if (_progress > _lastProgress + 1f) { _stalled = 0f; _lastProgress = _progress; }
@@ -215,6 +216,7 @@ namespace VoogleRoute.Navigation.Driving
             _plan.Path.SetCruiseSpeed(DrivingSpeedLimits.CruiseMps(_lease));
             _speedIntegral = 0f;
             _nextSensorTime = 0f;
+            _nextTelemetryTime = 0f;
         }
         private static void BrakeToStop(string message)
         {

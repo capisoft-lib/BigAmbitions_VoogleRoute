@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Kohde saavutettu. Pysäköi itse.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Reitti on olemassa, mutta sen mutkat ovat liian tiukkoja tälle autolle. Vaihda kohdetta tai käytä pikamatkaa.",
-  "voogle_route_options_physical_speed_auto": "Noudata tien nopeusrajoitusta"
+  "voogle_route_options_physical_speed_auto": "Automaattinen matkanopeus",
+  "voogle_route_options_stop_for_pedestrians": "Pysähdy jalankulkijoille",
+  "voogle_route_options_allow_speeding": "Ylitä nopeusrajoitukset (enintään 80 km/h)",
+  "voogle_route_options_run_red_lights": "Aja päin punaista"
 }

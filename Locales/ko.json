@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "목적지에 도착했습니다. 직접 주차하세요.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "경로는 있지만 이 차로 돌기에는 커브가 너무 급합니다. 목적지를 바꾸거나 빠른 이동을 이용하세요.",
-  "voogle_route_options_physical_speed_auto": "도로 제한 속도 따르기"
+  "voogle_route_options_physical_speed_auto": "자동 순항 속도",
+  "voogle_route_options_stop_for_pedestrians": "보행자를 위해 정지",
+  "voogle_route_options_allow_speeding": "제한 속도 초과 (최대 80 km/h)",
+  "voogle_route_options_run_red_lights": "빨간 신호 무시"
 }

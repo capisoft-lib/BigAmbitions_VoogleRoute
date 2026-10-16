@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "目的地に到着しました。手動で駐車してください。",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "経路はありますが、この車にはカーブが急すぎます。目的地を変更するか高速移動を利用してください。",
-  "voogle_route_options_physical_speed_auto": "道路の制限速度に合わせる"
+  "voogle_route_options_physical_speed_auto": "巡航速度を自動設定",
+  "voogle_route_options_stop_for_pedestrians": "歩行者のために停止",
+  "voogle_route_options_allow_speeding": "制限速度を超える（最大80 km/h）",
+  "voogle_route_options_run_red_lights": "赤信号を無視"
 }

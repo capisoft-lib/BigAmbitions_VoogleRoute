@@ -29,7 +29,9 @@ namespace VoogleRoute.Navigation.Driving
             return CityKmh;
         }
 
-        internal static float TargetMps(Vector3 position) => Mathf.Max(0f, At(position) / 3.6f - MarginMps);
+        internal static float LegalTargetMps(Vector3 position) => Mathf.Max(0f, At(position) / 3.6f - MarginMps);
+        internal static float TargetMps(Vector3 position) => ModConfig.AllowSpeedingEnabled
+            ? MaximumKmh / 3.6f : LegalTargetMps(position);
         internal static float CruiseMps(VehicleControlLease car) => Mathf.Min(car.MaxSpeedKmh,
             ModConfig.PhysicalDriveCruiseCeilingKmh) / 3.6f;
         internal static void Invalidate() => _zones = null;

@@ -19,6 +19,7 @@ namespace VoogleRoute.Navigation.Driving
             internal Collider Collider;
             internal Rigidbody Body;
             internal VehicleComponent Vehicle;
+            internal ThirdPersonCharacter Human;
             internal bool Ignore;
         }
 
@@ -54,16 +55,22 @@ namespace VoogleRoute.Navigation.Driving
                 if (distance < -1.5f) continue;
                 if (distance > horizon) break;
                 var wp = marker.Waypoint;
-                var blocked = wp.stop || wp.temporaryDisabled;
-                if (wp.giveWay)
+                var runLight = marker.SignalControlled && ModConfig.RunRedLightsEnabled;
+                var blocked = wp.temporaryDisabled || (wp.stop && !runLight);
+                if (wp.giveWay && !runLight)
                 {
                     // CanChange reads the live intersection's path occupancy, as vanilla traffic does.
-                    blocked |= !wp.CanChange() || CrossingTraffic(wp.position, car);
+                    blocked |= !wp.CanChange();
                 }
+                // A red-light override bypasses the signal, while crossing vehicles still take priority.
+                if (wp.giveWay || runLight) blocked |= CrossingTraffic(wp.position, car);
                 if (!blocked) continue;
                 WaitingForSignal = true;
                 limit = Mathf.Min(limit, StoppingSpeed(distance - 2f));
             }
+
+            if (ModConfig.StopForPedestriansEnabled)
+                limit = Mathf.Min(limit, PedestrianLimit(plan, car, progress, frontOffset, horizon, cruise));
 
             // Sweep along the upcoming curve, with a bumper-width box above the road surface.
             var start = progress + frontOffset;
@@ -99,10 +106,9 @@ namespace VoogleRoute.Navigation.Driving
                     var hit = _hits[i];
                     if (hit.collider == null || hit.normal.y > 0.65f || !_seenObstacles.Add(hit.collider.GetInstanceID())) continue;
                     var info = Info(hit.collider, car);
-                    if (info.Ignore) continue;
+                    if (info.Ignore || (!ModConfig.StopForPedestriansEnabled && info.Human != null)) continue;
                     var gap = gapBase + hit.distance;
-                    var velocity = info.Vehicle != null ? info.Vehicle.GetVelocity() :
-                        info.Body != null ? info.Body.velocity : Vector3.zero;
+                    var velocity = Velocity(info);
                     var lead = Mathf.Max(0f, Vector3.Dot(DrivingPath.Flat(velocity), DrivingPath.Flat(delta).normalized));
                     var buffer = 2.5f + speed * 0.8f;
                     var followSpeed = Mathf.Min(lead + Mathf.Max(0f, gap - buffer) * 0.6f,
@@ -123,11 +129,11 @@ namespace VoogleRoute.Navigation.Driving
             {
                 var collider = _crossing[i];
                 var info = Info(collider, car);
-                if (info.Ignore) continue;
+                if (info.Ignore || (!ModConfig.StopForPedestriansEnabled && info.Human != null)) continue;
                 var vehicle = info.Vehicle;
                 var body = info.Body;
-                if (vehicle == null && body == null) continue;
-                var velocity = vehicle != null ? vehicle.GetVelocity() : body.velocity;
+                if (vehicle == null && body == null && info.Human == null) continue;
+                var velocity = Velocity(info);
                 var offset = DrivingPath.Flat(collider.bounds.center - junction);
                 var v = DrivingPath.Flat(velocity);
                 if (v.sqrMagnitude < 0.3f) continue;
@@ -135,6 +141,55 @@ namespace VoogleRoute.Navigation.Driving
                 if ((offset + v * t).sqrMagnitude < 16f) return true;
             }
             return false;
+        }
+
+        private float PedestrianLimit(PhysicalDrivePlan plan, VehicleControlLease car, float progress,
+            float frontOffset, float horizon, float cruise)
+        {
+            // Street pedestrians can be NavMesh agents with trigger/disabled collision bodies.
+            // Use the live spawner's list as well as the existing solid-collider sweeps.
+            var pedestrians = CityManager.Instance?.pedestrianSpawner?.activePedestrians;
+            if (pedestrians == null) return cruise;
+            var limit = cruise;
+            var origin = car.RearPosition;
+            var rangeSquared = (horizon + 8f) * (horizon + 8f);
+            foreach (var pedestrian in pedestrians)
+            {
+                var human = pedestrian?.tpc;
+                if (human == null || human.isPlayer || !human.gameObject.activeInHierarchy) continue;
+                var position = human.transform.position;
+                var offset = DrivingPath.Flat(position - origin);
+                if (offset.sqrMagnitude > rangeSquared || Mathf.Abs(position.y - origin.y) > 3f) continue;
+                if (offset.sqrMagnitude < 25f && Vector3.Dot(offset, car.Vehicle.transform.forward) < -0.5f) continue;
+                var agent = human.navmeshAgent;
+                var velocity = agent != null && agent.enabled && agent.isOnNavMesh ? agent.velocity : human.velocity;
+                var arrivalTime = Mathf.Clamp(offset.magnitude / Mathf.Max(car.Speed, 3f), 0f, 3f);
+                limit = Mathf.Min(limit, PedestrianPointLimit(plan.Path, position, progress, frontOffset, horizon, car.HalfWidth));
+                limit = Mathf.Min(limit, PedestrianPointLimit(plan.Path, position + velocity * arrivalTime,
+                    progress, frontOffset, horizon, car.HalfWidth));
+            }
+            if (limit < cruise) WaitingForSignal = true;
+            return limit;
+        }
+
+        private static float PedestrianPointLimit(DrivingPath path, Vector3 position, float progress,
+            float frontOffset, float horizon, float halfWidth)
+        {
+            var along = path.Project(position, progress, out var lateral, searchAhead: horizon);
+            var gap = along - progress - frontOffset;
+            if (lateral > halfWidth + 0.65f || gap < -1.5f || gap > horizon) return float.PositiveInfinity;
+            return StoppingSpeed(gap - 2.5f);
+        }
+
+        private static Vector3 Velocity(ColliderInfo info)
+        {
+            if (info.Vehicle != null) return info.Vehicle.GetVelocity();
+            if (info.Human != null)
+            {
+                var agent = info.Human.navmeshAgent;
+                return agent != null && agent.enabled && agent.isOnNavMesh ? agent.velocity : info.Human.velocity;
+            }
+            return info.Body != null ? info.Body.velocity : Vector3.zero;
         }
 
         private ColliderInfo Info(Collider c, VehicleControlLease car)
@@ -146,7 +201,17 @@ namespace VoogleRoute.Navigation.Driving
             var ignored = c.isTrigger || body == car.Body || c.transform.IsChildOf(car.Car.transform) ||
                 c.transform.IsChildOf(car.Vehicle.transform);
             var info = new ColliderInfo { Collider = c, Body = body, Ignore = ignored };
-            if (!ignored) { _lookups++; info.Vehicle = c.GetComponentInParent<VehicleComponent>(); }
+            if (!ignored)
+            {
+                _lookups++;
+                info.Vehicle = c.GetComponentInParent<VehicleComponent>();
+                if (info.Vehicle == null)
+                {
+                    _lookups++;
+                    info.Human = c.GetComponentInParent<ThirdPersonCharacter>();
+                    if (info.Human != null && info.Human.isPlayer) info.Ignore = true;
+                }
+            }
             if (_colliders.Count >= 512) _colliders.Clear();
             _colliders[id] = info;
             return info;

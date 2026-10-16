@@ -195,6 +195,9 @@ namespace VoogleRoute
         public bool PhysicalAutoDrive { get; set; } = true;
         public int PhysicalDriveSpeedKmh { get; set; } = 40;
         public bool FollowRoadSpeedLimit { get; set; } = true;
+        public bool StopForPedestrians { get; set; } = true;
+        public bool AllowSpeeding { get; set; }
+        public bool RunRedLights { get; set; }
         public bool ForceCorrectSideArrival { get; set; }
         public bool AllowUturnAtStart { get; set; }
         public bool AutoEnterDestination { get; set; } = true;
@@ -251,7 +254,7 @@ namespace VoogleRoute
 
             if (data.BaseTaxiMultiplier < 1)
                 data.BaseTaxiMultiplier = 2;
-            if (data.PhysicalDriveSpeedKmh < 20 || data.PhysicalDriveSpeedKmh > 60)
+            if (data.PhysicalDriveSpeedKmh < 20 || data.PhysicalDriveSpeedKmh > 80)
                 data.PhysicalDriveSpeedKmh = 40;
 
             if (data.UiScalePercent < ModConfig.MinUiScalePercent ||

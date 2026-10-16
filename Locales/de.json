@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Ziel erreicht. Bitte selbst parken.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Eine Straßenroute existiert, aber ihre Kurven sind zu eng für dieses Auto. Anderes Ziel oder Schnellreise wählen.",
-  "voogle_route_options_physical_speed_auto": "Tempolimit der Straße einhalten"
+  "voogle_route_options_physical_speed_auto": "Automatische Reisegeschwindigkeit",
+  "voogle_route_options_stop_for_pedestrians": "Für Fußgänger anhalten",
+  "voogle_route_options_allow_speeding": "Tempolimits überschreiten (bis 80 km/h)",
+  "voogle_route_options_run_red_lights": "Bei Rot weiterfahren"
 }

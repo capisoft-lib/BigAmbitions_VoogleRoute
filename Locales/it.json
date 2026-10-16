@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Destinazione raggiunta. Parcheggia manualmente.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Una strada esiste, ma le curve sono troppo strette per questa auto. Cambia destinazione o usa il viaggio rapido.",
-  "voogle_route_options_physical_speed_auto": "Seguire i limiti stradali"
+  "voogle_route_options_physical_speed_auto": "Velocità di crociera automatica",
+  "voogle_route_options_stop_for_pedestrians": "Fermarsi per i pedoni",
+  "voogle_route_options_allow_speeding": "Superare i limiti (fino a 80 km/h)",
+  "voogle_route_options_run_red_lights": "Passare con il rosso"
 }

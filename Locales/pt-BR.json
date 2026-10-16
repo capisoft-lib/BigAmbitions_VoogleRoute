@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Destino alcançado. Estacione manualmente.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Existe uma rota, mas as curvas são estreitas demais para este carro. Mude o destino ou use viagem rápida.",
-  "voogle_route_options_physical_speed_auto": "Seguir o limite da via"
+  "voogle_route_options_physical_speed_auto": "Velocidade de cruzeiro automática",
+  "voogle_route_options_stop_for_pedestrians": "Parar para pedestres",
+  "voogle_route_options_allow_speeding": "Exceder limites (até 80 km/h)",
+  "voogle_route_options_run_red_lights": "Avançar sinais vermelhos"
 }

@@ -10,7 +10,7 @@ namespace VoogleRoute.Navigation.Driving
         internal readonly Vector3[] Points;
         internal readonly float[] Distances;
         internal readonly float[] SpeedLimits;
-        private readonly float[] _roadAndCornerLimits;
+        private readonly float[] _roadLimits, _cornerLimits;
         private Dictionary<Vector2Int, List<int>> _pointCells;
         internal int LastProjectionSegments { get; private set; }
         internal float Length => Distances[Distances.Length - 1];
@@ -20,22 +20,25 @@ namespace VoogleRoute.Navigation.Driving
             Points = points.ToArray();
             Distances = new float[Points.Length];
             SpeedLimits = new float[Points.Length];
-            _roadAndCornerLimits = new float[Points.Length];
+            _roadLimits = new float[Points.Length];
+            _cornerLimits = new float[Points.Length];
             for (var i = 1; i < Points.Length; i++)
                 Distances[i] = Distances[i - 1] + FlatDistance(Points[i - 1], Points[i]);
             for (var i = 0; i < Points.Length; i++)
             {
                 var curvature = i == 0 || i == Points.Length - 1 ? 0f :
                     Curvature(Points[i - 1], Points[i], Points[i + 1]);
-                _roadAndCornerLimits[i] = Mathf.Min(roadLimits != null ? roadLimits[i] : float.PositiveInfinity,
-                    Mathf.Sqrt(1.6f / Mathf.Max(curvature, 0.001f)));
+                _roadLimits[i] = roadLimits != null ? roadLimits[i] : float.PositiveInfinity;
+                _cornerLimits[i] = Mathf.Sqrt(1.6f / Mathf.Max(curvature, 0.001f));
             }
             SetCruiseSpeed(cruise);
         }
 
         internal void SetCruiseSpeed(float cruise)
         {
-            for (var i = 0; i < SpeedLimits.Length; i++) SpeedLimits[i] = Mathf.Min(cruise, _roadAndCornerLimits[i]);
+            for (var i = 0; i < SpeedLimits.Length; i++)
+                SpeedLimits[i] = Mathf.Min(cruise, Mathf.Min(_cornerLimits[i],
+                    ModConfig.AllowSpeedingEnabled ? float.PositiveInfinity : _roadLimits[i]));
             SpeedLimits[SpeedLimits.Length - 1] = 0f;
             ApplyBrakingEnvelope();
         }

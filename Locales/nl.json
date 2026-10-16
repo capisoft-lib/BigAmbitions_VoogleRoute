@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Bestemming bereikt. Parkeer zelf.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Er is een route, maar de bochten zijn te krap voor deze auto. Kies een ander doel of snelreizen.",
-  "voogle_route_options_physical_speed_auto": "Snelheidslimiet van de weg volgen"
+  "voogle_route_options_physical_speed_auto": "Automatische kruissnelheid",
+  "voogle_route_options_stop_for_pedestrians": "Stoppen voor voetgangers",
+  "voogle_route_options_allow_speeding": "Snelheidslimieten overschrijden (tot 80 km/h)",
+  "voogle_route_options_run_red_lights": "Door rood rijden"
 }

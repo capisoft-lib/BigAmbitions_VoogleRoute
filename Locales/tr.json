@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Hedefe ulaşıldı. Elle park edin.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Bir rota var, ancak dönüşler bu araç için çok dar. Hedefi değiştirin veya hızlı seyahati kullanın.",
-  "voogle_route_options_physical_speed_auto": "Yolun hız sınırına uy"
+  "voogle_route_options_physical_speed_auto": "Otomatik seyir hızı",
+  "voogle_route_options_stop_for_pedestrians": "Yayalar için dur",
+  "voogle_route_options_allow_speeding": "Hız sınırını aş (en fazla 80 km/sa)",
+  "voogle_route_options_run_red_lights": "Kırmızı ışıkta geç"
 }

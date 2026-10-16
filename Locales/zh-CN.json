@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "已到达目的地，请手动停车。",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "道路路线存在，但转弯对这辆车仍然太急。请更改目的地或使用快速旅行。",
-  "voogle_route_options_physical_speed_auto": "按道路限速行驶"
+  "voogle_route_options_physical_speed_auto": "自动巡航速度",
+  "voogle_route_options_stop_for_pedestrians": "为行人停车",
+  "voogle_route_options_allow_speeding": "超过限速（最高80 km/h）",
+  "voogle_route_options_run_red_lights": "闯红灯"
 }

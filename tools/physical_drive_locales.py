@@ -130,28 +130,53 @@ TURN_TIGHT = {
 
 
 SPEED_OPTIONS = {
-    "en": ("Follow road speed limits", "Speed cap (automatic mode off)"),
-    "fr": ("Rouler à la limite de la route", "Vitesse maxi (mode automatique désactivé)"),
-    "de": ("Tempolimit der Straße einhalten", "Höchsttempo (Automatikmodus aus)"),
-    "es": ("Seguir el límite de la vía", "Velocidad máxima (modo automático desactivado)"),
-    "it": ("Seguire i limiti stradali", "Velocità massima (modalità automatica disattivata)"),
-    "pt-BR": ("Seguir o limite da via", "Velocidade máxima (modo automático desligado)"),
-    "nl": ("Snelheidslimiet van de weg volgen", "Snelheidsgrens (automatische modus uit)"),
-    "da": ("Følg vejens hastighedsgrænse", "Maksimal fart (automatisk tilstand slået fra)"),
-    "fi": ("Noudata tien nopeusrajoitusta", "Enimmäisnopeus (automaattitila pois)"),
-    "cs": ("Dodržovat rychlostní limit silnice", "Maximální rychlost (automatický režim vypnutý)"),
-    "pl": ("Przestrzegaj limitu prędkości drogi", "Maksymalna prędkość (tryb automatyczny wyłączony)"),
-    "hu": ("Közúti sebességhatár követése", "Sebességkorlát (automatikus mód kikapcsolva)"),
-    "ro": ("Respectă limita de viteză a drumului", "Viteză maximă (mod automat dezactivat)"),
-    "tr": ("Yolun hız sınırına uy", "Azami hız (otomatik mod kapalı)"),
-    "el": ("Τήρηση ορίου ταχύτητας δρόμου", "Μέγιστη ταχύτητα (αυτόματη λειτουργία εκτός)"),
-    "lt": ("Laikytis kelio greičio ribojimo", "Didžiausias greitis (automatinis režimas išjungtas)"),
-    "ru": ("Соблюдать ограничение скорости дороги", "Предел скорости (авторежим выключен)"),
-    "uk": ("Дотримуватися обмеження швидкості дороги", "Максимальна швидкість (авторежим вимкнено)"),
-    "ja": ("道路の制限速度に合わせる", "上限速度（自動モードがオフのとき）"),
-    "ko": ("도로 제한 속도 따르기", "최대 속도 (자동 모드 꺼짐)"),
-    "zh-CN": ("按道路限速行驶", "最高速度（自动模式关闭时）"),
-    "zh-TW": ("依道路速限行駛", "最高速度（自動模式關閉時）"),
+    "en": ("Automatic cruising speed", "Speed cap (automatic mode off)"),
+    "fr": ("Vitesse de croisière automatique", "Vitesse maxi (mode automatique désactivé)"),
+    "de": ("Automatische Reisegeschwindigkeit", "Höchsttempo (Automatikmodus aus)"),
+    "es": ("Velocidad de crucero automática", "Velocidad máxima (modo automático desactivado)"),
+    "it": ("Velocità di crociera automatica", "Velocità massima (modalità automatica disattivata)"),
+    "pt-BR": ("Velocidade de cruzeiro automática", "Velocidade máxima (modo automático desligado)"),
+    "nl": ("Automatische kruissnelheid", "Snelheidsgrens (automatische modus uit)"),
+    "da": ("Automatisk rejsehastighed", "Maksimal fart (automatisk tilstand slået fra)"),
+    "fi": ("Automaattinen matkanopeus", "Enimmäisnopeus (automaattitila pois)"),
+    "cs": ("Automatická cestovní rychlost", "Maximální rychlost (automatický režim vypnutý)"),
+    "pl": ("Automatyczna prędkość podróżna", "Maksymalna prędkość (tryb automatyczny wyłączony)"),
+    "hu": ("Automatikus utazósebesség", "Sebességkorlát (automatikus mód kikapcsolva)"),
+    "ro": ("Viteză de croazieră automată", "Viteză maximă (mod automat dezactivat)"),
+    "tr": ("Otomatik seyir hızı", "Azami hız (otomatik mod kapalı)"),
+    "el": ("Αυτόματη ταχύτητα πορείας", "Μέγιστη ταχύτητα (αυτόματη λειτουργία εκτός)"),
+    "lt": ("Automatinis kelionės greitis", "Didžiausias greitis (automatinis režimas išjungtas)"),
+    "ru": ("Автоматическая крейсерская скорость", "Предел скорости (авторежим выключен)"),
+    "uk": ("Автоматична крейсерська швидкість", "Максимальна швидкість (авторежим вимкнено)"),
+    "ja": ("巡航速度を自動設定", "上限速度（自動モードがオフのとき）"),
+    "ko": ("자동 순항 속도", "최대 속도 (자동 모드 꺼짐)"),
+    "zh-CN": ("自动巡航速度", "最高速度（自动模式关闭时）"),
+    "zh-TW": ("自動巡航速度", "最高速度（自動模式關閉時）"),
+}
+
+ROAD_RULE_OPTIONS = {
+    "en": ("Stop for pedestrians", "Exceed speed limits (up to 80 km/h)", "Run red lights"),
+    "fr": ("S'arrêter pour les piétons", "Dépasser les limites (max. 80 km/h)", "Griller les feux rouges"),
+    "de": ("Für Fußgänger anhalten", "Tempolimits überschreiten (bis 80 km/h)", "Bei Rot weiterfahren"),
+    "es": ("Detenerse por peatones", "Superar límites (hasta 80 km/h)", "Saltarse semáforos rojos"),
+    "it": ("Fermarsi per i pedoni", "Superare i limiti (fino a 80 km/h)", "Passare con il rosso"),
+    "pt-BR": ("Parar para pedestres", "Exceder limites (até 80 km/h)", "Avançar sinais vermelhos"),
+    "nl": ("Stoppen voor voetgangers", "Snelheidslimieten overschrijden (tot 80 km/h)", "Door rood rijden"),
+    "da": ("Stop for fodgængere", "Overskrid fartgrænser (op til 80 km/t)", "Kør over for rødt"),
+    "fi": ("Pysähdy jalankulkijoille", "Ylitä nopeusrajoitukset (enintään 80 km/h)", "Aja päin punaista"),
+    "cs": ("Zastavovat před chodci", "Překračovat limity (až 80 km/h)", "Projíždět na červenou"),
+    "pl": ("Zatrzymuj się przed pieszymi", "Przekraczaj limity (do 80 km/h)", "Przejeżdżaj na czerwonym"),
+    "hu": ("Megállás gyalogosoknak", "Sebességhatárok túllépése (80 km/h-ig)", "Áthajtás a piroson"),
+    "ro": ("Oprește pentru pietoni", "Depășește limitele (până la 80 km/h)", "Treci pe roșu"),
+    "tr": ("Yayalar için dur", "Hız sınırını aş (en fazla 80 km/sa)", "Kırmızı ışıkta geç"),
+    "el": ("Στάση για πεζούς", "Υπέρβαση ορίων (έως 80 km/h)", "Διέλευση με κόκκινο"),
+    "lt": ("Sustoti dėl pėsčiųjų", "Viršyti greičio ribojimus (iki 80 km/h)", "Važiuoti degant raudonai"),
+    "ru": ("Останавливаться перед пешеходами", "Превышать скорость (до 80 км/ч)", "Проезжать на красный"),
+    "uk": ("Зупинятися перед пішоходами", "Перевищувати швидкість (до 80 км/год)", "Проїжджати на червоний"),
+    "ja": ("歩行者のために停止", "制限速度を超える（最大80 km/h）", "赤信号を無視"),
+    "ko": ("보행자를 위해 정지", "제한 속도 초과 (최대 80 km/h)", "빨간 신호 무시"),
+    "zh-CN": ("为行人停车", "超过限速（最高80 km/h）", "闯红灯"),
+    "zh-TW": ("為行人停車", "超過速限（最高80 km/h）", "闖紅燈"),
 }
 
 
@@ -160,6 +185,8 @@ def strings(locale):
     result["voogle_route_options_physical_drive_speed_value"] = "{value} km/h"
     result["voogle_route_physical_turn_tight"] = TURN_TIGHT[locale]
     result["voogle_route_options_physical_speed_auto"], result["voogle_route_options_physical_drive_speed"] = SPEED_OPTIONS[locale]
+    for key, value in zip(("stop_for_pedestrians", "allow_speeding", "run_red_lights"), ROAD_RULE_OPTIONS[locale]):
+        result["voogle_route_options_" + key] = value
     return result
 
 

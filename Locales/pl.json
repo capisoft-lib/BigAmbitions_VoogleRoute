@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Cel osiągnięty. Zaparkuj ręcznie.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Trasa istnieje, ale zakręty są zbyt ciasne dla tego auta. Zmień cel lub użyj szybkiej podróży.",
-  "voogle_route_options_physical_speed_auto": "Przestrzegaj limitu prędkości drogi"
+  "voogle_route_options_physical_speed_auto": "Automatyczna prędkość podróżna",
+  "voogle_route_options_stop_for_pedestrians": "Zatrzymuj się przed pieszymi",
+  "voogle_route_options_allow_speeding": "Przekraczaj limity (do 80 km/h)",
+  "voogle_route_options_run_red_lights": "Przejeżdżaj na czerwonym"
 }

@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Destination atteinte. Reprenez le volant pour stationner.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Une route existe, mais ses virages restent trop serrés pour cette voiture. Changez de destination ou utilisez le voyage rapide.",
-  "voogle_route_options_physical_speed_auto": "Rouler à la limite de la route"
+  "voogle_route_options_physical_speed_auto": "Vitesse de croisière automatique",
+  "voogle_route_options_stop_for_pedestrians": "S'arrêter pour les piétons",
+  "voogle_route_options_allow_speeding": "Dépasser les limites (max. 80 km/h)",
+  "voogle_route_options_run_red_lights": "Griller les feux rouges"
 }

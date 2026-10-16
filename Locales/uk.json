@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Мети досягнуто. Припаркуйтеся вручну.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Маршрут є, але повороти надто круті для цього авто. Змініть ціль або оберіть швидку подорож.",
-  "voogle_route_options_physical_speed_auto": "Дотримуватися обмеження швидкості дороги"
+  "voogle_route_options_physical_speed_auto": "Автоматична крейсерська швидкість",
+  "voogle_route_options_stop_for_pedestrians": "Зупинятися перед пішоходами",
+  "voogle_route_options_allow_speeding": "Перевищувати швидкість (до 80 км/год)",
+  "voogle_route_options_run_red_lights": "Проїжджати на червоний"
 }

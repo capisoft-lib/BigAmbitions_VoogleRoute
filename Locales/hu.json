@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Cél elérve. Parkolj kézzel.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Van útvonal, de a kanyarok túl szűkek ehhez az autóhoz. Válassz másik célt vagy gyorsutazást.",
-  "voogle_route_options_physical_speed_auto": "Közúti sebességhatár követése"
+  "voogle_route_options_physical_speed_auto": "Automatikus utazósebesség",
+  "voogle_route_options_stop_for_pedestrians": "Megállás gyalogosoknak",
+  "voogle_route_options_allow_speeding": "Sebességhatárok túllépése (80 km/h-ig)",
+  "voogle_route_options_run_red_lights": "Áthajtás a piroson"
 }

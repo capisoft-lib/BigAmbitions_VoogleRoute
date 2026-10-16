@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Destination reached. Take the wheel to park.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "A road route exists, but its turns cannot be fitted to this car. Choose another destination or fast travel.",
-  "voogle_route_options_physical_speed_auto": "Follow road speed limits"
+  "voogle_route_options_physical_speed_auto": "Automatic cruising speed",
+  "voogle_route_options_stop_for_pedestrians": "Stop for pedestrians",
+  "voogle_route_options_allow_speeding": "Exceed speed limits (up to 80 km/h)",
+  "voogle_route_options_run_red_lights": "Run red lights"
 }

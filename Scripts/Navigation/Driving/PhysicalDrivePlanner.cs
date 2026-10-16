@@ -18,12 +18,13 @@ namespace VoogleRoute.Navigation.Driving
         internal float CruiseKmh, VehicleMaxKmh;
         internal float CreatedAt, StartProgress, MinimumRadius;
         internal Vector3 Origin, Forward;
-        internal bool PreferBuildingSide;
+        internal bool PreferBuildingSide, AllowSpeeding;
         internal readonly List<TrafficMarker> Traffic = new List<TrafficMarker>();
         internal sealed class TrafficMarker
         {
             internal Waypoint Waypoint;
             internal float Distance;
+            internal bool SignalControlled;
         }
     }
 
@@ -33,6 +34,7 @@ namespace VoogleRoute.Navigation.Driving
         private static int _trafficScene;
         private static Dictionary<Vector2Int, List<Waypoint>> _trafficGrid;
         private static readonly Dictionary<int, Waypoint> TrafficMatches = new Dictionary<int, Waypoint>();
+        private static readonly HashSet<int> SignalWaypoints = new HashSet<int>();
 
         internal static bool TryBuild(out PhysicalDrivePlan plan, out string failure)
         {
@@ -82,7 +84,7 @@ namespace VoogleRoute.Navigation.Driving
                             ? "voogle_route_physical_no_route" : "voogle_route_physical_turn_tight");
                 Debug.Log("[VoogleRoute][PhysicalDrive] curve_fit_ok " + geometryDetail);
                 var roadLimits = new float[samples.Count];
-                for (var i = 0; i < samples.Count; i++) roadLimits[i] = DrivingSpeedLimits.TargetMps(samples[i]);
+                for (var i = 0; i < samples.Count; i++) roadLimits[i] = DrivingSpeedLimits.LegalTargetMps(samples[i]);
                 var path = new DrivingPath(samples, DrivingSpeedLimits.CruiseMps(geometry), roadLimits);
                 if (path.Length < 12f) return Reject("destination_too_close", "", out failure, "voogle_route_autodrive_too_close");
                 var progress = path.Project(origin, 0f, out var lateral, searchAhead: 50f);
@@ -105,6 +107,7 @@ namespace VoogleRoute.Navigation.Driving
                     SaveIdentity = SaveGameManager.Current, SceneHandle = SceneManager.GetActiveScene().handle,
                     GraphSource = RouteGraphStore.Graph,
                     CruiseKmh = ModConfig.PhysicalDriveCruiseCeilingKmh, VehicleMaxKmh = geometry.MaxSpeedKmh,
+                    AllowSpeeding = ModConfig.AllowSpeedingEnabled,
                     PreferBuildingSide = ModConfig.ForceCorrectSideArrivalEnabled,
                     Origin = origin, Forward = geometry.Vehicle.transform.forward,
                     StartProgress = progress, MinimumRadius = geometry.MinRadius
@@ -130,7 +133,8 @@ namespace VoogleRoute.Navigation.Driving
             reason = "expired";
             if (Time.realtimeSinceStartup - plan.CreatedAt > 60f) return false;
             reason = "options_or_geometry_changed";
-            if (plan.CruiseKmh != ModConfig.PhysicalDriveCruiseCeilingKmh || Mathf.Abs(plan.VehicleMaxKmh - car.MaxSpeedKmh) > 0.1f ||
+            if (plan.CruiseKmh != ModConfig.PhysicalDriveCruiseCeilingKmh || plan.AllowSpeeding != ModConfig.AllowSpeedingEnabled ||
+                Mathf.Abs(plan.VehicleMaxKmh - car.MaxSpeedKmh) > 0.1f ||
                 plan.PreferBuildingSide != ModConfig.ForceCorrectSideArrivalEnabled ||
                 Mathf.Abs(plan.MinimumRadius - car.MinRadius) > 0.05f) return false;
             reason = "car_moved";
@@ -189,6 +193,14 @@ namespace VoogleRoute.Navigation.Driving
                 !ReferenceEquals(_trafficSave, SaveGameManager.Current) || _trafficScene != SceneManager.GetActiveScene().handle)
             {
                 InvalidateTrafficIndex();
+                if (scene.allLightsIntersections != null)
+                    foreach (var intersection in scene.allLightsIntersections)
+                    {
+                        if (intersection?.stopWaypoints == null) continue;
+                        foreach (var road in intersection.stopWaypoints)
+                            if (road?.roadWaypoints != null)
+                                foreach (var waypointId in road.roadWaypoints) SignalWaypoints.Add(waypointId);
+                    }
                 var grid = new Dictionary<Vector2Int, List<Waypoint>>();
                 foreach (var wp in waypoints)
                 {
@@ -222,7 +234,8 @@ namespace VoogleRoute.Navigation.Driving
                 }
                 if (nearest == null || !seen.Add(nearest.listIndex)) continue;
                 var distance = plan.Path.NearestDistance(nearest.position);
-                plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance });
+                plan.Traffic.Add(new PhysicalDrivePlan.TrafficMarker { Waypoint = nearest, Distance = distance,
+                    SignalControlled = SignalWaypoints.Contains(nearest.listIndex) });
                 // Gley maxSpeed is the NPC's desired pace, not the legal road limit.
             }
             plan.Traffic.Sort((a, b) => a.Distance.CompareTo(b.Distance));
@@ -236,6 +249,7 @@ namespace VoogleRoute.Navigation.Driving
             _trafficScene = 0;
             _trafficGrid = null;
             TrafficMatches.Clear();
+            SignalWaypoints.Clear();
         }
     }
 }

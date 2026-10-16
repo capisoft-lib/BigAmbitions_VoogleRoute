@@ -27,6 +27,9 @@ namespace VoogleRoute
         private const string PhysicalAutoDriveKey = "physical_autodrive";
         private const string PhysicalDriveSpeedKey = "physical_drive_speed";
         private const string FollowRoadSpeedLimitKey = "follow_road_speed_limit";
+        private const string StopForPedestriansKey = "stop_for_pedestrians";
+        private const string AllowSpeedingKey = "allow_speeding";
+        private const string RunRedLightsKey = "run_red_lights";
         private const string ForceCorrectSideArrivalKey = "force_correct_side_arrival";
         private const string AllowUturnAtStartKey = "allow_uturn_at_start";
         private const string AutoEnterDestinationKey = "auto_enter_destination";
@@ -63,6 +66,9 @@ namespace VoogleRoute
         internal static bool PhysicalAutoDriveEnabled { get; private set; } = true;
         internal static int PhysicalDriveSpeedKmh { get; private set; } = 40;
         internal static bool FollowRoadSpeedLimitEnabled { get; private set; } = true;
+        internal static bool StopForPedestriansEnabled { get; private set; } = true;
+        internal static bool AllowSpeedingEnabled { get; private set; }
+        internal static bool RunRedLightsEnabled { get; private set; }
         internal static float PhysicalDriveCruiseCeilingKmh => FollowRoadSpeedLimitEnabled
             ? Navigation.Driving.DrivingSpeedLimits.MaximumKmh : PhysicalDriveSpeedKmh;
         internal static float NavHudOffsetY { get; private set; } = 16f;
@@ -150,8 +156,11 @@ namespace VoogleRoute
             if (PhysicalAutoDriveEnabled != data.PhysicalAutoDrive)
                 Navigation.Driving.PhysicalDriveService.Stop();
             PhysicalAutoDriveEnabled = data.PhysicalAutoDrive;
-            PhysicalDriveSpeedKmh = Mathf.Clamp(data.PhysicalDriveSpeedKmh, 20, 60);
+            PhysicalDriveSpeedKmh = Mathf.Clamp(data.PhysicalDriveSpeedKmh, 20, 80);
             FollowRoadSpeedLimitEnabled = data.FollowRoadSpeedLimit;
+            StopForPedestriansEnabled = data.StopForPedestrians;
+            AllowSpeedingEnabled = data.AllowSpeeding;
+            RunRedLightsEnabled = data.RunRedLights;
             Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
             VoogleRouteUiScale.SetScaleFactor(UiScalePercent / 100f);
             _footLineColor = ReadLineColor(data.FootRouteLineColor);
@@ -174,6 +183,9 @@ namespace VoogleRoute
                 PhysicalAutoDrive = PhysicalAutoDriveEnabled,
                 PhysicalDriveSpeedKmh = PhysicalDriveSpeedKmh,
                 FollowRoadSpeedLimit = FollowRoadSpeedLimitEnabled,
+                StopForPedestrians = StopForPedestriansEnabled,
+                AllowSpeeding = AllowSpeedingEnabled,
+                RunRedLights = RunRedLightsEnabled,
                 ForceCorrectSideArrival = ForceCorrectSideArrivalEnabled,
                 AllowUturnAtStart = AllowUturnAtStartEnabled,
                 AutoEnterDestination = AutoEnterDestinationEnabled,
@@ -204,6 +216,9 @@ namespace VoogleRoute
             ModGameOptionPrefs.SaveToggle(modId, PhysicalAutoDriveKey, PhysicalAutoDriveEnabled);
             ModGameOptionPrefs.SaveInt(modId, PhysicalDriveSpeedKey, PhysicalDriveSpeedKmh);
             ModGameOptionPrefs.SaveToggle(modId, FollowRoadSpeedLimitKey, FollowRoadSpeedLimitEnabled);
+            ModGameOptionPrefs.SaveToggle(modId, StopForPedestriansKey, StopForPedestriansEnabled);
+            ModGameOptionPrefs.SaveToggle(modId, AllowSpeedingKey, AllowSpeedingEnabled);
+            ModGameOptionPrefs.SaveToggle(modId, RunRedLightsKey, RunRedLightsEnabled);
             ModGameOptionPrefs.SaveColor(modId, FootRouteColorKey, FootLineColor);
             ModGameOptionPrefs.SaveColor(modId, IndoorRouteColorKey, IndoorFootLineColor);
             ModGameOptionPrefs.SaveColor(modId, VehicleRouteColorKey, VehicleLineColor);
@@ -427,7 +442,7 @@ namespace VoogleRoute
 
         private static void OnPhysicalDriveSpeedChanged(int value)
         {
-            PhysicalDriveSpeedKmh = Mathf.Clamp(value, 20, 60);
+            PhysicalDriveSpeedKmh = Mathf.Clamp(value, 20, 80);
             Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
             ModOptionsSaveStore.PersistFromModConfig();
         }
@@ -435,6 +450,27 @@ namespace VoogleRoute
         private static void OnFollowRoadSpeedLimitChanged(bool value)
         {
             FollowRoadSpeedLimitEnabled = value;
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
+        private static void OnStopForPedestriansChanged(bool value)
+        {
+            StopForPedestriansEnabled = value;
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
+        private static void OnAllowSpeedingChanged(bool value)
+        {
+            AllowSpeedingEnabled = value;
+            Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
+            ModOptionsSaveStore.PersistFromModConfig();
+        }
+
+        private static void OnRunRedLightsChanged(bool value)
+        {
+            RunRedLightsEnabled = value;
             Navigation.Driving.PhysicalDriveService.RefreshSpeedPolicy();
             ModOptionsSaveStore.PersistFromModConfig();
         }
@@ -471,8 +507,14 @@ namespace VoogleRoute
                     OnPhysicalAutoDriveChanged)
                 .AddToggle(FollowRoadSpeedLimitKey, "voogle_route_options_physical_speed_auto", FollowRoadSpeedLimitEnabled,
                     OnFollowRoadSpeedLimitChanged)
-                .AddSlider(PhysicalDriveSpeedKey, "voogle_route_options_physical_drive_speed", 20, 60,
+                .AddSlider(PhysicalDriveSpeedKey, "voogle_route_options_physical_drive_speed", 20, 80,
                     PhysicalDriveSpeedKmh, OnPhysicalDriveSpeedChanged, "voogle_route_options_physical_drive_speed_value")
+                .AddToggle(StopForPedestriansKey, "voogle_route_options_stop_for_pedestrians", StopForPedestriansEnabled,
+                    OnStopForPedestriansChanged)
+                .AddToggle(AllowSpeedingKey, "voogle_route_options_allow_speeding", AllowSpeedingEnabled,
+                    OnAllowSpeedingChanged)
+                .AddToggle(RunRedLightsKey, "voogle_route_options_run_red_lights", RunRedLightsEnabled,
+                    OnRunRedLightsChanged)
                 .AddSlider(BaseTaxiMultiplierKey, "voogle_route_options_base_taxi_multiplier", 1, 10,
                     BaseTaxiMultiplier, OnBaseTaxiMultiplierChanged,
                     "voogle_route_options_base_taxi_multiplier_value")

@@ -28,6 +28,9 @@ namespace VoogleRoute
             AppendBool(sb, "physicalAutoDrive", data.PhysicalAutoDrive);
             AppendInt(sb, "physicalDriveSpeedKmh", data.PhysicalDriveSpeedKmh);
             AppendBool(sb, "followRoadSpeedLimit", data.FollowRoadSpeedLimit);
+            AppendBool(sb, "stopForPedestrians", data.StopForPedestrians);
+            AppendBool(sb, "allowSpeeding", data.AllowSpeeding);
+            AppendBool(sb, "runRedLights", data.RunRedLights);
             AppendBool(sb, "forceCorrectSideArrival", data.ForceCorrectSideArrival);
             AppendBool(sb, "allowUturnAtStart", data.AllowUturnAtStart);
             AppendBool(sb, "autoEnterDestination", data.AutoEnterDestination);
@@ -54,6 +57,9 @@ namespace VoogleRoute
                 PhysicalAutoDrive = ReadBool(json, "physicalAutoDrive", true),
                 PhysicalDriveSpeedKmh = ReadInt(json, "physicalDriveSpeedKmh", 40),
                 FollowRoadSpeedLimit = ReadBool(json, "followRoadSpeedLimit", true),
+                StopForPedestrians = ReadBool(json, "stopForPedestrians", true),
+                AllowSpeeding = ReadBool(json, "allowSpeeding", false),
+                RunRedLights = ReadBool(json, "runRedLights", false),
                 ForceCorrectSideArrival = ReadBool(json, "forceCorrectSideArrival", false),
                 AllowUturnAtStart = ReadBool(json, "allowUturnAtStart", false),
                 AutoEnterDestination = ReadBool(json, "autoEnterDestination", true),

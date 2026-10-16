@@ -105,5 +105,8 @@
   "voogle_route_physical_arrived": "Tikslas pasiektas. Pastatykite automobilį.",
   "voogle_route_options_physical_drive_speed_value": "{value} km/h",
   "voogle_route_physical_turn_tight": "Maršrutas yra, tačiau posūkiai šiam automobiliui per siauri. Pakeiskite tikslą arba rinkitės greitą kelionę.",
-  "voogle_route_options_physical_speed_auto": "Laikytis kelio greičio ribojimo"
+  "voogle_route_options_physical_speed_auto": "Automatinis kelionės greitis",
+  "voogle_route_options_stop_for_pedestrians": "Sustoti dėl pėsčiųjų",
+  "voogle_route_options_allow_speeding": "Viršyti greičio ribojimus (iki 80 km/h)",
+  "voogle_route_options_run_red_lights": "Važiuoti degant raudonai"
 }
